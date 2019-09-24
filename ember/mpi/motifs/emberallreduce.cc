@@ -19,50 +19,49 @@
 
 using namespace SST::Ember;
 
-static void test(void* a, void* b, int* len, PayloadDataType* ) {
+static void test(void *a, void *b, int *len, PayloadDataType *) {
 
-	printf("%s() len=%d\n",__func__,*len);
+    printf("%s() len=%d\n", __func__, *len);
 }
 
-EmberAllreduceGenerator::EmberAllreduceGenerator(SST::Component* owner,
-                                            Params& params) :
-	EmberMessagePassingGenerator(owner, params, "Allreduce"),
-    m_loopIndex(0)
-{
+EmberAllreduceGenerator::EmberAllreduceGenerator(SST::Component *owner,
+                                                 Params &params) :
+    EmberMessagePassingGenerator(owner, params, "Allreduce"),
+    m_loopIndex(0) {
 
-	m_iterations = (uint32_t) params.find("arg.iterations", 1);
-	m_compute    = (uint32_t) params.find("arg.compute", 0);
-	m_count      = (uint32_t) params.find("arg.count", 1);
-	if ( params.find<bool>("arg.doUserFunc", false )  )   {
-		m_op = op_create( test, 0 );
-	} else {
-		m_op = Hermes::MP::SUM;
-	}	
-	memSetBacked();
-	m_sendBuf = memAlloc(sizeofDataType(DOUBLE));
-	m_recvBuf = memAlloc(sizeofDataType(DOUBLE));
+    m_iterations = (uint32_t) params.find("arg.iterations", 1);
+    m_compute = (uint32_t) params.find("arg.compute", 0);
+    m_count = (uint32_t) params.find("arg.count", 1);
+    if (params.find<bool>("arg.doUserFunc", false)) {
+        m_op = op_create(test, 0);
+    } else {
+        m_op = Hermes::MP::SUM;
+    }
+    memSetBacked();
+    m_sendBuf = memAlloc(sizeofDataType(DOUBLE));
+    m_recvBuf = memAlloc(sizeofDataType(DOUBLE));
 }
 
-bool EmberAllreduceGenerator::generate( std::queue<EmberEvent*>& evQ) {
+bool EmberAllreduceGenerator::generate(std::queue<EmberEvent *> &evQ) {
 
-    if ( m_loopIndex == m_iterations ) {
-        if ( 0 == rank() ) {
-            double latency = (double)(m_stopTime-m_startTime)/(double)m_iterations;
+    if (m_loopIndex == m_iterations) {
+        if (0 == rank()) {
+            double latency = (double) (m_stopTime - m_startTime) / (double) m_iterations;
             latency /= 1000000000.0;
-            output( "%s: ranks %d, loop %d, %d double(s), latency %.3f us\n",
-                    getMotifName().c_str(), size(), m_iterations, m_count, latency * 1000000.0  );
+            output("%s: ranks %d, loop %d, %d double(s), latency %.3f us\n",
+                   getMotifName().c_str(), size(), m_iterations, m_count, latency * 1000000.0);
         }
         return true;
     }
-    if ( 0 == m_loopIndex ) {
-        enQ_getTime( evQ, &m_startTime );
+    if (0 == m_loopIndex) {
+        enQ_getTime(evQ, &m_startTime);
     }
 
-    enQ_compute( evQ, m_compute );
-    enQ_allreduce( evQ, m_sendBuf, m_recvBuf, m_count, DOUBLE, m_op, GroupWorld );
+    enQ_compute(evQ, m_compute);
+    enQ_allreduce(evQ, m_sendBuf, m_recvBuf, m_count, DOUBLE, m_op, GroupWorld);
 
-    if ( ++m_loopIndex == m_iterations ) {
-        enQ_getTime( evQ, &m_stopTime );
+    if (++m_loopIndex == m_iterations) {
+        enQ_getTime(evQ, &m_stopTime);
     }
     return false;
 }

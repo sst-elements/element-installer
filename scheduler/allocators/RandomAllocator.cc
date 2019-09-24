@@ -25,28 +25,24 @@
 
 using namespace SST::Scheduler;
 
-RandomAllocator::RandomAllocator(Machine* mesh) : Allocator(*mesh)
-{
+RandomAllocator::RandomAllocator(Machine *mesh) : Allocator(*mesh) {
     schedout.init("", 8, ~0, Output::STDOUT);
     rng = new SST::RNG::MersenneRNG();
 }
 
-RandomAllocator::~RandomAllocator()
-{
+RandomAllocator::~RandomAllocator() {
     delete rng;
 }
 
-std::string RandomAllocator::getParamHelp()
-{
+std::string RandomAllocator::getParamHelp() {
     return "";
 }
 
-std::string RandomAllocator::getSetupInfo(bool comment) const
-{
+std::string RandomAllocator::getSetupInfo(bool comment) const {
     std::string com;
-    if(comment)  {
+    if (comment) {
         com = "# ";
-    } else  {
+    } else {
         com = "";
     }
     return com + "Random Allocator";
@@ -55,17 +51,17 @@ std::string RandomAllocator::getSetupInfo(bool comment) const
 //allocates job if possible
 //returns information on the allocation or null if it wasn't possible
 //(doesn't make allocation; merely returns info on possible allocation)
-AllocInfo* RandomAllocator::allocate(Job* job){
-    if(!canAllocate(*job)) return NULL;
+AllocInfo *RandomAllocator::allocate(Job *job) {
+    if (!canAllocate(*job)) return nullptr;
 
-    AllocInfo* retVal = new AllocInfo(job, machine);
+    AllocInfo *retVal = new AllocInfo(job, machine);
 
     //figure out which processors to use
     int nodesNeeded = ceil((double) job->getProcsNeeded() / machine.coresPerNode);
-    
-    std::vector<int>* freeNodes = machine.getFreeNodes();    
+
+    std::vector<int> *freeNodes = machine.getFreeNodes();
     for (int i = 0; i < nodesNeeded; i++) {
-        int num = rng->generateNextInt32() % freeNodes -> size();
+        int num = rng->generateNextInt32() % freeNodes->size();
         retVal->nodeIndices[i] = freeNodes->at(num);
         freeNodes->erase(freeNodes->begin() + num);
     }

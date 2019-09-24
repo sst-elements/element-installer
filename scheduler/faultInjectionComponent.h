@@ -22,67 +22,75 @@
 #include <sst/core/component.h>
 #include <sst/core/link.h>
 
-namespace SST{
-	class Event;
-	class Link;
-	class Params;
-	namespace Scheduler{
+namespace SST {
+    class Event;
 
-		class FaultEvent;
+    class Link;
 
-		class faultInjectionComponent : public SST::Component{
-			public:
+    class Params;
+    namespace Scheduler {
 
-                SST_ELI_REGISTER_COMPONENT(
-                    faultInjectionComponent,
-                    "scheduler",
-                    "faultInjectionComponent",
-                    SST_ELI_ELEMENT_VERSION(1,0,0),
-                    "Generates and injects failures from a flatfile",
-                    COMPONENT_CATEGORY_UNCATEGORIZED
-                )
+        class FaultEvent;
 
-                SST_ELI_DOCUMENT_PARAMS(
-                    { "faultInjectionFilename",
-                        "File to use for fault injections",
-                        NULL
-                    },
-                    { "injectionFrequency",
-                        "Frequency with which injections occur",
-                        NULL
-                    }
-                )
+        class faultInjectionComponent : public SST::Component {
+        public:
 
-                SST_ELI_DOCUMENT_PORTS(
-                    {"faultInjector",
-                     "Causes nodes to fail",
-                     {"faultActivationEvents"}
-                    }
-                )
+            SST_ELI_REGISTER_COMPONENT(
+                faultInjectionComponent,
+            "scheduler",
+            "faultInjectionComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Generates and injects failures from a flatfile",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-				faultInjectionComponent();
-				faultInjectionComponent( SST::ComponentId_t id, SST::Params& params );
-				~faultInjectionComponent();
+            SST_ELI_DOCUMENT_PARAMS(
+            {
+                "faultInjectionFilename",
+                    "File to use for fault injections",
+                    nullptr
+            },
+            {
+                "injectionFrequency",
+                    "Frequency with which injections occur",
+                    nullptr
+            }
+            )
 
-				void setup();
+            SST_ELI_DOCUMENT_PORTS(
+            {
+                "faultInjector",
+                    "Causes nodes to fail",
+                    {"faultActivationEvents"}
+            }
+            )
 
-				void handleSelfLink( SST::Event * );
-				void handleNodeLink( SST::Event *, int );
+            faultInjectionComponent();
 
-			private:
-				std::map<std::string, std::string> * readFailFile();
+            faultInjectionComponent(SST::ComponentId_t id, SST::Params &params);
 
-				SST::Link * selfLink;
-				std::string resumeSimulationToken;
-				std::string failFilename;
-				time_t fileLastWritten;
-				int failFrequency;
-				int failPollFreq;
+            ~faultInjectionComponent();
 
-				std::vector<SST::Link *> nodeLinks;
-				std::vector<std::string> nodeIDs;
-		};
-	};
+            void setup();
+
+            void handleSelfLink(SST::Event *);
+
+            void handleNodeLink(SST::Event *, int);
+
+        private:
+            std::map <std::string, std::string> *readFailFile();
+
+            SST::Link *selfLink;
+            std::string resumeSimulationToken;
+            std::string failFilename;
+            time_t fileLastWritten;
+            int failFrequency;
+            int failPollFreq;
+
+            std::vector<SST::Link *> nodeLinks;
+            std::vector <std::string> nodeIDs;
+        };
+    };
 };
 
 #endif

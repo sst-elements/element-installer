@@ -18,9 +18,12 @@
 class DetailedModel:
     def getName(self):
         pass
-    def build(self,nodeID,numCores):
-        pass 
-    def getThreadLink(self,core):
+
+    def build(self, nodeID, numCores):
         pass
+
+    def getThreadLink(self, core):
+        pass
+
     def getNicLink(self):
         pass

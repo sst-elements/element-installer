@@ -31,24 +31,26 @@
 namespace SST {
     namespace Scheduler {
         class Machine;
+
         class Job;
 
         class RandomAllocator : public Allocator {
 
-            public:
-                RandomAllocator(Machine* mach);
-                ~RandomAllocator();
+        public:
+            RandomAllocator(Machine *mach);
 
-                RandomAllocator Make(std::vector<std::string*>* params);
+            ~RandomAllocator();
 
-                std::string getParamHelp();
+            RandomAllocator Make(std::vector<std::string *> *params);
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getParamHelp();
 
-                AllocInfo* allocate(Job* job);
-                
-            private:
-                SST::RNG::SSTRandom* rng;  //random number generator
+            std::string getSetupInfo(bool comment) const;
+
+            AllocInfo *allocate(Job *job);
+
+        private:
+            SST::RNG::SSTRandom *rng;  //random number generator
 
         };
 

@@ -20,38 +20,37 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberTestEvent : public EmberMPIEvent {
+        class EmberTestEvent : public EmberMPIEvent {
 
-public:
-	EmberTestEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-       		MessageRequest* req, int* flag, MessageResponse* resp = NULL ) :
-       	EmberMPIEvent( api, output, stat ),
-       	m_req( req ),
-		m_flag( flag ),
-		m_respPtr( resp )
-    { }
+        public:
+            EmberTestEvent(MP::Interface &api, Output *output,
+                           EmberEventTimeStatistic *stat,
+                           MessageRequest *req, int *flag, MessageResponse *resp = nullptr) :
+                EmberMPIEvent(api, output, stat),
+                m_req(req),
+                m_flag(flag),
+                m_respPtr(resp) {}
 
-	~EmberTestEvent() {}
+            ~EmberTestEvent() {}
 
-    std::string getName() { return "Test"; }
+            std::string getName() { return "Test"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-       	m_api.test( *m_req, m_flag, m_respPtr, functor );
+                m_api.test(*m_req, m_flag, m_respPtr, functor);
+            }
+
+        private:
+            MessageRequest *m_req;
+            int *m_flag;
+            MessageResponse *m_respPtr;
+        };
+
     }
-
-private:
-    MessageRequest*		m_req;
-	int*				m_flag;
-	MessageResponse*	m_respPtr;	
-};
-
-}
 }
 
 #endif

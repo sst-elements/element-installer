@@ -28,47 +28,54 @@
 #include <map>
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-using SST::Interfaces::SimpleNetwork;
+        using SST::Interfaces::SimpleNetwork;
 
-class MemNetBridge : public SST::Merlin::Bridge::Translator {
-public:
+        class MemNetBridge : public SST::Merlin::Bridge::Translator {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT(MemNetBridge, "memHierarchy", "MemNetBridge", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT(MemNetBridge,
+            "memHierarchy", "MemNetBridge", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Merlin::Bridge::Translator for memory network bridging", "SST::Merlin::Bridge::Translator")
 
-    SST_ELI_DOCUMENT_PARAMS(
-            {"debug",       "(int) Print debug information. Options: 0[no output], 1[stdout], 2[stderr], 3[file]", "0"},
-            {"debug_level", "(int) Debugging level. Between 0 and 10", "0"} )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "debug", "(int) Print debug information. Options: 0[no output], 1[stdout], 2[stderr], 3[file]", "0" },
+            { "debug_level", "(int) Debugging level. Between 0 and 10", "0" } )
 
 /* Begin class definition */
-    MemNetBridge(SST::Component *comp, SST::Params &params);
-    ~MemNetBridge();
-    void init(unsigned int);
-    void setup(void);
-    void finish(void);
+            MemNetBridge(SST::Component *comp, SST::Params &params);
 
-    SimpleNetwork::Request* translate(SimpleNetwork::Request* req, uint8_t fromNetwork);
-    SimpleNetwork::Request* initTranslate(SimpleNetwork::Request* req, uint8_t fromNetwork);
+            ~MemNetBridge();
 
-private:
-    Output dbg;
+            void init(unsigned int);
 
-    typedef std::map<std::string, SimpleNetwork::nid_t> addrMap_t;
-    typedef std::map<std::string, uint64_t> imreMap_t;
+            void setup(void);
 
-    struct Net_t {
-        addrMap_t map;
-        imreMap_t imreMap;
-    };
+            void finish(void);
 
-    Net_t networks[2];
+            SimpleNetwork::Request *translate(SimpleNetwork::Request *req, uint8_t fromNetwork);
 
-    SimpleNetwork::nid_t getAddrFor(Net_t &nic, const std::string &tgt);
+            SimpleNetwork::Request *initTranslate(SimpleNetwork::Request *req, uint8_t fromNetwork);
 
-};
+        private:
+            Output dbg;
 
-}}
+            typedef std::map <std::string, SimpleNetwork::nid_t> addrMap_t;
+            typedef std::map <std::string, uint64_t> imreMap_t;
+
+            struct Net_t {
+                addrMap_t map;
+                imreMap_t imreMap;
+            };
+
+            Net_t networks[2];
+
+            SimpleNetwork::nid_t getAddrFor(Net_t &nic, const std::string &tgt);
+
+        };
+
+    }
+}
 
 #endif

@@ -19,48 +19,52 @@
 #include "customCmdMemory.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
 /* CustomCmdInfo with OpCode */
-class CustomOpCodeCmdInfo : public CustomCmdInfo {
-public:
-    /* Constructors */
-    CustomOpCodeCmdInfo() : CustomCmdInfo() { }
+        class CustomOpCodeCmdInfo : public CustomCmdInfo {
+        public:
+            /* Constructors */
+            CustomOpCodeCmdInfo() : CustomCmdInfo() {}
 
-    CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr) :
-        CustomCmdInfo(id, rqstr), addr_(addr), custOpc_(0xFFFF) { }
+            CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr) :
+                CustomCmdInfo(id, rqstr), addr_(addr), custOpc_(0xFFFF) {}
 
-    CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr, uint32_t flags = 0) :
-        CustomCmdInfo(id, rqstr, flags), addr_(addr), custOpc_(0xFFFF) { }
+            CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr,
+                                uint32_t flags = 0) :
+                CustomCmdInfo(id, rqstr, flags), addr_(addr), custOpc_(0xFFFF) {}
 
-    CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr, uint32_t opc, uint32_t flags = 0) :
-        CustomCmdInfo(id, rqstr, flags), addr_(addr), custOpc_(opc) { }
+            CustomOpCodeCmdInfo(SST::Event::id_type id, std::string rqstr, Addr addr, uint32_t opc,
+                                uint32_t flags = 0) :
+                CustomCmdInfo(id, rqstr, flags), addr_(addr), custOpc_(opc) {}
 
-    virtual ~CustomOpCodeCmdInfo() = default;
+            virtual ~CustomOpCodeCmdInfo() = default;
 
-    /* String-ify for debug */
-    virtual std::string getString() {
-        std::ostringstream str;
-        str << std::hex << " Addr: 0x" << addr_;
-        str << " OpCode: 0x" << custOpc_;
-        return CustomCmdInfo::getString() + str.str();
-    }
-    
-    /* Address getter/setter */
-    void setAddr(Addr addr) { addr_ = addr; }
-    Addr getAddr() { return addr_; }
+            /* String-ify for debug */
+            virtual std::string getString() {
+                std::ostringstream str;
+                str << std::hex << " Addr: 0x" << addr_;
+                str << " OpCode: 0x" << custOpc_;
+                return CustomCmdInfo::getString() + str.str();
+            }
 
-    /* Op code getter/setter */
-    void setOpCode(uint32_t opc) { custOpc_ = opc; }
-    uint32_t getOpCode() { return custOpc_; }
+            /* Address getter/setter */
+            void setAddr(Addr addr) { addr_ = addr; }
 
-protected:
-    Addr addr_;          /* Target address */
-    uint32_t custOpc_;   /* Custom op code */
+            Addr getAddr() { return addr_; }
 
-};
+            /* Op code getter/setter */
+            void setOpCode(uint32_t opc) { custOpc_ = opc; }
+
+            uint32_t getOpCode() { return custOpc_; }
+
+        protected:
+            Addr addr_;          /* Target address */
+            uint32_t custOpc_;   /* Custom op code */
+
+        };
 
 
-} /* namespace MemHierarchy */
+    } /* namespace MemHierarchy */
 } /* namespace SST */
 #endif

@@ -19,7 +19,7 @@
 using namespace SST;
 using namespace Ember;
 
-const char* EmberEvent::m_enumName[] = {
+const char *EmberEvent::m_enumName[] = {
     FOREACH_ENUM(GENERATE_STRING)
 };
 

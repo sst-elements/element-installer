@@ -22,22 +22,23 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacWaitEvent : public ZodiacEvent {
+        class ZodiacWaitEvent : public ZodiacEvent {
 
-	public:
-		ZodiacWaitEvent(uint64_t reqID); 
-		ZodiacEventType getEventType();
+        public:
+            ZodiacWaitEvent(uint64_t reqID);
 
-		uint64_t getRequestID();
+            ZodiacEventType getEventType();
 
-	protected:
-		uint64_t reqID;
+            uint64_t getRequestID();
 
-};
+        protected:
+            uint64_t reqID;
 
-}
+        };
+
+    }
 }
 
 #endif

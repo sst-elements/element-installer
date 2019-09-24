@@ -21,40 +21,45 @@
 #include "memBackend.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class CramSimMemory : public SimpleMemBackend {
-public:
+        class CramSimMemory : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(CramSimMemory, "memHierarchy", "cramsim", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(CramSimMemory,
+            "memHierarchy", "cramsim", SST_ELI_ELEMENT_VERSION(1,0,0),
             "CramSim memory timings", SST::MemHierarchy::SimpleMemBackend)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
-            /* Own parameters */
-            {"verbose", "Sets the verbosity of the backend output", "0"},
-            {"access_time", "(string) Link latency for link to CramSim. With units (SI ok).", "100ns"}, 
-            {"max_outstanding_requests", "Maximum number of outstanding requests", "256"} )
 
-    SST_ELI_DOCUMENT_PORTS(
-            {"cube_link",   "Link to CramSim",  {"CramSim.MemReqEvent", "CramSim.MemRespEvent"} } )
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+            /* Own parameters */
+            { "verbose", "Sets the verbosity of the backend output", "0" },
+            { "access_time", "(string) Link latency for link to CramSim. With units (SI ok).", "100ns" },
+            { "max_outstanding_requests", "Maximum number of outstanding requests", "256" } )
+
+            SST_ELI_DOCUMENT_PORTS(
+            { "cube_link", "Link to CramSim", {"CramSim.MemReqEvent", "CramSim.MemRespEvent"}} )
 
 /* Begin class definition */
-    CramSimMemory(Component *comp, Params &params);
-    CramSimMemory(ComponentId_t id, Params &params);
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, unsigned numBytes );
-    virtual bool isClocked() { return false; }
+            CramSimMemory(Component *comp, Params &params);
 
-private:
-    void build(Params& params);
-    void handleCramsimEvent(SST::Event *event);
+            CramSimMemory(ComponentId_t id, Params &params);
 
-	std::set<ReqId> memReqs;
-    SST::Link *cramsim_link;
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, unsigned numBytes);
 
-	int m_maxNumOutstandingReqs;
-};
+            virtual bool isClocked() { return false; }
 
-}
+        private:
+            void build(Params &params);
+
+            void handleCramsimEvent(SST::Event *event);
+
+            std::set <ReqId> memReqs;
+            SST::Link *cramsim_link;
+
+            int m_maxNumOutstandingReqs;
+        };
+
+    }
 }
 
 #endif

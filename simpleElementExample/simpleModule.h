@@ -23,34 +23,34 @@
 #include <sst/core/link.h>
 
 namespace SST {
-namespace SimpleModule {
+    namespace SimpleModule {
 
-class SimpleModuleExample : public SST::Module {
+        class SimpleModuleExample : public SST::Module {
 
-public:
-	SimpleModuleExample(SST::Params& params);
+        public:
+            SimpleModuleExample(SST::Params &params);
 
-	SST_ELI_REGISTER_MODULE(
-		SimpleModuleExample,
-		"simpleElementExample",
-		"SimpleModule",
-		SST_ELI_ELEMENT_VERSION(1,0,0),
-		"Simple module to demonstrate interface.",
-		"SST::SimpleModule::SimpleModuleInterface"
-	)
+            SST_ELI_REGISTER_MODULE(
+                SimpleModuleExample,
+            "simpleElementExample",
+            "SimpleModule",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Simple module to demonstrate interface.",
+            "SST::SimpleModule::SimpleModuleInterface"
+            )
 
-	SST_ELI_DOCUMENT_PARAMS(
-        	{"modulename", "Name to give this module", ""},
-    	)
+            SST_ELI_DOCUMENT_PARAMS(
+            { "modulename", "Name to give this module", "" },
+            )
 
-	void printName();
+            void printName();
 
-private:
-	std::string modName;
+        private:
+            std::string modName;
 
-};
+        };
 
-}
+    }
 } // namespace SST
 
 #endif /* _SIMPLE_MODULE_H */

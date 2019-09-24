@@ -24,43 +24,51 @@ namespace SST {
 
         //Custom Fibonacci heap implementation
         class FibonacciHeap {
-            private:
-                struct Node {
-                    unsigned int ID;
-                    double key;
-                    Node* left;
-                    Node* right;
-                    Node* parent;
-                    std::vector<Node*> child;
-                    unsigned int childNo;
-                    bool marked;
-                };
+        private:
+            struct Node {
+                unsigned int ID;
+                double key;
+                Node *left;
+                Node *right;
+                Node *parent;
+                std::vector<Node *> child;
+                unsigned int childNo;
+                bool marked;
+            };
 
-                Node* minRoot;
-                std::vector<Node*> nodesByID;
+            Node *minRoot;
+            std::vector<Node *> nodesByID;
 
-                void makeRoot(Node *node);
-                //extracts node0 and node1 from the root list
-                //merges node0 with node1
-                //makes merged node a root and returns it
-                Node* mergeRoots(Node *node0, Node *node1);
+            void makeRoot(Node *node);
 
-            public:            
-                //debug:
-                void printNode(Node* node, int shift) const;
-                void print() const;
+            //extracts node0 and node1 from the root list
+            //merges node0 with node1
+            //makes merged node a root and returns it
+            Node *mergeRoots(Node *node0, Node *node1);
 
-                //needs maximum size
-                FibonacciHeap(unsigned int size);
-                ~FibonacciHeap();
+        public:
+            //debug:
+            void printNode(Node *node, int shift) const;
 
-                bool isEmpty() const { return minRoot == NULL; }
-                int findMin() const;
-                //ID should be smaller than max size
-                void insert(unsigned int nodeID, double key);
-                int deleteMin();
-                void decreaseKey(unsigned int nodeID, double newKey);
-                double getKey(unsigned int nodeID);
+            void print() const;
+
+            //needs maximum size
+            FibonacciHeap(unsigned int size);
+
+            ~FibonacciHeap();
+
+            bool isEmpty() const { return minRoot == nullptr; }
+
+            int findMin() const;
+
+            //ID should be smaller than max size
+            void insert(unsigned int nodeID, double key);
+
+            int deleteMin();
+
+            void decreaseKey(unsigned int nodeID, double newKey);
+
+            double getKey(unsigned int nodeID);
         };
     }
 }

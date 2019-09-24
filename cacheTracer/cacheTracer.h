@@ -39,84 +39,90 @@ using namespace std;
 using namespace SST;
 using namespace SST::MemHierarchy;
 
-namespace SST{
-namespace CACHETRACER {
+namespace SST {
+    namespace CACHETRACER {
 
-class cacheTracer : public SST::Component {
-public:
-    cacheTracer(SST::ComponentId_t id, Params& params);
-    ~cacheTracer();
-    void finish();
-    void init(unsigned int phase);
+        class cacheTracer : public SST::Component {
+        public:
+            cacheTracer(SST::ComponentId_t id, Params &params);
 
-    SST_ELI_REGISTER_COMPONENT(
-       	cacheTracer,
-       	"cacheTracer",
-       	"cacheTracer",
-       	SST_ELI_ELEMENT_VERSION(1,0,0),
-       	"Cache Tracing Plugin for MemHierarchy",
-	COMPONENT_CATEGORY_UNCATEGORIZED
-    )
+            ~cacheTracer();
 
-    SST_ELI_DOCUMENT_PARAMS(
-	{ "clock", "Frequency, same as system clock frequency", "1 GHz" },
-    	{ "statsPrefix", "writes stats to statsPrefix file", "" },
-    	{ "tracePrefix", "writes trace to tracePrefix tracing is enable", "" },
-    	{ "debug", "Print debug statements with increasing verbosity [0-10]", "0" },
-    	{ "statistics", "0-No-stats, 1-print-stats", "0" },
-    	{ "pageSize", "Page Size (bytes), used for selecting number of bins for address histogram ", "4096" },
-    	{"accessLatencyBins", "Number of bins for access latency histogram" "10" }
-    )
+            void finish();
 
-    SST_ELI_DOCUMENT_PORTS(
-	{ "northBus", "Connect towards cpu side", { "memHierarchy.MemEvent", "" } },
-    	{ "southBus", "Connect towards memory side", { "memHierarchy.MemEvent", "" } }
-    )
+            void init(unsigned int phase);
 
-private:
-    // Functions
-    bool clock(SST::Cycle_t);
-    void FinalStats(FILE*, unsigned int);
-    void PrintAddrHistogram(FILE*, vector<SST::MemHierarchy::Addr>);
-    void PrintAccessLatencyDistribution(FILE*, unsigned int);
+            SST_ELI_REGISTER_COMPONENT(
+                cacheTracer,
+            "cacheTracer",
+            "cacheTracer",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Cache Tracing Plugin for MemHierarchy",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    Output* out;
-    FILE* traceFile;
-    FILE* statsFile;
+            SST_ELI_DOCUMENT_PARAMS(
+            { "clock", "Frequency, same as system clock frequency", "1 GHz" },
+            { "statsPrefix", "writes stats to statsPrefix file", "" },
+            { "tracePrefix", "writes trace to tracePrefix tracing is enable", "" },
+            { "debug", "Print debug statements with increasing verbosity [0-10]", "0" },
+            { "statistics", "0-No-stats, 1-print-stats", "0" },
+            { "pageSize", "Page Size (bytes), used for selecting number of bins for address histogram ", "4096" },
+            { "accessLatencyBins", "Number of bins for access latency histogram" "10" }
+            )
 
-    // Links
-    SST::Link *northBus;
-    SST::Link *southBus;
+            SST_ELI_DOCUMENT_PORTS(
+            { "northBus", "Connect towards cpu side", {"memHierarchy.MemEvent", ""}},
+            { "southBus", "Connect towards memory side", {"memHierarchy.MemEvent", ""}}
+            )
 
-    // Input Parameters
-    unsigned int stats;
-    unsigned int pageSize;
-    unsigned int accessLatBins;
+        private:
+            // Functions
+            bool clock(SST::Cycle_t);
 
-    // Flags
-    bool writeTrace;
-    bool writeStats;
-    bool writeDebug_8;
+            void FinalStats(FILE *, unsigned int);
 
-    unsigned int nbCount;
-    unsigned int sbCount;
-    uint64_t timestamp;
+            void PrintAddrHistogram(FILE *, vector <SST::MemHierarchy::Addr>);
 
-    vector<SST::MemHierarchy::Addr>AddrHist;   // Address Histogram
-    vector<unsigned int> AccessLatencyDist;
+            void PrintAccessLatencyDistribution(FILE *, unsigned int);
 
-    map<MemEvent::id_type,uint64_t>InFlightReqQueue;
+            Output *out;
+            FILE *traceFile;
+            FILE *statsFile;
 
-    TimeConverter* picoTimeConv;
-    TimeConverter* nanoTimeConv;
+            // Links
+            SST::Link *northBus;
+            SST::Link *southBus;
 
-    // Serialization
-    cacheTracer();                         // for serialization only
-    cacheTracer(const cacheTracer&);      // do not implement
-    void operator=(const cacheTracer&);    // do not implement
-}; // class cacheTracer
+            // Input Parameters
+            unsigned int stats;
+            unsigned int pageSize;
+            unsigned int accessLatBins;
 
-} // namespace CACHETRACER
+            // Flags
+            bool writeTrace;
+            bool writeStats;
+            bool writeDebug_8;
+
+            unsigned int nbCount;
+            unsigned int sbCount;
+            uint64_t timestamp;
+
+            vector <SST::MemHierarchy::Addr> AddrHist;   // Address Histogram
+            vector<unsigned int> AccessLatencyDist;
+
+            map <MemEvent::id_type, uint64_t> InFlightReqQueue;
+
+            TimeConverter *picoTimeConv;
+            TimeConverter *nanoTimeConv;
+
+            // Serialization
+            cacheTracer();                         // for serialization only
+            cacheTracer(const cacheTracer &);      // do not implement
+            void operator=(const cacheTracer &);    // do not implement
+        }; // class cacheTracer
+
+    } // namespace CACHETRACER
 } // namespace SST
 
 #endif //_CACHETRACER_H

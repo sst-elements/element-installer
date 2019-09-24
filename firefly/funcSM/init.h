@@ -21,50 +21,50 @@
 #include "ctrlMsg.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class InitFuncSM :  public FunctionSMInterface 
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        InitFuncSM,
-        "firefly",
-        "Init",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class InitFuncSM : public FunctionSMInterface {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                InitFuncSM,
+            "firefly",
+            "Init",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
-    InitFuncSM( SST::Params& params ) : FunctionSMInterface( params ), m_event(NULL) {}
+        public:
+            InitFuncSM(SST::Params &params) : FunctionSMInterface(params), m_event(nullptr) {}
 
-	virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
 
-    virtual void handleStartEvent( SST::Event *e, Retval& retval ) {
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
 
-		assert( NULL == m_event );
-        m_dbg.debug(CALL_INFO,1,0,"\n");
+                assert(nullptr == m_event);
+                m_dbg.debug(CALL_INFO, 1, 0, "\n");
 
-		m_event = static_cast<InitStartEvent*>(e);
+                m_event = static_cast<InitStartEvent *>(e);
 
-        proto()->initMsgPassing( );
+                proto()->initMsgPassing();
+            }
+
+            void handleEnterEvent(Retval &retval) {
+                delete m_event;
+                m_event = nullptr;
+                retval.setExit(0);
+
+            }
+
+        private:
+
+            CtrlMsg::API *proto() { return static_cast<CtrlMsg::API *>(m_proto); }
+
+            InitStartEvent *m_event;
+
+        };
+
     }
-
-    void handleEnterEvent( Retval& retval ) {
-        delete m_event;
-        m_event = NULL;
-        retval.setExit(0);
-
-    }
-  private:
-
-    CtrlMsg::API* proto() { return static_cast<CtrlMsg::API*>(m_proto); }
-
-    InitStartEvent* m_event;
-		
-};
-
-}
 }
 
 #endif

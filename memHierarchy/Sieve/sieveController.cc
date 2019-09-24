@@ -30,7 +30,7 @@ using namespace SST::MemHierarchy;
 
 void Sieve::recordMiss(Addr addr, bool isRead) {
     allocMap_t::iterator allocI = activeAllocMap.lower_bound(addr);
-    
+
     // lower_bound returns iterator to address just above or equal to addr
     if (allocI->first != addr) {
         if (allocI == activeAllocMap.begin()) {
@@ -41,7 +41,7 @@ void Sieve::recordMiss(Addr addr, bool isRead) {
     }
     if (allocI != activeAllocMap.end()) {
         // is it in range
-        if (addr < (allocI->first +  allocI->second.size)) {
+        if (addr < (allocI->first + allocI->second.size)) {
             uint64_t allocID = allocI->second.id;
             allocCountMap_t::iterator evI = allocMap.find(allocID);
             if (evI == allocMap.end()) {
@@ -58,7 +58,7 @@ void Sieve::recordMiss(Addr addr, bool isRead) {
             return;
         }
     }
-    
+
     if (isRead) {
         statUnassocReadMisses->addData(1);
         statReadMisses->addData(1);
@@ -68,10 +68,10 @@ void Sieve::recordMiss(Addr addr, bool isRead) {
     }
 }
 
-void Sieve::processAllocEvent(SST::Event* event) {
+void Sieve::processAllocEvent(SST::Event *event) {
     // should only recieve AllocTrackEvent events
-    AllocTrackEvent* ev = static_cast<AllocTrackEvent*>(event);
-    
+    AllocTrackEvent *ev = static_cast<AllocTrackEvent *>(event);
+
     if (ev->getType() == AllocTrackEvent::ALLOC) {
         // add to the list of active allocations (i.e. not FREEd)
         mallocEntry entry = {ev->getInstructionPointer(), ev->getAllocateLength()};
@@ -89,18 +89,19 @@ void Sieve::processAllocEvent(SST::Event* event) {
         if (targ != activeAllocMap.end()) {
             uint64_t allocID = targ->second.id;
             allocCountMap_t::iterator mapIt = allocMap.find(allocID);
-            
+
             // In this case ALWAYS delete the entry from active alloc & delete the event
             activeAllocMap.erase(targ);
-            
+
             // If the entry in the count map is 0, remove it as well
-            if (mapIt != allocMap.end() && (mapIt->second.first == 0 && mapIt->second.second == 0)) {
+            if (mapIt != allocMap.end() &&
+                (mapIt->second.first == 0 && mapIt->second.second == 0)) {
                 allocMap.erase(mapIt);
             }
 
 #ifdef __SST_DEBUG_OUTPUT__
-        } else {
-            output_->debug(_INFO_,"FREEing an address that was never ALLOCd\n");
+            } else {
+                output_->debug(_INFO_,"FREEing an address that was never ALLOCd\n");
 #endif
         }
         delete ev;
@@ -113,20 +114,20 @@ void Sieve::processAllocEvent(SST::Event* event) {
     }
 }
 
-void Sieve::processEvent(SST::Event* ev) {
-    MemEvent* event = static_cast<MemEvent*>(ev);
-    Command cmd     = event->getCmd();
-    
+void Sieve::processEvent(SST::Event *ev) {
+    MemEvent *event = static_cast<MemEvent *>(ev);
+    Command cmd = event->getCmd();
+
     event->setBaseAddr(toBaseAddr(event->getAddr()));
-    Addr baseAddr   = event->getBaseAddr();
-            
-    CacheLine * cline = cacheArray_->lookup(baseAddr, true);
+    Addr baseAddr = event->getBaseAddr();
+
+    CacheLine *cline = cacheArray_->lookup(baseAddr, true);
     bool miss = (cline == nullptr);
     Addr replacementAddr = 0;
 
     if (miss) {                                     /* Miss.  If needed, evict candidate */
         // output_->debug(_L3_,"-- Cache Miss --\n");
-        CacheLine * line = cacheArray_->findReplacementCandidate(baseAddr, false);
+        CacheLine *line = cacheArray_->findReplacementCandidate(baseAddr, false);
         replacementAddr = line->getBaseAddr();
         cacheArray_->replace(baseAddr, line);
         line->setState(M);
@@ -137,10 +138,10 @@ void Sieve::processEvent(SST::Event* ev) {
         // notify profiler, if any
         if (listener_) {
             CacheListenerNotification notify(event->getAddr(),
-                                             event->getBaseAddr(), 
+                                             event->getBaseAddr(),
                                              event->getVirtualAddress(),
-                                             event->getInstructionPointer(), 
-                                             event->getSize(), 
+                                             event->getInstructionPointer(),
+                                             event->getSize(),
                                              isRead ? READ : WRITE,
                                              MISS);
             listener_->notifyAccess(notify);
@@ -158,7 +159,7 @@ void Sieve::processEvent(SST::Event* ev) {
     if (miss) output_->debug(_L5_, "%s, Replaced address %" PRIx64 "\n", getName().c_str(), replacementAddr);
 #endif
 
-    MemEvent * responseEvent;
+    MemEvent *responseEvent;
     if (cmd == Command::GetS) {
         responseEvent = event->makeResponse(S);
     } else {
@@ -169,13 +170,13 @@ void Sieve::processEvent(SST::Event* ev) {
     // It is meant for other processor models, particularly Ariel.
     // Currently, Ariel does not care about the payload.  Therefore,
     // there is no need to construct the payload.
-    
+
     responseEvent->setDst(event->getSrc());
-    SST::Link * link = event->getDeliveryLink();
+    SST::Link *link = event->getDeliveryLink();
     link->send(responseEvent);
-    
+
     //output_->debug(_L3_,"%s, Sending Response, Addr = %" PRIx64 "\n", getName().c_str(), event->getAddr());
-    
+
     delete ev;
 }
 
@@ -187,7 +188,7 @@ void Sieve::init(unsigned int phase) {
     }
 
     for (int i = 0; i < cpuLinkCount_; i++) {
-        while (SST::Event* ev = cpuLinks_[i]->recvInitData()) {
+        while (SST::Event *ev = cpuLinks_[i]->recvInitData()) {
             if (ev) delete ev;
         }
     }
@@ -198,13 +199,13 @@ void Sieve::outputStats(int marker) {
     stringstream fileName;
     fileName << outFileName << "-" << outCount;
     outCount++;
-    if (-1 != marker)  {
+    if (-1 != marker) {
         fileName << "-" << marker;
     }
     fileName << ".txt";
 
     // create new file
-    Output* output_file = new Output("",0,0,SST::Output::FILE, fileName.str());
+    Output *output_file = new Output("", 0, 0, SST::Output::FILE, fileName.str());
 
     // have the listener (if any) output stats
     if (listener_) {
@@ -212,18 +213,25 @@ void Sieve::outputStats(int marker) {
     }
 
     // print out all the allocations and how often they were touched
-    output_file->output(CALL_INFO, "#Printing allocation memory accesses (mallocID, reads, writes):\n");
-    vector<uint64_t> entriesToErase;
+    output_file->output(CALL_INFO,
+                        "#Printing allocation memory accesses (mallocID, reads, writes):\n");
+    vector <uint64_t> entriesToErase;
     for (allocCountMap_t::iterator i = allocMap.begin(); i != allocMap.end(); i++) {
-	rwCount_t &counts = i->second;
+        rwCount_t &counts = i->second;
 
         if (counts.first == 0 && counts.second == 0) {
             entriesToErase.push_back(i->first);
             continue;
         }
-        output_file->output(CALL_INFO, "%" PRIu64 " %" PRId64 " %" PRId64 "\n",
-                            i->first, counts.first, counts.second);
-        
+        output_file->output(CALL_INFO, "%"
+        PRIu64
+        " %"
+        PRId64
+        " %"
+        PRId64
+        "\n",
+            i->first, counts.first, counts.second);
+
         // clear the counts
         if (resetStatsOnOutput) {
             counts.first = 0;
@@ -238,12 +246,12 @@ void Sieve::outputStats(int marker) {
     delete output_file;
 }
 
-void Sieve::finish(){
+void Sieve::finish() {
     outputStats(-1);
 }
 
 
-Sieve::~Sieve(){
+Sieve::~Sieve() {
     delete cacheArray_;
     delete output_;
 }

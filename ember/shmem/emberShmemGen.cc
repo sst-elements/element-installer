@@ -20,11 +20,10 @@
 using namespace SST;
 using namespace SST::Ember;
 
-EmberShmemGenerator::EmberShmemGenerator( 
-            Component* owner, Params& params, std::string name) :
-    EmberGenerator(owner, params, name )
-{
-    m_shmem = static_cast<EmberShmemLib*>(getLib("shmem"));
+EmberShmemGenerator::EmberShmemGenerator(
+    Component *owner, Params &params, std::string name) :
+    EmberGenerator(owner, params, name) {
+    m_shmem = static_cast<EmberShmemLib *>(getLib("shmem"));
     assert(m_shmem);
-    m_shmem->initOutput( &getOutput() );
+    m_shmem->initOutput(&getOutput());
 }

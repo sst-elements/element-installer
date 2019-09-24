@@ -26,23 +26,25 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Machine;
+
         class TaskMapInfo;
 
         class RandomTaskMapper : public TaskMapper {
-        
-	        public:
-	        
-		        RandomTaskMapper(const Machine & mach);
-		        
-		        ~RandomTaskMapper();
-		        
-		        std::string getSetupInfo(bool comment) const;
 
-		        TaskMapInfo* mapTasks(AllocInfo* allocInfo);
-		    
-		    private:
-		        SST::RNG::MarsagliaRNG rng; //random number generator
+        public:
+
+            RandomTaskMapper(const Machine &mach);
+
+            ~RandomTaskMapper();
+
+            std::string getSetupInfo(bool comment) const;
+
+            TaskMapInfo *mapTasks(AllocInfo *allocInfo);
+
+        private:
+            SST::RNG::MarsagliaRNG rng; //random number generator
         };
     }
 }

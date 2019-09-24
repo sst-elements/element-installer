@@ -19,14 +19,12 @@
 
 using namespace SST::Scheduler;
 
-SimpleSpreadAllocator::SimpleSpreadAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+SimpleSpreadAllocator::SimpleSpreadAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
 
 }
 
-std::string SimpleSpreadAllocator::getSetupInfo(bool comment) const
-{
+std::string SimpleSpreadAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -37,38 +35,37 @@ std::string SimpleSpreadAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
 
-AllocInfo* SimpleSpreadAllocator::allocate(Job* j)
-{
+AllocInfo *SimpleSpreadAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         int lastNode = -1;
-        for(int i = 0; i < ai->getNodesNeeded(); i++) {
+        for (int i = 0; i < ai->getNodesNeeded(); i++) {
             do {
                 lastNode = nextNodeId(lastNode);
-            } while(!dMach.isFree(lastNode));
+            } while (!dMach.isFree(lastNode));
             int rId = dMach.routerOf(lastNode);
             ai->nodeIndices[i] = lastNode;
         }
         return ai;
     }
-    return NULL;
+    return nullptr;
 }
 
-int SimpleSpreadAllocator::nextNodeId(int curNode)
-{
-    if(curNode < 0) {
+int SimpleSpreadAllocator::nextNodeId(int curNode) {
+    if (curNode < 0) {
         return 0;
     }
-    if((curNode + 1) % dMach.nodesPerRouter != 0) {
+    if ((curNode + 1) % dMach.nodesPerRouter != 0) {
         //using the same router
         return curNode + 1;
     }
     //calculate the next router's ID
     int rId = dMach.routerOf(curNode);
-    if(dMach.groupOf(rId) != dMach.numGroups - 1) {
+    if (dMach.groupOf(rId) != dMach.numGroups - 1) {
         //use the same local ID in the next group
         rId += dMach.routersPerGroup;
     } else {

@@ -20,32 +20,33 @@
 #include "msgapi.h"
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-enum ZodiacEventType {
-	Z_SKIP,
-	Z_COMPUTE,
-	Z_SEND,
-	Z_IRECV,
-	Z_RECV,
-	Z_BARRIER,
-	Z_ALLREDUCE,
-	Z_COLLECTIVE,
-	Z_INIT,
-	Z_FINALIZE,
-	Z_WAIT
-};
+        enum ZodiacEventType {
+            Z_SKIP,
+            Z_COMPUTE,
+            Z_SEND,
+            Z_IRECV,
+            Z_RECV,
+            Z_BARRIER,
+            Z_ALLREDUCE,
+            Z_COLLECTIVE,
+            Z_INIT,
+            Z_FINALIZE,
+            Z_WAIT
+        };
 
-class ZodiacEvent : public SST::Event {
+        class ZodiacEvent : public SST::Event {
 
-	public:
-		ZodiacEvent();
-		virtual ZodiacEventType getEventType() = 0;
+        public:
+            ZodiacEvent();
 
-		NotSerializable(ZodiacEvent)
-};
+            virtual ZodiacEventType getEventType() = 0;
 
-}
+            NotSerializable(ZodiacEvent)
+        };
+
+    }
 }
 
 #endif

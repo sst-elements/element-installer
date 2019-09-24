@@ -20,34 +20,33 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCancelEvent : public EmberMPIEvent {
+        class EmberCancelEvent : public EmberMPIEvent {
 
-public:
-	EmberCancelEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-       		MessageRequest req ) :
-       	EmberMPIEvent( api, output, stat ),
-       	m_req( req )
-    { }
+        public:
+            EmberCancelEvent(MP::Interface &api, Output *output,
+                             EmberEventTimeStatistic *stat,
+                             MessageRequest req) :
+                EmberMPIEvent(api, output, stat),
+                m_req(req) {}
 
-	~EmberCancelEvent() {}
+            ~EmberCancelEvent() {}
 
-    std::string getName() { return "Cancel"; }
+            std::string getName() { return "Cancel"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-       	m_api.cancel( m_req, functor );
+                m_api.cancel(m_req, functor);
+            }
+
+        private:
+            MessageRequest m_req;
+        };
+
     }
-
-private:
-    MessageRequest 	m_req;
-};
-
-}
 }
 
 #endif

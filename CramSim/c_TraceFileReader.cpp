@@ -32,49 +32,39 @@
 using namespace SST;
 using namespace n_Bank;
 
-c_TraceFileReader::c_TraceFileReader(SST::ComponentId_t x_id, SST::Params& x_params):c_TxnGenBase(x_id,x_params)
-{
+c_TraceFileReader::c_TraceFileReader(SST::ComponentId_t x_id, SST::Params &x_params) : c_TxnGenBase(
+    x_id, x_params) {
     // trace file param
-    bool l_found=false;
+    bool l_found = false;
 
     // get trace file name
     m_traceFileName = x_params.find<std::string>("traceFile", "nil", l_found);
-    if (!l_found)
-    {
-        std::cout << "TraceFileReader: traceFile name is missing... exiting"<<
-        std::endl;
+    if (!l_found) {
+        std::cout << "TraceFileReader: traceFile name is missing... exiting" <<
+                  std::endl;
         exit(-1);
-    }
-    else
-    {
-        std::cout<< "TraceFileReader: tracefile name is" <<m_traceFileName<<std::endl;
+    } else {
+        std::cout << "TraceFileReader: tracefile name is" << m_traceFileName << std::endl;
     }
     m_traceFileStream = new std::ifstream(m_traceFileName, std::ifstream::in);
-    if(!(*m_traceFileStream))
-    {
+    if (!(*m_traceFileStream)) {
         std::cerr << "Unable to open trace file " << m_traceFileName << " Aborting!" <<
-        std::endl;
+                  std::endl;
         exit(-1);
     }
 
     // get trace file type
-    std::string l_traceFileType= x_params.find<std::string>("traceFileType", "DEFAULT", l_found);
-    if (!l_found)
-    {
-        std::cout << "TraceFileReader: traceFile type is missing... default (DRAMSim2 type)"<<
-        std::endl;
+    std::string l_traceFileType = x_params.find<std::string>("traceFileType", "DEFAULT", l_found);
+    if (!l_found) {
+        std::cout << "TraceFileReader: traceFile type is missing... default (DRAMSim2 type)" <<
+                  std::endl;
     }
-    if(l_traceFileType=="DEFAULT" || l_traceFileType=="DRAMSIM2")
-    {
-        m_traceType=e_TracefileType::DEFAULT;
-    }
-    else if(l_traceFileType=="USIMM")
-    {
-        m_traceType=e_TracefileType ::USIMM;
-    }
-    else
-    {
-        std::cout << "TraceFileReader: trace file type error!!"<< std::endl;
+    if (l_traceFileType == "DEFAULT" || l_traceFileType == "DRAMSIM2") {
+        m_traceType = e_TracefileType::DEFAULT;
+    } else if (l_traceFileType == "USIMM") {
+        m_traceType = e_TracefileType::USIMM;
+    } else {
+        std::cout << "TraceFileReader: trace file type error!!" << std::endl;
         exit(-1);
     }
 
@@ -85,11 +75,9 @@ c_TraceFileReader::c_TraceFileReader(SST::ComponentId_t x_id, SST::Params& x_par
 }
 
 
-void c_TraceFileReader::createTxn()
-{
+void c_TraceFileReader::createTxn() {
 // check if txn can fit inside Req q
-    while(m_txnReqQ.size()<k_numTxnPerCycle)
-    {
+    while (m_txnReqQ.size() < k_numTxnPerCycle) {
         std::string l_line;
         if (std::getline(*m_traceFileStream, l_line)) {
             char_delimiter sep(" ");
@@ -102,13 +90,13 @@ void c_TraceFileReader::createTxn()
             unsigned l_txnDataWidth = 0;
 
             for (Tokenizer<>::iterator l_iter =
-                    l_tok.begin(); l_iter != l_tok.end(); ++l_iter) {
+                l_tok.begin(); l_iter != l_tok.end(); ++l_iter) {
 
                 //Trace file type is default (DRAMSim2)
-                if(m_traceType==e_TracefileType::DEFAULT) {
+                if (m_traceType == e_TracefileType::DEFAULT) {
                     switch (l_tokNum) {
                         case 0:
-                            l_txnAddress = (ulong) strtoul((*l_iter).c_str(), NULL,
+                            l_txnAddress = (ulong) strtoul((*l_iter).c_str(), nullptr,
                                                            0);
                             break;
                         case 1:
@@ -122,13 +110,13 @@ void c_TraceFileReader::createTxn()
                             break;
                         default:
                             std::cout
-                                    << "TraceFileReader Should not be in this stage of switch statement"
-                                    << std::endl;
+                                << "TraceFileReader Should not be in this stage of switch statement"
+                                << std::endl;
                             exit(-1);
                             break;
                     }
                 }//Trace file type is USIMM
-                else if(m_traceType==e_TracefileType::USIMM) {
+                else if (m_traceType == e_TracefileType::USIMM) {
                     switch (l_tokNum) {
                         case 0:
                             l_txnInterval = m_simCycle + std::atoi((*l_iter).c_str());
@@ -141,32 +129,30 @@ void c_TraceFileReader::createTxn()
                                 l_txnType = e_TransactionType::READ;
                             break;
                         case 2:
-                            l_txnAddress = (ulong)strtoul((*l_iter).c_str(), NULL, 0);
+                            l_txnAddress = (ulong) strtoul((*l_iter).c_str(), nullptr, 0);
                             break;
                         case 3:
                             break;
                         default:
                             std::cout
-                                    << "TraceFileReader Should not be in this stage of switch statement"
-                                    << std::endl;
+                                << "TraceFileReader Should not be in this stage of switch statement"
+                                << std::endl;
                             exit(-1);
                     }
-                }
-                else
-                {
-                    std::cout<< "TraceFieReader: trace file type error!!"<<std::endl;
+                } else {
+                    std::cout << "TraceFieReader: trace file type error!!" << std::endl;
                     exit(-1);
                 }
-                
+
                 ++l_tokNum;
             }
 
-            c_Transaction* l_txn = new c_Transaction(m_seqNum, l_txnType, l_txnAddress, 1);
-            std::pair<c_Transaction *, unsigned> l_entry = std::make_pair(l_txn, l_txnInterval);
+            c_Transaction *l_txn = new c_Transaction(m_seqNum, l_txnType, l_txnAddress, 1);
+            std::pair < c_Transaction * , unsigned > l_entry = std::make_pair(l_txn, l_txnInterval);
             m_txnReqQ.push_back(l_entry);
             m_seqNum++;
         } else {
-            
+
             primaryComponentOKToEndSim();
             std::cout << "TraceFileReader: Ran out of txn's to read" << std::endl;
 

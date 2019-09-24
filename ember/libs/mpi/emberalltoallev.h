@@ -20,51 +20,50 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAlltoallEvent : public EmberMPIEvent {
-public:
-    EmberAlltoallEvent( MP::Interface& api, Output* output,
-                       EmberEventTimeStatistic* stat,
-        const Hermes::MemAddr& sendData, 
-        int sendCnts, PayloadDataType senddtype,
-        const Hermes::MemAddr& recvData,
-        int recvCnts, PayloadDataType recvdtype, 
-        Communicator group ) :
+        class EmberAlltoallEvent : public EmberMPIEvent {
+        public:
+            EmberAlltoallEvent(MP::Interface &api, Output *output,
+                               EmberEventTimeStatistic *stat,
+                               const Hermes::MemAddr &sendData,
+                               int sendCnts, PayloadDataType senddtype,
+                               const Hermes::MemAddr &recvData,
+                               int recvCnts, PayloadDataType recvdtype,
+                               Communicator group) :
 
-        EmberMPIEvent( api, output, stat ),
-        m_senddata(sendData),
-        m_sendcnts(sendCnts),
-        m_senddtype(senddtype),
-        m_recvdata(recvData),
-        m_recvcnts(recvCnts),
-        m_recvdtype(recvdtype),
-        m_group(group)
-    {}
+                EmberMPIEvent(api, output, stat),
+                m_senddata(sendData),
+                m_sendcnts(sendCnts),
+                m_senddtype(senddtype),
+                m_recvdata(recvData),
+                m_recvcnts(recvCnts),
+                m_recvdtype(recvdtype),
+                m_group(group) {}
 
-	~EmberAlltoallEvent() {}
+            ~EmberAlltoallEvent() {}
 
-    std::string getName() { return "Alltoall"; }
+            std::string getName() { return "Alltoall"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.alltoall( m_senddata, m_sendcnts, m_senddtype,
-                        m_recvdata, m_recvcnts, m_recvdtype, m_group, functor );
+                m_api.alltoall(m_senddata, m_sendcnts, m_senddtype,
+                               m_recvdata, m_recvcnts, m_recvdtype, m_group, functor);
+            }
+
+        private:
+            Hermes::MemAddr m_senddata;
+            int m_sendcnts;
+            PayloadDataType m_senddtype;
+            Hermes::MemAddr m_recvdata;
+            int m_recvcnts;
+            PayloadDataType m_recvdtype;
+            Communicator m_group;
+        };
+
     }
-
-private:
-    Hermes::MemAddr     m_senddata;
-    int                 m_sendcnts;
-    PayloadDataType     m_senddtype;
-    Hermes::MemAddr     m_recvdata;
-    int                 m_recvcnts;
-    PayloadDataType     m_recvdtype;
-    Communicator        m_group;
-};
-
-}
 }
 
 #endif

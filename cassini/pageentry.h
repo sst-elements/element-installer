@@ -28,33 +28,42 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 
 namespace SST {
-namespace Cassini {
+    namespace Cassini {
 
-class CassiniPageEntry {
+        class CassiniPageEntry {
 
-	public:
-		CassiniPageEntry(Addr vPageStart, Addr pPageStart, uint64_t pageLength);
-		bool readAllowed();
-		bool writeAllowed();
-		bool execAllowed();
-		Addr getVirtualPageStart();
-		Addr getPhysicalPageStart();
-		uint64_t getPageLength();
-		void markReadAllowed();
-		void markWriteAllowed();
-		void markExecAllowed();
+        public:
+            CassiniPageEntry(Addr vPageStart, Addr pPageStart, uint64_t pageLength);
 
-	private:
-		Addr virtualPageStart;
-		Addr physicalPageStart;
-		uint64_t pageLength;
-		bool allowExec;
-		bool allowRead;
-		bool allowWrite;
+            bool readAllowed();
 
-};
+            bool writeAllowed();
 
-}
+            bool execAllowed();
+
+            Addr getVirtualPageStart();
+
+            Addr getPhysicalPageStart();
+
+            uint64_t getPageLength();
+
+            void markReadAllowed();
+
+            void markWriteAllowed();
+
+            void markExecAllowed();
+
+        private:
+            Addr virtualPageStart;
+            Addr physicalPageStart;
+            uint64_t pageLength;
+            bool allowExec;
+            bool allowRead;
+            bool allowWrite;
+
+        };
+
+    }
 }
 
 #endif

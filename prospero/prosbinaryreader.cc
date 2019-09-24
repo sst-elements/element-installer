@@ -19,77 +19,79 @@
 
 using namespace SST::Prospero;
 
-ProsperoBinaryTraceReader::ProsperoBinaryTraceReader( Component* owner, Params& params ) :
-	ProsperoTraceReader(owner, params) {
+ProsperoBinaryTraceReader::ProsperoBinaryTraceReader(Component *owner, Params &params) :
+    ProsperoTraceReader(owner, params) {
 
-	std::string traceFile = params.find<std::string>("file", "");
-	traceInput = fopen(traceFile.c_str(), "rb");
+    std::string traceFile = params.find<std::string>("file", "");
+    traceInput = fopen(traceFile.c_str(), "rb");
 
-	if(NULL == traceInput) {
-		fprintf(stderr, "Fatal: Error opening trace file: %s in binary reader.\n",
-			traceFile.c_str());
-		exit(-1);
-	}
+    if (nullptr == traceInput) {
+        fprintf(stderr, "Fatal: Error opening trace file: %s in binary reader.\n",
+                traceFile.c_str());
+        exit(-1);
+    }
 
-	recordLength = sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t);
-	buffer = (char*) malloc(sizeof(char) * recordLength);
+    recordLength = sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t);
+    buffer = (char *) malloc(sizeof(char) * recordLength);
 }
 
-ProsperoBinaryTraceReader::ProsperoBinaryTraceReader( ComponentId_t id, Params& params, Output* out ) :
-	ProsperoTraceReader(id, params, out) {
+ProsperoBinaryTraceReader::ProsperoBinaryTraceReader(ComponentId_t id, Params &params, Output *out)
+    :
+    ProsperoTraceReader(id, params, out) {
 
-	std::string traceFile = params.find<std::string>("file", "");
-	traceInput = fopen(traceFile.c_str(), "rb");
+    std::string traceFile = params.find<std::string>("file", "");
+    traceInput = fopen(traceFile.c_str(), "rb");
 
-	if(NULL == traceInput) {
-            output->fatal(CALL_INFO, -1, "%s, Fatal: Error opening trace file: %s in binary reader.\n",
-                    getName().c_str(), traceFile.c_str());
-	}
+    if (nullptr == traceInput) {
+        output->fatal(CALL_INFO, -1, "%s, Fatal: Error opening trace file: %s in binary reader.\n",
+                      getName().c_str(), traceFile.c_str());
+    }
 
-	recordLength = sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t);
-	buffer = (char*) malloc(sizeof(char) * recordLength);
+    recordLength = sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t);
+    buffer = (char *) malloc(sizeof(char) * recordLength);
 }
 
 ProsperoBinaryTraceReader::~ProsperoBinaryTraceReader() {
-	if(NULL != traceInput) {
-		fclose(traceInput);
-	}
+    if (nullptr != traceInput) {
+        fclose(traceInput);
+    }
 
-	if(NULL != buffer) {
-		free(buffer);
-	}
+    if (nullptr != buffer) {
+        free(buffer);
+    }
 }
 
-void ProsperoBinaryTraceReader::copy(char* target, const char* source,
-	const size_t bufferOffset, const size_t len) {
+void ProsperoBinaryTraceReader::copy(char *target, const char *source,
+                                     const size_t bufferOffset, const size_t len) {
 
-	for(size_t i = 0; i < len; ++i) {
-		target[i] = source[bufferOffset + i];
-	}
+    for (size_t i = 0; i < len; ++i) {
+        target[i] = source[bufferOffset + i];
+    }
 }
 
-ProsperoTraceEntry* ProsperoBinaryTraceReader::readNextEntry() {
-	uint64_t reqAddress = 0;
-	uint64_t reqCycles  = 0;
-	char reqType = 'R';
-	uint32_t reqLength  = 0;
+ProsperoTraceEntry *ProsperoBinaryTraceReader::readNextEntry() {
+    uint64_t reqAddress = 0;
+    uint64_t reqCycles = 0;
+    char reqType = 'R';
+    uint32_t reqLength = 0;
 
-	if(feof(traceInput)) {
-		return NULL;
-	}
+    if (feof(traceInput)) {
+        return nullptr;
+    }
 
-	if(1 == fread(buffer, (size_t) recordLength, (size_t) 1, traceInput)) {
-		// We DID read an entry
-		copy((char*) &reqCycles,  buffer, (size_t) 0, sizeof(uint64_t));
-		copy((char*) &reqType,    buffer, sizeof(uint64_t), sizeof(char));
-		copy((char*) &reqAddress, buffer, sizeof(uint64_t) + sizeof(char), sizeof(uint64_t));
-		copy((char*) &reqLength,  buffer, sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t), sizeof(uint32_t));
+    if (1 == fread(buffer, (size_t) recordLength, (size_t) 1, traceInput)) {
+        // We DID read an entry
+        copy((char *) &reqCycles, buffer, (size_t) 0, sizeof(uint64_t));
+        copy((char *) &reqType, buffer, sizeof(uint64_t), sizeof(char));
+        copy((char *) &reqAddress, buffer, sizeof(uint64_t) + sizeof(char), sizeof(uint64_t));
+        copy((char *) &reqLength, buffer, sizeof(uint64_t) + sizeof(char) + sizeof(uint64_t),
+             sizeof(uint32_t));
 
-		return new ProsperoTraceEntry(reqCycles, reqAddress,
-			reqLength,
-			(reqType == 'R' || reqType == 'r') ? READ : WRITE);
-	} else {
-		// Did not get a full read?
-		return NULL;
-	}
+        return new ProsperoTraceEntry(reqCycles, reqAddress,
+                                      reqLength,
+                                      (reqType == 'R' || reqType == 'r') ? READ : WRITE);
+    } else {
+        // Did not get a full read?
+        return nullptr;
+    }
 }

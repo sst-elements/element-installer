@@ -22,30 +22,30 @@
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielSwitchPoolEvent : public ArielEvent {
+        class ArielSwitchPoolEvent : public ArielEvent {
 
-    public:
-        ArielSwitchPoolEvent(uint32_t newPool) : pool(newPool) {
-        }
+        public:
+            ArielSwitchPoolEvent(uint32_t newPool) : pool(newPool) {
+            }
 
-        ~ArielSwitchPoolEvent() {}
+            ~ArielSwitchPoolEvent() {}
 
-        ArielEventType getEventType() const {
+            ArielEventType getEventType() const {
                 return SWITCH_POOL;
+            };
+
+            uint32_t getPool() const {
+                return pool;
+            }
+
+        private:
+            const uint32_t pool;
+
         };
 
-        uint32_t getPool() const {
-                return pool;
-        }
-
-    private:
-        const uint32_t pool;
-
-};
-
-}
+    }
 }
 
 #endif

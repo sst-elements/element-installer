@@ -20,40 +20,41 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberWaitanyEvent : public EmberMPIEvent {
+        class EmberWaitanyEvent : public EmberMPIEvent {
 
-	public:
-		EmberWaitanyEvent(MP::Interface& api, Output* output,
-                      EmberEventTimeStatistic* stat,
-           int count, MessageRequest* req, int* indx, MessageResponse* resp  = NULL ) :
-        EmberMPIEvent( api, output, stat ),
-        m_count(count),
-        m_req(req),
-		m_indx(indx),
-        m_resp(resp)
-    { }
+        public:
+            EmberWaitanyEvent(MP::Interface &api, Output *output,
+                              EmberEventTimeStatistic *stat,
+                              int count, MessageRequest *req, int *indx,
+                              MessageResponse *resp = nullptr) :
+                EmberMPIEvent(api, output, stat),
+                m_count(count),
+                m_req(req),
+                m_indx(indx),
+                m_resp(resp) {}
 
-		~EmberWaitanyEvent() {}
-    	std::string getName() { return "Waitany"; }
+            ~EmberWaitanyEvent() {}
 
-    	void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "Waitany"; }
 
-        	EmberEvent::issue( time );
+            void issue(uint64_t time, FOO *functor) {
 
-        	m_api.waitany( m_count, m_req, m_indx, m_resp, functor );
-    	}
+                EmberEvent::issue(time);
 
-	private:
-		MessageRequest* m_req;
-		MessageResponse* m_resp;
-		int m_count;
-		int* m_indx;
+                m_api.waitany(m_count, m_req, m_indx, m_resp, functor);
+            }
 
-};
+        private:
+            MessageRequest *m_req;
+            MessageResponse *m_resp;
+            int m_count;
+            int *m_indx;
 
-}
+        };
+
+    }
 }
 
 #endif

@@ -44,47 +44,51 @@
 //#include "c_BankCommand.hpp"
 
 namespace SST {
-namespace n_Bank {
+    namespace n_Bank {
 
-class c_Rank;
-class c_BankCommand;
-  
-class c_Channel {
-public:
+        class c_Rank;
 
-	friend std::ostream& operator<<(std::ostream& x_stream,
-			const c_Channel& x_channel) {
-		x_stream << "Rank:" << std::endl;
-		for (unsigned l_i = 0; l_i < x_channel.m_rankPtrs.size(); ++l_i) {
-			x_stream << (x_channel.m_rankPtrs.at(l_i)) << std::endl;
-		}
+        class c_BankCommand;
 
-		return x_stream;
-	}
+        class c_Channel {
+        public:
 
-	c_Channel(std::map<std::string, unsigned>* x_bankParams);
-	c_Channel(std::map<std::string, unsigned>* x_bankParams, unsigned x_chId);
+            friend std::ostream &operator<<(std::ostream &x_stream,
+                                            const c_Channel &x_channel) {
+                x_stream << "Rank:" << std::endl;
+                for (unsigned l_i = 0; l_i < x_channel.m_rankPtrs.size(); ++l_i) {
+                    x_stream << (x_channel.m_rankPtrs.at(l_i)) << std::endl;
+                }
 
-	virtual ~c_Channel();
+                return x_stream;
+            }
 
-	void acceptRank(c_Rank* x_rankPtr);
+            c_Channel(std::map<std::string, unsigned> *x_bankParams);
 
-	unsigned getNumBanks() const;
-	unsigned getNumRanks() const;
-	unsigned getChannelId() const;
+            c_Channel(std::map<std::string, unsigned> *x_bankParams, unsigned x_chId);
 
-	std::vector<c_BankInfo*> getBankPtrs() const;
+            virtual ~c_Channel();
 
-	void updateOtherBanksNextCommandCycles(c_Rank* x_initRankPtr,
-			c_BankCommand* x_cmdPtr, SimTime_t x_cycle);
+            void acceptRank(c_Rank *x_rankPtr);
 
-private:
-	std::vector<c_Rank*> m_rankPtrs;
-	std::map<std::string, unsigned>* m_bankParams;
-	unsigned m_chId;
+            unsigned getNumBanks() const;
 
-};
+            unsigned getNumRanks() const;
 
-} // end n_Bank
+            unsigned getChannelId() const;
+
+            std::vector<c_BankInfo *> getBankPtrs() const;
+
+            void updateOtherBanksNextCommandCycles(c_Rank *x_initRankPtr,
+                                                   c_BankCommand *x_cmdPtr, SimTime_t x_cycle);
+
+        private:
+            std::vector<c_Rank *> m_rankPtrs;
+            std::map<std::string, unsigned> *m_bankParams;
+            unsigned m_chId;
+
+        };
+
+    } // end n_Bank
 } // end SST
 #endif /* C_CHANNEL_HPP_ */

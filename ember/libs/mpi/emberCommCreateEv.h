@@ -20,37 +20,38 @@
 #include "emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCommCreateEvent : public EmberMPIEvent {
+        class EmberCommCreateEvent : public EmberMPIEvent {
 
-public:
-    EmberCommCreateEvent( MP::Interface& api, Output* output,
-                         EmberEventTimeStatistic* stat,
-        Communicator oldComm, std::vector<int>& ranks, Communicator* newComm ) 
-      : EmberMPIEvent( api, output, stat ),
-        m_oldComm( oldComm), 
-        m_ranks(ranks), 
-        m_newComm(newComm)
-    {}
-    ~EmberCommCreateEvent() {}
+        public:
+            EmberCommCreateEvent(MP::Interface &api, Output *output,
+                                 EmberEventTimeStatistic *stat,
+                                 Communicator oldComm, std::vector<int> &ranks,
+                                 Communicator *newComm)
+                : EmberMPIEvent(api, output, stat),
+                  m_oldComm(oldComm),
+                  m_ranks(ranks),
+                  m_newComm(newComm) {}
 
-   std::string getName() { return "CommCreate"; }
+            ~EmberCommCreateEvent() {}
 
-    void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "CommCreate"; }
 
-        EmberEvent::issue( time );
-        m_api.comm_create( m_oldComm, m_ranks.size(), &m_ranks[0], 
-                                                    m_newComm, functor );
+            void issue(uint64_t time, FOO *functor) {
+
+                EmberEvent::issue(time);
+                m_api.comm_create(m_oldComm, m_ranks.size(), &m_ranks[0],
+                                  m_newComm, functor);
+            }
+
+        private:
+            Communicator m_oldComm;
+            std::vector<int> &m_ranks;
+            Communicator *m_newComm;
+        };
+
     }
-
-private:
-	Communicator m_oldComm;
-    std::vector<int>& m_ranks;
-    Communicator* m_newComm;
-};
-
-}
 }
 
 #endif

@@ -13,21 +13,21 @@
 # information, see the LICENSE file in the top level directory of the
 # distribution.
 
-import jobInfo as JobInfo
 import emberConfig as EmberConfig
+import jobInfo as JobInfo
 
-def _genWorkFlow( defaults, nodeNum = None ):
 
+def _genWorkFlow(defaults, nodeNum=None):
     workFlow = []
-    motif = dict.copy( defaults )
+    motif = dict.copy(defaults)
     motif['cmd'] = "Null"
-    workFlow.append( motif )
+    workFlow.append(motif)
 
     return workFlow
 
-def create( emberParams, hermesParams ):
 
-	jobInfo = JobInfo.JobInfo( -1, -1, 1, _genWorkFlow )
-	jobInfo.setNidList( 'Null' )
+def create(emberParams, hermesParams):
+    jobInfo = JobInfo.JobInfo(-1, -1, 1, _genWorkFlow)
+    jobInfo.setNidList('Null')
 
-	return EmberConfig.EmberConfig( emberParams, hermesParams, jobInfo )
+    return EmberConfig.EmberConfig(emberParams, hermesParams, jobInfo)

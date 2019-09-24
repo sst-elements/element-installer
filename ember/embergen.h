@@ -37,127 +37,138 @@
 #include "embergettimeev.h"
 #include "libs/emberLib.h"
 
-#define ENGINE_MASK (1<<0) 
-#define MOTIF_MASK (1<<1) 
+#define ENGINE_MASK (1<<0)
+#define MOTIF_MASK (1<<1)
 // #define EVENT_MASK (1<<2)  defined in emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberGenerator : public SubComponent {
+        class EmberGenerator : public SubComponent {
 
-  public:
+        public:
 
-    typedef std::queue<EmberEvent*> Queue;
+            typedef std::queue<EmberEvent *> Queue;
 
-    EmberGenerator( Component* owner, Params& params, std::string name ="" );
+            EmberGenerator(Component *owner, Params &params, std::string name = "");
 
-	~EmberGenerator(){
-		delete m_computeDistrib;
-	};
-    
-    virtual void generate( const SST::Output* output, const uint32_t phase,
-        std::queue<EmberEvent*>* evQ ) {
-        assert(0);
+            ~EmberGenerator() {
+                delete m_computeDistrib;
+            };
+
+            virtual void generate(const SST::Output *output, const uint32_t phase,
+                                  std::queue<EmberEvent *> *evQ) {
+                assert(0);
+            }
+
+            virtual bool generate(std::queue<EmberEvent *> &evQ) {
+                assert(0);
+            }
+
+            virtual void completed(const SST::Output *output, uint64_t time) {
+                assert(0);
+            }
+
+            virtual bool primary() { return m_primary; }
+
+            virtual std::string getComputeModelName() {
+                return "";
+            }
+
+            EmberLib *getLib(std::string name);
+
+
+            Output &getOutput() { return *m_output; }
+
+            void verbose(uint32_t line, const char *file, const char *func,
+                         uint32_t output_level, uint32_t output_bits,
+                         const char *format, ...) const
+            __attribute__ ((format (printf, 7, 8)));
+
+            void output(const char *format, ...) const
+            __attribute__ ((format (printf, 2, 3)));
+
+            void fatal(uint32_t line, const char *file, const char *func,
+                       uint32_t exit_code,
+                       const char *format, ...) const
+            __attribute__ ((format (printf, 6, 7)));
+
+            void setVerbosePrefix(int rank = -1) {
+                m_verbosePrefix.str(std::string());
+                m_verbosePrefix << "@t:" << getJobId() << ":" << rank <<
+                                ":EmberEngine:" << getMotifName() << ":@p:@l: ";
+            }
+
+            std::string getMotifName() { return m_motifName; }
+
+            int getJobId() { return m_jobId; }
+
+            int getMotifNum() { return m_motifNum; }
+
+            Hermes::NodePerf &nodePerf() { return *m_nodePerf; }
+
+            virtual void *memAlloc(size_t);
+
+            virtual void memFree(void *);
+
+            virtual void memSetBacked() { m_dataMode = Backing; }
+
+            bool haveDetailed() { return m_detailedCompute; }
+
+            Thornhill::DetailedCompute *m_detailedCompute;
+            Thornhill::MemoryHeapLink *m_memHeapLink;
+
+            inline void enQ_getTime(Queue &, uint64_t *time);
+
+            inline void enQ_memAlloc(Queue &, Hermes::MemAddr *addr, size_t length);
+
+            inline void enQ_compute(Queue &, uint64_t nanoSecondDelay);
+
+            inline void enQ_compute(Queue &q, std::function<uint64_t()> func);
+
+            inline void enQ_detailedCompute(Queue &q, std::string, Params &,
+                                            std::function<int()> func);
+
+        private:
+            Output *m_output;
+            enum {
+                NoBacking, Backing, BackingZeroed
+            } m_dataMode;
+            std::string m_motifName;
+            std::ostringstream m_verbosePrefix;
+            Hermes::NodePerf *m_nodePerf;
+            int m_jobId;
+            int m_motifNum;
+            bool m_primary;
+            EmberComputeDistribution *m_computeDistrib;
+        };
+
+        void EmberGenerator::enQ_getTime(Queue &q, uint64_t *time) {
+            q.push(new EmberGetTimeEvent(&getOutput(), time));
+        }
+
+        void EmberGenerator::enQ_compute(Queue &q, uint64_t delay) {
+            q.push(new EmberComputeEvent(&getOutput(), delay, m_computeDistrib));
+        }
+
+        void EmberGenerator::enQ_compute(Queue &q, std::function<uint64_t()> func) {
+            q.push(new EmberComputeEvent(&getOutput(), func, m_computeDistrib));
+        }
+
+        void EmberGenerator::enQ_detailedCompute(Queue &q, std::string name,
+                                                 Params &params, std::function<int()> fini = nullptr) {
+            assert(m_detailedCompute);
+            q.push(new EmberDetailedComputeEvent(&getOutput(), *m_detailedCompute, name, params,
+                                                 fini));
+        }
+
+        void EmberGenerator::enQ_memAlloc(Queue &q, Hermes::MemAddr *addr, size_t length) {
+            assert(m_memHeapLink);
+            addr->setBacking(memAlloc(length));
+            q.push(new EmberMemAllocEvent(*m_memHeapLink, &getOutput(), addr, length));
+        }
+
     }
-
-    virtual bool generate( std::queue<EmberEvent*>& evQ ) { 
-        assert(0); 
-    }
-
-    virtual void completed( const SST::Output* output, uint64_t time) {
-        assert(0);
-    }
-
-    virtual bool primary( ) { return m_primary; }
-
-    virtual std::string getComputeModelName() {
-        return "";
-    }
-    EmberLib* getLib(std::string name );
-
-
-    Output& getOutput() { return *m_output; }
-    void verbose(uint32_t line, const char* file, const char* func,
-                 uint32_t output_level, uint32_t output_bits,
-                 const char* format, ...)    const
-        __attribute__ ((format (printf, 7, 8)));
-
-    void output(const char* format, ...) const
-         __attribute__ ((format (printf, 2, 3)));
-
-    void fatal(uint32_t line, const char* file, const char* func,
-               uint32_t exit_code,
-               const char* format, ...)    const
-                  __attribute__ ((format (printf, 6, 7))) ;
-
-    void setVerbosePrefix( int rank = -1 ) {
-        m_verbosePrefix.str(std::string());
-        m_verbosePrefix << "@t:" << getJobId() << ":" << rank <<
-                    ":EmberEngine:" << getMotifName() << ":@p:@l: ";
-    }
-
-    std::string getMotifName() { return m_motifName; }
-    int getJobId()    { return m_jobId; }
-    int getMotifNum() { return m_motifNum; }
-
-    Hermes::NodePerf& nodePerf() { return *m_nodePerf; }
-
-    virtual void* memAlloc( size_t );
-    virtual void memFree( void* );
-	virtual void memSetBacked() { m_dataMode = Backing; }
-    bool haveDetailed() { return m_detailedCompute; }
-
-    Thornhill::DetailedCompute*   m_detailedCompute;
-    Thornhill::MemoryHeapLink*    m_memHeapLink;
-
-	inline void enQ_getTime( Queue&, uint64_t* time );
-    inline void enQ_memAlloc( Queue&, Hermes::MemAddr* addr, size_t length  );
-    inline void enQ_compute( Queue&, uint64_t nanoSecondDelay );
-    inline void enQ_compute( Queue& q, std::function<uint64_t()> func );
-    inline void enQ_detailedCompute( Queue& q, std::string, Params&, std::function<int()> func );
-
-  private:
-    Output* 	        	m_output;
-    enum { NoBacking, Backing, BackingZeroed  } m_dataMode; 
-    std::string				m_motifName;
-    std::ostringstream      m_verbosePrefix;
-    Hermes::NodePerf*       m_nodePerf;
-    int                     m_jobId;
-    int                     m_motifNum;
-    bool                    m_primary;
-    EmberComputeDistribution*           m_computeDistrib;
-};
-
-void EmberGenerator::enQ_getTime( Queue& q, uint64_t* time ) {
-	q.push( new EmberGetTimeEvent( &getOutput(), time ) );
-}
-
-void EmberGenerator::enQ_compute( Queue& q, uint64_t delay )
-{
-    q.push( new EmberComputeEvent( &getOutput(), delay, m_computeDistrib ) );
-}
-
-void EmberGenerator::enQ_compute( Queue& q, std::function<uint64_t()> func )
-{
-    q.push( new EmberComputeEvent( &getOutput(), func, m_computeDistrib ) );
-}
-
-void EmberGenerator::enQ_detailedCompute( Queue& q, std::string name,
-        Params& params, std::function<int()> fini = NULL )
-{
-    assert( m_detailedCompute );
-    q.push( new EmberDetailedComputeEvent( &getOutput(), *m_detailedCompute, name, params, fini ) );
-}
-
-void EmberGenerator::enQ_memAlloc( Queue& q, Hermes::MemAddr* addr, size_t length )
-{
-    assert( m_memHeapLink );
-    addr->setBacking( memAlloc(length) );
-    q.push( new EmberMemAllocEvent( *m_memHeapLink, &getOutput(), addr, length  ) );
-}
-
-}
 }
 
 #endif

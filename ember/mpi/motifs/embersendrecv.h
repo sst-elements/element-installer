@@ -21,90 +21,94 @@
 #include "rng/xorshift.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
 
 #define DATA_TYPE INT
-class EmberSendrecvGenerator : public EmberMessagePassingGenerator {
 
-public:
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        EmberSendrecvGenerator,
-        "ember",
-        "SendrecvMotif",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Performs a Sendrecv Motif",
-        "SST::Ember::EmberGenerator"
-    )
-    SST_ELI_DOCUMENT_STATISTICS(
-        { "time-Init", "Time spent in Init event",          "ns",  0},
-        { "time-Finalize", "Time spent in Finalize event",  "ns", 0},
-        { "time-Rank", "Time spent in Rank event",          "ns", 0},
-        { "time-Size", "Time spent in Size event",          "ns", 0},
-        { "time-Send", "Time spent in Recv event",          "ns", 0},
-        { "time-Recv", "Time spent in Recv event",          "ns", 0},
-        { "time-Irecv", "Time spent in Irecv event",        "ns", 0},
-        { "time-Isend", "Time spent in Isend event",        "ns", 0},
-        { "time-Wait", "Time spent in Wait event",          "ns", 0},
-        { "time-Waitall", "Time spent in Waitall event",    "ns", 0},
-        { "time-Waitany", "Time spent in Waitany event",    "ns", 0},
-        { "time-Sendrecv", "Time spent in Sendrecv event",    "ns", 0},
-        { "time-Compute", "Time spent in Compute event",    "ns", 0},
-        { "time-Barrier", "Time spent in Barrier event",    "ns", 0},
-        { "time-Alltoallv", "Time spent in Alltoallv event", "ns", 0},
-        { "time-Alltoall", "Time spent in Alltoall event",  "ns", 0},
-        { "time-Allreduce", "Time spent in Allreduce event", "ns", 0},
-        { "time-Reduce", "Time spent in Reduce event",      "ns", 0},
-        { "time-Bcast", "Time spent in Bcast event",        "ns", 0},
-        { "time-Gettime", "Time spent in Gettime event",    "ns", 0},
-        { "time-Commsplit", "Time spent in Commsplit event", "ns", 0},
-        { "time-Commcreate", "Time spent in Commcreate event", "ns", 0},
-    )
+        class EmberSendrecvGenerator : public EmberMessagePassingGenerator {
 
-public:
-	EmberSendrecvGenerator(SST::Component* owner, Params& params): 
-        EmberMessagePassingGenerator(owner, params, "Null" ), m_phase(Init)
-	{
-			m_messageSize = 1024;
-		    m_sendBuf = memAlloc(m_messageSize * sizeofDataType(DATA_TYPE) );
-    		m_recvBuf = memAlloc(m_messageSize * sizeofDataType(DATA_TYPE) );
-   	}
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                EmberSendrecvGenerator,
+            "ember",
+            "SendrecvMotif",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Performs a Sendrecv Motif",
+            "SST::Ember::EmberGenerator"
+            )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "time-Init", "Time spent in Init event", "ns", 0 },
+            { "time-Finalize", "Time spent in Finalize event", "ns", 0 },
+            { "time-Rank", "Time spent in Rank event", "ns", 0 },
+            { "time-Size", "Time spent in Size event", "ns", 0 },
+            { "time-Send", "Time spent in Recv event", "ns", 0 },
+            { "time-Recv", "Time spent in Recv event", "ns", 0 },
+            { "time-Irecv", "Time spent in Irecv event", "ns", 0 },
+            { "time-Isend", "Time spent in Isend event", "ns", 0 },
+            { "time-Wait", "Time spent in Wait event", "ns", 0 },
+            { "time-Waitall", "Time spent in Waitall event", "ns", 0 },
+            { "time-Waitany", "Time spent in Waitany event", "ns", 0 },
+            { "time-Sendrecv", "Time spent in Sendrecv event", "ns", 0 },
+            { "time-Compute", "Time spent in Compute event", "ns", 0 },
+            { "time-Barrier", "Time spent in Barrier event", "ns", 0 },
+            { "time-Alltoallv", "Time spent in Alltoallv event", "ns", 0 },
+            { "time-Alltoall", "Time spent in Alltoall event", "ns", 0 },
+            { "time-Allreduce", "Time spent in Allreduce event", "ns", 0 },
+            { "time-Reduce", "Time spent in Reduce event", "ns", 0 },
+            { "time-Bcast", "Time spent in Bcast event", "ns", 0 },
+            { "time-Gettime", "Time spent in Gettime event", "ns", 0 },
+            { "time-Commsplit", "Time spent in Commsplit event", "ns", 0 },
+            { "time-Commcreate", "Time spent in Commcreate event", "ns", 0 },
+            )
 
-    bool generate( std::queue<EmberEvent*>& evQ){
-		assert( size() == 2 );
-		switch ( m_phase ) {
-			case Init:
-				enQ_sendrecv( evQ, 
-							m_sendBuf, m_messageSize, DATA_TYPE, destRank(), 0xdeadbeef,
-							m_recvBuf, m_messageSize, DATA_TYPE, srcRank(),  0xdeadbeef,
-							GroupWorld, &m_resp );
-				m_phase = Fini;
-				return false;
+        public:
+            EmberSendrecvGenerator(SST::Component *owner, Params &params) :
+                EmberMessagePassingGenerator(owner, params, "Null"), m_phase(Init) {
+                m_messageSize = 1024;
+                m_sendBuf = memAlloc(m_messageSize * sizeofDataType(DATA_TYPE));
+                m_recvBuf = memAlloc(m_messageSize * sizeofDataType(DATA_TYPE));
+            }
 
-			case Fini:
-				printf("rand %d done\n",rank());
-				return true;
+            bool generate(std::queue<EmberEvent *> &evQ) {
+                assert(size() == 2);
+                switch (m_phase) {
+                    case Init:
+                        enQ_sendrecv(evQ,
+                                     m_sendBuf, m_messageSize, DATA_TYPE, destRank(), 0xdeadbeef,
+                                     m_recvBuf, m_messageSize, DATA_TYPE, srcRank(), 0xdeadbeef,
+                                     GroupWorld, &m_resp);
+                        m_phase = Fini;
+                        return false;
 
-		}
-		assert(0);
-	}
-	int destRank() {
-		return (rank() + 1) % 2;
-	}
-	int srcRank() {
-		return (rank() + 1) % 2;
-	}
+                    case Fini:
+                        printf("rand %d done\n", rank());
+                        return true;
 
-private:
+                }
+                assert(0);
+            }
 
-	int      m_messageSize;
-    void*    m_sendBuf;
-    void*    m_recvBuf;
-	enum { Init, Fini } m_phase;
-    MessageResponse m_resp;
-};
+            int destRank() {
+                return (rank() + 1) % 2;
+            }
 
-}
+            int srcRank() {
+                return (rank() + 1) % 2;
+            }
+
+        private:
+
+            int m_messageSize;
+            void *m_sendBuf;
+            void *m_recvBuf;
+            enum {
+                Init, Fini
+            } m_phase;
+            MessageResponse m_resp;
+        };
+
+    }
 }
 
 #endif

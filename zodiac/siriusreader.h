@@ -47,46 +47,68 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class SiriusReader {
-    public:
-	SiriusReader(char* file, uint32_t rank, uint32_t qLimit, std::queue<ZodiacEvent*>* eventQueue, int verbose);
-        void close();
-	void setOutput(Output* oput);
-	uint32_t generateNextEvents();
-	uint32_t getQueueLimit();
-	uint32_t getCurrentQueueSize();
-	bool hasReachedFinalize();
+        class SiriusReader {
+        public:
+            SiriusReader(char *file, uint32_t rank, uint32_t qLimit,
+                         std::queue<ZodiacEvent *> *eventQueue, int verbose);
 
-    private:
-	Output* output;
-	uint32_t rank;
-	uint32_t qLimit;
-	bool foundFinalize;
-	std::queue<ZodiacEvent*>* eventQ;
-	FILE* trace;
-	double prevEventTime;
-	void generateNextEvent();
-	inline uint32_t readUINT32();
-	inline uint64_t readUINT64();
-	inline double readTime();
-	inline int32_t readINT32();
-	inline int64_t readINT64();
-	void readSend();
-	void readIrecv();
-	void readRecv();
-	void readInit();
-	void readFinalize();
-	void readBarrier();
-	void readWait();
-	void readAllreduce();
+            void close();
 
-	PayloadDataType convertToHermesType(uint32_t dtype);
-	ReductionOperation convertToHermesOp(uint32_t op);
-};
+            void setOutput(Output *oput);
 
-}
+            uint32_t generateNextEvents();
+
+            uint32_t getQueueLimit();
+
+            uint32_t getCurrentQueueSize();
+
+            bool hasReachedFinalize();
+
+        private:
+            Output *output;
+            uint32_t rank;
+            uint32_t qLimit;
+            bool foundFinalize;
+            std::queue<ZodiacEvent *> *eventQ;
+            FILE *trace;
+            double prevEventTime;
+
+            void generateNextEvent();
+
+            inline uint32_t readUINT32();
+
+            inline uint64_t readUINT64();
+
+            inline double readTime();
+
+            inline int32_t readINT32();
+
+            inline int64_t readINT64();
+
+            void readSend();
+
+            void readIrecv();
+
+            void readRecv();
+
+            void readInit();
+
+            void readFinalize();
+
+            void readBarrier();
+
+            void readWait();
+
+            void readAllreduce();
+
+            PayloadDataType convertToHermesType(uint32_t dtype);
+
+            ReductionOperation convertToHermesOp(uint32_t op);
+        };
+
+    }
 }
 
 #endif

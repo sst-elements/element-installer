@@ -29,27 +29,26 @@ using namespace SST::MemHierarchy;
 using namespace SST::Cassini;
 
 static const int tab64[64] = {
-    63,  0, 58,  1, 59, 47, 53,  2,
-    60, 39, 48, 27, 54, 33, 42,  3,
+    63, 0, 58, 1, 59, 47, 53, 2,
+    60, 39, 48, 27, 54, 33, 42, 3,
     61, 51, 37, 40, 49, 18, 28, 20,
-    55, 30, 34, 11, 43, 14, 22,  4,
+    55, 30, 34, 11, 43, 14, 22, 4,
     62, 57, 46, 52, 38, 26, 32, 41,
     50, 36, 17, 19, 29, 10, 13, 21,
-    56, 45, 25, 31, 35, 16,  9, 12,
-    44, 24, 15,  8, 23,  7,  6,  5};
+    56, 45, 25, 31, 35, 16, 9, 12,
+    44, 24, 15, 8, 23, 7, 6, 5};
 
-static int log2_64(uint64_t value)
-{
+static int log2_64(uint64_t value) {
     value |= value >> 1;
     value |= value >> 2;
     value |= value >> 4;
     value |= value >> 8;
     value |= value >> 16;
     value |= value >> 32;
-    return tab64[((uint64_t)((value - (value >> 1))*0x07EDD5E59A4E28C2)) >> 58];
+    return tab64[((uint64_t)((value - (value >> 1)) * 0x07EDD5E59A4E28C2)) >> 58];
 }
 
-cacheLineTrack::cacheLineTrack(ComponentId_t id, Params& params) : CacheListener(id, params) {
+cacheLineTrack::cacheLineTrack(ComponentId_t id, Params &params) : CacheListener(id, params) {
     std::string cutoff_s = params.find<std::string>("addr_cutoff", "16GiB");
     UnitAlgebra cutoff_u(cutoff_s);
     cutoff = cutoff_u.getRoundedValue();
@@ -61,13 +60,16 @@ cacheLineTrack::cacheLineTrack(ComponentId_t id, Params& params) : CacheListener
     evicts = registerStatistic<uint>("evicts");
 
 }
-cacheLineTrack::cacheLineTrack(Component* owner, Params& params) : CacheListener(owner, params) {
+
+cacheLineTrack::cacheLineTrack(Component *owner, Params &params) : CacheListener(owner, params) {
     Output out("", 1, 0, Output::STDOUT);
-    out.fatal(CALL_INFO, -1, "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n", getName().c_str());
+    out.fatal(CALL_INFO, -1,
+              "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n",
+              getName().c_str());
 }
 
 
-void cacheLineTrack::notifyAccess(const CacheListenerNotification& notify) {
+void cacheLineTrack::notifyAccess(const CacheListenerNotification &notify) {
     const NotifyAccessType notifyType = notify.getAccessType();
     const NotifyResultType notifyResType = notify.getResultType();
 
@@ -75,23 +77,22 @@ void cacheLineTrack::notifyAccess(const CacheListenerNotification& notify) {
     Addr cacheAddr = notify.getPhysicalAddress(); // cacheline (base) address
 
     // if get a MISS notification, do we get a HIT later?
-    if(addr >= cutoff) return;
+    if (addr >= cutoff) return;
 
     // size
 
     switch (notifyType) {
-    case READ:
-    case WRITE:
-        {
+        case READ:
+        case WRITE: {
             auto iter = cacheLines.find(cacheAddr);
             if (iter == cacheLines.end()) {
                 // insert a new one
                 SimTime_t now = getSimulation()->getCurrentSimCycle();
                 iter = (cacheLines.insert({cacheAddr, lineTrack(now)})).first;
-            } 
+            }
             // update
             if (notify.getSize() > 8) {
-	      //printf("Not sure what to do here. access size > 8, %d\n", notify.getSize());
+                //printf("Not sure what to do here. access size > 8, %d\n", notify.getSize());
             }
             Addr offset = (addr - cacheAddr) / 8;
             iter->second.touched[offset] = 1;
@@ -99,11 +100,11 @@ void cacheLineTrack::notifyAccess(const CacheListenerNotification& notify) {
                 iter->second.reads++;
             } else {
                 iter->second.writes++;
-            }   
+            }
         }
-        break;
-    case EVICT:
-        // find the cacheline record
+            break;
+        case EVICT:
+            // find the cacheline record
         {
             auto iter = cacheLines.find(cacheAddr);
             if (iter != cacheLines.end()) {
@@ -114,17 +115,17 @@ void cacheLineTrack::notifyAccess(const CacheListenerNotification& notify) {
                 ageHisto->addData(log2_64(now - iter->second.entered));
                 uint touched = iter->second.touched.count();
                 useHisto->addData(touched);
-		evicts->addData(1);
+                evicts->addData(1);
                 //delete it
                 cacheLines.erase(iter);
             } else {
                 // couldn't find record?
                 printf("Not sure what to do here. Couldn't find record\n");
             }
-        } 
-        break;
-    default:
-        printf("Invalid notify Type\n");
+        }
+            break;
+        default:
+            printf("Invalid notify Type\n");
     }
 }
 

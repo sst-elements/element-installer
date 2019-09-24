@@ -27,24 +27,26 @@ namespace SST {
     namespace Scheduler {
 
         class Job;
+
         class Machine;
 
         class AllocInfo {
-            public:
-                Job* job;
-                int* nodeIndices;
+        public:
+            Job *job;
+            int *nodeIndices;
 
-                AllocInfo(Job* job, const Machine & mach);
-                AllocInfo(const AllocInfo & ai);
+            AllocInfo(Job *job, const Machine &mach);
 
-                virtual ~AllocInfo();
+            AllocInfo(const AllocInfo &ai);
 
-                virtual std::string getProcList();
-                
-                int getNodesNeeded() const { return nodesNeeded; }
-                
-            private:
-                int nodesNeeded;
+            virtual ~AllocInfo();
+
+            virtual std::string getProcList();
+
+            int getNodesNeeded() const { return nodesNeeded; }
+
+        private:
+            int nodesNeeded;
         };
 
 

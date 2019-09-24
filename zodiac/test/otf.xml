@@ -6,16 +6,16 @@ stopAtCycle=10000000ns
 </config>
 
 <variables>
-	<lat> 1ns </lat>
-	<buslat> 50 ps </buslat>
+<lat>1ns</lat>
+<buslat>50 ps</buslat>
 </variables>
 
 
 <sst>
-	<component name="z0" type="zodiac.ZodiacOTFTraceReader">
-		<params>
-			<trace>/home/sdhammo/subversion/sst-simulator/sst/elements/zodiac/test/pingpong/pingpong.otf</trace>
-			<rank>1</rank>
-		</params>
-	</component>
+<component name="z0" type="zodiac.ZodiacOTFTraceReader">
+    <params>
+        <trace>/home/sdhammo/subversion/sst-simulator/sst/elements/zodiac/test/pingpong/pingpong.otf</trace>
+        <rank>1</rank>
+    </params>
+</component>
 </sst>

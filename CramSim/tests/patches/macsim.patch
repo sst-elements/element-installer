@@ -76,7 +76,7 @@ index f546b6a..c20c2f0 100644
      m_cube_link = dynamic_cast<Interfaces::SimpleMem*>(loadModuleWithComponent("memHierarchy.memInterface", this, params));
      if (!m_cube_link) m_dbg->fatal(CALL_INFO, -1, "Unable to load Module as memory\n");
 @@ -71,10 +71,10 @@ macsimComponent::macsimComponent(ComponentId_t id, Params& params) : Component(i
-     m_cube_link = NULL;
+     m_cube_link = nullptr;
    }
  
 -  string clock_freq = params.find_string("frequency", "1GHz");
@@ -96,7 +96,7 @@ index f546b6a..c20c2f0 100644
 +  m_operation_mode = params.find<int>("operation_mode", MASTER);
    if (m_operation_mode == MASTER) {
      m_triggered = true;
-     m_ipc_link = NULL;
+     m_ipc_link = nullptr;
 diff --git macsimEvent.h macsimEvent.h
 index 64b443d..51c208d 100644
 --- macsimEvent.h

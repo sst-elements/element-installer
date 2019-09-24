@@ -20,38 +20,37 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberWaitallEvent : public EmberMPIEvent {
+        class EmberWaitallEvent : public EmberMPIEvent {
 
-public:
-	EmberWaitallEvent( MP::Interface& api, Output* output,
-                      EmberEventTimeStatistic* stat,
-           int count, MessageRequest* req, MessageResponse** resp  ) :
-        EmberMPIEvent( api, output, stat ),
-        m_count(count),
-        m_req(req),
-        m_resp(resp)
-    { }
+        public:
+            EmberWaitallEvent(MP::Interface &api, Output *output,
+                              EmberEventTimeStatistic *stat,
+                              int count, MessageRequest *req, MessageResponse **resp) :
+                EmberMPIEvent(api, output, stat),
+                m_count(count),
+                m_req(req),
+                m_resp(resp) {}
 
-	~EmberWaitallEvent() {}
+            ~EmberWaitallEvent() {}
 
-    std::string getName() { return "Waitall"; }
+            std::string getName() { return "Waitall"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.waitall( m_count, m_req, m_resp, functor );
+                m_api.waitall(m_count, m_req, m_resp, functor);
+            }
+
+        private:
+            int m_count;
+            MessageRequest *m_req;
+            MessageResponse **m_resp;
+        };
+
     }
-
-private:
-    int m_count;
-    MessageRequest* m_req;
-    MessageResponse** m_resp;
-};
-
-}
 }
 
 #endif

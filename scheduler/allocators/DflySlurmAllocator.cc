@@ -25,14 +25,12 @@
 
 using namespace SST::Scheduler;
 
-DflySlurmAllocator::DflySlurmAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+DflySlurmAllocator::DflySlurmAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
 
 }
 
-std::string DflySlurmAllocator::getSetupInfo(bool comment) const
-{
+std::string DflySlurmAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -43,12 +41,12 @@ std::string DflySlurmAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
-AllocInfo* DflySlurmAllocator::allocate(Job* j)
-{
+AllocInfo *DflySlurmAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         //This set keeps track of allocated nodes in the current allocation.
         std::set<int> occupiedNodes;
         const int jobSize = ai->getNodesNeeded();
@@ -63,13 +61,13 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
                 int thisRouterFreeNode = 0;
                 for (int localNodeID = 0; localNodeID < dMach.nodesPerRouter; localNodeID++) {
                     int nodeID = routerID * dMach.nodesPerRouter + localNodeID;
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         //caution: isFree() will update only after one job is fully allocated.
                         ++thisRouterFreeNode;
                     }
                 }
                 // update best fit.
-                if ( (thisRouterFreeNode >= jobSize) && (thisRouterFreeNode < BestRouterFreeNodes) ) {
+                if ((thisRouterFreeNode >= jobSize) && (thisRouterFreeNode < BestRouterFreeNodes)) {
                     BestRouter = routerID;
                     BestRouterFreeNodes = thisRouterFreeNode;
                 }
@@ -79,14 +77,13 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
                 int nodeID = BestRouter * dMach.nodesPerRouter;
                 int i = 0;
                 while (i < jobSize) {
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         ai->nodeIndices[i] = nodeID;
                         occupiedNodes.insert(nodeID);
                         //std::cout << nodeID << " ";
                         ++i;
                         ++nodeID;
-                    }
-                    else {
+                    } else {
                         ++nodeID;
                     }
                 }
@@ -105,13 +102,14 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
                     int thisRouterFreeNode = 0;
                     for (int localNodeID = 0; localNodeID < dMach.nodesPerRouter; localNodeID++) {
                         int nodeID = routerID * dMach.nodesPerRouter + localNodeID;
-                        if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                        if (dMach.isFree(nodeID) &&
+                            occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                             //caution: isFree() will update only after one job is fully allocated.
                             ++thisRouterFreeNode;
                         }
                     }
                     // update best fit, the router should contain at least one vacancy.
-                    if ( (thisRouterFreeNode >= 1) && (thisRouterFreeNode < BestRouterFreeNodes) ) {
+                    if ((thisRouterFreeNode >= 1) && (thisRouterFreeNode < BestRouterFreeNodes)) {
                         BestRouter = routerID;
                         BestRouterFreeNodes = thisRouterFreeNode;
                     }
@@ -119,7 +117,7 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
                 // then allocate all the nodes in this router.
                 for (int localNodeID = 0; localNodeID < dMach.nodesPerRouter; localNodeID++) {
                     int nodeID = BestRouter * dMach.nodesPerRouter + localNodeID;
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         ai->nodeIndices[i] = nodeID;
                         occupiedNodes.insert(nodeID);
                         //std::cout << nodeID << " ";
@@ -127,12 +125,10 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
                         if (i == jobSize) {
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         if (localNodeID < dMach.nodesPerRouter - 1) {
                             continue;
-                        }
-                        else {
+                        } else {
                             //change router.
                             break;
                         }
@@ -143,6 +139,6 @@ AllocInfo* DflySlurmAllocator::allocate(Job* j)
             return ai;
         }
     }
-    return NULL;
+    return nullptr;
 }
 

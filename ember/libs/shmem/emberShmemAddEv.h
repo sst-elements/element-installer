@@ -20,33 +20,34 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAddShmemEvent : public EmberShmemEvent {
+        class EmberAddShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberAddShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::Vaddr dest, Hermes::Value value, int pe, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), 
-            m_dest(dest), m_value(value), m_pe(pe) {}
-	~EmberAddShmemEvent() {}
+        public:
+            EmberAddShmemEvent(Shmem::Interface &api, Output *output,
+                               Hermes::Vaddr dest, Hermes::Value value, int pe,
+                               EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_dest(dest), m_value(value), m_pe(pe) {}
 
-    std::string getName() { return "Add"; }
+            ~EmberAddShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Add"; }
 
-        EmberEvent::issue( time );
-        m_api.add( m_dest, m_value, m_pe, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.add(m_dest, m_value, m_pe, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Hermes::Value m_value;
+            int m_pe;
+        };
+
     }
-
-private:
-    Hermes::Vaddr m_dest;
-    Hermes::Value m_value;
-    int m_pe;
-};
-
-}
 }
 
 #endif

@@ -20,54 +20,58 @@
 #include "memBackend.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class SimpleMemory : public SimpleMemBackend {
-public:
+        class SimpleMemory : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(SimpleMemory, "memHierarchy", "simpleMem", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(SimpleMemory,
+            "memHierarchy", "simpleMem", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Basic constant-access-time memory timing model", SST::MemHierarchy::SimpleMemBackend)
 
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
             /* Own parameters */
-            {"access_time", "(string) Constant latency of memory operations. With units (SI ok).", "100ns"} )
+            { "access_time", "(string) Constant latency of memory operations. With units (SI ok).", "100ns" } )
 
 /* Begin class definition */
-    SimpleMemory();
-    SimpleMemory(Component *comp, Params &params);
-    SimpleMemory(ComponentId_t id, Params &params);
-    bool issueRequest(ReqId, Addr, bool, unsigned );
-    virtual bool isClocked() { return false; }
+            SimpleMemory();
 
-private:
-    void build(Params& params);
+            SimpleMemory(Component *comp, Params &params);
 
-public:
-    class MemCtrlEvent : public SST::Event {
-    public:
-        MemCtrlEvent( ReqId id_) : SST::Event(), reqId(id_)
-        { }
+            SimpleMemory(ComponentId_t id, Params &params);
 
-        ReqId reqId;
+            bool issueRequest(ReqId, Addr, bool, unsigned);
 
-    private:
-        MemCtrlEvent() {} // For Serialization only
+            virtual bool isClocked() { return false; }
 
-    public:
-        void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-            Event::serialize_order(ser);
-            ser & reqId;  // Cannot serialize pointers unless they are a serializable object
-       }
+        private:
+            void build(Params &params);
 
-        ImplementSerializable(SST::MemHierarchy::SimpleMemory::MemCtrlEvent);
-    };
+        public:
+            class MemCtrlEvent : public SST::Event {
+            public:
+                MemCtrlEvent(ReqId id_) : SST::Event(), reqId(id_) {}
 
-    void handleSelfEvent(SST::Event *event);
+                ReqId reqId;
 
-    Link *self_link;
-};
+            private:
+                MemCtrlEvent() {} // For Serialization only
 
-}
+            public:
+                void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                    Event::serialize_order(ser);
+                    ser & reqId;  // Cannot serialize pointers unless they are a serializable object
+                }
+
+                ImplementSerializable(SST::MemHierarchy::SimpleMemory::MemCtrlEvent);
+            };
+
+            void handleSelfEvent(SST::Event *event);
+
+            Link *self_link;
+        };
+
+    }
 }
 
 #endif

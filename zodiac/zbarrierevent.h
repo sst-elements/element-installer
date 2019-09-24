@@ -23,21 +23,23 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacBarrierEvent : public ZodiacEvent {
+        class ZodiacBarrierEvent : public ZodiacEvent {
 
-	public:
-		ZodiacBarrierEvent(Communicator group);
-		ZodiacEventType getEventType();
-		Communicator getCommunicatorGroup();
+        public:
+            ZodiacBarrierEvent(Communicator group);
 
-	private:
-		Communicator msgComm;
+            ZodiacEventType getEventType();
 
-};
+            Communicator getCommunicatorGroup();
 
-}
+        private:
+            Communicator msgComm;
+
+        };
+
+    }
 }
 
 #endif

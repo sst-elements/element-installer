@@ -40,39 +40,46 @@
 #include <sst/core/link.h>
 
 namespace SST {
-namespace n_Bank {
+    namespace n_Bank {
 
-class c_BankInfo;
-class c_Rank;
-class c_BankCommand;
+        class c_BankInfo;
 
-class c_BankGroup {
-public:
+        class c_Rank;
+
+        class c_BankCommand;
+
+        class c_BankGroup {
+        public:
 
 
-        c_BankGroup(std::map<std::string, unsigned>* x_bankParams, unsigned x_Id);
-	virtual ~c_BankGroup();
+            c_BankGroup(std::map<std::string, unsigned> *x_bankParams, unsigned x_Id);
 
-	void acceptBank(c_BankInfo* x_bankPtr);
-	void acceptRank(c_Rank* x_rankPtr);
+            virtual ~c_BankGroup();
 
-	unsigned getNumBanks() const;
-        unsigned getBankGroupId() const;
-	std::vector<c_BankInfo*> getBankPtrs() const;
-	c_Rank* getRankPtr() const;
+            void acceptBank(c_BankInfo *x_bankPtr);
 
-	void updateOtherBanksNextCommandCycles(c_BankInfo* x_initBankPtr,
-			c_BankCommand* x_cmdPtr, SimTime_t x_cycle);
+            void acceptRank(c_Rank *x_rankPtr);
 
-private:
-        unsigned m_bankGroupId;
-	std::vector<c_BankInfo*> m_bankPtrs;
-	c_Rank* m_rankPtr;
+            unsigned getNumBanks() const;
 
-	std::map<std::string, unsigned>* m_bankParams;
+            unsigned getBankGroupId() const;
 
-};
+            std::vector<c_BankInfo *> getBankPtrs() const;
 
-} // end n_Bank
+            c_Rank *getRankPtr() const;
+
+            void updateOtherBanksNextCommandCycles(c_BankInfo *x_initBankPtr,
+                                                   c_BankCommand *x_cmdPtr, SimTime_t x_cycle);
+
+        private:
+            unsigned m_bankGroupId;
+            std::vector<c_BankInfo *> m_bankPtrs;
+            c_Rank *m_rankPtr;
+
+            std::map<std::string, unsigned> *m_bankParams;
+
+        };
+
+    } // end n_Bank
 } // end SST
 #endif /* C_BANKGROUP_HPP_ */

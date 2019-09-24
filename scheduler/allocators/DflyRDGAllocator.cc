@@ -20,19 +20,16 @@
 
 using namespace SST::Scheduler;
 
-DflyRDGAllocator::DflyRDGAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+DflyRDGAllocator::DflyRDGAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
     rng = new SST::RNG::MersenneRNG();
 }
 
-DflyRDGAllocator::~DflyRDGAllocator()
-{
+DflyRDGAllocator::~DflyRDGAllocator() {
     delete rng;
 }
 
-std::string DflyRDGAllocator::getSetupInfo(bool comment) const
-{
+std::string DflyRDGAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -43,12 +40,12 @@ std::string DflyRDGAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
-AllocInfo* DflyRDGAllocator::allocate(Job* j)
-{
+AllocInfo *DflyRDGAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         //This set keeps track of allocated nodes in the current allocation.
         std::set<int> occupiedNodes;
         const int jobSize = ai->getNodesNeeded();
@@ -61,13 +58,12 @@ AllocInfo* DflyRDGAllocator::allocate(Job* j)
             //select nodes one by one in this group.
             for (int localNodeID = 0; localNodeID < nodesPerGroup; localNodeID++) {
                 int nodeID = groupID * nodesPerGroup + localNodeID;
-                if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                     ai->nodeIndices[i] = nodeID;
                     ++i;
                     occupiedNodes.insert(nodeID);
                     //std::cout << nodeID << " ";
-                }
-                else {
+                } else {
                     continue;
                 }
                 if (i == jobSize) {
@@ -78,6 +74,6 @@ AllocInfo* DflyRDGAllocator::allocate(Job* j)
         //std::cout << endl;
         return ai;
     }
-    return NULL;
+    return nullptr;
 }
 

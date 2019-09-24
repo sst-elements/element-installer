@@ -28,17 +28,19 @@ namespace SST {
     namespace Scheduler {
 
         class Machine;
+
         class Job;
+
         class AllocInfo;
 
         class BestFitAllocator : public LinearAllocator {
-            public:
+        public:
 
-                BestFitAllocator(std::vector<std::string>* params, Machine* mach) ;
+            BestFitAllocator(std::vector <std::string> *params, Machine *mach);
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* job) ;
+            AllocInfo *allocate(Job *job);
         };
     }
 }

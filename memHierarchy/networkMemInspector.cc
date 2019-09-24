@@ -19,33 +19,35 @@
 #include <networkMemInspector.h>
 #include <memNIC.h>
 
-namespace SST { namespace MemHierarchy {
+namespace SST {
+    namespace MemHierarchy {
 
-networkMemInspector::networkMemInspector(Component *parent, Params &params)
-    : NetworkInspector(parent) {
-    // should fix to have this be a param
-    dbg.init("@R:netMemInspect::@p():@l " + getName() + ": ", 0, 0, 
-             Output::STDOUT);  
+        networkMemInspector::networkMemInspector(Component *parent, Params &params)
+            : NetworkInspector(parent) {
+            // should fix to have this be a param
+            dbg.init("@R:netMemInspect::@p():@l " + getName() + ": ", 0, 0,
+                     Output::STDOUT);
 
-}
+        }
 
-void networkMemInspector::initialize(std::string id) {
-    // Init the stats
-    for (int i = 0; i < (int)Command::LAST_CMD; ++i) {
-        memCmdStat[i] = registerStatistic<uint64_t>(CommandString[i],id);
+        void networkMemInspector::initialize(std::string id) {
+            // Init the stats
+            for (int i = 0; i < (int) Command::LAST_CMD; ++i) {
+                memCmdStat[i] = registerStatistic<uint64_t>(CommandString[i], id);
+            }
+        }
+
+        void networkMemInspector::inspectNetworkData(SimpleNetwork::Request *req) {
+            MemNIC::MemRtrEvent *mre = dynamic_cast<MemNIC::MemRtrEvent *>(req->inspectPayload());
+            if (mre) {
+                memCmdStat[(int) mre->event->getCmd()]->addData(1);
+            } else {
+                dbg.output(CALL_INFO, "Unexpected payload encountered. Ignoring.\n");
+            }
+        }
+
     }
-}
-
-void networkMemInspector::inspectNetworkData(SimpleNetwork::Request* req) {
-    MemNIC::MemRtrEvent *mre = dynamic_cast<MemNIC::MemRtrEvent*>(req->inspectPayload());
-    if (mre) {
-        memCmdStat[(int)mre->event->getCmd()]->addData(1);
-    } else {
-        dbg.output(CALL_INFO,"Unexpected payload encountered. Ignoring.\n");
-    }
-}
-
-}} // close sst::memhierarchy namespace
+} // close sst::memhierarchy namespace
 
 
 

@@ -37,16 +37,15 @@
 
 using namespace SST::Scheduler;
 
-FirstFitAllocator::FirstFitAllocator(std::vector<std::string>* params, Machine* mach): LinearAllocator(params, mach) 
-{
+FirstFitAllocator::FirstFitAllocator(std::vector <std::string> *params, Machine *mach)
+    : LinearAllocator(params, mach) {
     schedout.init("", 8, 0, Output::STDOUT);
     schedout.debug(CALL_INFO, 1, 0, "Constructing FirstFitAllocator\n");
 }
 
-std::string FirstFitAllocator::getSetupInfo(bool comment) const
-{
+std::string FirstFitAllocator::getSetupInfo(bool comment) const {
     std::string com;
-    if (comment)  {
+    if (comment) {
         com = "# ";
     } else {
         com = "";
@@ -55,58 +54,57 @@ std::string FirstFitAllocator::getSetupInfo(bool comment) const
 }
 
 //allocates job if possible
-//returns information on the allocation or NULL if it wasn't possible
+//returns information on the allocation or nullptr if it wasn't possible
 //(doesn't make allocation; merely returns info on possible allocation)
-AllocInfo* FirstFitAllocator::allocate(Job* job) 
-{
-    schedout.fatal(CALL_INFO, 1, "Allocating %s procs: ", job -> toString().c_str());
+AllocInfo *FirstFitAllocator::allocate(Job *job) {
+    schedout.fatal(CALL_INFO, 1, "Allocating %s procs: ", job->toString().c_str());
 
     if (!canAllocate(*job)) {  //check if we have enough free processors
-        return NULL;
+        return nullptr;
     }
 
-    std::vector<std::vector<MeshLocation*>*>* intervals = getIntervals();
+    std::vector < std::vector < MeshLocation * > * > *intervals = getIntervals();
 
     int numNodes = ceil((double) job->getProcsNeeded() / machine.coresPerNode);
 
     //find an interval to use if one exists
-    for (int i = 0; i < (int)intervals -> size(); i++) {
-        if ((int)intervals -> at(i) -> size() >= numNodes) {
-            AllocInfo* retVal = new AllocInfo(job, machine);
+    for (int i = 0; i < (int) intervals->size(); i++) {
+        if ((int) intervals->at(i)->size() >= numNodes) {
+            AllocInfo *retVal = new AllocInfo(job, machine);
             int j;
-            for (j = 0; j<numNodes; j++) {
-                schedout.debug(CALL_INFO, 7, 0, "%d ", intervals -> at(i) -> at(j) -> toInt(*mMachine));
-                retVal -> nodeIndices[j] = intervals -> at(i) -> at(j) -> toInt(*mMachine);
+            for (j = 0; j < numNodes; j++) {
+                schedout.debug(CALL_INFO, 7, 0, "%d ", intervals->at(i)->at(j)->toInt(*mMachine));
+                retVal->nodeIndices[j] = intervals->at(i)->at(j)->toInt(*mMachine);
             }
             j++;
-            while (j < (int)intervals -> at(i) -> size()) {
-                delete intervals -> at(i) -> at(j++);
+            while (j < (int) intervals->at(i)->size()) {
+                delete intervals->at(i)->at(j++);
             }
-            intervals -> at(i) -> clear();
-            delete intervals -> at(i);
+            intervals->at(i)->clear();
+            delete intervals->at(i);
 
             schedout.debug(CALL_INFO, 7, 0, "\n");
             i++;
-            while (i < (int)intervals -> size()) {
-                for (int j = 0; j < (int)intervals -> at(i) -> size(); j++) {
-                    delete intervals -> at(i) -> at(j);
+            while (i < (int) intervals->size()) {
+                for (int j = 0; j < (int) intervals->at(i)->size(); j++) {
+                    delete intervals->at(i)->at(j);
                 }
-                intervals -> at(i) -> clear();
-                delete intervals -> at(i);
+                intervals->at(i)->clear();
+                delete intervals->at(i);
                 i++;
             }
-            intervals -> clear();
+            intervals->clear();
             delete intervals;
             return retVal;
         } else {
-            for (int j = 0; j < (int)intervals -> at(i) -> size(); j++) {
-                delete intervals -> at(i) -> at(j);
+            for (int j = 0; j < (int) intervals->at(i)->size(); j++) {
+                delete intervals->at(i)->at(j);
             }
-            intervals -> at(i) -> clear();
-            delete intervals -> at(i);
+            intervals->at(i)->clear();
+            delete intervals->at(i);
         }
     }
-    intervals -> clear();
+    intervals->clear();
     delete intervals;
 
     //no single interval is big enough; minimize the span

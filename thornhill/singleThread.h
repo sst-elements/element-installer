@@ -19,46 +19,50 @@
 #include "detailedCompute.h"
 
 namespace SST {
-namespace Thornhill {
+    namespace Thornhill {
 
-class SingleThread : public DetailedCompute {
+        class SingleThread : public DetailedCompute {
 
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        SingleThread,
-        "thornhill",
-        "SingleThread",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-	struct Entry {
-      Entry( std::function<int()>& _finiHandler ) : finiHandler( _finiHandler ) {}
-    	std::function<int()> finiHandler; 
-	};
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                SingleThread,
+            "thornhill",
+            "SingleThread",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
+            struct Entry {
+                Entry(std::function<int()> &_finiHandler) : finiHandler(_finiHandler) {}
 
-    SingleThread( Component* owner, Params& params );
+                std::function<int()> finiHandler;
+            };
 
-    ~SingleThread(){};
+        public:
 
-    virtual void start( const std::deque< 
-						std::pair< std::string, SST::Params > >&, 
-                 std::function<int()>, std::function<int()> );
-    virtual bool isConnected() { return ( m_link ); }
-	
-	virtual std::string getModelName() {
-		return "thornhill.SingleThread";
-	}
+            SingleThread(Component *owner, Params &params);
 
-  private:
-    void eventHandler( SST::Event* ev ); 
-    Link*  m_link;
-	Entry* m_entry;
-};
+            ~SingleThread() {};
+
+            virtual void start(const std::deque <
+            std::pair<std::string, SST::Params>> &,
+                               std::function<int()>, std::function<int()>);
+
+            virtual bool isConnected() { return (m_link); }
+
+            virtual std::string getModelName() {
+                return "thornhill.SingleThread";
+            }
+
+        private:
+            void eventHandler(SST::Event *ev);
+
+            Link *m_link;
+            Entry *m_entry;
+        };
 
 
-}
+    }
 }
 #endif

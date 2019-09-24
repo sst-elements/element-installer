@@ -8,10 +8,9 @@ sst.setProgramOption("stopAtCycle", "10000s")
 # Define the simulation components
 comp_clocker0 = sst.Component("clocker0", "simpleSimulation.simpleCarWash")
 comp_clocker0.addParams({
-      "clockcount" : """100000000""",
-      "clock" : """1MHz"""
+    "clockcount": """100000000""",
+    "clock": """1MHz"""
 })
-
 
 # Define the simulation links
 # End of generated output.

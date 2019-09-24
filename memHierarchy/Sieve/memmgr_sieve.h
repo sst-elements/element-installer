@@ -30,36 +30,46 @@
 using namespace SST;
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class MemoryManagerSieve : public ArielComponent::ArielMemoryManager {
+        class MemoryManagerSieve : public ArielComponent::ArielMemoryManager {
 
-    public:
-        /* SST ELI */
-        SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemoryManagerSieve, "memHierarchy", "MemoryManagerSieve", SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Memory manager for interfacing to MemSieve", SST::ArielComponent::ArielMemoryManager)
+        public:
+            /* SST ELI */
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemoryManagerSieve,
+            "memHierarchy", "MemoryManagerSieve", SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Memory manager for interfacing to MemSieve", SST::ArielComponent::ArielMemoryManager)
 
-        SST_ELI_DOCUMENT_PORTS( {"alloc_link_%(corecound)d", "Each core's link memSieve", {"memHierarchy.AllocTrackEvent"}} )
+            SST_ELI_DOCUMENT_PORTS( {
+                "alloc_link_%(corecound)d", "Each core's link memSieve", {
+                    "memHierarchy.AllocTrackEvent"}
+            } )
 
-        SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( {"memmgr", "Which memory manager to use for translation", "SST::Ariel::ArielMemoryManager" } )
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( { "memmgr", "Which memory manager to use for translation", "SST::Ariel::ArielMemoryManager" } )
 
-        /* MemoryManagerSieve */
-        MemoryManagerSieve(ComponentId_t id, Params& params);
-        MemoryManagerSieve(Component* comp, Params& params) : ArielMemoryManager(comp, params) { } // Legacy
-        ~MemoryManagerSieve();
+            /* MemoryManagerSieve */
+            MemoryManagerSieve(ComponentId_t id, Params &params);
 
-        uint64_t translateAddress(uint64_t virtAddr);
-        void printStats();
+            MemoryManagerSieve(Component *comp, Params &params) : ArielMemoryManager(comp,
+                                                                                     params) {} // Legacy
+            ~MemoryManagerSieve();
 
-        void freeMalloc(const uint64_t vAddr);
-        bool allocateMalloc(const uint64_t size, const uint32_t level, const uint64_t virtualAddress, const uint64_t instructionPointer, const uint32_t thread);
-        
-    private:
-        std::vector<SST::Link*> allocLink;
-        ArielMemoryManager * memmgr;
-};
+            uint64_t translateAddress(uint64_t virtAddr);
 
-}
+            void printStats();
+
+            void freeMalloc(const uint64_t vAddr);
+
+            bool allocateMalloc(const uint64_t size, const uint32_t level,
+                                const uint64_t virtualAddress, const uint64_t instructionPointer,
+                                const uint32_t thread);
+
+        private:
+            std::vector<SST::Link *> allocLink;
+            ArielMemoryManager *memmgr;
+        };
+
+    }
 }
 
 #endif

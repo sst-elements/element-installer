@@ -21,53 +21,53 @@
 #include "emberconstdistrib.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberComputeEvent : public EmberEvent {
+        class EmberComputeEvent : public EmberEvent {
 
-public:
-	EmberComputeEvent( Output* output, uint64_t nanoSecondDelay,
-                EmberComputeDistribution* dist) :
-        EmberEvent(output),
-        m_nanoSecondDelay( nanoSecondDelay ),
-        m_computeDistrib(dist),
-        m_calcFunc(NULL)
-    {}  
+        public:
+            EmberComputeEvent(Output *output, uint64_t nanoSecondDelay,
+                              EmberComputeDistribution *dist) :
+                EmberEvent(output),
+                m_nanoSecondDelay(nanoSecondDelay),
+                m_computeDistrib(dist),
+                m_calcFunc(nullptr) {}
 
-	EmberComputeEvent( Output* output, std::function<uint64_t()> func,
-                EmberComputeDistribution* dist) :
-        EmberEvent(output),
-        m_computeDistrib(dist),
-        m_calcFunc(func)
-    {}  
+            EmberComputeEvent(Output *output, std::function<uint64_t()> func,
+                              EmberComputeDistribution *dist) :
+                EmberEvent(output),
+                m_computeDistrib(dist),
+                m_calcFunc(func) {}
 
-	~EmberComputeEvent() {}
+            ~EmberComputeEvent() {}
 
-    std::string getName() { return "Compute"; }
+            std::string getName() { return "Compute"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
-    
-        if ( m_calcFunc ) {
-            m_completeDelayNS = (double) m_calcFunc(); 
-        } else {
-            m_completeDelayNS = (double) m_nanoSecondDelay;
-        }
-        m_completeDelayNS *= m_computeDistrib->sample(time);
+                EmberEvent::issue(time);
 
-        m_output->debug(CALL_INFO, 2, EVENT_MASK, "Adjust time by noise "
-                "distribution to give: %" PRIu64 "ns\n", m_completeDelayNS );
+                if (m_calcFunc) {
+                    m_completeDelayNS = (double) m_calcFunc();
+                } else {
+                    m_completeDelayNS = (double) m_nanoSecondDelay;
+                }
+                m_completeDelayNS *= m_computeDistrib->sample(time);
+
+                m_output->debug(CALL_INFO, 2, EVENT_MASK, "Adjust time by noise "
+                                                          "distribution to give: %"
+                PRIu64
+                "ns\n", m_completeDelayNS );
+            }
+
+        protected:
+            uint64_t m_nanoSecondDelay;
+            EmberComputeDistribution *m_computeDistrib;
+            std::function<uint64_t()> m_calcFunc;
+
+        };
+
     }
-
-protected:
-	uint64_t m_nanoSecondDelay;
-    EmberComputeDistribution* m_computeDistrib;
-    std::function<uint64_t()> m_calcFunc; 
-
-};
-
-}
 }
 
 #endif

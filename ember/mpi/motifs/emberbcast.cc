@@ -19,43 +19,44 @@
 
 using namespace SST::Ember;
 
-EmberBcastGenerator::EmberBcastGenerator(SST::Component* owner,
-                                    Params& params) :
-	EmberMessagePassingGenerator(owner, params, "Bcast"),
-    m_loopIndex(0)
-{
-	m_iterations = (uint32_t) params.find("arg.iterations", 1);
-	m_count      = (uint32_t) params.find("arg.count", 1);
-    m_compute    = (uint32_t) params.find("arg.compute", 0);
-	m_root    = (uint32_t) params.find("arg.root", 0);
-    m_sendBuf = NULL;
+EmberBcastGenerator::EmberBcastGenerator(SST::Component *owner,
+                                         Params &params) :
+    EmberMessagePassingGenerator(owner, params, "Bcast"),
+    m_loopIndex(0) {
+    m_iterations = (uint32_t) params.find("arg.iterations", 1);
+    m_count = (uint32_t) params.find("arg.count", 1);
+    m_compute = (uint32_t) params.find("arg.compute", 0);
+    m_root = (uint32_t) params.find("arg.root", 0);
+    m_sendBuf = nullptr;
 }
 
-bool EmberBcastGenerator::generate( std::queue<EmberEvent*>& evQ) {
+bool EmberBcastGenerator::generate(std::queue<EmberEvent *> &evQ) {
 
-    if ( m_loopIndex == m_iterations ) {
-printf("%s\n",__func__);
+    if (m_loopIndex == m_iterations) {
+        printf("%s\n", __func__);
         int typeSize = sizeofDataType(DOUBLE);
-        if ( size() - 1 == rank() ) {
-            double latency = (double)(m_stopTime-m_startTime)/(double)m_iterations;
+        if (size() - 1 == rank()) {
+            double latency = (double) (m_stopTime - m_startTime) / (double) m_iterations;
             latency /= 1000000000.0;
-            output( "%s: ranks %d, loop %d, bytes %" PRIu32 ", latency %.3f us\n",
-                    getMotifName().c_str(), size(), m_iterations, 
-                        m_count * typeSize, latency * 1000000.0  );
+            output("%s: ranks %d, loop %d, bytes %"
+            PRIu32
+            ", latency %.3f us\n",
+                getMotifName().c_str(), size(), m_iterations,
+                m_count * typeSize, latency * 1000000.0  );
         }
         return true;
     }
 
-    if ( 0 == m_loopIndex ) {
-        enQ_getTime( evQ, &m_startTime );
+    if (0 == m_loopIndex) {
+        enQ_getTime(evQ, &m_startTime);
     }
 
-    enQ_compute( evQ, m_compute );
+    enQ_compute(evQ, m_compute);
 
-    enQ_bcast( evQ, m_sendBuf, m_count, DOUBLE, m_root, GroupWorld );
+    enQ_bcast(evQ, m_sendBuf, m_count, DOUBLE, m_root, GroupWorld);
 
-    if ( ++m_loopIndex == m_iterations ) {
-        enQ_getTime( evQ, &m_stopTime );
+    if (++m_loopIndex == m_iterations) {
+        enQ_getTime(evQ, &m_stopTime);
     }
     return false;
 }

@@ -20,35 +20,38 @@
 #include "shmem/common.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class HadesSHMEM;
+        class HadesSHMEM;
 
-class ShmemAlltoall : public ShmemCollective {
-  public:
-    ShmemAlltoall( HadesSHMEM& api, ShmemCommon& common ) : ShmemCollective(api, common )
-    { }
-    void start( Hermes::Vaddr dest, Hermes::Vaddr source, size_t nelems, int PE_start, 
-        int logPE_stride, int PE_size, Hermes::Vaddr pSync, Hermes::Shmem::Callback );
-  private:
+        class ShmemAlltoall : public ShmemCollective {
+        public:
+            ShmemAlltoall(HadesSHMEM &api, ShmemCommon &common) : ShmemCollective(api, common) {}
 
-    void put(int);
-    void barrier( int);
-    void fini(int);
+            void start(Hermes::Vaddr dest, Hermes::Vaddr source, size_t nelems, int PE_start,
+                       int logPE_stride, int PE_size, Hermes::Vaddr pSync, Hermes::Shmem::Callback);
 
-    Hermes::Vaddr m_dest;
-    Hermes::Vaddr m_src;
+        private:
 
-    size_t m_nelems;
-    int m_logPE_stride;
-    int m_PE_size;
-    int m_PE_start;
+            void put(int);
 
-    int m_start_pe;
-    int m_peer;
-};
+            void barrier(int);
 
-}
+            void fini(int);
+
+            Hermes::Vaddr m_dest;
+            Hermes::Vaddr m_src;
+
+            size_t m_nelems;
+            int m_logPE_stride;
+            int m_PE_size;
+            int m_PE_start;
+
+            int m_start_pe;
+            int m_peer;
+        };
+
+    }
 }
 
 #endif

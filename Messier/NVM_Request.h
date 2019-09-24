@@ -20,6 +20,7 @@
 
 #ifndef _H_SST_NVM_REQUEST
 #define _H_SST_NVM_REQUEST
+
 #include <sst/core/sst_config.h>
 #include <sst/core/component.h>
 #include <sst/core/timeConverter.h>
@@ -29,21 +30,29 @@
 
 using namespace SST;
 
-namespace SST{ namespace MessierComponent{
+namespace SST {
+    namespace MessierComponent {
 
-class NVM_Request
-{
+        class NVM_Request {
 
-	public:
-		NVM_Request() {}
-		NVM_Request(long long id, bool R, int size, long long int Add) { req_ID = id; Read = R; Size = size; Address = Add;}
-		long long int req_ID;
-		bool Read;
-		int Size;
-		long long int Address;
-		int meta_data;
+        public:
+            NVM_Request() {}
 
-};
+            NVM_Request(long long id, bool R, int size, long long int Add) {
+                req_ID = id;
+                Read = R;
+                Size = size;
+                Address = Add;
+            }
 
-}}
+            long long int req_ID;
+            bool Read;
+            int Size;
+            long long int Address;
+            int meta_data;
+
+        };
+
+    }
+}
 #endif

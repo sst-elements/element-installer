@@ -19,28 +19,27 @@
 
 using namespace SST::Ember;
 
-EmberReduceGenerator::EmberReduceGenerator(SST::Component* owner,
-                                    Params& params) :
-	EmberMessagePassingGenerator(owner, params, "Reduce"),
-    m_loopIndex(0)
-{
-	m_iterations = (uint32_t) params.find("arg.iterations", 1);
-	m_count      = (uint32_t) params.find("arg.count", 1);
-	m_redRoot    = (uint32_t) params.find("arg.root", 0);
-    m_sendBuf = NULL;
-    m_recvBuf = NULL;
+EmberReduceGenerator::EmberReduceGenerator(SST::Component *owner,
+                                           Params &params) :
+    EmberMessagePassingGenerator(owner, params, "Reduce"),
+    m_loopIndex(0) {
+    m_iterations = (uint32_t) params.find("arg.iterations", 1);
+    m_count = (uint32_t) params.find("arg.count", 1);
+    m_redRoot = (uint32_t) params.find("arg.root", 0);
+    m_sendBuf = nullptr;
+    m_recvBuf = nullptr;
 
 }
 
-bool EmberReduceGenerator::generate( std::queue<EmberEvent*>& evQ) {
-    if ( 0 == m_loopIndex ) {
+bool EmberReduceGenerator::generate(std::queue<EmberEvent *> &evQ) {
+    if (0 == m_loopIndex) {
         verbose(CALL_INFO, 1, 0, "rank=%d size=%d\n", rank(), size());
     }
 
-    enQ_compute( evQ, 11000 );
-    enQ_reduce( evQ, m_sendBuf, m_recvBuf, m_count, DOUBLE,
-                                                 MP::SUM, m_redRoot, GroupWorld );
-    if ( ++m_loopIndex == m_iterations ) {
+    enQ_compute(evQ, 11000);
+    enQ_reduce(evQ, m_sendBuf, m_recvBuf, m_count, DOUBLE,
+               MP::SUM, m_redRoot, GroupWorld);
+    if (++m_loopIndex == m_iterations) {
         return true;
     } else {
         return false;

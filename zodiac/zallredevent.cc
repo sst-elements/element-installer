@@ -22,34 +22,34 @@ using namespace SST::Zodiac;
 using namespace SST;
 
 ZodiacAllreduceEvent::ZodiacAllreduceEvent(
-	uint32_t length,
-	PayloadDataType dataType,
-	ReductionOperation op,
-	Communicator group) {
+    uint32_t length,
+    PayloadDataType dataType,
+    ReductionOperation op,
+    Communicator group) {
 
-	msgLength = length;
-	msgType = dataType;
-	mpiOp = op;
-	msgComm = group;
+    msgLength = length;
+    msgType = dataType;
+    mpiOp = op;
+    msgComm = group;
 }
 
 
 ZodiacEventType ZodiacAllreduceEvent::getEventType() {
-	return Z_ALLREDUCE;
+    return Z_ALLREDUCE;
 }
 
 ReductionOperation ZodiacAllreduceEvent::getOp() {
-	return mpiOp;
+    return mpiOp;
 }
 
 uint32_t ZodiacAllreduceEvent::getLength() {
-	return msgLength;
+    return msgLength;
 }
 
 PayloadDataType ZodiacAllreduceEvent::getDataType() {
-	return msgType;
+    return msgType;
 }
 
 Communicator ZodiacAllreduceEvent::getCommunicatorGroup() {
-	return msgComm;
+    return msgComm;
 }

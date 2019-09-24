@@ -24,37 +24,38 @@
 #include "arieltracegen.h"
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielCompressedBinaryTraceGenerator : public ArielTraceGenerator {
+        class ArielCompressedBinaryTraceGenerator : public ArielTraceGenerator {
 
-    public:
+        public:
 
-        SST_ELI_REGISTER_MODULE(ArielCompressedBinaryTraceGenerator, "ariel", "CompressedBinaryTraceGenerator",
-                SST_ELI_ELEMENT_VERSION(1,0,0), "Provides tracing to compressed file capabilities", "SST::ArielComponent::ArielTraceGenerator")
+            SST_ELI_REGISTER_MODULE(ArielCompressedBinaryTraceGenerator,
+            "ariel", "CompressedBinaryTraceGenerator",
+            SST_ELI_ELEMENT_VERSION(1,0,0), "Provides tracing to compressed file capabilities", "SST::ArielComponent::ArielTraceGenerator")
 
-        SST_ELI_DOCUMENT_PARAMS( { "trace_prefix", "Sets the prefix for the trace file", "ariel-core-" } )
+            SST_ELI_DOCUMENT_PARAMS( { "trace_prefix", "Sets the prefix for the trace file", "ariel-core-" } )
 
-        ArielCompressedBinaryTraceGenerator(Params& params);
+            ArielCompressedBinaryTraceGenerator(Params &params);
 
-        ~ArielCompressedBinaryTraceGenerator();
+            ~ArielCompressedBinaryTraceGenerator();
 
-        void publishEntry(const uint64_t picoS, const uint64_t physAddr,
-                const uint32_t reqLength, const ArielTraceEntryOperation op);
+            void publishEntry(const uint64_t picoS, const uint64_t physAddr,
+                              const uint32_t reqLength, const ArielTraceEntryOperation op);
 
-        void setCoreID(const uint32_t core);
+            void setCoreID(const uint32_t core);
 
-    private:
-        void copy(char* dest, const void* src, const size_t length);
+        private:
+            void copy(char *dest, const void *src, const size_t length);
 
-        gzFile traceFile;
-        std::string tracePrefix;
-        uint32_t coreID;
-        char* buffer;
+            gzFile traceFile;
+            std::string tracePrefix;
+            uint32_t coreID;
+            char *buffer;
 
-};
+        };
 
-}
+    }
 }
 
 #endif

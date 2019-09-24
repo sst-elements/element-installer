@@ -21,57 +21,69 @@
 #include <queue>
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class DelayBuffer : public SimpleMemBackend {
-public:
+        class DelayBuffer : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(DelayBuffer, "memHierarchy", "DelayBuffer", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(DelayBuffer,
+            "memHierarchy", "DelayBuffer", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Delays requests by a specified time", SST::MemHierarchy::SimpleMemBackend)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
             /* Own parameters */
-            {"verbose", "Sets the verbosity of the backend output", "0"},
-            {"backend", "Backend memory system", "memHierarchy.simpleMem"},
-            {"request_delay", "Constant delay to be added to requests with units (e.g., 1us)", "0ns"} )
-    
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( {"backend", "Backend memory model", "SST::MemHierarchy::SimpleMemBackend"} )
+            { "verbose", "Sets the verbosity of the backend output", "0" },
+            { "backend", "Backend memory system", "memHierarchy.simpleMem" },
+            { "request_delay", "Constant delay to be added to requests with units (e.g., 1us)", "0ns" } )
+
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( { "backend", "Backend memory model", "SST::MemHierarchy::SimpleMemBackend" } )
 
 /* Begin class definition */
-    DelayBuffer();
-    DelayBuffer(Component *comp, Params &params);
-    DelayBuffer(ComponentId_t id, Params &params);
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, unsigned numBytes );
-    void handleNextRequest(SST::Event * ev);
-    void setup();
-    void finish();
-    virtual bool clock(Cycle_t cycle);
-    virtual const std::string& getClockFreq() { return backend->getClockFreq(); }
-    virtual bool isClocked() { return backend->isClocked(); }
+            DelayBuffer();
 
-private:
-    void build(Params& params);
-    void handleMemReponse( ReqId id ) {
-        SimpleMemBackend::handleMemResponse( id );
+            DelayBuffer(Component *comp, Params &params);
+
+            DelayBuffer(ComponentId_t id, Params &params);
+
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, unsigned numBytes);
+
+            void handleNextRequest(SST::Event *ev);
+
+            void setup();
+
+            void finish();
+
+            virtual bool clock(Cycle_t cycle);
+
+            virtual const std::string &getClockFreq() { return backend->getClockFreq(); }
+
+            virtual bool isClocked() { return backend->isClocked(); }
+
+        private:
+            void build(Params &params);
+
+            void handleMemReponse(ReqId id) {
+                SimpleMemBackend::handleMemResponse(id);
+            }
+
+            struct Req {
+                Req(ReqId id, Addr addr, bool isWrite, unsigned numBytes) :
+                    id(id), addr(addr), isWrite(isWrite), numBytes(numBytes) {}
+
+                ReqId id;
+                Addr addr;
+                bool isWrite;
+                unsigned numBytes;
+            };
+
+            SimpleMemBackend *backend;
+            unsigned int fwdDelay;
+            Link *delay_self_link;
+
+            std::queue <Req> requestBuffer;
+        };
+
     }
-	struct Req {
-		Req( ReqId id, Addr addr, bool isWrite, unsigned numBytes ) : 
-			id(id), addr(addr), isWrite(isWrite), numBytes(numBytes) 
-		{ }
-		ReqId id;
-		Addr addr;
-		bool isWrite;
-		unsigned numBytes;
-	};
-
-    SimpleMemBackend* backend;
-    unsigned int fwdDelay;
-    Link * delay_self_link;
-
-    std::queue<Req> requestBuffer;
-};
-
-}
 }
 
 #endif

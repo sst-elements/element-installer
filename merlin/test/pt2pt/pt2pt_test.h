@@ -27,104 +27,107 @@
 #include <sst/core/interfaces/simpleNetwork.h>
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-class LinkControl;
+        class LinkControl;
 
-class pt2pt_test : public Component {
+        class pt2pt_test : public Component {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_COMPONENT(
-        pt2pt_test,
-        "merlin",
-        "pt2pt_test",
-        SST_ELI_ELEMENT_VERSION(0,9,0),
-        "Simple NIC to test basic pt2pt performance.",
-        COMPONENT_CATEGORY_NETWORK)
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        {"link_bw",          "Bandwidth of the router link specified in either b/s or B/s (can include SI prefix)."},
-        {"packet_size",      "Packet size specified in either b or B (can include SI prefix)."},
-        {"packets_to_send",  "Number of packets to send in the test."},
-        {"buffer_size",      "Size of input and output buffers specified in b or B (can include SI prefix)."},
-        {"src",              "Array of IDs of NICs that will send data."},
-        {"dest",             "Array of IDs of NICs to send data to."},
-        {"linkcontrol",      "SimpleNetwork class to use to talk to network."}
-    )
+            SST_ELI_REGISTER_COMPONENT(
+                pt2pt_test,
+            "merlin",
+            "pt2pt_test",
+            SST_ELI_ELEMENT_VERSION(0,9,0),
+            "Simple NIC to test basic pt2pt performance.",
+            COMPONENT_CATEGORY_NETWORK)
 
-    SST_ELI_DOCUMENT_PORTS(
-        {"rtr",  "Port that hooks up to router.", { "merlin.RtrEvent", "merlin.credit_event" } }
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "link_bw", "Bandwidth of the router link specified in either b/s or B/s (can include SI prefix)." },
+            { "packet_size", "Packet size specified in either b or B (can include SI prefix)." },
+            { "packets_to_send", "Number of packets to send in the test." },
+            { "buffer_size", "Size of input and output buffers specified in b or B (can include SI prefix)." },
+            { "src", "Array of IDs of NICs that will send data." },
+            { "dest", "Array of IDs of NICs to send data to." },
+            { "linkcontrol", "SimpleNetwork class to use to talk to network." }
+            )
 
-
-private:
-
-    Output out;
-    
-    struct recv_data {
-        SimTime_t first_arrival;
-        SimTime_t end_arrival;
-        int packets_recd;
-    };
-    
-    int id;
-
-    std::vector<int> src;
-    std::vector<int> dest;
-
-    int my_dest;
-
-    std::map<int,recv_data> my_recvs;    
-    
-    int packets_sent;
-    int packets_recd;
-
-    SimTime_t start_time;
-    SimTime_t latency;
-    
-    int packets_to_send;
-    int packet_size;
-    UnitAlgebra buffer_size;
-    
-    SST::Interfaces::SimpleNetwork* link_control;
-    Link* self_link;
-
-public:
-    pt2pt_test(ComponentId_t cid, Params& params);
-    ~pt2pt_test() {}
-
-    void init(unsigned int phase);
-    void setup(); 
-    void finish();
+            SST_ELI_DOCUMENT_PORTS(
+            { "rtr", "Port that hooks up to router.", {"merlin.RtrEvent", "merlin.credit_event"}}
+            )
 
 
-private:
-    // bool clock_handler(Cycle_t cycle);
-    // void handle_complete(Event* ev);
+        private:
 
-    bool send_handler(int vn);
-    bool recv_handler(int vn); 
+            Output out;
 
-    
-};
+            struct recv_data {
+                SimTime_t first_arrival;
+                SimTime_t end_arrival;
+                int packets_recd;
+            };
 
-class pt2pt_test_event : public Event {
+            int id;
 
- public:
-    SimTime_t start_time;
+            std::vector<int> src;
+            std::vector<int> dest;
 
-    pt2pt_test_event() {}
-    
-    virtual Event* clone(void) override
-    {
-        return new pt2pt_test_event(*this);
+            int my_dest;
+
+            std::map<int, recv_data> my_recvs;
+
+            int packets_sent;
+            int packets_recd;
+
+            SimTime_t start_time;
+            SimTime_t latency;
+
+            int packets_to_send;
+            int packet_size;
+            UnitAlgebra buffer_size;
+
+            SST::Interfaces::SimpleNetwork *link_control;
+            Link *self_link;
+
+        public:
+            pt2pt_test(ComponentId_t cid, Params &params);
+
+            ~pt2pt_test() {}
+
+            void init(unsigned int phase);
+
+            void setup();
+
+            void finish();
+
+
+        private:
+            // bool clock_handler(Cycle_t cycle);
+            // void handle_complete(Event* ev);
+
+            bool send_handler(int vn);
+
+            bool recv_handler(int vn);
+
+
+        };
+
+        class pt2pt_test_event : public Event {
+
+        public:
+            SimTime_t start_time;
+
+            pt2pt_test_event() {}
+
+            virtual Event *clone(void) override {
+                return new pt2pt_test_event(*this);
+            }
+
+            ImplementSerializable(SST::Merlin::pt2pt_test_event)
+        };
+
     }
-
-    ImplementSerializable(SST::Merlin::pt2pt_test_event)
-};
-
-}
 }
 
 #endif // COMPONENTS_MERLIN_TEST_NIC_H

@@ -23,20 +23,24 @@
 using namespace SST;
 using namespace SST::MemHierarchy;
 
-SimpleMemScratchBackendConvertor::SimpleMemScratchBackendConvertor(Component *comp, Params &params) :
-        ScratchBackendConvertor(comp, params) 
-{
+SimpleMemScratchBackendConvertor::SimpleMemScratchBackendConvertor(Component *comp, Params &params)
+    :
+    ScratchBackendConvertor(comp, params) {
     using std::placeholders::_1;
-    static_cast<SimpleMemBackend*>(m_backend)->setResponseHandler( std::bind( &SimpleMemScratchBackendConvertor::handleMemResponse, this, _1 ) );
+    static_cast<SimpleMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&SimpleMemScratchBackendConvertor::handleMemResponse, this, _1));
 }
 
-SimpleMemScratchBackendConvertor::SimpleMemScratchBackendConvertor(ComponentId_t id, Params &params) :
-        ScratchBackendConvertor(id, params) 
-{
+SimpleMemScratchBackendConvertor::SimpleMemScratchBackendConvertor(ComponentId_t id, Params &params)
+    :
+    ScratchBackendConvertor(id, params) {
     using std::placeholders::_1;
-    static_cast<SimpleMemBackend*>(m_backend)->setResponseHandler( std::bind( &SimpleMemScratchBackendConvertor::handleMemResponse, this, _1 ) );
+    static_cast<SimpleMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&SimpleMemScratchBackendConvertor::handleMemResponse, this, _1));
 }
 
-bool SimpleMemScratchBackendConvertor::issue( MemReq* req ) {
-    return static_cast<SimpleMemBackend*>(m_backend)->issueRequest( req->id(), req->addr(), req->isWrite(), m_backendRequestWidth );
+bool SimpleMemScratchBackendConvertor::issue(MemReq *req) {
+    return static_cast<SimpleMemBackend *>(m_backend)->issueRequest(req->id(), req->addr(),
+                                                                    req->isWrite(),
+                                                                    m_backendRequestWidth);
 }

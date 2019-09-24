@@ -27,43 +27,54 @@
 #include "ioVec.h"
 
 namespace SST {
-namespace Firefly {
-namespace IO { 
+    namespace Firefly {
+        namespace IO {
 
-typedef uint32_t NodeId;
-static const NodeId AnyId = -1;
+            typedef uint32_t NodeId;
+            static const NodeId AnyId = -1;
 
-class Entry {
-  public:
-    typedef VoidArg_FunctorBase< Entry* > Functor;
-    Entry() : callback(NULL) {}
-    virtual ~Entry() { if ( callback ) delete callback; }
+            class Entry {
+            public:
+                typedef VoidArg_FunctorBase<Entry *> Functor;
 
-    Functor* callback; 
-};
+                Entry() : callback(nullptr) {}
 
-typedef Arg_FunctorBase< NodeId >     Functor2;
+                virtual ~Entry() { if (callback) delete callback; }
 
-class Interface : public SST::Module {
+                Functor *callback;
+            };
 
-  public:
+            typedef Arg_FunctorBase <NodeId> Functor2;
 
-    Interface() { }
-    virtual ~Interface() { }
-     virtual void _componentInit(unsigned int phase ) {}
+            class Interface : public SST::Module {
 
-    virtual NodeId getNodeId() { assert(0); };
-    virtual NodeId peek() { assert(0); }
-    virtual bool sendv(NodeId dest, std::vector<IoVec>&, Entry::Functor*) 
-                                            { assert(0); }
-    virtual bool recvv(NodeId src, std::vector<IoVec>&, Entry::Functor*) 
-                                            { assert(0); }
-    virtual void wait() { assert(0);}
-    virtual void setReturnLink( SST::Link* ) { assert(0); }
-};
+            public:
 
-}
-}
+                Interface() {}
+
+                virtual ~Interface() {}
+
+                virtual void _componentInit(unsigned int phase) {}
+
+                virtual NodeId getNodeId() { assert(0); };
+
+                virtual NodeId peek() { assert(0); }
+
+                virtual bool sendv(NodeId dest, std::vector <IoVec> &, Entry::Functor *) {
+                    assert(0);
+                }
+
+                virtual bool recvv(NodeId src, std::vector <IoVec> &, Entry::Functor *) {
+                    assert(0);
+                }
+
+                virtual void wait() { assert(0); }
+
+                virtual void setReturnLink(SST::Link *) { assert(0); }
+            };
+
+        }
+    }
 }
 
 #endif

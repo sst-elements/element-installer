@@ -28,7 +28,7 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 using namespace SST::Cassini;
 
-AddrHistogrammer::AddrHistogrammer(ComponentId_t id, Params& params) : CacheListener(id, params) {
+AddrHistogrammer::AddrHistogrammer(ComponentId_t id, Params &params) : CacheListener(id, params) {
     std::string cutoff_s = params.find<std::string>("addr_cutoff", "16GiB");
     UnitAlgebra cutoff_u(cutoff_s);
     cutoff = cutoff_u.getRoundedValue();
@@ -40,13 +40,16 @@ AddrHistogrammer::AddrHistogrammer(ComponentId_t id, Params& params) : CacheList
 
 }
 
-AddrHistogrammer::AddrHistogrammer(Component* owner, Params& params) : CacheListener(owner, params) {
+AddrHistogrammer::AddrHistogrammer(Component *owner, Params &params) : CacheListener(owner,
+                                                                                     params) {
     Output out("", 1, 0, Output::STDOUT);
-    out.fatal(CALL_INFO, -1, "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n", getName().c_str());
+    out.fatal(CALL_INFO, -1,
+              "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n",
+              getName().c_str());
 }
 
 
-void AddrHistogrammer::notifyAccess(const CacheListenerNotification& notify) {
+void AddrHistogrammer::notifyAccess(const CacheListenerNotification &notify) {
     const NotifyAccessType notifyType = notify.getAccessType();
     const NotifyResultType notifyResType = notify.getResultType();
 
@@ -58,21 +61,21 @@ void AddrHistogrammer::notifyAccess(const CacheListenerNotification& notify) {
     }
 
 
-    if(notifyType == EVICT || notifyResType != MISS || vaddr >= cutoff) return;
+    if (notifyType == EVICT || notifyResType != MISS || vaddr >= cutoff) return;
 
     // // Remove the offset within a bin
     // Addr baseAddr = vaddr & binMask;
     switch (notifyType) {
-      case READ:
-        // Add to the read histogram
-        rdHisto->addData(vaddr);
-        return;
-      case WRITE:
-        // Add to the write hitogram
-        wrHisto->addData(vaddr);
-        return;
-    case EVICT:
-        return;
+        case READ:
+            // Add to the read histogram
+            rdHisto->addData(vaddr);
+            return;
+        case WRITE:
+            // Add to the write hitogram
+            wrHisto->addData(vaddr);
+            return;
+        case EVICT:
+            return;
     }
 }
 

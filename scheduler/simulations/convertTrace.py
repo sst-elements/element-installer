@@ -4,16 +4,16 @@ to SST scheduler format
 usage: python convertTrace.py <input file name>
 '''
 
-import sys
 import numpy as np
+import sys
 
 if __name__ == '__main__':
-    #check input
+    # check input
     if len(sys.argv) != 3:
-    	print "usage: python convertTrace.py <input file name> <time units>"
-    	sys.exit()
+        print "usage: python convertTrace.py <input file name> <time units>"
+        sys.exit()
 
-    #check time units
+    # check time units
     timeUnits = sys.argv[2]
     if timeUnits == 's':
         factor = 1
@@ -27,22 +27,22 @@ if __name__ == '__main__':
         print "Valid time units: [s | ms | us | ns]"
         sys.exit()
 
-    #load data
+    # load data
     print "Converting..."
-    data = np.loadtxt(sys.argv[1], comments = ';')
+    data = np.loadtxt(sys.argv[1], comments=';')
     # The order: [Arrival time | Number of processors | Runtime | Requested Time]
-    data = np.array([data[:,1], data[:,4], data[:,3], data[:,8]])
+    data = np.array([data[:, 1], data[:, 4], data[:, 3], data[:, 8]])
     data = np.int_(data.T)
-    unitConvertedData = np.array([factor*data[:,0], data[:,1], factor*data[:,2], factor*data[:,3]])
+    unitConvertedData = np.array([factor * data[:, 0], data[:, 1], factor * data[:, 2], factor * data[:, 3]])
     unitConvertedData = np.int_(unitConvertedData.T)
     for i in range(len(unitConvertedData)):
-        if(unitConvertedData[i,3] < 0):
-            unitConvertedData[i,3] = -1
+        if (unitConvertedData[i, 3] < 0):
+            unitConvertedData[i, 3] = -1
 
-    #write data
+    # write data
     np.savetxt(sys.argv[1] + ".sim", unitConvertedData, delimiter=' ', fmt='%.0f')
     print "Completed!"
-    
+
     '''
     #Older version without unit conversion
     data = np.int_(data.T)

@@ -32,23 +32,24 @@
 namespace SST {
     namespace Scheduler {
         class Job;
+
         class Machine;
 
         class EnergyAllocator : public Allocator {
 
-            private:
-                std::string configName;
+        private:
+            std::string configName;
 
-            public:
-                EnergyAllocator(std::vector<std::string>* params, const Machine & mach);
+        public:
+            EnergyAllocator(std::vector <std::string> *params, const Machine &mach);
 
-                std::string getParamHelp();
+            std::string getParamHelp();
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* job);
+            AllocInfo *allocate(Job *job);
 
-                AllocInfo* allocate(Job* job, std::vector<int>* available); 
+            AllocInfo *allocate(Job *job, std::vector<int> *available);
         };
 
     }

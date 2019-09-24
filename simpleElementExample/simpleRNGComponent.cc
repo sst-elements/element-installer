@@ -26,9 +26,8 @@ using namespace SST;
 using namespace SST::RNG;
 using namespace SST::SimpleRNGComponent;
 
-simpleRNGComponent::simpleRNGComponent(ComponentId_t id, Params& params) :
-  Component(id) 
-{
+simpleRNGComponent::simpleRNGComponent(ComponentId_t id, Params &params) :
+    Component(id) {
     rng_count = 0;
     rng_max_count = params.find<int64_t>("count", 1000);
 
@@ -40,27 +39,36 @@ simpleRNGComponent::simpleRNGComponent(ComponentId_t id, Params& params) :
     if (rngType == "mersenne") {
         const uint32_t seed = (uint32_t) params.find<int64_t>("seed", 1447);
 
-	output->verbose(CALL_INFO, 1, 0, "Using Mersenne Generator with seed: %" PRIu32 "\n", seed);
+        output->verbose(CALL_INFO, 1, 0, "Using Mersenne Generator with seed: %"
+        PRIu32
+        "\n", seed);
         rng = new MersenneRNG(seed);
     } else if (rngType == "marsaglia") {
         const uint32_t m_w = (uint32_t) params.find<int64_t>("seed_w", 0);
         const uint32_t m_z = (uint32_t) params.find<int64_t>("seed_z", 0);
 
-        if(m_w == 0 || m_z == 0) {
-	    output->verbose(CALL_INFO, 1, 0, "Using Marsaglia Generator with no seeds...\n");
+        if (m_w == 0 || m_z == 0) {
+            output->verbose(CALL_INFO, 1, 0, "Using Marsaglia Generator with no seeds...\n");
             rng = new MarsagliaRNG();
         } else {
-	    output->verbose(CALL_INFO, 1, 0, "Using Marsaglia Generator with seeds: Z=%" PRIu32 ", W=%" PRIu32 "\n",
-		m_w, m_z);
+            output->verbose(CALL_INFO, 1, 0, "Using Marsaglia Generator with seeds: Z=%"
+            PRIu32
+            ", W=%"
+            PRIu32
+            "\n",
+                m_w, m_z);
             rng = new MarsagliaRNG(m_z, m_w);
         }
     } else if (rngType == "xorshift") {
-	uint32_t seed = (uint32_t) params.find<int64_t>("seed", 57);
-	output->verbose(CALL_INFO, 1, 0, "Using XORShift Generator with seed: %" PRIu32 "\n", seed);
-	rng = new XORShiftRNG(seed);
+        uint32_t seed = (uint32_t) params.find<int64_t>("seed", 57);
+        output->verbose(CALL_INFO, 1, 0, "Using XORShift Generator with seed: %"
+        PRIu32
+        "\n", seed);
+        rng = new XORShiftRNG(seed);
     } else {
-	output->verbose(CALL_INFO, 1, 0, "Generator: %s is unknown, using Mersenne with standard seed\n",
-		rngType.c_str());
+        output->verbose(CALL_INFO, 1, 0,
+                        "Generator: %s is unknown, using Mersenne with standard seed\n",
+                        rngType.c_str());
         rng = new MersenneRNG(1447);
     }
 
@@ -70,21 +78,19 @@ simpleRNGComponent::simpleRNGComponent(ComponentId_t id, Params& params) :
 
     //set our clock
     registerClock("1GHz", new Clock::Handler<simpleRNGComponent>(this,
-			       &simpleRNGComponent::tick));
+                                                                 &simpleRNGComponent::tick));
 }
 
 simpleRNGComponent::~simpleRNGComponent() {
-	delete output;
+    delete output;
 }
 
 simpleRNGComponent::simpleRNGComponent() :
-    Component(-1)
-{
+    Component(-1) {
     // for serialization only
 }
 
-bool simpleRNGComponent::tick( Cycle_t ) 
-{
+bool simpleRNGComponent::tick(Cycle_t) {
     double nU = rng->nextUniform();
     uint32_t U32 = rng->generateNextUInt32();
     uint64_t U64 = rng->generateNextUInt64();
@@ -92,16 +98,28 @@ bool simpleRNGComponent::tick( Cycle_t )
     int64_t I64 = rng->generateNextInt64();
     rng_count++;
 
-    output->verbose(CALL_INFO, 1, 0, "Random: %" PRIu32 " of %" PRIu32 " %18.15f %" PRIu32 ", %" PRIu64 ", %" PRId32 ", %" PRId64 "\n",
-	rng_count, rng_max_count, nU, U32, U64, I32, I64);
+    output->verbose(CALL_INFO, 1, 0, "Random: %"
+    PRIu32
+    " of %"
+    PRIu32
+    " %18.15f %"
+    PRIu32
+    ", %"
+    PRIu64
+    ", %"
+    PRId32
+    ", %"
+    PRId64
+    "\n",
+        rng_count, rng_max_count, nU, U32, U64, I32, I64);
 
-   // return false so we keep going
-  	if(rng_count == rng_max_count) {
-  	    primaryComponentOKToEndSim();
-  		return true;
-  	} else {
-  		return false;
-  	}
+    // return false so we keep going
+    if (rng_count == rng_max_count) {
+        primaryComponentOKToEndSim();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Element Library / Serialization stuff

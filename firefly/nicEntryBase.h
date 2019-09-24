@@ -14,33 +14,39 @@
 // distribution.
 
 class EntryBase {
-  public:
-    EntryBase( ) :
+public:
+    EntryBase() :
         m_currentVec(0),
         m_currentPos(0),
-        m_currentLen(0)
-    {}
+        m_currentLen(0) {}
+
     virtual ~EntryBase() {}
 
     virtual size_t totalBytes() {
         size_t bytes = 0;
-        for ( unsigned int i = 0; i < ioVec().size(); i++ ) {
+        for (unsigned int i = 0; i < ioVec().size(); i++) {
             bytes += ioVec().at(i).len;
         }
         return bytes;
     }
-    virtual void copyOut( Output&, int numBytes,
-               FireflyNetworkEvent&, std::vector<MemOp>& vec );
-    virtual bool copyIn( Output&,
-               FireflyNetworkEvent&, std::vector<MemOp>& vec );
-    virtual bool isDone()       { return ( currentVec() == ioVec().size() ); }
 
-    virtual size_t& currentLen() { return m_currentLen; }
-    static  int m_alignment;
-  private:
-    virtual std::vector<IoVec>& ioVec() = 0;
-    virtual size_t& currentVec() { return m_currentVec; }
-    virtual size_t& currentPos() { return m_currentPos; }
+    virtual void copyOut(Output &, int numBytes,
+                         FireflyNetworkEvent &, std::vector <MemOp> &vec);
+
+    virtual bool copyIn(Output &,
+                        FireflyNetworkEvent &, std::vector <MemOp> &vec);
+
+    virtual bool isDone() { return (currentVec() == ioVec().size()); }
+
+    virtual size_t &currentLen() { return m_currentLen; }
+
+    static int m_alignment;
+private:
+    virtual std::vector <IoVec> &ioVec() = 0;
+
+    virtual size_t &currentVec() { return m_currentVec; }
+
+    virtual size_t &currentPos() { return m_currentPos; }
 
     size_t m_currentVec;
     size_t m_currentPos;

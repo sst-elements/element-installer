@@ -17,34 +17,33 @@
 #ifndef _H_EMBER_SHMEM_EVENT
 #define _H_EMBER_SHMEM_EVENT
 
-#include "emberevent.h" 
+#include "emberevent.h"
 
 using namespace Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-typedef Statistic<uint32_t> EmberEventTimeStatistic;
+        typedef Statistic <uint32_t> EmberEventTimeStatistic;
 
-class EmberShmemEvent : public EmberEvent {
+        class EmberShmemEvent : public EmberEvent {
 
-  public:
+        public:
 
-    EmberShmemEvent( Shmem::Interface& api, Output* output, 
-            EmberEventTimeStatistic* stat = NULL ):
-        EmberEvent( output, stat ), m_api( api )
-    {
-        m_state = IssueCallback;
+            EmberShmemEvent(Shmem::Interface &api, Output *output,
+                            EmberEventTimeStatistic *stat = nullptr) :
+                EmberEvent(output, stat), m_api(api) {
+                m_state = IssueCallback;
+            }
+
+        protected:
+
+            Shmem::Interface &m_api;
+
+        private:
+        };
+
     }
-
-  protected:
-
-    Shmem::Interface&   m_api;
-
-  private:
-};
-
-}
 }
 
 #endif

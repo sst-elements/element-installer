@@ -22,17 +22,18 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacInitEvent : public ZodiacEvent {
+        class ZodiacInitEvent : public ZodiacEvent {
 
-	public:
-		ZodiacInitEvent();
-		ZodiacEventType getEventType();
+        public:
+            ZodiacInitEvent();
 
-};
+            ZodiacEventType getEventType();
 
-}
+        };
+
+    }
 }
 
 #endif

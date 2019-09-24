@@ -20,34 +20,37 @@
 #include "emberFamEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFamPut_Event : public EmberFamEvent {
+        class EmberFamPut_Event : public EmberFamEvent {
 
-public:
-	EmberFamPut_Event( Shmem::Interface& api, Output* output,
-            Shmem::Fam_Descriptor fd, uint64_t offset, Hermes::Vaddr src, uint64_t nbytes, bool blocking,
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberFamEvent( api, output, stat ), 
-            m_src(src), m_fd(fd), m_offset(offset), m_nbytes(nbytes), m_blocking(blocking) {}
-	~EmberFamPut_Event() {}
+        public:
+            EmberFamPut_Event(Shmem::Interface &api, Output *output,
+                              Shmem::Fam_Descriptor fd, uint64_t offset, Hermes::Vaddr src,
+                              uint64_t nbytes, bool blocking,
+                              EmberEventTimeStatistic *stat = nullptr) :
+                EmberFamEvent(api, output, stat),
+                m_src(src), m_fd(fd), m_offset(offset), m_nbytes(nbytes), m_blocking(blocking) {}
 
-    std::string getName() { return "FamPut"; }
+            ~EmberFamPut_Event() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "FamPut"; }
 
-        EmberEvent::issue( time );
-        m_api.fam_put( m_fd, m_offset, m_src, m_nbytes, m_blocking, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.fam_put(m_fd, m_offset, m_src, m_nbytes, m_blocking, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_src;
+            Shmem::Fam_Descriptor m_fd;
+            uint64_t m_offset;
+            uint64_t m_nbytes;
+            bool m_blocking;
+        };
+
     }
-private:
-    Hermes::Vaddr m_src;
-	Shmem::Fam_Descriptor m_fd;
-	uint64_t m_offset;
-	uint64_t m_nbytes;
-	bool m_blocking;
-};
-
-}
 }
 
 #endif

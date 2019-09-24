@@ -19,14 +19,12 @@
 
 using namespace SST::Scheduler;
 
-DflyJokanovicAllocator::DflyJokanovicAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+DflyJokanovicAllocator::DflyJokanovicAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
 
 }
 
-std::string DflyJokanovicAllocator::getSetupInfo(bool comment) const
-{
+std::string DflyJokanovicAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -37,12 +35,12 @@ std::string DflyJokanovicAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
-AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
-{
+AllocInfo *DflyJokanovicAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         //This set keeps track of allocated nodes in the current allocation.
         std::set<int> occupiedNodes;
         const int jobSize = ai->getNodesNeeded();
@@ -59,7 +57,7 @@ AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
                 int thisGroupFreeNode = 0;
                 for (int localNodeID = 0; localNodeID < nodesPerGroup; localNodeID++) {
                     int nodeID = GroupID * nodesPerGroup + localNodeID;
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         ++thisGroupFreeNode;
                     }
                 }
@@ -68,7 +66,8 @@ AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
                     int i = 0;//node index of the job.
                     for (int localNodeID = 0; localNodeID < nodesPerGroup; localNodeID++) {
                         int nodeID = GroupID * nodesPerGroup + localNodeID;
-                        if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                        if (dMach.isFree(nodeID) &&
+                            occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                             ai->nodeIndices[i] = nodeID;
                             occupiedNodes.insert(nodeID);
                             //std::cout << nodeID << " ";
@@ -79,20 +78,18 @@ AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
                                 //std::cout << endl;
                                 break;
                             }
-                        }
-                        else {
+                        } else {
                             continue;
                         }
                     }
-                }
-                else {
+                } else {
                     continue;
                 }
             }
             //no group has enough space for this small job.
             int i = 0;//node index of the job.
             for (int nodeID = 0; nodeID < nodesPerGroup * dMach.numGroups; nodeID++) {
-                if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                     ai->nodeIndices[i] = nodeID;
                     occupiedNodes.insert(nodeID);
                     //std::cout << nodeID << " ";
@@ -102,18 +99,17 @@ AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
                         //std::cout << endl;
                         break;
                     }
-                }
-                else {
+                } else {
                     continue;
                 }
             }
         }
-        //job cannot fit in one group, so
-        //it will simply be allocated from the rightmost node.
+            //job cannot fit in one group, so
+            //it will simply be allocated from the rightmost node.
         else {
             int i = 0;//node index of the job.
             for (int nodeID = nodesPerGroup * dMach.numGroups - 1; nodeID >= 0; nodeID--) {
-                if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                     ai->nodeIndices[i] = nodeID;
                     occupiedNodes.insert(nodeID);
                     //std::cout << nodeID << " ";
@@ -123,14 +119,13 @@ AllocInfo* DflyJokanovicAllocator::allocate(Job* j)
                         //std::cout << endl;
                         break;
                     }
-                }
-                else {
+                } else {
                     continue;
                 }
             }
         }
         return ai;
     }
-    return NULL;
+    return nullptr;
 }
 

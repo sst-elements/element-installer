@@ -18,10 +18,11 @@
 # numNodes = -1 implies use all nodes on network
 
 import pprint
+
 pp = pprint.PrettyPrinter(indent=4)
 
-numNodes = -1 
-ranksPerNode = 1 
+numNodes = -1
+ranksPerNode = 1
 
 platform = 'defaultParams'
 
@@ -33,39 +34,45 @@ detailedNodes = [0]
 
 detailedModel = "sandyBridgeModel"
 detailedModelParams = "sandyBridgeModelParams"
-#detailedModel = "basicDetailedModel" 
-#detailedModelParams = "basicDetailedModelParams" 
-#detailedModel = "3LevelModel"
-#detailedModelParams = "3LevelModelParams"
+# detailedModel = "basicDetailedModel"
+# detailedModelParams = "basicDetailedModelParams"
+# detailedModel = "3LevelModel"
+# detailedModelParams = "3LevelModelParams"
 
 arguments = 'stream_n=1024 operandwidth=32'
 
 detailedMotif = "DetailedStream " + arguments
 
-def genWorkFlow( defaults, nodeNum = None ):
 
-	workFlow = []
+def genWorkFlow(defaults, nodeNum=None):
+    workFlow = []
 
-	motif = dict.copy( defaults )
-	motif['cmd'] = detailedMotif 
-	workFlow.append( motif )
+    motif = dict.copy(defaults)
+    motif['cmd'] = detailedMotif
+    workFlow.append(motif)
 
-	return workFlow
+    return workFlow
+
 
 def getNumNodes():
-	return numNodes
+    return numNodes
+
 
 def getRanksPerNode():
-	return ranksPerNode 
+    return ranksPerNode
+
 
 def getTopo():
-	return topo, shape 
+    return topo, shape
+
 
 def getPlatform():
-	return platform 
+    return platform
+
 
 def getPerNicParams(nodeNum):
-	return {}
+    return {}
+
 
 def getDetailedModel():
-    return detailedModel,detailedModelParams,detailedNodes
+    return detailedModel, detailedModelParams, detailedNodes

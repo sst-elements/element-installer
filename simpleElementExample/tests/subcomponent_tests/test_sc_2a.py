@@ -3,7 +3,6 @@ import sst
 # Define SST core options
 sst.setProgramOption("stopAtCycle", "10us")
 
-
 # Set up senders using anonymous subcomponents
 loader0 = sst.Component("Loader0", "simpleElementExample.SubComponentLoader")
 loader0.addParam("clock", "1.5GHz")
@@ -25,5 +24,5 @@ link0.connect((loader0, "port0", "5ns"), (loader1, "port0", "5ns"))
 link1 = sst.Link("myLink1")
 link1.connect((loader0, "port1", "5ns"), (loader1, "port1", "5ns"))
 
-#sst.enableAllStatisticsForAllComponents()
+# sst.enableAllStatisticsForAllComponents()
 sst.setStatisticLoadLevel(1)

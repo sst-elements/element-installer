@@ -27,11 +27,10 @@ using namespace SST;
 using namespace SST::RNG;
 using namespace SST::SimpleDistribComponent;
 
-void simpleDistribComponent::finish() 
-{
+void simpleDistribComponent::finish() {
     if (bin_results) {
         std::map<int64_t, uint64_t>::iterator map_itr;
-        
+
         std::cout << "Bin:" << std::endl;
         for (map_itr = bins->begin(); map_itr != bins->end(); map_itr++) {
             std::cout << map_itr->first << " " << map_itr->second << std::endl;
@@ -39,18 +38,17 @@ void simpleDistribComponent::finish()
     }
 }
 
-simpleDistribComponent::simpleDistribComponent(ComponentId_t id, Params& params) :
-    Component(id) 
-{
+simpleDistribComponent::simpleDistribComponent(ComponentId_t id, Params &params) :
+    Component(id) {
     // tell the simulator not to end without us
     registerAsPrimaryComponent();
     primaryComponentDoNotEndSim();
-    
+
     rng_max_count = params.find<int64_t>("count", 1000);
     rng_count = 0;
-    
+
     bins = new std::map<int64_t, uint64_t>();
-    
+
     if ("1" == params.find<std::string>("binresults", "1")) {
         bin_results = true;
     } else {
@@ -72,33 +70,37 @@ simpleDistribComponent::simpleDistribComponent(ComponentId_t id, Params& params)
 
         comp_distrib = new SSTPoissonDistribution(lambda, new MersenneRNG(10111));
     } else if ("discrete" == dist_type) {
-	uint32_t prob_count = (uint32_t) params.find<int64_t>("probcount", 1);
+        uint32_t prob_count = (uint32_t) params.find<int64_t>("probcount", 1);
 
-	double* probs = (double*) malloc(sizeof(double) * prob_count);
+        double *probs = (double *) malloc(sizeof(double) * prob_count);
 
-	printf("Will create discrete distribution with %" PRIu32 " probabilities.\n",
-		prob_count);
+        printf("Will create discrete distribution with %"
+        PRIu32
+        " probabilities.\n",
+            prob_count);
 
-	if(1 == prob_count) {
-		probs[0] = 1.0;
-	} else {
-		char* prob_name = (char*) malloc(sizeof(char) * 64);
+        if (1 == prob_count) {
+            probs[0] = 1.0;
+        } else {
+            char *prob_name = (char *) malloc(sizeof(char) * 64);
 
-		for(uint32_t i = 0; i < prob_count; i++) {
-			sprintf(prob_name, "prob%" PRIu32, i);
-			double prob_tmp = (double) params.find<double>(prob_name, 1.0 / (double)(prob_count));
+            for (uint32_t i = 0; i < prob_count; i++) {
+                sprintf(prob_name, "prob%"
+                PRIu32, i);
+                double prob_tmp = (double) params.find<double>(prob_name,
+                                                               1.0 / (double) (prob_count));
 
-			//printf("Probability at %" PRIu32 " : %f\n", i, prob_tmp);
+                //printf("Probability at %" PRIu32 " : %f\n", i, prob_tmp);
 
-			probs[i] = prob_tmp;
-		}
+                probs[i] = prob_tmp;
+            }
 
-		free(prob_name);
+            free(prob_name);
 
-		probs[prob_count - 1] = 1.0;
-	}
+            probs[prob_count - 1] = 1.0;
+        }
 
-	comp_distrib = new SSTDiscreteDistribution(probs, prob_count, new MersenneRNG(10111));
+        comp_distrib = new SSTDiscreteDistribution(probs, prob_count, new MersenneRNG(10111));
     } else {
         std::cerr << "Unknown distribution type." << std::endl;
         exit(-1);
@@ -106,21 +108,19 @@ simpleDistribComponent::simpleDistribComponent(ComponentId_t id, Params& params)
 
     //set our clock
     registerClock("1GHz", new Clock::Handler<simpleDistribComponent>(this,
-                  &simpleDistribComponent::tick));
+                                                                     &simpleDistribComponent::tick));
 }
 
-simpleDistribComponent::simpleDistribComponent() : Component(-1)
-{
+simpleDistribComponent::simpleDistribComponent() : Component(-1) {
     // for serialization only
 }
 
-bool simpleDistribComponent::tick(Cycle_t cyc) 
-{
+bool simpleDistribComponent::tick(Cycle_t cyc) {
     double next_result = comp_distrib->getNextDouble();
     int64_t int_next_result = 0;
 
-    if("discrete" == dist_type) {
-	int_next_result = (int64_t) (next_result * 100.0);
+    if ("discrete" == dist_type) {
+        int_next_result = (int64_t)(next_result * 100.0);
     }
 
     if (bins->find(int_next_result) == bins->end()) {
@@ -128,14 +128,14 @@ bool simpleDistribComponent::tick(Cycle_t cyc)
     } else {
         bins->at(int_next_result)++;
     }
-    
+
     rng_count++;
-    
+
     if (rng_max_count == rng_count) {
         primaryComponentOKToEndSim();
         return true;
     }
-    
+
     return false;
 }
 

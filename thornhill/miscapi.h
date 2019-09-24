@@ -21,21 +21,24 @@
 #include "hermes.h"
 
 namespace SST {
-namespace Hermes {
-namespace Misc {
+    namespace Hermes {
+        namespace Misc {
 
-class Interface : public Hermes::Interface {
-    public:
+            class Interface : public Hermes::Interface {
+            public:
 
-    Interface( Component* parent ) : Hermes::Interface(parent) {}
+                Interface(Component *parent) : Hermes::Interface(parent) {}
 
-    virtual void getNodeNum( int*, Callback*) { assert(0); }
-    virtual void getNumNodes( int*, Callback*) { assert(0); }
-	virtual void malloc( Hermes::MemAddr*, size_t length, bool backed, Callback* ) {assert(0); }
-};
+                virtual void getNodeNum(int *, Callback *) { assert(0); }
 
-}
-}
+                virtual void getNumNodes(int *, Callback *) { assert(0); }
+
+                virtual void malloc(Hermes::MemAddr *, size_t length, bool backed,
+                                    Callback *) { assert(0); }
+            };
+
+        }
+    }
 }
 
 #endif

@@ -21,31 +21,37 @@
 #include <sst/core/component.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberRankMap : public Module {
+        class EmberRankMap : public Module {
 
-public:
-	EmberRankMap(Component* owner, Params& params) {}
-	~EmberRankMap() {}
-	virtual void setEnvironment(const uint32_t rank, const uint32_t worldSize) = 0;
-	virtual uint32_t mapRank(const uint32_t input) = 0;
+        public:
+            EmberRankMap(Component *owner, Params &params) {}
 
-	virtual void getPosition(const int32_t rank, const int32_t px, const int32_t py, const int32_t pz,
-                int32_t* myX, int32_t* myY, int32_t* myZ) = 0;
+            ~EmberRankMap() {}
 
-    virtual void getPosition(const int32_t rank, const int32_t px, const int32_t py,
-                int32_t* myX, int32_t* myY) = 0;
+            virtual void setEnvironment(const uint32_t rank, const uint32_t worldSize) = 0;
 
-    virtual int32_t convertPositionToRank(const int32_t px, const int32_t py,
-	                const int32_t myX, const int32_t myY) = 0;
+            virtual uint32_t mapRank(const uint32_t input) = 0;
 
-    virtual int32_t convertPositionToRank(const int32_t px, const int32_t py, const int32_t pz,
-	                const int32_t myX, const int32_t myY, const int32_t myZ) = 0;
+            virtual void getPosition(const int32_t rank, const int32_t px, const int32_t py,
+                                     const int32_t pz,
+                                     int32_t *myX, int32_t *myY, int32_t *myZ) = 0;
 
-};
+            virtual void getPosition(const int32_t rank, const int32_t px, const int32_t py,
+                                     int32_t *myX, int32_t *myY) = 0;
 
-}
+            virtual int32_t convertPositionToRank(const int32_t px, const int32_t py,
+                                                  const int32_t myX, const int32_t myY) = 0;
+
+            virtual int32_t convertPositionToRank(const int32_t px, const int32_t py,
+                                                  const int32_t pz,
+                                                  const int32_t myX, const int32_t myY,
+                                                  const int32_t myZ) = 0;
+
+        };
+
+    }
 }
 
 #endif

@@ -58,22 +58,22 @@ namespace SST {
 
             SST_ELI_REGISTER_SUBCOMPONENT(
                 c_AddressHasher,
-                "CramSim",
-                "c_AddressHasher",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Hashes addresses based on config parameters",
-                "SST::CramSim::Controller::AddressHasher"
+            "CramSim",
+            "c_AddressHasher",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Hashes addresses based on config parameters",
+            "SST::CramSim::Controller::AddressHasher"
             )
 
             SST_ELI_DOCUMENT_PARAMS(
-                {"numChannelsPerDimm", "Total number of channels per DIMM", NULL},
-                {"numRanksPerChannel", "Total number of ranks per channel", NULL},
-                {"numBankGroupsPerRank", "Total number of bank groups per rank", NULL},
-                {"numBanksPerBankGroup", "Total number of banks per group", NULL},
-                {"numRowsPerBank" "Number of rows in every bank", NULL},
-                {"numColsPerBank", "Number of cols in every bank", NULL},
-                {"numBytesPerTransaction", "Number of bytes retrieved for every transaction", NULL},
-                {"strAddressMapStr","String defining the address mapping scheme",NULL},
+            { "numChannelsPerDimm", "Total number of channels per DIMM", nullptr },
+            { "numRanksPerChannel", "Total number of ranks per channel", nullptr },
+            { "numBankGroupsPerRank", "Total number of bank groups per rank", nullptr },
+            { "numBanksPerBankGroup", "Total number of banks per group", nullptr },
+            { "numRowsPerBank" "Number of rows in every bank", nullptr },
+            { "numColsPerBank", "Number of cols in every bank", nullptr },
+            { "numBytesPerTransaction", "Number of bytes retrieved for every transaction", nullptr },
+            { "strAddressMapStr", "String defining the address mapping scheme", nullptr },
             )
 
             SST_ELI_DOCUMENT_PORTS(
@@ -88,7 +88,8 @@ namespace SST {
             static c_AddressHasher *getInstance();
 
             static c_AddressHasher *
-            getInstance(Params &x_params); // This reads the parameters and constructs the hash function
+            getInstance(
+                Params &x_params); // This reads the parameters and constructs the hash function
 
             void fillHashedAddress(c_HashedAddress *x_hashAddr, const ulong x_address);
 
@@ -98,12 +99,13 @@ namespace SST {
 
             c_AddressHasher(const c_AddressHasher &) = delete;
 
-            void operator=(const c_AddressHasher &)= delete;
+            void operator=(const c_AddressHasher &) = delete;
 
             c_AddressHasher(Params &x_params);
+
             ulong getAddressForBankId(const unsigned x_bankId);
 
-            c_Controller* m_owner;
+            c_Controller *m_owner;
             unsigned k_pNumChannels;
             unsigned k_pNumRanks;
             unsigned k_pNumBankGroups;
@@ -114,11 +116,11 @@ namespace SST {
             unsigned k_pNumPseudoChannels;
 
             std::string k_addressMapStr = "rlbRBh";
-            std::map<std::string, std::vector<uint> > m_bitPositions;
-            std::map<std::string, uint> m_structureSizes;  // Used for checking that params agree
+            std::map <std::string, std::vector<uint>> m_bitPositions;
+            std::map <std::string, uint> m_structureSizes;  // Used for checking that params agree
 
             // regex replacement stuff
-            void parsePattern(std::string *x_inStr, std::pair<std::string, uint> *x_outPair);
+            void parsePattern(std::string *x_inStr, std::pair <std::string, uint> *x_outPair);
         };
     }
 }

@@ -29,57 +29,64 @@
 #include<list>
 
 
-using namespace SST; 
+using namespace SST;
 
 
-namespace SST{ namespace MessierComponent{
+namespace SST {
+    namespace MessierComponent {
 
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #endif
-    
-	enum EventType { READ_COMPLETION, WRITE_COMPLETION, DEVICE_READY, HIT_MISS, INVALIDATE_WRITE};
 
-	// Thie defines a class for events of Messier
-	class MessierEvent : public SST::Event
-	{
+        enum EventType {
+            READ_COMPLETION, WRITE_COMPLETION, DEVICE_READY, HIT_MISS, INVALIDATE_WRITE
+        };
 
-		private:
-		MessierEvent() { } // For serialization
+        // Thie defines a class for events of Messier
+        class MessierEvent : public SST::Event {
 
-			int ev;
-			NVM_Request * req;		
-		public:
+        private:
+            MessierEvent() {} // For serialization
 
-			MessierEvent(NVM_Request * x, EventType y) : SST::Event()
-		{ ev = y; req = x;}
+            int ev;
+            NVM_Request *req;
+        public:
 
-			void setType(int ev1) { ev = static_cast<EventType>(ev1);}
-			int getType() { return ev; }
-			
-			void setReq(NVM_Request * tmp) { req = tmp;}
-			NVM_Request * getReq() { return req; }
+            MessierEvent(NVM_Request *x, EventType y) : SST::Event() {
+                ev = y;
+                req = x;
+            }
 
-			// Pointer to the NVM_Request initiated this event
+            void setType(int ev1) { ev = static_cast<EventType>(ev1); }
 
-			void serialize_order(SST::Core::Serialization::serializer &ser) {
-				Event::serialize_order(ser);
-			}
+            int getType() { return ev; }
 
-				// This indicates the event type
+            void setReq(NVM_Request *tmp) { req = tmp; }
+
+            NVM_Request *getReq() { return req; }
+
+            // Pointer to the NVM_Request initiated this event
+
+            void serialize_order(SST::Core::Serialization::serializer &ser) {
+                Event::serialize_order(ser);
+            }
+
+            // This indicates the event type
 
 
-		//ImplementSerializable(MemRespEvent);
+            //ImplementSerializable(MemRespEvent);
 
-		ImplementSerializable(MessierEvent);
+            ImplementSerializable(MessierEvent);
 
-	};
+        };
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
 
-}}
+    }
+}
 
 #endif

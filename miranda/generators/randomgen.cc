@@ -21,63 +21,71 @@
 
 using namespace SST::Miranda;
 
-RandomGenerator::RandomGenerator( Component* owner, Params& params ) :
-	RequestGenerator(owner, params) {
-            build(params);
-        }
+RandomGenerator::RandomGenerator(Component *owner, Params &params) :
+    RequestGenerator(owner, params) {
+    build(params);
+}
 
-RandomGenerator::RandomGenerator( ComponentId_t id, Params& params ) :
-	RequestGenerator(id, params) {
-            build(params);
-        }
+RandomGenerator::RandomGenerator(ComponentId_t id, Params &params) :
+    RequestGenerator(id, params) {
+    build(params);
+}
 
-void RandomGenerator::build(Params& params) {
-	const uint32_t verbose = params.find<uint32_t>("verbose", 0);
+void RandomGenerator::build(Params &params) {
+    const uint32_t verbose = params.find<uint32_t>("verbose", 0);
 
-	out = new Output("RandomGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
+    out = new Output("RandomGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
 
-	issueCount = params.find<uint64_t>("count", 1000);
-	reqLength  = params.find<uint64_t>("length", 8);
-	maxAddr    = params.find<uint64_t>("max_address", 524288);
+    issueCount = params.find<uint64_t>("count", 1000);
+    reqLength = params.find<uint64_t>("length", 8);
+    maxAddr = params.find<uint64_t>("max_address", 524288);
 
-	rng = new MarsagliaRNG(11, 31);
+    rng = new MarsagliaRNG(11, 31);
 
-	out->verbose(CALL_INFO, 1, 0, "Will issue %" PRIu64 " operations\n", issueCount);
-	out->verbose(CALL_INFO, 1, 0, "Request lengths: %" PRIu64 " bytes\n", reqLength);
-	out->verbose(CALL_INFO, 1, 0, "Maximum address: %" PRIu64 "\n", maxAddr);
+    out->verbose(CALL_INFO, 1, 0, "Will issue %"
+    PRIu64
+    " operations\n", issueCount);
+    out->verbose(CALL_INFO, 1, 0, "Request lengths: %"
+    PRIu64
+    " bytes\n", reqLength);
+    out->verbose(CALL_INFO, 1, 0, "Maximum address: %"
+    PRIu64
+    "\n", maxAddr);
 
-	issueOpFences = params.find<std::string>("issue_op_fences", "yes") == "yes";
+    issueOpFences = params.find<std::string>("issue_op_fences", "yes") == "yes";
 
 }
 
 RandomGenerator::~RandomGenerator() {
-	delete out;
-	delete rng;
+    delete out;
+    delete rng;
 }
 
-void RandomGenerator::generate(MirandaRequestQueue<GeneratorRequest*>* q) {
-	out->verbose(CALL_INFO, 4, 0, "Generating next request number: %" PRIu64 "\n", issueCount);
+void RandomGenerator::generate(MirandaRequestQueue<GeneratorRequest *> *q) {
+    out->verbose(CALL_INFO, 4, 0, "Generating next request number: %"
+    PRIu64
+    "\n", issueCount);
 
-	const uint64_t rand_addr = rng->generateNextUInt64();
-	// Ensure we have a reqLength aligned request
-	const uint64_t addr_under_limit = (rand_addr % maxAddr);
-	const uint64_t addr = (addr_under_limit < reqLength) ? addr_under_limit :
-		(rand_addr % maxAddr) - (rand_addr % reqLength);
+    const uint64_t rand_addr = rng->generateNextUInt64();
+    // Ensure we have a reqLength aligned request
+    const uint64_t addr_under_limit = (rand_addr % maxAddr);
+    const uint64_t addr = (addr_under_limit < reqLength) ? addr_under_limit :
+                          (rand_addr % maxAddr) - (rand_addr % reqLength);
 
-	const double op_decide = rng->nextUniform();
+    const double op_decide = rng->nextUniform();
 
-	// Populate request
-	q->push_back(new MemoryOpRequest(addr, reqLength, (op_decide < 0.5) ? READ : WRITE));
+    // Populate request
+    q->push_back(new MemoryOpRequest(addr, reqLength, (op_decide < 0.5) ? READ : WRITE));
 
-	if (issueOpFences) {
-	    q->push_back(new FenceOpRequest());
-	}
+    if (issueOpFences) {
+        q->push_back(new FenceOpRequest());
+    }
 
-	issueCount--;
+    issueCount--;
 }
 
 bool RandomGenerator::isFinished() {
-	return (issueCount == 0);
+    return (issueCount == 0);
 }
 
 void RandomGenerator::completed() {

@@ -24,23 +24,28 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 using namespace SST::CramSim;
 
-CramSimMemory::CramSimMemory(Component *comp, Params &params) : SimpleMemBackend(comp, params){ build(params); }
-CramSimMemory::CramSimMemory(ComponentId_t id, Params &params) : SimpleMemBackend(id, params){ build(params); }
+CramSimMemory::CramSimMemory(Component *comp, Params &params) : SimpleMemBackend(comp, params) {
+    build(params);
+}
 
-void CramSimMemory::build(Params& params) {
+CramSimMemory::CramSimMemory(ComponentId_t id, Params &params) : SimpleMemBackend(id, params) {
+    build(params);
+}
+
+void CramSimMemory::build(Params &params) {
     std::string access_time = params.find<std::string>("access_time", "100 ns");
-    cramsim_link = configureLink( "cube_link", access_time,
-            new Event::Handler<CramSimMemory>(this, &CramSimMemory::handleCramsimEvent));
+    cramsim_link = configureLink("cube_link", access_time,
+                                 new Event::Handler<CramSimMemory>(this,
+                                                                   &CramSimMemory::handleCramsimEvent));
 
-    m_maxNumOutstandingReqs = params.find<int>("max_outstanding_requests",256);
-    output= new Output("CramSimMemory[@p:@l]: ", 1, 0, Output::STDOUT);
+    m_maxNumOutstandingReqs = params.find<int>("max_outstanding_requests", 256);
+    output = new Output("CramSimMemory[@p:@l]: ", 1, 0, Output::STDOUT);
 }
 
 
+bool CramSimMemory::issueRequest(ReqId reqId, Addr addr, bool isWrite, unsigned numBytes) {
 
-bool CramSimMemory::issueRequest(ReqId reqId, Addr addr, bool isWrite, unsigned numBytes ){
-
-    if(memReqs.size()>=m_maxNumOutstandingReqs) {
+    if (memReqs.size() >= m_maxNumOutstandingReqs) {
         output->verbose(CALL_INFO, 1, 0, "the number of outstanding requests reaches to max %d\n",
                         m_maxNumOutstandingReqs);
         return false;
@@ -49,24 +54,24 @@ bool CramSimMemory::issueRequest(ReqId reqId, Addr addr, bool isWrite, unsigned 
     if (memReqs.find(reqId) != memReqs.end())
         output->fatal(CALL_INFO, -1, "Assertion failed");
 
-    memReqs.insert( reqId );
-    cramsim_link->send( new CramSim::MemReqEvent(reqId,addr,isWrite,numBytes,0) );
+    memReqs.insert(reqId);
+    cramsim_link->send(new CramSim::MemReqEvent(reqId, addr, isWrite, numBytes, 0));
     return true;
 }
 
 
-void CramSimMemory::handleCramsimEvent(SST::Event *event){
+void CramSimMemory::handleCramsimEvent(SST::Event *event) {
 
-    CramSim::MemRespEvent *ev = dynamic_cast<CramSim::MemRespEvent*>(event);
+    CramSim::MemRespEvent *ev = dynamic_cast<CramSim::MemRespEvent *>(event);
 
     if (ev) {
-        if ( memReqs.find( ev->getReqId() ) != memReqs.end() ) {
-            memReqs.erase( ev->getReqId() );
-            handleMemResponse( ev->getReqId());
-      		delete event;
-        } else {  
+        if (memReqs.find(ev->getReqId()) != memReqs.end()) {
+            memReqs.erase(ev->getReqId());
+            handleMemResponse(ev->getReqId());
+            delete event;
+        } else {
             output->fatal(CALL_INFO, -1, "Could not match incoming request from cubes\n");
-		}
+        }
     } else {
         output->fatal(CALL_INFO, -1, "Recived wrong event type from cubes\n");
     }

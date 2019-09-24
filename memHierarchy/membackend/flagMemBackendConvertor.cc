@@ -26,32 +26,36 @@ using namespace SST::MemHierarchy;
 #ifdef __SST_DEBUG_OUTPUT__
 #define Debug(level, fmt, ... ) m_dbg.debug( level, fmt, ##__VA_ARGS__  )
 #else
-#define Debug(level, fmt, ... )
+#define Debug(level, fmt, ...)
 #endif
 
 FlagMemBackendConvertor::FlagMemBackendConvertor(Component *comp, Params &params) :
-    MemBackendConvertor(comp,params) 
-{
+    MemBackendConvertor(comp, params) {
     using std::placeholders::_1;
     using std::placeholders::_2;
-    static_cast<FlagMemBackend*>(m_backend)->setResponseHandler( std::bind( &FlagMemBackendConvertor::handleMemResponse, this, _1,_2 ) );
+    static_cast<FlagMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&FlagMemBackendConvertor::handleMemResponse, this, _1, _2));
 }
 
 FlagMemBackendConvertor::FlagMemBackendConvertor(ComponentId_t id, Params &params) :
-    MemBackendConvertor(id,params) 
-{
+    MemBackendConvertor(id, params) {
     using std::placeholders::_1;
     using std::placeholders::_2;
-    static_cast<FlagMemBackend*>(m_backend)->setResponseHandler( std::bind( &FlagMemBackendConvertor::handleMemResponse, this, _1,_2 ) );
+    static_cast<FlagMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&FlagMemBackendConvertor::handleMemResponse, this, _1, _2));
 }
 
-bool FlagMemBackendConvertor::issue( BaseReq *breq ) {
+bool FlagMemBackendConvertor::issue(BaseReq *breq) {
     if (breq->isMemEv()) {
-        MemReq * req = static_cast<MemReq*>(breq);
-        MemEvent* event = req->getMemEvent();
-        return static_cast<FlagMemBackend*>(m_backend)->issueRequest( req->id(), req->addr(), req->isWrite(), event->getFlags(), m_backendRequestWidth );
+        MemReq *req = static_cast<MemReq *>(breq);
+        MemEvent *event = req->getMemEvent();
+        return static_cast<FlagMemBackend *>(m_backend)->issueRequest(req->id(), req->addr(),
+                                                                      req->isWrite(),
+                                                                      event->getFlags(),
+                                                                      m_backendRequestWidth);
     } else {
-        CustomReq * req = static_cast<CustomReq*>(breq);
-        return static_cast<FlagMemBackend*>(m_backend)->issueCustomRequest(req->id(), req->getInfo());
+        CustomReq *req = static_cast<CustomReq *>(breq);
+        return static_cast<FlagMemBackend *>(m_backend)->issueCustomRequest(req->id(),
+                                                                            req->getInfo());
     }
 }

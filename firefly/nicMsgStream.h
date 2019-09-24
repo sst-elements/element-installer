@@ -14,20 +14,24 @@
 // distribution.
 
 class MsgStream : public StreamBase {
-  public:
-    MsgStream( Output&, Ctx*, int srcNode, int srcPid, int destPid, FireflyNetworkEvent* );
+public:
+    MsgStream(Output &, Ctx *, int srcNode, int srcPid, int destPid, FireflyNetworkEvent *);
+
     ~MsgStream() {
-        m_dbg.debug(CALL_INFO,1,NIC_DBG_RECV_STREAM,"\n");
+        m_dbg.debug(CALL_INFO, 1, NIC_DBG_RECV_STREAM, "\n");
     }
+
     bool isBlocked() {
-        return  m_recvEntry == NULL || m_blocked;
+        return m_recvEntry == nullptr || m_blocked;
     }
-  protected:
-    void processFirstPkt( FireflyNetworkEvent* ev ) {
+
+protected:
+    void processFirstPkt(FireflyNetworkEvent *ev) {
         m_blocked = false;
-        m_ctx->schedCallback( m_wakeupCallback );
-        m_wakeupCallback = NULL;
+        m_ctx->schedCallback(m_wakeupCallback);
+        m_wakeupCallback = nullptr;
     }
-  private:
+
+private:
     bool m_blocked;
 };

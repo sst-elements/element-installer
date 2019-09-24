@@ -19,13 +19,13 @@
 #include "DRAMReq.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class MemResponseHandler {
-	virtual void handleMemResponse(DRAMReq *req) = 0;
-};
+        class MemResponseHandler {
+            virtual void handleMemResponse(DRAMReq *req) = 0;
+        };
 
-}
+    }
 }
 
 #endif

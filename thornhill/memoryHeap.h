@@ -19,41 +19,44 @@
 #include <sst/core/component.h>
 
 namespace SST {
-namespace Thornhill {
+    namespace Thornhill {
 
-class MemoryHeap : public Component {
-  public:
-    SST_ELI_REGISTER_COMPONENT(
-        MemoryHeap,
-        "thornhill",
-        "MemoryHeap",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        COMPONENT_CATEGORY_UNCATEGORIZED
-    )
-    SST_ELI_DOCUMENT_PORTS(
-        {"detailed%(num_ports)d", "Port connected to Memory Heap client", {}},
-    )
+        class MemoryHeap : public Component {
+        public:
+            SST_ELI_REGISTER_COMPONENT(
+                MemoryHeap,
+            "thornhill",
+            "MemoryHeap",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
+            SST_ELI_DOCUMENT_PORTS(
+            { "detailed%(num_ports)d", "Port connected to Memory Heap client", {}},
+            )
 
-  public:
-    MemoryHeap( ComponentId_t id, Params& params );
-    ~MemoryHeap(){};
+        public:
+            MemoryHeap(ComponentId_t id, Params &params);
 
-	void setup() {}
-    void finish() {}
-    void init( unsigned int phase ) {}
+            ~MemoryHeap() {};
 
-  private:
-    void eventHandler( SST::Event* ev, int src ); 
+            void setup() {}
 
-    std::vector<Link*>  		m_links;
-	uint64_t                    m_currentVaddr;
-	Output						m_output;
+            void finish() {}
 
-	MemoryHeap() : Component(-1) {}
+            void init(unsigned int phase) {}
 
-};
+        private:
+            void eventHandler(SST::Event *ev, int src);
 
-}
+            std::vector<Link *> m_links;
+            uint64_t m_currentVaddr;
+            Output m_output;
+
+            MemoryHeap() : Component(-1) {}
+
+        };
+
+    }
 }
 #endif

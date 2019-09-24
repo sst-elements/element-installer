@@ -43,47 +43,52 @@
 namespace SST {
     namespace Scheduler {
         class Job;
+
         class Machine;
+
         class CenterGenerator;
+
         class PointCollector;
+
         class Scorer;
+
         class StencilMachine;
 
         class NearestAllocator : public Allocator {
 
-            private:
-                //way to generate list of possible centers:
-                CenterGenerator* centerGenerator;
+        private:
+            //way to generate list of possible centers:
+            CenterGenerator *centerGenerator;
 
-                //how to find candidate points from a center:
-                PointCollector* pointCollector;
+            //how to find candidate points from a center:
+            PointCollector *pointCollector;
 
-                //how we evaluate a possible allocation:
-                Scorer* scorer;
+            //how we evaluate a possible allocation:
+            Scorer *scorer;
 
-                std::string configName;
+            std::string configName;
 
-                StencilMachine *mMachine;
+            StencilMachine *mMachine;
 
-            public:
+        public:
 
-                NearestAllocator(std::vector<std::string>* params, Machine* mach);
+            NearestAllocator(std::vector <std::string> *params, Machine *mach);
 
-                std::string getParamHelp();
+            std::string getParamHelp();
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* job);
+            AllocInfo *allocate(Job *job);
 
-                AllocInfo* allocate(Job* job, std::vector<MeshLocation*>* available); 
+            AllocInfo *allocate(Job *job, std::vector<MeshLocation *> *available);
 
-                void genAlgAllocator(StencilMachine* m);
+            void genAlgAllocator(StencilMachine *m);
 
-                void MMAllocator(StencilMachine* m); 
-                
-                void MC1x1Allocator(StencilMachine* m); 
+            void MMAllocator(StencilMachine *m);
 
-                void HybridAllocator(StencilMachine* m);
+            void MC1x1Allocator(StencilMachine *m);
+
+            void HybridAllocator(StencilMachine *m);
         };
 
     }

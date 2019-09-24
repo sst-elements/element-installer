@@ -15,32 +15,37 @@
 
 import sys
 
+
 def getOptions():
-	return [ "detailedNameModel=", "detailedModelParams=", "detailedModelNodes=" ]
+    return ["detailedNameModel=", "detailedModelParams=", "detailedModelNodes="]
+
 
 class DetailedModel:
     def getName(self):
         pass
-    def build(self,nodeID,numCores):
-        pass 
-    def getThreadLink(self,core):
+
+    def build(self, nodeID, numCores):
         pass
+
+    def getThreadLink(self, core):
+        pass
+
     def getNicLink(self):
         pass
 
-def getModel( model, params ):
 
-	#print 'getModel() model={0} params={1}'.format(model,params)
+def getModel(model, params):
+    # print 'getModel() model={0} params={1}'.format(model,params)
 
-	try:
-		modelModule = __import__( model, fromlist=[''] )
+    try:
+        modelModule = __import__(model, fromlist=[''])
 
-	except:
-		sys.exit('Failed: could not import detailed model `{0}`'.format(model) )
+    except:
+        sys.exit('Failed: could not import detailed model `{0}`'.format(model))
 
-	try:
-		modelParams = __import__( params, fromlist=[''] )
-	except:
-		sys.exit('Failed: could not import detailed model params `{0}`'.format(params) )
+    try:
+        modelParams = __import__(params, fromlist=[''])
+    except:
+        sys.exit('Failed: could not import detailed model params `{0}`'.format(params))
 
-	return modelModule.getModel(modelParams.params)
+    return modelModule.getModel(modelParams.params)

@@ -28,23 +28,26 @@
 namespace SST {
     namespace Scheduler {
         class StencilMachine;
+
         class Machine;
+
         class Job;
+
         class AllocInfo;
 
         class SortedFreeListAllocator : public LinearAllocator {
-            public:
-                SortedFreeListAllocator(StencilMachine* m, std::string filename);
+        public:
+            SortedFreeListAllocator(StencilMachine *m, std::string filename);
 
-                SortedFreeListAllocator(std::vector<std::string>* params, Machine* mach);
+            SortedFreeListAllocator(std::vector <std::string> *params, Machine *mach);
 
-                std::string getParamHelp()
-                {
-                    return "[<file>]\n\tfile: Path to file giving the curve";
-                }
-                std::string getSetupInfo(bool comment) const;
+            std::string getParamHelp() {
+                return "[<file>]\n\tfile: Path to file giving the curve";
+            }
 
-                AllocInfo* allocate(Job* job);
+            std::string getSetupInfo(bool comment) const;
+
+            AllocInfo *allocate(Job *job);
         };
 
 

@@ -21,35 +21,37 @@
 #include <sst/core/rng/gaussian.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberGaussianDistribution : public EmberComputeDistribution {
-public:
-    SST_ELI_REGISTER_MODULE(
-        EmberGaussianDistribution, 
-        "ember",
-        "GaussianDistrib",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Gaussian distributed compute noise model",
-        "SST::Ember::EmberComputeDistribution"
-    )
+        class EmberGaussianDistribution : public EmberComputeDistribution {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                EmberGaussianDistribution,
+            "ember",
+            "GaussianDistrib",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Gaussian distributed compute noise model",
+            "SST::Ember::EmberComputeDistribution"
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {   "mean",         "Sets the mean value of the Gaussian distribution", "1.0" },
-        {   "stddev",       "Sets the standard deviation of the Gaussian distribution", "0.25" },
-    )    
+            SST_ELI_DOCUMENT_PARAMS(
+            { "mean", "Sets the mean value of the Gaussian distribution", "1.0" },
+            { "stddev", "Sets the standard deviation of the Gaussian distribution", "0.25" },
+            )
 
-public:
-	EmberGaussianDistribution(Component* owner, Params& params);
-	~EmberGaussianDistribution();
-	double sample(uint64_t now);
+        public:
+            EmberGaussianDistribution(Component *owner, Params &params);
 
-private:
-	SSTGaussianDistribution* distrib;
+            ~EmberGaussianDistribution();
 
-};
+            double sample(uint64_t now);
 
-}
+        private:
+            SSTGaussianDistribution *distrib;
+
+        };
+
+    }
 }
 
 #endif

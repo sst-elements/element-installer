@@ -20,32 +20,33 @@
 #include "emberFamEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFamAddEvent : public EmberFamEvent {
+        class EmberFamAddEvent : public EmberFamEvent {
 
-public:
-	EmberFamAddEvent( Shmem::Interface& api, Output* output,
-			Shmem::Fam_Descriptor fd, uint64_t dest, Hermes::Value value, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberFamEvent( api, output, stat ), 
-            m_fd(fd), m_dest(dest), m_value(value) {}
-	~EmberFamAddEvent() {}
+        public:
+            EmberFamAddEvent(Shmem::Interface &api, Output *output,
+                             Shmem::Fam_Descriptor fd, uint64_t dest, Hermes::Value value,
+                             EmberEventTimeStatistic *stat = nullptr) :
+                EmberFamEvent(api, output, stat),
+                m_fd(fd), m_dest(dest), m_value(value) {}
 
-    std::string getName() { return "Fam_Add"; }
+            ~EmberFamAddEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
-        EmberEvent::issue( time );
-        m_api.fam_add( m_fd, m_dest, m_value, callback );
+            std::string getName() { return "Fam_Add"; }
+
+            void issue(uint64_t time, Shmem::Callback callback) {
+                EmberEvent::issue(time);
+                m_api.fam_add(m_fd, m_dest, m_value, callback);
+            }
+
+        private:
+            Shmem::Fam_Descriptor m_fd;
+            uint64_t m_dest;
+            Hermes::Value m_value;
+        };
+
     }
-
-private:
-	Shmem::Fam_Descriptor m_fd;
-    uint64_t m_dest;
-    Hermes::Value m_value;
-};
-
-}
 }
 
 #endif

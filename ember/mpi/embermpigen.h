@@ -20,7 +20,7 @@
 #include "libs/emberMpiLib.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
 #define enQ_init mpi().init
 #define enQ_fini mpi().fini
@@ -53,80 +53,86 @@ namespace Ember {
 #define enQ_commCreate mpi().commCreate
 #define enQ_commDestroy mpi().commDestroy
 
-class EmberMessagePassingGenerator : public EmberGenerator {
+        class EmberMessagePassingGenerator : public EmberGenerator {
 
-public:
+        public:
 
-	EmberMessagePassingGenerator( Component* owner, Params& params, std::string name = "" );
-	~EmberMessagePassingGenerator();
+            EmberMessagePassingGenerator(Component *owner, Params &params, std::string name = "");
 
-    virtual void completed( const SST::Output* output, uint64_t time ) {
-		mpi().completed(output,time,getMotifName(),getMotifNum());
-	};
+            ~EmberMessagePassingGenerator();
 
-protected:
+            virtual void completed(const SST::Output *output, uint64_t time) {
+                mpi().completed(output, time, getMotifName(), getMotifNum());
+            };
 
-	EmberMpiLib& mpi() { return *m_mpi; }
+        protected:
 
-	int rank() { return mpi().getRankCache(); }
-	int size() { return mpi().getSizeCache(); }
-	void setRank( int rank ) { mpi().setRankCache( rank );  }
-	void setSize( int size ) { mpi().setSizeCache( size );  }
+            EmberMpiLib &mpi() { return *m_mpi; }
 
-	void getPosition( int32_t rank, int32_t px, int32_t py, int32_t pz, int32_t* myX, int32_t* myY, int32_t* myZ) {
-		m_rankMap->getPosition(rank, px, py, pz, myX, myY, myZ);
-	}
+            int rank() { return mpi().getRankCache(); }
 
-	void getPosition( int32_t rank, int32_t px, int32_t py, int32_t* myX, int32_t* myY) {
-		m_rankMap->getPosition(rank, px, py, myX, myY);
-	}
+            int size() { return mpi().getSizeCache(); }
 
-	int32_t convertPositionToRank( int32_t px, int32_t py, int32_t pz, int32_t myX, int32_t myY, int32_t myZ) {
-		return m_rankMap->convertPositionToRank(px, py, pz, myX, myY, myZ);
-	}
+            void setRank(int rank) { mpi().setRankCache(rank); }
 
-	int32_t convertPositionToRank( int32_t px, int32_t py, int32_t myX, int32_t myY) {
-		return m_rankMap->convertPositionToRank(px, py, myX, myY);
-	}
+            void setSize(int size) { mpi().setSizeCache(size); }
 
-	ReductionOperation op_create( User_function* func, int commute ) {
-		return Hermes::MP::Op_create( func, commute ); 
-	}
+            void getPosition(int32_t rank, int32_t px, int32_t py, int32_t pz, int32_t *myX,
+                             int32_t *myY, int32_t *myZ) {
+                m_rankMap->getPosition(rank, px, py, pz, myX, myY, myZ);
+            }
 
-	void op_free( ReductionOperation op ) {
-		Hermes::MP::Op_free( op );
-	}
+            void getPosition(int32_t rank, int32_t px, int32_t py, int32_t *myX, int32_t *myY) {
+                m_rankMap->getPosition(rank, px, py, myX, myY);
+            }
 
-	int sizeofDataType( PayloadDataType type ) {
-		return mpi().sizeofDataType( type );
-	}
+            int32_t convertPositionToRank(int32_t px, int32_t py, int32_t pz, int32_t myX,
+                                          int32_t myY, int32_t myZ) {
+                return m_rankMap->convertPositionToRank(px, py, pz, myX, myY, myZ);
+            }
 
-	int get_count( MessageResponse* resp, PayloadDataType datatype, int* count ) {
-		uint32_t nbytes = resp->count * resp->dtypeSize;
-		int dtypesize = sizeofDataType(datatype);
-		if ( nbytes % dtypesize ) { 
-			*count = 0;
-			return -1;
-		}
-		*count = nbytes / dtypesize;
+            int32_t convertPositionToRank(int32_t px, int32_t py, int32_t myX, int32_t myY) {
+                return m_rankMap->convertPositionToRank(px, py, myX, myY);
+            }
 
-		return 0;
-	}
+            ReductionOperation op_create(User_function *func, int commute) {
+                return Hermes::MP::Op_create(func, commute);
+            }
 
-	EmberRankMap* getRankMap() { return m_rankMap; }
+            void op_free(ReductionOperation op) {
+                Hermes::MP::Op_free(op);
+            }
 
-	void memSetBacked() {
-		EmberGenerator::memSetBacked();
-		mpi().setBacked();
-	}
+            int sizeofDataType(PayloadDataType type) {
+                return mpi().sizeofDataType(type);
+            }
 
-private:
-	EmberMpiLib*	m_mpi;
-	EmberRankMap*	m_rankMap;
-};
+            int get_count(MessageResponse *resp, PayloadDataType datatype, int *count) {
+                uint32_t nbytes = resp->count * resp->dtypeSize;
+                int dtypesize = sizeofDataType(datatype);
+                if (nbytes % dtypesize) {
+                    *count = 0;
+                    return -1;
+                }
+                *count = nbytes / dtypesize;
+
+                return 0;
+            }
+
+            EmberRankMap *getRankMap() { return m_rankMap; }
+
+            void memSetBacked() {
+                EmberGenerator::memSetBacked();
+                mpi().setBacked();
+            }
+
+        private:
+            EmberMpiLib *m_mpi;
+            EmberRankMap *m_rankMap;
+        };
 
 
-}
+    }
 }
 
 #endif

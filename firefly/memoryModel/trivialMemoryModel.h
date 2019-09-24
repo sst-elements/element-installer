@@ -21,49 +21,54 @@
 class TrivialMemoryModel : public MemoryModel {
 
     class SelfEvent : public SST::Event {
-      public:
-        SelfEvent( MemoryModel::Callback callback ) : callback(callback) {}
-		MemoryModel::Callback callback;
+    public:
+        SelfEvent(MemoryModel::Callback callback) : callback(callback) {}
+
+        MemoryModel::Callback callback;
         NotSerializable(SelfEvent)
     };
 
 public:
 
-    TrivialMemoryModel( Component* comp, Params& params ) : MemoryModel(comp) 
-	{
-		m_selfLink = comp->configureSelfLink("Nic::TrivialMemoryModel", "1 ns",
-        new Event::Handler<TrivialMemoryModel>(this,&TrivialMemoryModel::handleSelfEvent));
-	} 
-    virtual void printStatus( Output& out, int id ) { }
-	virtual void schedHostCallback( int core, std::vector< MemOp >* ops, Callback callback ) { 
-		for ( size_t i = 0; i < ops->size(); i++ ) {
-			if ( (*ops)[i].callback) {
-					schedCallback( 0, (*ops)[i].callback );	
-			} 
-		}
-		schedCallback( 0, callback );	
-	}
-	virtual void schedNicCallback( int unit, int pid, std::vector< MemOp >* ops, Callback callback ) {
-		for ( size_t i = 0; i < ops->size(); i++ ) {
-			if ( (*ops)[i].callback) {
-					schedCallback( 0, (*ops)[i].callback );	
-			} 
-		}
-		schedCallback( 0, callback );	
-	} 
+    TrivialMemoryModel(Component *comp, Params &params) : MemoryModel(comp) {
+        m_selfLink = comp->configureSelfLink("Nic::TrivialMemoryModel", "1 ns",
+                                             new Event::Handler<TrivialMemoryModel>(this,
+                                                                                    &TrivialMemoryModel::handleSelfEvent));
+    }
+
+    virtual void printStatus(Output &out, int id) {}
+
+    virtual void schedHostCallback(int core, std::vector <MemOp> *ops, Callback callback) {
+        for (size_t i = 0; i < ops->size(); i++) {
+            if ((*ops)[i].callback) {
+                schedCallback(0, (*ops)[i].callback);
+            }
+        }
+        schedCallback(0, callback);
+    }
+
+    virtual void schedNicCallback(int unit, int pid, std::vector <MemOp> *ops, Callback callback) {
+        for (size_t i = 0; i < ops->size(); i++) {
+            if ((*ops)[i].callback) {
+                schedCallback(0, (*ops)[i].callback);
+            }
+        }
+        schedCallback(0, callback);
+    }
 
 private:
 
-	void schedCallback( SimTime_t delay, Callback callback ){
-		m_selfLink->send( delay , new SelfEvent( callback ) );
-	}
-	
-	void handleSelfEvent( Event* ev ) {
-		SelfEvent* event = static_cast<SelfEvent*>(ev); 
-		event->callback();
-		delete ev;
-	}
-	Link* m_selfLink;
+    void schedCallback(SimTime_t delay, Callback callback) {
+        m_selfLink->send(delay, new SelfEvent(callback));
+    }
+
+    void handleSelfEvent(Event *ev) {
+        SelfEvent *event = static_cast<SelfEvent *>(ev);
+        event->callback();
+        delete ev;
+    }
+
+    Link *m_selfLink;
 };
 
 #endif

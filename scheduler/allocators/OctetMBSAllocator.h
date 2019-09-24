@@ -25,9 +25,11 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wuser-defined-warnings"
+
 #include <set>
 #include <string>
 #include <vector>
+
 #pragma clang diagnostic pop
 
 #include "MBSAllocator.h"
@@ -35,23 +37,27 @@
 namespace SST {
     namespace Scheduler {
         class StencilMachine;
+
         class Machine;
+
         class Block;
+
         class MeshLocation;
 
         class OctetMBSAllocator : public MBSAllocator {
-            public:
+        public:
 
-                OctetMBSAllocator(StencilMachine* m, int x, int y, int z);
-                OctetMBSAllocator(std::vector<std::string>* params, Machine* m);
+            OctetMBSAllocator(StencilMachine *m, int x, int y, int z);
 
-                std::string getSetupInfo(bool comment) const;
+            OctetMBSAllocator(std::vector <std::string> *params, Machine *m);
 
-                static OctetMBSAllocator Make(std::vector<std::string>* params, StencilMachine* mach);
+            std::string getSetupInfo(bool comment) const;
 
-                void initialize(MeshLocation* dim, MeshLocation* off);
+            static OctetMBSAllocator Make(std::vector <std::string> *params, StencilMachine *mach);
 
-                std::set<Block*, Block>* splitBlock(Block* b);
+            void initialize(MeshLocation *dim, MeshLocation *off);
+
+            std::set<Block *, Block> *splitBlock(Block *b);
         };
 
     }

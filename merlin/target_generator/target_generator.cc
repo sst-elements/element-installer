@@ -19,8 +19,8 @@
 #include "bit_complement.h"
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-} //namespace Merlin
+    } //namespace Merlin
 } //namespace SST
 

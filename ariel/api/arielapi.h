@@ -18,6 +18,7 @@
 #define _H_ARIEL_CLIENT_API
 
 void ariel_enable();
+
 void ariel_fence();
 
 #endif

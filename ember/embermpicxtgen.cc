@@ -21,8 +21,9 @@
 
 using namespace SST::Ember;
 
-EmberContextSwitchingMessagePassingGenerator::EmberContextSwitchingMessagePassingGenerator(Component* owner, Params& params) :
-	EmberMessagePassingGenerator(owner, params) {
+EmberContextSwitchingMessagePassingGenerator::EmberContextSwitchingMessagePassingGenerator(
+    Component *owner, Params &params) :
+    EmberMessagePassingGenerator(owner, params) {
 
 }
 
@@ -31,11 +32,11 @@ EmberContextSwitchingMessagePassingGenerator::~EmberContextSwitchingMessagePassi
 }
 
 void EmberContextSwitchingMessagePassingGenerator::suspendGenerator() {
-	// Save the generator context
-	getcontext(&genContext);
+    // Save the generator context
+    getcontext(&genContext);
 }
 
 void EmberContextSwitchingMessagePassingGenerator::resumeGenerator() {
-	// Reload the saved context and continue
-	setcontext(&genContext);
+    // Reload the saved context and continue
+    setcontext(&genContext);
 }

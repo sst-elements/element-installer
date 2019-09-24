@@ -14,20 +14,22 @@
 # distribution.
 
 def getOptions():
-	return ['hermesVerbose=']
+    return ['hermesVerbose=']
+
 
 def parseOptions(opts):
-	level = 0
-	if opts:
-		for o,a in opts:
-			if o in ('--hermesVerbose'):
-				level = int(a)
-	
-	return level
+    level = 0
+    if opts:
+        for o, a in opts:
+            if o in ('--hermesVerbose'):
+                level = int(a)
+
+    return level
+
 
 class HermesConfig:
-	def __init__(self, params, opts ):
-		self.params = params
+    def __init__(self, params, opts):
+        self.params = params
 
-	def getParams(self):
-		return self.params
+    def getParams(self):
+        return self.params

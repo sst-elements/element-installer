@@ -36,42 +36,47 @@
 #include "c_BankCommand.hpp"
 
 namespace SST {
-namespace n_Bank {
+    namespace n_Bank {
 
-class c_BankStateActive;
-class c_BankStateWriteA;
+        class c_BankStateActive;
+
+        class c_BankStateWriteA;
+
 //class c_BankStatePrecharge;
-class c_BankStateRead;
+        class c_BankStateRead;
 
-class c_BankStateWrite: public c_BankState {
+        class c_BankStateWrite : public c_BankState {
 
-public:
+        public:
 
-	c_BankStateWrite(std::map<std::string, unsigned>* x_bankParams);
-	~c_BankStateWrite();
+            c_BankStateWrite(std::map<std::string, unsigned> *x_bankParams);
 
-	virtual void handleCommand(c_BankInfo* x_bank, c_BankCommand* x_bankCommandPtr, SimTime_t x_cycle);
+            ~c_BankStateWrite();
 
-	virtual void clockTic(c_BankInfo* x_bank, SimTime_t x_cycle);
+            virtual void handleCommand(c_BankInfo *x_bank, c_BankCommand *x_bankCommandPtr,
+                                       SimTime_t x_cycle);
 
-	virtual void enter(c_BankInfo* x_bank,
-			c_BankState* x_prevState, c_BankCommand* x_cmdPtr,SimTime_t x_cycle);
+            virtual void clockTic(c_BankInfo *x_bank, SimTime_t x_cycle);
 
-	virtual std::list<e_BankCommandType> getAllowedCommands();
+            virtual void enter(c_BankInfo *x_bank,
+                               c_BankState *x_prevState, c_BankCommand *x_cmdPtr,
+                               SimTime_t x_cycle);
 
-	virtual bool isCommandAllowed(c_BankCommand* x_cmdPtr,
-			c_BankInfo* x_bankPtr);
+            virtual std::list <e_BankCommandType> getAllowedCommands();
 
-private:
-	SimTime_t m_timer; // counts down to 0
-	SimTime_t m_timerExit; // counts down to 0 during state exit
+            virtual bool isCommandAllowed(c_BankCommand *x_cmdPtr,
+                                          c_BankInfo *x_bankPtr);
 
-	std::list<e_BankCommandType> m_allowedCommands;
-	c_BankCommand* m_receivedCommandPtr;
-	c_BankCommand* m_prevCommandPtr;
-	c_BankState* m_nextStatePtr;
-};
+        private:
+            SimTime_t m_timer; // counts down to 0
+            SimTime_t m_timerExit; // counts down to 0 during state exit
 
-}
+            std::list <e_BankCommandType> m_allowedCommands;
+            c_BankCommand *m_receivedCommandPtr;
+            c_BankCommand *m_prevCommandPtr;
+            c_BankState *m_nextStatePtr;
+        };
+
+    }
 }
 #endif // C_BANKSTATEWRITE_HPP

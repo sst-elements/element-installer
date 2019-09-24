@@ -14,31 +14,32 @@
 # distribution.
 
 import pprint
-import myprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
-def getOptions(): 
-	return ["netBW=", "netFlitSize=", "rtrArb=", "netInspect="]
+
+def getOptions():
+    return ["netBW=", "netFlitSize=", "rtrArb=", "netInspect="]
+
 
 class RtrConfig:
-	def __init__( self, params, opts ):
-		self._params = params 
+    def __init__(self, params, opts):
+        self._params = params
 
-		for o,a in opts:
-			if o in ('--netBW='):
-				self._params['link_bw'] = a
+        for o, a in opts:
+            if o in ('--netBW='):
+                self._params['link_bw'] = a
 
-			elif o in ('--netFlitSize='):
-				self._params['flitSize'] = a
+            elif o in ('--netFlitSize='):
+                self._params['flitSize'] = a
 
-			elif o in ('--rtrArb='):
-				self._params['xbar_arb'] = a 
+            elif o in ('--rtrArb='):
+                self._params['xbar_arb'] = a
 
-			elif o in ('--netInspect='):
-				self._params['network_inspectors'] = a 
+            elif o in ('--netInspect='):
+                self._params['network_inspectors'] = a
 
-		#myprint.printParams( 'RtrConfig:', self._params );
+    # myprint.printParams( 'RtrConfig:', self._params );
 
-	def getParams(self ):
-		return self._params
+    def getParams(self):
+        return self._params

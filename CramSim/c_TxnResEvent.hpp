@@ -37,28 +37,28 @@
 //#include "c_Transaction.hpp"
 
 namespace SST {
-namespace n_Bank {
+    namespace n_Bank {
 
-  class c_Transaction;
-  
-class c_TxnResEvent: public SST::Event {
-public:
-	c_Transaction *m_payload; // FIXME: change this pointer to a unique_ptr
+        class c_Transaction;
 
-	c_TxnResEvent() :
-			SST::Event() {
-	}
+        class c_TxnResEvent : public SST::Event {
+        public:
+            c_Transaction *m_payload; // FIXME: change this pointer to a unique_ptr
 
-	void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-		Event::serialize_order(ser);
-		ser & m_payload;
-	}
+            c_TxnResEvent() :
+                SST::Event() {
+            }
 
-	ImplementSerializable (SST::n_Bank::c_TxnResEvent);
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & m_payload;
+            }
 
-};
+            ImplementSerializable (SST::n_Bank::c_TxnResEvent);
 
-}
+        };
+
+    }
 }
 
 #endif /* C_TXNRESEVENT_HPP_ */

@@ -32,40 +32,47 @@
 #endif
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class FlashDIMMSimMemory : public SimpleMemBackend {
-public:
+        class FlashDIMMSimMemory : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(FlashDIMMSimMemory, "memHierarchy", "FlashDIMMSim", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(FlashDIMMSimMemory,
+            "memHierarchy", "FlashDIMMSim", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Backend interface to FlashDIMM simulator for memory timings", SST::MemHierarchy::SimpleMemBackend)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
             /* Own parameters */
-            {"device_ini",          "Name of HybridSim Device config file", ""},
-            {"verbose",             "Sets the verbosity of the backend output", "0"},
-            {"trace",               "Sets the name of a file to record trace output", ""},
-            {"max_pending_reqs",    "Sets the maximum number of requests that can be outstanding", "32" } )
+            { "device_ini", "Name of HybridSim Device config file", "" },
+            { "verbose", "Sets the verbosity of the backend output", "0" },
+            { "trace", "Sets the name of a file to record trace output", "" },
+            { "max_pending_reqs", "Sets the maximum number of requests that can be outstanding", "32" } )
 
 /* Begin class definition */
-    FlashDIMMSimMemory(Component *comp, Params &params);
-    FlashDIMMSimMemory(ComponentId_t id, Params &params);
-    bool issueRequest(ReqId, Addr, bool, unsigned );
-    virtual bool clock(Cycle_t cycle);
-    void finish();
+            FlashDIMMSimMemory(Component *comp, Params &params);
 
-private:
-    void build(Params& params);
-    void FlashDIMMSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle);
-    uint32_t pendingRequests;
-    uint32_t maxPendingRequests;
+            FlashDIMMSimMemory(ComponentId_t id, Params &params);
 
-    FDSim::FlashDIMM *memSystem;
-    std::map<uint64_t, std::deque<ReqId> > dramReqs;
+            bool issueRequest(ReqId, Addr, bool, unsigned);
 
-};
+            virtual bool clock(Cycle_t cycle);
 
-}
+            void finish();
+
+        private:
+            void build(Params &params);
+
+            void FlashDIMMSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle);
+
+            uint32_t pendingRequests;
+            uint32_t maxPendingRequests;
+
+            FDSim::FlashDIMM *memSystem;
+            std::map <uint64_t, std::deque<ReqId>> dramReqs;
+
+        };
+
+    }
 }
 
 #endif

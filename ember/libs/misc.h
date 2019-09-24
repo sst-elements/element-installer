@@ -26,40 +26,41 @@
 using namespace Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberMiscLib : public EmberLib {
+        class EmberMiscLib : public EmberLib {
 
-  public:
+        public:
 
-    SST_ELI_REGISTER_MODULE(
-        EmberMiscLib,
-        "Ember",
-        "Misc",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        "SST::Ember::EmberMiscLib"
-    )
+            SST_ELI_REGISTER_MODULE(
+                EmberMiscLib,
+            "Ember",
+            "Misc",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            "SST::Ember::EmberMiscLib"
+            )
 
-    EmberMiscLib( Params& params ) {}
+            EmberMiscLib(Params &params) {}
 
-    void getNodeNum( EmberGenerator::Queue& q, int* ptr ) {
-        q.push( new EmberGetNodeNumEvent( api(), m_output, ptr ) ); 
+            void getNodeNum(EmberGenerator::Queue &q, int *ptr) {
+                q.push(new EmberGetNodeNumEvent(api(), m_output, ptr));
+            }
+
+            void getNumNodes(EmberGenerator::Queue &q, int *ptr) {
+                q.push(new EmberGetNumNodesEvent(api(), m_output, ptr));
+            }
+
+            void malloc(EmberGenerator::Queue &q, Hermes::MemAddr *addr, size_t length,
+                        bool backed = false) {
+                q.push(new EmberMallocEvent(api(), m_output, addr, length, backed));
+            }
+
+        private:
+            Misc::Interface &api() { return *static_cast<Misc::Interface *>(m_api); }
+        };
+
     }
-
-    void getNumNodes( EmberGenerator::Queue& q, int* ptr ) {
-        q.push( new EmberGetNumNodesEvent( api(), m_output, ptr ) ); 
-    }
-
-    void malloc( EmberGenerator::Queue& q, Hermes::MemAddr* addr, size_t length, bool backed = false ) {
-        q.push( new EmberMallocEvent( api(), m_output, addr, length, backed ) ); 
-    }
-
-  private:
-	Misc::Interface& api() { return *static_cast<Misc::Interface*>(m_api); }
-};
-
-}
 }
 
 #endif

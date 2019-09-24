@@ -3,7 +3,6 @@ import sst
 # Define SST core options
 sst.setProgramOption("stopAtCycle", "10us")
 
-
 # Set up sender using anonymous subcomponent
 loader0 = sst.Component("Loader0", "simpleElementExample.SubComponentLoaderLegacy")
 loader0.addParam("clock", "1.5GHz")

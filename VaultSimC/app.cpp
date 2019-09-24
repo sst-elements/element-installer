@@ -21,49 +21,49 @@
 #include <stdlib.h>
 
 
-static unsigned int missRate[][3] = {{0,51,32},   //app 0
-				     {0,18,15}};  //app 1
-static unsigned int isLoad[] = {3,32}; // out of 64
+static unsigned int missRate[][3] = {{0, 51, 32},   //app 0
+                                     {0, 18, 15}};  //app 1
+static unsigned int isLoad[] = {3, 32}; // out of 64
 
 using namespace SST::MemHierarchy;
 using namespace SST::VaultSim;
 
 MemReqEvent *cpu::getInst(int cacheLevel, int app, int core) {
-  /*
-app: 		MD(0)	PHD(1)
-l/s ratio	21:1	1:1
-L1 miss/1Kinst  51	18
-L2 miss/inst	32	15
-  */
-  //printf("using missrate %d\n", missRate[app][cacheLevel]);
+    /*
+  app: 		MD(0)	PHD(1)
+  l/s ratio	21:1	1:1
+  L1 miss/1Kinst  51	18
+  L2 miss/inst	32	15
+    */
+    //printf("using missrate %d\n", missRate[app][cacheLevel]);
 
-  unsigned int roll1K = rng->generateNextUInt32() & 0x3ff;
-  if (roll1K <= missRate[app][cacheLevel]) {
-    //is a memory access
-    unsigned int roll = rng->generateNextUInt32();
-    unsigned int memRoll = roll & 0x3f;
+    unsigned int roll1K = rng->generateNextUInt32() & 0x3ff;
+    if (roll1K <= missRate[app][cacheLevel]) {
+        //is a memory access
+        unsigned int roll = rng->generateNextUInt32();
+        unsigned int memRoll = roll & 0x3f;
 
-    Addr addr;
-    if ((memRoll & 0x1) == 0) {
-      // stride
-      addr = coreAddr[core] + (1 << 6);  
-      addr = (addr >> 6) << 6;    
+        Addr addr;
+        if ((memRoll & 0x1) == 0) {
+            // stride
+            addr = coreAddr[core] + (1 << 6);
+            addr = (addr >> 6) << 6;
+        } else {
+            //random
+            addr = (roll >> 6) << 6;
+        }
+        coreAddr[core] = addr;
+        bool isWrite;
+
+        if (memRoll <= isLoad[app]) {
+            isWrite = false;
+        } else {
+            isWrite = true;
+        }
+        MemReqEvent *event = new MemReqEvent((ReqId) this, addr, isWrite, 0, 0);
+
+        return event;
     } else {
-      //random
-      addr = (roll >> 6) << 6;    
+        return 0;
     }
-    coreAddr[core] = addr;
-	bool isWrite; 
-
-    if (memRoll <= isLoad[app]) {
-        isWrite = false;
-    } else {
-        isWrite = true;
-    }
-    MemReqEvent *event = new MemReqEvent((ReqId)this, addr, isWrite, 0, 0 );
-
-    return event;
-  } else {
-    return 0;
-  }
 }

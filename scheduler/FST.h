@@ -26,30 +26,41 @@
 namespace SST {
     namespace Scheduler {
         class Scheduler;
+
         class Machine;
+
         class Allocator;
+
         class Job;
+
         class Statistics;
+
         class TaskMapInfo;
 
         class FST {
-            private:
-                std::vector<Job*>* running;
-                std::vector<Job*>* toRun;
-                int numjobs;
-                unsigned long* jobFST; //array to hold the FST values for jobs 1....numjobs
-                bool relaxed;
+        private:
+            std::vector<Job *> *running;
+            std::vector<Job *> *toRun;
+            int numjobs;
+            unsigned long *jobFST; //array to hold the FST values for jobs 1....numjobs
+            bool relaxed;
 
-            public:
-                void jobArrives(Job* j, Scheduler* insched, Machine* inmach);
-                void jobCompletes(Job* j);
-                void jobStarts(Job* j, unsigned long time);
-                FST(int inrelaxed); 
-                bool FSTstart(std::multimap<Job*, unsigned long, bool(*)(Job*, Job*)>* endtimes, 
-                              std::map<Job*, TaskMapInfo*>* jobToAi, Job* j, Scheduler* sched,
-                              Allocator* alloc, Machine* mach, Statistics* stats, unsigned long time);
-                void setup(int numjobs);
-                unsigned long getFST(int num);
+        public:
+            void jobArrives(Job *j, Scheduler *insched, Machine *inmach);
+
+            void jobCompletes(Job *j);
+
+            void jobStarts(Job *j, unsigned long time);
+
+            FST(int inrelaxed);
+
+            bool FSTstart(std::multimap<Job *, unsigned long, bool (*)(Job *, Job *)> *endtimes,
+                          std::map<Job *, TaskMapInfo *> *jobToAi, Job *j, Scheduler *sched,
+                          Allocator *alloc, Machine *mach, Statistics *stats, unsigned long time);
+
+            void setup(int numjobs);
+
+            unsigned long getFST(int num);
         };
 
     }

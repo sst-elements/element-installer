@@ -24,453 +24,434 @@
 using namespace Hermes;
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class InitStartEvent : public Event {
-  public:
-    InitStartEvent()
-    { }
-    
-    NotSerializable(InitStartEvent)
-};
+        class InitStartEvent : public Event {
+        public:
+            InitStartEvent() {}
 
-class FiniStartEvent : public Event {
-  public:
-    FiniStartEvent()
-    { }
-    
-    NotSerializable(FiniStartEvent)
-};
+            NotSerializable(InitStartEvent)
+        };
 
-class RankStartEvent : public Event {
-  public:
-    RankStartEvent( MP::Communicator _group, int* _rank ) :
-        group( _group ),
-        rank( _rank )
-    { }
+        class FiniStartEvent : public Event {
+        public:
+            FiniStartEvent() {}
 
-    MP::Communicator group;
-    int* rank;
-    
-    NotSerializable(RankStartEvent)
-};
+            NotSerializable(FiniStartEvent)
+        };
 
-class SizeStartEvent : public Event {
-  public:
-    SizeStartEvent( MP::Communicator _group, int* _size ) :
-        group( _group ),
-        size( _size )
-    { }
+        class RankStartEvent : public Event {
+        public:
+            RankStartEvent(MP::Communicator _group, int *_rank) :
+                group(_group),
+                rank(_rank) {}
 
-    MP::Communicator group;
-    int* size;
-    
-    NotSerializable(SizeStartEvent)
-};
+            MP::Communicator group;
+            int *rank;
 
-class MakeProgressStartEvent : public Event {
-  public:
-    MakeProgressStartEvent()
-    { }
-    
-    NotSerializable(InitStartEvent)
-};
+            NotSerializable(RankStartEvent)
+        };
 
-class BarrierStartEvent : public Event {
-  public:
-    BarrierStartEvent( MP::Communicator _group ) :
-        group( _group )
-    { }
+        class SizeStartEvent : public Event {
+        public:
+            SizeStartEvent(MP::Communicator _group, int *_size) :
+                group(_group),
+                size(_size) {}
 
-    MP::Communicator group;
-    
-    NotSerializable(BarrierStartEvent)
-};
+            MP::Communicator group;
+            int *size;
 
-class RecvStartEvent : public Event {
+            NotSerializable(SizeStartEvent)
+        };
 
-  public:
-    RecvStartEvent(
-            const Hermes::MemAddr& _buf, uint32_t _count,
-            MP::PayloadDataType _dtype, MP::RankID _src,
-            uint32_t _tag, MP::Communicator _group, 
-            MP::MessageRequest* _req, MP::MessageResponse* _resp ) :
-        buf( _buf ),
-        count( _count ),
-        dtype( _dtype ),      
-        src( _src ),
-        tag( _tag ),
-        group( _group ),
-        resp( _resp ),
-        req( _req )
-    {}
-    Hermes::MemAddr            buf;
-    uint32_t                    count;
-    MP::PayloadDataType     dtype;
-    MP::RankID              src;
-    uint32_t                    tag;
-    MP::Communicator        group;
-    MP::MessageResponse*    resp;
-    MP::MessageRequest*     req;
-    
-    NotSerializable(RecvStartEvent)
-};
+        class MakeProgressStartEvent : public Event {
+        public:
+            MakeProgressStartEvent() {}
+
+            NotSerializable(InitStartEvent)
+        };
+
+        class BarrierStartEvent : public Event {
+        public:
+            BarrierStartEvent(MP::Communicator _group) :
+                group(_group) {}
+
+            MP::Communicator group;
+
+            NotSerializable(BarrierStartEvent)
+        };
+
+        class RecvStartEvent : public Event {
+
+        public:
+            RecvStartEvent(
+                const Hermes::MemAddr &_buf, uint32_t _count,
+                MP::PayloadDataType _dtype, MP::RankID _src,
+                uint32_t _tag, MP::Communicator _group,
+                MP::MessageRequest *_req, MP::MessageResponse *_resp) :
+                buf(_buf),
+                count(_count),
+                dtype(_dtype),
+                src(_src),
+                tag(_tag),
+                group(_group),
+                resp(_resp),
+                req(_req) {}
+
+            Hermes::MemAddr buf;
+            uint32_t count;
+            MP::PayloadDataType dtype;
+            MP::RankID src;
+            uint32_t tag;
+            MP::Communicator group;
+            MP::MessageResponse *resp;
+            MP::MessageRequest *req;
+
+            NotSerializable(RecvStartEvent)
+        };
 
 
-class SendStartEvent : public Event {
+        class SendStartEvent : public Event {
 
-  public:
-    SendStartEvent(
-                const Hermes::MemAddr& _buf, uint32_t _count,
+        public:
+            SendStartEvent(
+                const Hermes::MemAddr &_buf, uint32_t _count,
                 MP::PayloadDataType _dtype, MP::RankID _dest,
-                uint32_t _tag, MP::Communicator _group, 
-                MP::MessageRequest* _req ) :
-        buf( _buf ),
-        count( _count ),
-        dtype( _dtype ),      
-        dest( _dest ),
-        tag( _tag ),
-        group( _group ),
-        req( _req )
-    {}
-    Hermes::MemAddr         buf;
-    uint32_t                count;
-    MP::PayloadDataType     dtype;
-    MP::RankID              dest;
-    uint32_t                tag;
-    MP::Communicator        group;
-    MP::MessageRequest*     req;
-    
-    NotSerializable(SendStartEvent)
-};
+                uint32_t _tag, MP::Communicator _group,
+                MP::MessageRequest *_req) :
+                buf(_buf),
+                count(_count),
+                dtype(_dtype),
+                dest(_dest),
+                tag(_tag),
+                group(_group),
+                req(_req) {}
 
-class CollectiveStartEvent : public Event {
+            Hermes::MemAddr buf;
+            uint32_t count;
+            MP::PayloadDataType dtype;
+            MP::RankID dest;
+            uint32_t tag;
+            MP::Communicator group;
+            MP::MessageRequest *req;
 
-  public:
-    enum Type { Allreduce, Reduce, Bcast };
-    CollectiveStartEvent(
-                const Hermes::MemAddr& _mydata, const Hermes::MemAddr& _result, uint32_t _count,
+            NotSerializable(SendStartEvent)
+        };
+
+        class CollectiveStartEvent : public Event {
+
+        public:
+            enum Type {
+                Allreduce, Reduce, Bcast
+            };
+
+            CollectiveStartEvent(
+                const Hermes::MemAddr &_mydata, const Hermes::MemAddr &_result, uint32_t _count,
                 MP::PayloadDataType _dtype, MP::ReductionOperation _op,
                 MP::RankID _root, MP::Communicator _group,
-                Type _type ) :
-        mydata(_mydata),
-        result(_result),
-        count(_count),
-        dtype(_dtype),
-        op(_op),
-        root(_root),
-        group(_group),
-        type( _type ) 
-    {}
-    
-    const char* typeName() {
-        switch( type ) {
-          case Allreduce:
-            return "Allreduce";
-          case Reduce:
-            return "Reduce";
-          case Bcast:
-            return "Bcast";
-        }
-        return NULL;
-    }
+                Type _type) :
+                mydata(_mydata),
+                result(_result),
+                count(_count),
+                dtype(_dtype),
+                op(_op),
+                root(_root),
+                group(_group),
+                type(_type) {}
 
-    Hermes::MemAddr mydata;
-    Hermes::MemAddr result;
-    uint32_t count;
-    MP::PayloadDataType dtype;
-    MP::ReductionOperation op;
-    MP::RankID  root;
-    MP::Communicator group;
-    Type  type;
-    
-    NotSerializable(CollectiveStartEvent)
-};
+            const char *typeName() {
+                switch (type) {
+                    case Allreduce:
+                        return "Allreduce";
+                    case Reduce:
+                        return "Reduce";
+                    case Bcast:
+                        return "Bcast";
+                }
+                return nullptr;
+            }
 
-class GatherBaseStartEvent : public Event {
+            Hermes::MemAddr mydata;
+            Hermes::MemAddr result;
+            uint32_t count;
+            MP::PayloadDataType dtype;
+            MP::ReductionOperation op;
+            MP::RankID root;
+            MP::Communicator group;
+            Type type;
 
-  public:
-    GatherBaseStartEvent(
-                const Hermes::MemAddr& _sendbuf, uint32_t _sendcnt,
+            NotSerializable(CollectiveStartEvent)
+        };
+
+        class GatherBaseStartEvent : public Event {
+
+        public:
+            GatherBaseStartEvent(
+                const Hermes::MemAddr &_sendbuf, uint32_t _sendcnt,
                 MP::PayloadDataType _sendtype,
-                const Hermes::MemAddr& _recvbuf,
+                const Hermes::MemAddr &_recvbuf,
                 MP::PayloadDataType _recvtype,
-                MP::RankID _root, MP::Communicator _group ) :
-        sendbuf(_sendbuf),
-        recvbuf(_recvbuf),
-        sendcnt(_sendcnt),
-        sendtype(_sendtype),
-        recvtype(_recvtype),
-        root(_root),
-        group(_group)
-    {}
-    
-    Hermes::MemAddr sendbuf;
-    Hermes::MemAddr recvbuf;
-    uint32_t sendcnt;
-    MP::PayloadDataType sendtype;
-    MP::PayloadDataType recvtype;
-    MP::RankID  root;
-    MP::Communicator group;
-    
-    NotSerializable(GatherBaseStartEvent)
-};
+                MP::RankID _root, MP::Communicator _group) :
+                sendbuf(_sendbuf),
+                recvbuf(_recvbuf),
+                sendcnt(_sendcnt),
+                sendtype(_sendtype),
+                recvtype(_recvtype),
+                root(_root),
+                group(_group) {}
 
-class GatherStartEvent : public GatherBaseStartEvent {
-  public:
-    GatherStartEvent(
-            const Hermes::MemAddr& sendbuf, uint32_t sendcnt,
-            MP::PayloadDataType sendtype,
-            const Hermes::MemAddr& recvbuf, void* _recvcnt,  void* _displs,
-            MP::PayloadDataType recvtype,
-            MP::RankID root, MP::Communicator group ) :
-        GatherBaseStartEvent( sendbuf, sendcnt, sendtype,
-            recvbuf, recvtype, root, group ),
-            recvcntPtr( _recvcnt),
-            displsPtr( _displs ) 
-    { }
+            Hermes::MemAddr sendbuf;
+            Hermes::MemAddr recvbuf;
+            uint32_t sendcnt;
+            MP::PayloadDataType sendtype;
+            MP::PayloadDataType recvtype;
+            MP::RankID root;
+            MP::Communicator group;
 
-    GatherStartEvent(
-            const Hermes::MemAddr& sendbuf, uint32_t sendcnt,
-            MP::PayloadDataType sendtype,
-            const Hermes::MemAddr& recvbuf, uint32_t _recvcnt,
-            MP::PayloadDataType recvtype,
-            MP::RankID root, MP::Communicator group ) :
-        GatherBaseStartEvent( sendbuf, sendcnt, sendtype,
-            recvbuf, recvtype, root, group ),
-            recvcntPtr( 0 ),
-            displsPtr( 0 ),
-            recvcnt( _recvcnt) 
-    { }
+            NotSerializable(GatherBaseStartEvent)
+        };
 
-    GatherStartEvent(
-            const Hermes::MemAddr& sendbuf, uint32_t sendcnt,
-            MP::PayloadDataType sendtype,
-            const Hermes::MemAddr& recvbuf, uint32_t _recvcnt,
-            MP::PayloadDataType recvtype,
-            MP::Communicator group ) :
-        GatherBaseStartEvent( sendbuf, sendcnt, sendtype,
-            recvbuf, recvtype, 0, group ),
-            recvcntPtr( 0 ),
-            displsPtr( 0 ),
-            recvcnt( _recvcnt) 
-    { }
+        class GatherStartEvent : public GatherBaseStartEvent {
+        public:
+            GatherStartEvent(
+                const Hermes::MemAddr &sendbuf, uint32_t sendcnt,
+                MP::PayloadDataType sendtype,
+                const Hermes::MemAddr &recvbuf, void *_recvcnt, void *_displs,
+                MP::PayloadDataType recvtype,
+                MP::RankID root, MP::Communicator group) :
+                GatherBaseStartEvent(sendbuf, sendcnt, sendtype,
+                                     recvbuf, recvtype, root, group),
+                recvcntPtr(_recvcnt),
+                displsPtr(_displs) {}
 
-    GatherStartEvent(
-            const Hermes::MemAddr& sendbuf, uint32_t sendcnt,
-            MP::PayloadDataType sendtype,
-            const Hermes::MemAddr& recvbuf,  void* _recvcnt, void* _displs,
-            MP::PayloadDataType recvtype, MP::Communicator group ) :
-        GatherBaseStartEvent( sendbuf, sendcnt, sendtype,
-            recvbuf, recvtype, 0, group ),
-            recvcntPtr( _recvcnt),
-            displsPtr( _displs )
-    { }
+            GatherStartEvent(
+                const Hermes::MemAddr &sendbuf, uint32_t sendcnt,
+                MP::PayloadDataType sendtype,
+                const Hermes::MemAddr &recvbuf, uint32_t _recvcnt,
+                MP::PayloadDataType recvtype,
+                MP::RankID root, MP::Communicator group) :
+                GatherBaseStartEvent(sendbuf, sendcnt, sendtype,
+                                     recvbuf, recvtype, root, group),
+                recvcntPtr(0),
+                displsPtr(0),
+                recvcnt(_recvcnt) {}
 
-    void* recvcntPtr;
-    void* displsPtr;
-    uint32_t recvcnt;
+            GatherStartEvent(
+                const Hermes::MemAddr &sendbuf, uint32_t sendcnt,
+                MP::PayloadDataType sendtype,
+                const Hermes::MemAddr &recvbuf, uint32_t _recvcnt,
+                MP::PayloadDataType recvtype,
+                MP::Communicator group) :
+                GatherBaseStartEvent(sendbuf, sendcnt, sendtype,
+                                     recvbuf, recvtype, 0, group),
+                recvcntPtr(0),
+                displsPtr(0),
+                recvcnt(_recvcnt) {}
 
-    NotSerializable(GatherStartEvent)
-};
+            GatherStartEvent(
+                const Hermes::MemAddr &sendbuf, uint32_t sendcnt,
+                MP::PayloadDataType sendtype,
+                const Hermes::MemAddr &recvbuf, void *_recvcnt, void *_displs,
+                MP::PayloadDataType recvtype, MP::Communicator group) :
+                GatherBaseStartEvent(sendbuf, sendcnt, sendtype,
+                                     recvbuf, recvtype, 0, group),
+                recvcntPtr(_recvcnt),
+                displsPtr(_displs) {}
 
-class AlltoallStartEvent: public Event {
-  public:
-    AlltoallStartEvent(
-            const Hermes::MemAddr& _sendbuf, uint32_t _sendcnt, 
-            MP::PayloadDataType _sendtype, 
-            const Hermes::MemAddr& _recvbuf, uint32_t _recvcnt, 
-            MP::PayloadDataType _recvtype, 
-            MP::Communicator _group  ) :
-        sendbuf( _sendbuf ),
-        sendcnt( _sendcnt ),
-        sendcnts( NULL ),
-        sendtype( _sendtype ),
-        recvbuf( _recvbuf ),
-        recvcnt( _recvcnt ),
-        recvcnts( NULL ),
-        recvtype( _recvtype ),
-        group( _group )
-    { } 
+            void *recvcntPtr;
+            void *displsPtr;
+            uint32_t recvcnt;
 
-    AlltoallStartEvent(
-            const Hermes::MemAddr& _sendbuf, void* _sendcnts,  
-            void* _senddispls,
-            MP::PayloadDataType _sendtype, 
-            const Hermes::MemAddr& _recvbuf, void* _recvcnts, 
-            void* _recvdispls,
-            MP::PayloadDataType _recvtype, 
-            MP::Communicator _group ) :
-        sendbuf( _sendbuf ),
-        sendcnts( _sendcnts ),
-        senddispls( _senddispls ),
-        sendtype( _sendtype ),
-        recvbuf( _recvbuf ),
-        recvcnts( _recvcnts ),
-        recvdispls( _recvdispls ),
-        recvtype( _recvtype ),
-        group( _group )
-    { } 
+            NotSerializable(GatherStartEvent)
+        };
 
-    Hermes::MemAddr            sendbuf;
-    uint32_t                sendcnt;
-    void*            sendcnts;
-    void*            senddispls;
-    MP::PayloadDataType sendtype;
-    Hermes::MemAddr            recvbuf;
-    uint32_t                recvcnt;
-    void*            recvcnts;
-    void*            recvdispls;
-    MP::PayloadDataType recvtype;
-    MP::Communicator    group;
+        class AlltoallStartEvent : public Event {
+        public:
+            AlltoallStartEvent(
+                const Hermes::MemAddr &_sendbuf, uint32_t _sendcnt,
+                MP::PayloadDataType _sendtype,
+                const Hermes::MemAddr &_recvbuf, uint32_t _recvcnt,
+                MP::PayloadDataType _recvtype,
+                MP::Communicator _group) :
+                sendbuf(_sendbuf),
+                sendcnt(_sendcnt),
+                sendcnts(nullptr),
+                sendtype(_sendtype),
+                recvbuf(_recvbuf),
+                recvcnt(_recvcnt),
+                recvcnts(nullptr),
+                recvtype(_recvtype),
+                group(_group) {}
 
-    NotSerializable(AlltoallStartEvent)
-};
+            AlltoallStartEvent(
+                const Hermes::MemAddr &_sendbuf, void *_sendcnts,
+                void *_senddispls,
+                MP::PayloadDataType _sendtype,
+                const Hermes::MemAddr &_recvbuf, void *_recvcnts,
+                void *_recvdispls,
+                MP::PayloadDataType _recvtype,
+                MP::Communicator _group) :
+                sendbuf(_sendbuf),
+                sendcnts(_sendcnts),
+                senddispls(_senddispls),
+                sendtype(_sendtype),
+                recvbuf(_recvbuf),
+                recvcnts(_recvcnts),
+                recvdispls(_recvdispls),
+                recvtype(_recvtype),
+                group(_group) {}
 
-class CancelStartEvent : public Event {
-  public:
-    CancelStartEvent(
-        MP::MessageRequest req ) :
-        req(req)
-    { }
+            Hermes::MemAddr sendbuf;
+            uint32_t sendcnt;
+            void *sendcnts;
+            void *senddispls;
+            MP::PayloadDataType sendtype;
+            Hermes::MemAddr recvbuf;
+            uint32_t recvcnt;
+            void *recvcnts;
+            void *recvdispls;
+            MP::PayloadDataType recvtype;
+            MP::Communicator group;
 
-    MP::MessageRequest req;
+            NotSerializable(AlltoallStartEvent)
+        };
 
-    NotSerializable(CancelStartEvent)
-};
+        class CancelStartEvent : public Event {
+        public:
+            CancelStartEvent(
+                MP::MessageRequest req) :
+                req(req) {}
 
-class TestStartEvent : public Event {
-  public:
-    TestStartEvent(
-        MP::MessageRequest _req, int* flag, MP::MessageResponse* _resp ) :
-        req(_req),
-		flag(flag),
-        resp(_resp)
-    { }
+            MP::MessageRequest req;
 
-    MP::MessageRequest req;
-    MP::MessageResponse* resp;
-	int* flag;
+            NotSerializable(CancelStartEvent)
+        };
 
-    NotSerializable(TestStartEvent)
-};
-class WaitStartEvent : public Event {
-  public:
-    WaitStartEvent(
-        MP::MessageRequest _req, MP::MessageResponse* _resp ) :
-        req(_req),
-        resp(_resp)
-    { }
+        class TestStartEvent : public Event {
+        public:
+            TestStartEvent(
+                MP::MessageRequest _req, int *flag, MP::MessageResponse *_resp) :
+                req(_req),
+                flag(flag),
+                resp(_resp) {}
 
-    MP::MessageRequest req;
-    MP::MessageResponse* resp;
+            MP::MessageRequest req;
+            MP::MessageResponse *resp;
+            int *flag;
 
-    NotSerializable(WaitStartEvent)
-};
+            NotSerializable(TestStartEvent)
+        };
 
-class TestanyStartEvent : public Event {
-  public:
-    TestanyStartEvent( int count, MP::MessageRequest req[], 
-                            int* index, int* flag, MP::MessageResponse* resp ) :
-        count( count ),
-        req( req ),
-        index( index ),
-        flag( flag ),
-        resp( resp )
-    { }
+        class WaitStartEvent : public Event {
+        public:
+            WaitStartEvent(
+                MP::MessageRequest _req, MP::MessageResponse *_resp) :
+                req(_req),
+                resp(_resp) {}
 
-    int count;
-    MP::MessageRequest* req;
-    int* index;
-	int* flag;
-    MP::MessageResponse* resp;
+            MP::MessageRequest req;
+            MP::MessageResponse *resp;
 
-    NotSerializable(TestanyStartEvent)
-};
+            NotSerializable(WaitStartEvent)
+        };
 
-class WaitAnyStartEvent : public Event {
-  public:
-    WaitAnyStartEvent( int _count, MP::MessageRequest _req[], 
-                            int* _index, MP::MessageResponse* _resp ) :
-        count( _count ),
-        req( _req ),
-        index( _index ),
-        resp( _resp )
-    { }
+        class TestanyStartEvent : public Event {
+        public:
+            TestanyStartEvent(int count, MP::MessageRequest req[],
+                              int *index, int *flag, MP::MessageResponse *resp) :
+                count(count),
+                req(req),
+                index(index),
+                flag(flag),
+                resp(resp) {}
 
-    int count;
-    MP::MessageRequest* req;
-    int* index;
-    MP::MessageResponse* resp;
+            int count;
+            MP::MessageRequest *req;
+            int *index;
+            int *flag;
+            MP::MessageResponse *resp;
 
-    NotSerializable(WaitAnyStartEvent)
-};
+            NotSerializable(TestanyStartEvent)
+        };
 
-class WaitAllStartEvent : public Event {
-  public:
-    WaitAllStartEvent( int _count, MP::MessageRequest _req[], 
-                            MP::MessageResponse* _resp[] ) :
-        count( _count ),
-        req( _req ),
-        resp( _resp )
-    { }
+        class WaitAnyStartEvent : public Event {
+        public:
+            WaitAnyStartEvent(int _count, MP::MessageRequest _req[],
+                              int *_index, MP::MessageResponse *_resp) :
+                count(_count),
+                req(_req),
+                index(_index),
+                resp(_resp) {}
 
-    int count;
-    MP::MessageRequest*  req;
-    MP::MessageResponse** resp;
+            int count;
+            MP::MessageRequest *req;
+            int *index;
+            MP::MessageResponse *resp;
 
-    NotSerializable(WaitAllStartEvent)
-};
+            NotSerializable(WaitAnyStartEvent)
+        };
+
+        class WaitAllStartEvent : public Event {
+        public:
+            WaitAllStartEvent(int _count, MP::MessageRequest _req[],
+                              MP::MessageResponse *_resp[]) :
+                count(_count),
+                req(_req),
+                resp(_resp) {}
+
+            int count;
+            MP::MessageRequest *req;
+            MP::MessageResponse **resp;
+
+            NotSerializable(WaitAllStartEvent)
+        };
 
 
-class CommSplitStartEvent : public Event {
-  public:
-    CommSplitStartEvent( MP::Communicator _oldComm, int _color, int _key,
-                            MP::Communicator* _newComm ) :
-        oldComm(_oldComm),
-        color( _color ),
-        key( _key ),
-        newComm( _newComm )
-    { }
+        class CommSplitStartEvent : public Event {
+        public:
+            CommSplitStartEvent(MP::Communicator _oldComm, int _color, int _key,
+                                MP::Communicator *_newComm) :
+                oldComm(_oldComm),
+                color(_color),
+                key(_key),
+                newComm(_newComm) {}
 
-    MP::Communicator oldComm;
-    int color;
-    int key;
-    MP::Communicator* newComm;
+            MP::Communicator oldComm;
+            int color;
+            int key;
+            MP::Communicator *newComm;
 
-    NotSerializable(CommSplitStartEvent)
-};
+            NotSerializable(CommSplitStartEvent)
+        };
 
-class CommCreateStartEvent : public Event {
-  public:
-    CommCreateStartEvent( MP::Communicator _oldComm, size_t _nRanks, 
-                int* _ranks, MP::Communicator* _newComm ) :
-        oldComm(_oldComm),
-        nRanks( _nRanks ),
-        ranks( _ranks ),
-        newComm( _newComm )
-    { }
+        class CommCreateStartEvent : public Event {
+        public:
+            CommCreateStartEvent(MP::Communicator _oldComm, size_t _nRanks,
+                                 int *_ranks, MP::Communicator *_newComm) :
+                oldComm(_oldComm),
+                nRanks(_nRanks),
+                ranks(_ranks),
+                newComm(_newComm) {}
 
-    MP::Communicator oldComm;
-    size_t nRanks;
-    int*   ranks;
-    MP::Communicator* newComm;
+            MP::Communicator oldComm;
+            size_t nRanks;
+            int *ranks;
+            MP::Communicator *newComm;
 
-    NotSerializable(CommCreateStartEvent)
-};
+            NotSerializable(CommCreateStartEvent)
+        };
 
-class CommDestroyStartEvent : public Event {
-  public:
-    CommDestroyStartEvent( MP::Communicator _comm ) :
-        comm(_comm)
-    { }
+        class CommDestroyStartEvent : public Event {
+        public:
+            CommDestroyStartEvent(MP::Communicator _comm) :
+                comm(_comm) {}
 
-    MP::Communicator comm;
+            MP::Communicator comm;
 
-    NotSerializable(CommDestroyStartEvent)
-};
+            NotSerializable(CommDestroyStartEvent)
+        };
 
 
-}
+    }
 }
 #endif

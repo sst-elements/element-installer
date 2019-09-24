@@ -20,35 +20,43 @@
 #include "memBackend.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class VaultSimMemory : public FlagMemBackend {
-public:
+        class VaultSimMemory : public FlagMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(VaultSimMemory, "memHierarchy", "vaultsim", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(VaultSimMemory,
+            "memHierarchy", "vaultsim", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Backend to interface with VaultSimC, a generic vaulted memory model", SST::MemHierarchy::FlagMemBackend)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
-            /* Own parameters */
-            {"access_time", "Link latency for the link to the VaultSim memory model. With units (SI ok).", "100ns"} )
 
-    SST_ELI_DOCUMENT_PORTS( {"cube_link", "Link to VaultSim.", {"VaultSimC.MemRespEvent", "VaultSimC.MemReqEvent"} } )
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+            /* Own parameters */
+            { "access_time", "Link latency for the link to the VaultSim memory model. With units (SI ok).", "100ns" } )
+
+            SST_ELI_DOCUMENT_PORTS( {
+                "cube_link", "Link to VaultSim.", {"VaultSimC.MemRespEvent",
+                                                   "VaultSimC.MemReqEvent"}
+            } )
 
 /* Begin class definition */
-    VaultSimMemory(Component *comp, Params &params);
-    VaultSimMemory(ComponentId_t id, Params &params);
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, uint32_t flags, unsigned numBytes );
-    virtual bool isClocked() { return false; }
+            VaultSimMemory(Component *comp, Params &params);
 
-private:
-    void build(Params& params);
-    void handleCubeEvent(SST::Event *event);
+            VaultSimMemory(ComponentId_t id, Params &params);
 
-    std::set<ReqId> outToCubes;
-    SST::Link *cube_link;
-};
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, uint32_t flags, unsigned numBytes);
 
-}
+            virtual bool isClocked() { return false; }
+
+        private:
+            void build(Params &params);
+
+            void handleCubeEvent(SST::Event *event);
+
+            std::set <ReqId> outToCubes;
+            SST::Link *cube_link;
+        };
+
+    }
 }
 
 #endif

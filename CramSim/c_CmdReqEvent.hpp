@@ -34,23 +34,23 @@
 #include "c_BankCommand.hpp"
 
 namespace SST {
-namespace n_Bank {
-  class c_CmdReqEvent : public SST::Event {
-  public:
-    c_BankCommand *m_payload; // FIXME: change this pointer to a unique_ptr
+    namespace n_Bank {
+        class c_CmdReqEvent : public SST::Event {
+        public:
+            c_BankCommand *m_payload; // FIXME: change this pointer to a unique_ptr
 
-    c_CmdReqEvent() : SST::Event() {}
+            c_CmdReqEvent() : SST::Event() {}
 
-    void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-        Event::serialize_order(ser);
-        ser & m_payload;
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & m_payload;
+            }
+
+            ImplementSerializable(SST::n_Bank::c_CmdReqEvent);
+
+        };
+
     }
-    
-    ImplementSerializable(SST::n_Bank::c_CmdReqEvent);     
-
-  };
-
-}
 }
 
 #endif // C_CMDREQEVENT_H

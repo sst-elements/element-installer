@@ -19,68 +19,71 @@
 #include <sst/core/component.h>
 
 namespace SST {
-namespace SimpleClockerComponent {
+    namespace SimpleClockerComponent {
 
-class simpleClockerComponent : public SST::Component 
-{
-public:
+        class simpleClockerComponent : public SST::Component {
+        public:
 
-    // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_COMPONENT(
-        simpleClockerComponent,
-        "simpleElementExample",
-        "simpleClockerComponent",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Clock Benchmark Component",
-        COMPONENT_CATEGORY_UNCATEGORIZED
-    )
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        { "clock",      "Clock frequency", "1GHz" },
-        { "clockcount", "Number of clock ticks to execute", "100000"}
-    )
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(
+                simpleClockerComponent,
+            "simpleElementExample",
+            "simpleClockerComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Clock Benchmark Component",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_STATISTICS(
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "clock", "Clock frequency", "1GHz" },
+            { "clockcount", "Number of clock ticks to execute", "100000" }
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_PORTS(
-    )
-    
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_STATISTICS(
+            )
 
-    simpleClockerComponent(SST::ComponentId_t id, SST::Params& params);
-    void setup()  { }
-    void finish() { }
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_PORTS(
+            )
 
-private:
-    simpleClockerComponent();  // for serialization only
-    simpleClockerComponent(const simpleClockerComponent&); // do not implement
-    void operator=(const simpleClockerComponent&); // do not implement
-    
-    virtual bool tick(SST::Cycle_t);
-    
-    virtual bool Clock2Tick(SST::Cycle_t, uint32_t);
-    virtual bool Clock3Tick(SST::Cycle_t, uint32_t);
-    
-    virtual void Oneshot1Callback(uint32_t);
-    virtual void Oneshot2Callback();
-    
-    TimeConverter*      tc;
-    Clock::HandlerBase* Clock3Handler;
-    
-    // Variables to store OneShot Callback Handlers
-    OneShot::HandlerBase* callback1Handler;
-    OneShot::HandlerBase* callback2Handler;
-    
-    std::string clock_frequency_str;
-    int clock_count;
-};
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            )
 
-} // namespace SimpleClockerComponent
+            simpleClockerComponent(SST::ComponentId_t id, SST::Params &params);
+
+            void setup() {}
+
+            void finish() {}
+
+        private:
+            simpleClockerComponent();  // for serialization only
+            simpleClockerComponent(const simpleClockerComponent &); // do not implement
+            void operator=(const simpleClockerComponent &); // do not implement
+
+            virtual bool tick(SST::Cycle_t);
+
+            virtual bool Clock2Tick(SST::Cycle_t, uint32_t);
+
+            virtual bool Clock3Tick(SST::Cycle_t, uint32_t);
+
+            virtual void Oneshot1Callback(uint32_t);
+
+            virtual void Oneshot2Callback();
+
+            TimeConverter *tc;
+            Clock::HandlerBase *Clock3Handler;
+
+            // Variables to store OneShot Callback Handlers
+            OneShot::HandlerBase *callback1Handler;
+            OneShot::HandlerBase *callback2Handler;
+
+            std::string clock_frequency_str;
+            int clock_count;
+        };
+
+    } // namespace SimpleClockerComponent
 } // namespace SST
 
 #endif /* _SIMPLECLOCKERCOMPONENT_H */

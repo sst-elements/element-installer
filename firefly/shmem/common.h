@@ -22,82 +22,99 @@
 
 #if 1
 #undef printf
-#define printf(x,...)
+#define printf(x, ...)
 #endif
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class HadesSHMEM;
+        class HadesSHMEM;
 
-class ShmemCommon {
-  public:
-    ShmemCommon( int my_pe, int num_pes, int requested_crossover, int requested_radix );
-    void build_kary_tree(int radix, int PE_start, int stride, int PE_size, int PE_root, int *parent,
-                                                                      int *num_children, int *children);
-    int num_pes() { return m_num_pes; }
-    int my_pe() { return m_my_pe; }
-    int full_tree_parent() { return m_full_tree_parent; }
-    int full_tree_num_children() { return m_full_tree_num_children; }
-    int tree_radix() { return m_tree_radix; }
-    std::vector<int>& full_tree_children() { return m_full_tree_children; }
-    int circular_iter_next(int curr, int PE_start, int logPE_stride, int PE_size);
+        class ShmemCommon {
+        public:
+            ShmemCommon(int my_pe, int num_pes, int requested_crossover, int requested_radix);
 
-  private:
-    bool m_debug;
-    int m_my_pe;
-    int m_num_pes;
-    int m_full_tree_parent;
-    int m_tree_radix;
-    int m_tree_crossover;
-    int m_full_tree_num_children;
-    std::vector<int> m_full_tree_children;
-};
+            void build_kary_tree(int radix, int PE_start, int stride, int PE_size, int PE_root,
+                                 int *parent,
+                                 int *num_children, int *children);
 
-class ShmemCollective {
-  public:
-    ShmemCollective( HadesSHMEM& api, ShmemCommon& common ) : m_api(api), m_common( common ),
-        m_value( Hermes::Value::Long), m_one((long)1), m_zero((long)0)
-    {}
+            int num_pes() { return m_num_pes; }
 
-    int num_pes() { return m_common.num_pes(); }
-    int my_pe() { return m_common.my_pe(); }
-    int tree_radix() { return m_common.tree_radix(); }
-    int full_tree_parent() { return m_common.full_tree_parent(); }
-    int full_tree_num_children() { return m_common.full_tree_num_children(); }
-    std::vector<int>& full_tree_children() { return m_common.full_tree_children(); }
+            int my_pe() { return m_my_pe; }
 
-    typedef long pSync_t;
+            int full_tree_parent() { return m_full_tree_parent; }
 
-  protected:
+            int full_tree_num_children() { return m_full_tree_num_children; }
+
+            int tree_radix() { return m_tree_radix; }
+
+            std::vector<int> &full_tree_children() { return m_full_tree_children; }
+
+            int circular_iter_next(int curr, int PE_start, int logPE_stride, int PE_size);
+
+        private:
+            bool m_debug;
+            int m_my_pe;
+            int m_num_pes;
+            int m_full_tree_parent;
+            int m_tree_radix;
+            int m_tree_crossover;
+            int m_full_tree_num_children;
+            std::vector<int> m_full_tree_children;
+        };
+
+        class ShmemCollective {
+        public:
+            ShmemCollective(HadesSHMEM &api, ShmemCommon &common) : m_api(api), m_common(common),
+                                                                    m_value(Hermes::Value::Long),
+                                                                    m_one((long) 1),
+                                                                    m_zero((long) 0) {}
+
+            int num_pes() { return m_common.num_pes(); }
+
+            int my_pe() { return m_common.my_pe(); }
+
+            int tree_radix() { return m_common.tree_radix(); }
+
+            int full_tree_parent() { return m_common.full_tree_parent(); }
+
+            int full_tree_num_children() { return m_common.full_tree_num_children(); }
+
+            std::vector<int> &full_tree_children() { return m_common.full_tree_children(); }
+
+            typedef long pSync_t;
+
+        protected:
 
 #if 0
-    void fini(int) {
-        printf(":%d:%s():%d\n",my_pe(),__func__,__LINE__);
-        m_returnCallback( 0 );
-    }    
+            void fini(int) {
+                printf(":%d:%s():%d\n",my_pe(),__func__,__LINE__);
+                m_returnCallback( 0 );
+            }
 #endif
 
-    std::string m_prefix;
-    const char* prefix() { return m_prefix.c_str(); }
-    HadesSHMEM&     m_api;
-    ShmemCommon&    m_common;
+            std::string m_prefix;
 
-    int     m_parent;
-    int     m_num_children;
-    int*    m_children;
+            const char *prefix() { return m_prefix.c_str(); }
 
-    std::vector<int> m_part_tree_children;
+            HadesSHMEM &m_api;
+            ShmemCommon &m_common;
 
-    Hermes::Vaddr   m_pSync;
-    Hermes::Value   m_value;
-    Hermes::Value   m_one;
-    Hermes::Value   m_zero;
+            int m_parent;
+            int m_num_children;
+            int *m_children;
 
-    Hermes::Shmem::Callback m_returnCallback;    
-};
+            std::vector<int> m_part_tree_children;
 
-}
+            Hermes::Vaddr m_pSync;
+            Hermes::Value m_value;
+            Hermes::Value m_one;
+            Hermes::Value m_zero;
+
+            Hermes::Shmem::Callback m_returnCallback;
+        };
+
+    }
 }
 
 #endif

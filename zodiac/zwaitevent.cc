@@ -22,13 +22,13 @@ using namespace SST::Zodiac;
 using namespace SST;
 
 ZodiacWaitEvent::ZodiacWaitEvent(uint64_t rID) {
-	reqID = rID;
+    reqID = rID;
 }
 
 ZodiacEventType ZodiacWaitEvent::getEventType() {
-	return Z_WAIT;
+    return Z_WAIT;
 }
 
 uint64_t ZodiacWaitEvent::getRequestID() {
-	return reqID;
+    return reqID;
 }

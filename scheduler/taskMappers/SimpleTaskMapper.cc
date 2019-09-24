@@ -21,22 +21,20 @@
 
 using namespace SST::Scheduler;
 
-std::string SimpleTaskMapper::getSetupInfo(bool comment) const
-{
+std::string SimpleTaskMapper::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
-        com="# ";
-    } else  {
-        com="";
+        com = "# ";
+    } else {
+        com = "";
     }
     return com + "Simple Task Mapper";
 }
 
-TaskMapInfo* SimpleTaskMapper::mapTasks(AllocInfo* allocInfo)
-{
-    TaskMapInfo* tmi = new TaskMapInfo(allocInfo, mach);
-    for(int i = 0; i < allocInfo->job->getProcsNeeded(); i++){
-        tmi->insert(i, allocInfo->nodeIndices[i/mach.coresPerNode]);
+TaskMapInfo *SimpleTaskMapper::mapTasks(AllocInfo *allocInfo) {
+    TaskMapInfo *tmi = new TaskMapInfo(allocInfo, mach);
+    for (int i = 0; i < allocInfo->job->getProcsNeeded(); i++) {
+        tmi->insert(i, allocInfo->nodeIndices[i / mach.coresPerNode]);
     }
     return tmi;
 }

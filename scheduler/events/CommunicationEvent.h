@@ -23,28 +23,42 @@
 namespace SST {
     namespace Scheduler {
 
-        enum CommunicationTypes { RETRIEVE_ID, START_FAULTING, LOG_JOB_START, UNREGISTER_YOURSELF, START_FILE_WATCH, START_NEXT_JOB, SEED_FAULT, SEED_ERROR_LOG, SEED_ERROR_LATENCY, SEED_ERROR_CORRECTION, SEED_JOB_KILL, FAIL_JOBS, SET_DETAILED_NETWORK_SIM }; //NetworkSim: added SET_DETAILED_NETWORK_SIM type
+        enum CommunicationTypes {
+            RETRIEVE_ID,
+            START_FAULTING,
+            LOG_JOB_START,
+            UNREGISTER_YOURSELF,
+            START_FILE_WATCH,
+            START_NEXT_JOB,
+            SEED_FAULT,
+            SEED_ERROR_LOG,
+            SEED_ERROR_LATENCY,
+            SEED_ERROR_CORRECTION,
+            SEED_JOB_KILL,
+            FAIL_JOBS,
+            SET_DETAILED_NETWORK_SIM
+        }; //NetworkSim: added SET_DETAILED_NETWORK_SIM type
 
-        class CommunicationEvent : public SST::Event{
-            public:
+        class CommunicationEvent : public SST::Event {
+        public:
 
-                CommunicationEvent( enum CommunicationTypes type ) : SST::Event() {
-                    CommType = type;
-                    reply = false;
-                    this->payload = NULL;
-                }
+            CommunicationEvent(enum CommunicationTypes type) : SST::Event() {
+                CommType = type;
+                reply = false;
+                this->payload = nullptr;
+            }
 
-                CommunicationEvent(enum CommunicationTypes type, void* payload) : SST::Event() {
-                    CommType = type;
-                    reply = false;
-                    this -> payload = payload;
-                }
+            CommunicationEvent(enum CommunicationTypes type, void *payload) : SST::Event() {
+                CommType = type;
+                reply = false;
+                this->payload = payload;
+            }
 
-                enum CommunicationTypes CommType;
-                bool reply;
-                void * payload;
-                
-                NotSerializable(CommunicationEvent)
+            enum CommunicationTypes CommType;
+            bool reply;
+            void *payload;
+
+            NotSerializable(CommunicationEvent)
         };
 
     }

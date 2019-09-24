@@ -19,35 +19,34 @@
 #include "funcSM/collectiveTree.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class AllreduceFuncSM :  public CollectiveTreeFuncSM 
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        AllreduceFuncSM,
-        "firefly",
-        "Allreduce",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class AllreduceFuncSM : public CollectiveTreeFuncSM {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                AllreduceFuncSM,
+            "firefly",
+            "Allreduce",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
-    AllreduceFuncSM( SST::Params& params ) : CollectiveTreeFuncSM( params ) { }
+        public:
+            AllreduceFuncSM(SST::Params &params) : CollectiveTreeFuncSM(params) {}
 
-    virtual void handleStartEvent( SST::Event* e, Retval& retval ) {
-        CollectiveTreeFuncSM::handleStartEvent( e, retval );
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
+                CollectiveTreeFuncSM::handleStartEvent(e, retval);
+            }
+
+            virtual void handleEnterEvent(Retval &retval) {
+                CollectiveTreeFuncSM::handleEnterEvent(retval);
+            }
+
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+        };
+
     }
-
-    virtual void handleEnterEvent( Retval& retval) {
-        CollectiveTreeFuncSM::handleEnterEvent( retval );
-    }
-
-    virtual std::string protocolName() { return "CtrlMsgProtocol"; }
-};
-
-}
 }
 
 #endif

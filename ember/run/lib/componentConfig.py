@@ -14,11 +14,11 @@
 # distribution.
 
 class ComponentConfig:
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def getParams( self, nodeNum ):
-		pass
-	
-	def getName( self, nodeNum ):
-		pass
+    def getParams(self, nodeNum):
+        pass
+
+    def getName(self, nodeNum):
+        pass

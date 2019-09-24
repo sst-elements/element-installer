@@ -20,37 +20,45 @@
 #include "memBackend.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class Messier : public SimpleMemBackend {
-public:
+        class Messier : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(Messier, "memHierarchy", "Messier", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(Messier,
+            "memHierarchy", "Messier", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Messier memory timings", SST::MemHierarchy::SimpleMemBackend)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
-            /* Own parameters */
-            {"verbose", "Sets the verbosity of the backend output", "0"},
-            {"access_time", "Link latency for the link to the Messier memory model. With units (SI ok).", "1ns"} )
 
-    SST_ELI_DOCUMENT_PORTS( {"cube_link", "Link to Messier", {"Messier.MemReqEvent", "Messier.MemRespEvent"} } )
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKEND_ELI_PARAMS,
+            /* Own parameters */
+            { "verbose", "Sets the verbosity of the backend output", "0" },
+            { "access_time", "Link latency for the link to the Messier memory model. With units (SI ok).", "1ns" } )
+
+            SST_ELI_DOCUMENT_PORTS( {
+                "cube_link", "Link to Messier", {"Messier.MemReqEvent", "Messier.MemRespEvent"}
+            } )
 
 /* Begin class definition */
-    Messier(Component *comp, Params &params);
-    Messier(ComponentId_t id, Params &params);
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, unsigned numBytes );
-    void handleMessierResp(SST::Event *event);
-    virtual bool isClocked() { return false; }
+            Messier(Component *comp, Params &params);
 
-private:
-    void build(Params& params);
-    SST::Link *cube_link;
-    std::set<ReqId> outToNVM;
-    SST::Link *nvm_link;
+            Messier(ComponentId_t id, Params &params);
 
-};
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, unsigned numBytes);
 
-}
+            void handleMessierResp(SST::Event *event);
+
+            virtual bool isClocked() { return false; }
+
+        private:
+            void build(Params &params);
+
+            SST::Link *cube_link;
+            std::set <ReqId> outToNVM;
+            SST::Link *nvm_link;
+
+        };
+
+    }
 }
 
 #endif

@@ -20,35 +20,34 @@
 #include "event.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class RankFuncSM :  public FunctionSMInterface
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        RankFuncSM,
-        "firefly",
-        "Rank",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-  public:
-    RankFuncSM( SST::Params& params ) : FunctionSMInterface( params ) {}
+        class RankFuncSM : public FunctionSMInterface {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                RankFuncSM,
+            "firefly",
+            "Rank",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
+        public:
+            RankFuncSM(SST::Params &params) : FunctionSMInterface(params) {}
 
-    virtual void handleStartEvent( SST::Event *e, Retval& retval ) {
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
 
-        RankStartEvent* event = static_cast< RankStartEvent* >(e);
-        *event->rank = m_info->getGroup(event->group)->getMyRank();
-        
-        m_dbg.debug(CALL_INFO,1,0,"%d\n",*event->rank);
+                RankStartEvent *event = static_cast< RankStartEvent * >(e);
+                *event->rank = m_info->getGroup(event->group)->getMyRank();
 
-        retval.setExit(0);
-        delete e;
+                m_dbg.debug(CALL_INFO, 1, 0, "%d\n", *event->rank);
+
+                retval.setExit(0);
+                delete e;
+            }
+        };
+
     }
-};
-
-}
 }
 
 #endif

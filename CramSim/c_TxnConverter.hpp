@@ -49,86 +49,94 @@
 #include "c_Controller.hpp"
 
 namespace SST {
-namespace n_Bank {
-	class c_CmdScheduler;
-	class c_Controller;
+    namespace n_Bank {
+        class c_CmdScheduler;
+
+        class c_Controller;
 
 
-class c_TxnConverter: public SubComponent{
+        class c_TxnConverter : public SubComponent {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        c_TxnConverter,
-        "CramSim",
-        "c_TxnConverter",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Transaction Converter",
-        "SST::CramSim::Controller::TxnConverter"
-    )
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                c_TxnConverter,
+            "CramSim",
+            "c_TxnConverter",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Transaction Converter",
+            "SST::CramSim::Controller::TxnConverter"
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-		{"relCommandWidth", "Relative width of each command", NULL},
-		{"bankPolicy", "Select which bank policy to model", NULL},
-		{"boolUseReadA", "Whether to use READ or READA Cmds", NULL},
-		{"boolUseWriteA", "Whether to use WRITE or WRITEA Cmds", NULL},
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "relCommandWidth", "Relative width of each command", nullptr },
+            { "bankPolicy", "Select which bank policy to model", nullptr },
+            { "boolUseReadA", "Whether to use READ or READA Cmds", nullptr },
+            { "boolUseWriteA", "Whether to use WRITE or WRITEA Cmds", nullptr },
+            )
 
-    SST_ELI_DOCUMENT_PORTS(
-    )
+            SST_ELI_DOCUMENT_PORTS(
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-        {"readTxnsRecvd", "Number of read transactions received", "reads", 1}, // Name, Desc, Units, Enable Level
-        {"writeTxnsRecvd", "Number of write transactions received", "writes", 1},
-        {"totalTxnsRecvd", "Number of write transactions received", "transactions", 1},
-        {"reqQueueSize", "Total size of the request queue over time", "transactions", 1},
-        {"resQueueSize", "Total size of the response queue over time", "transactions", 1},
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "readTxnsRecvd", "Number of read transactions received", "reads", 1 }, // Name, Desc, Units, Enable Level
+            { "writeTxnsRecvd", "Number of write transactions received", "writes", 1 },
+            { "totalTxnsRecvd", "Number of write transactions received", "transactions", 1 },
+            { "reqQueueSize", "Total size of the request queue over time", "transactions", 1 },
+            { "resQueueSize", "Total size of the response queue over time", "transactions", 1 },
+            )
 
-	c_TxnConverter(SST::Component * comp, SST::Params& x_params);
-	~c_TxnConverter();
+            c_TxnConverter(SST::Component *comp, SST::Params &x_params);
 
-    void run();
-    void push(c_Transaction* newTxn); // receive txns from txnGen into req q
-	c_BankInfo* getBankInfo(unsigned x_bankId);
+            ~c_TxnConverter();
 
-private:
+            void run();
 
-	std::vector<c_BankCommand*> getCommands(c_Transaction* x_txn);
-	void getPreCommands(std::vector<c_BankCommand*> &x_commandVec, c_Transaction* x_txn, ulong x_addr);
-	void getPostCommands(std::vector<c_BankCommand*> &x_commandVec, c_Transaction* x_txn, ulong x_addr);
-	void updateBankInfo(c_Transaction* x_txn);
+            void push(c_Transaction *newTxn); // receive txns from txnGen into req q
+            c_BankInfo *getBankInfo(unsigned x_bankId);
 
-	/// / FIXME: Remove. For testing purposes
-	void printQueues();
+        private:
 
-	c_CmdScheduler *m_cmdScheduler;
-	c_Controller *m_owner;
+            std::vector<c_BankCommand *> getCommands(c_Transaction *x_txn);
 
-	std::vector<c_BankInfo*> m_bankInfo;
-	unsigned m_bankNums;
-	unsigned m_cmdSeqNum;
+            void getPreCommands(std::vector<c_BankCommand *> &x_commandVec, c_Transaction *x_txn,
+                                ulong x_addr);
 
-	std::deque<c_Transaction*> m_inputQ;
+            void getPostCommands(std::vector<c_BankCommand *> &x_commandVec, c_Transaction *x_txn,
+                                 ulong x_addr);
 
-	// params
-	int k_relCommandWidth; // txn relative command width
-	bool k_useReadA;
-	bool k_useWriteA;
-	int k_bankPolicy;
-	SimTime_t k_bankCloseTime;
+            void updateBankInfo(c_Transaction *x_txn);
+
+            /// / FIXME: Remove. For testing purposes
+            void printQueues();
+
+            c_CmdScheduler *m_cmdScheduler;
+            c_Controller *m_owner;
+
+            std::vector<c_BankInfo *> m_bankInfo;
+            unsigned m_bankNums;
+            unsigned m_cmdSeqNum;
+
+            std::deque<c_Transaction *> m_inputQ;
+
+            // params
+            int k_relCommandWidth; // txn relative command width
+            bool k_useReadA;
+            bool k_useWriteA;
+            int k_bankPolicy;
+            SimTime_t k_bankCloseTime;
 
 
-  	// Statistics
-	Statistic<uint64_t>* s_readTxnsRecvd;
-  	Statistic<uint64_t>* s_writeTxnsRecvd;
-  	Statistic<uint64_t>* s_totalTxnsRecvd;
+            // Statistics
+            Statistic <uint64_t> *s_readTxnsRecvd;
+            Statistic <uint64_t> *s_writeTxnsRecvd;
+            Statistic <uint64_t> *s_totalTxnsRecvd;
 
-    //debug
-	Output *output;
+            //debug
+            Output *output;
 
-};
-}
+        };
+    }
 }
 
 #endif /* C_TxnConverter_HPP_ */

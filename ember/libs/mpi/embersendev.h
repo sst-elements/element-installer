@@ -20,48 +20,47 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberSendEvent : public EmberMPIEvent {
+        class EmberSendEvent : public EmberMPIEvent {
 
-  public:
-	EmberSendEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-        const Hermes::MemAddr& payload,
-		uint32_t count, PayloadDataType dtype, RankID dest,
-        uint32_t tag, Communicator group ) :
-        EmberMPIEvent( api, output, stat ),
-        m_payload(payload),
-        m_count(count),
-        m_dtype(dtype),
-        m_dest(dest),
-        m_tag(tag),
-        m_group(group)
-    {}
+        public:
+            EmberSendEvent(MP::Interface &api, Output *output,
+                           EmberEventTimeStatistic *stat,
+                           const Hermes::MemAddr &payload,
+                           uint32_t count, PayloadDataType dtype, RankID dest,
+                           uint32_t tag, Communicator group) :
+                EmberMPIEvent(api, output, stat),
+                m_payload(payload),
+                m_count(count),
+                m_dtype(dtype),
+                m_dest(dest),
+                m_tag(tag),
+                m_group(group) {}
 
-	~EmberSendEvent() {}
+            ~EmberSendEvent() {}
 
-	std::string getName() { return "Send"; }
+            std::string getName() { return "Send"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.send( m_payload, m_count, m_dtype, m_dest, m_tag, 
-                                                    m_group, functor );
+                m_api.send(m_payload, m_count, m_dtype, m_dest, m_tag,
+                           m_group, functor);
+            }
+
+
+        private:
+            Hermes::MemAddr m_payload;
+            uint32_t m_count;
+            PayloadDataType m_dtype;
+            RankID m_dest;
+            uint32_t m_tag;
+            Communicator m_group;
+        };
+
     }
-
-
-  private:
-    Hermes::MemAddr m_payload;
-    uint32_t        m_count;
-    PayloadDataType m_dtype;
-    RankID          m_dest;
-    uint32_t        m_tag;
-    Communicator    m_group;
-};
-
-}
 }
 
 #endif

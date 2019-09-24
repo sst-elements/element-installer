@@ -30,44 +30,48 @@ using namespace SST::Interfaces;
 using namespace SST::Statistics;
 
 namespace SST {
-namespace Cassini {
+    namespace Cassini {
 
-class DMAEngine : public SST::Component {
+        class DMAEngine : public SST::Component {
 
-public:
-	DMAEngine(SST::ComponentId_t id, SST::Params& params);
-	~DMAEngine();
+        public:
+            DMAEngine(SST::ComponentId_t id, SST::Params &params);
 
-	void init(unsigned int phase);
-	void finish();
-	void handleDMACommandIssue(SST::Event* ev);
-	void handleMemorySystemEvent(Interfaces::SimpleMem::Request* ev);
+            ~DMAEngine();
 
-private:
-	DMAEngine(); 			// Serialization only, no implement
-	DMAEngine(const DMAEngine&);	// Serialization only, no implement
-	void operator=(const DMAEngine&); // Serialization only, no implement
+            void init(unsigned int phase);
 
-	void issueNextCommand();
+            void finish();
 
-	uint64_t cacheLineSize;
-	uint32_t maxInFlight;
-	uint32_t opsInFlight;
-	uint32_t cpuLinkCount;
+            void handleDMACommandIssue(SST::Event *ev);
 
-	SST::Link* cpuSideLinks;
-	SimpleMem* cache_link;
+            void handleMemorySystemEvent(Interfaces::SimpleMem::Request *ev);
 
-	std::vector<SimpleMem::Request::id_t> pendingWriteReqs;
-	std::map<SimpleMem::Request::id_t, DMAMemoryOperation*> pendingReadReqs;
+        private:
+            DMAEngine();            // Serialization only, no implement
+            DMAEngine(const DMAEngine &);    // Serialization only, no implement
+            void operator=(const DMAEngine &); // Serialization only, no implement
 
-	std::deque<DMACommand*> cmdQ;
-	DMAEngineState* currentState;
-	Output* output;
+            void issueNextCommand();
 
-};
+            uint64_t cacheLineSize;
+            uint32_t maxInFlight;
+            uint32_t opsInFlight;
+            uint32_t cpuLinkCount;
 
-}
+            SST::Link *cpuSideLinks;
+            SimpleMem *cache_link;
+
+            std::vector <SimpleMem::Request::id_t> pendingWriteReqs;
+            std::map<SimpleMem::Request::id_t, DMAMemoryOperation *> pendingReadReqs;
+
+            std::deque<DMACommand *> cmdQ;
+            DMAEngineState *currentState;
+            Output *output;
+
+        };
+
+    }
 }
 
 #endif

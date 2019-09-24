@@ -22,48 +22,47 @@
 #include "target_generator.h"
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
 
-class BitComplementDist : public TargetGenerator {
+        class BitComplementDist : public TargetGenerator {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        BitComplementDist,
-        "merlin",
-        "targetgen.bit_complement",
-        SST_ELI_ELEMENT_VERSION(0,0,1),
-        "Generates a generalized bit complement pattern.  Returns the same value of num_peers - 1 - id.",
-        "SST::Merlin::DestGenerator")
-    
-    SST_ELI_DOCUMENT_PARAMS(
-    )
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                BitComplementDist,
+            "merlin",
+            "targetgen.bit_complement",
+            SST_ELI_ELEMENT_VERSION(0,0,1),
+            "Generates a generalized bit complement pattern.  Returns the same value of num_peers - 1 - id.",
+            "SST::Merlin::DestGenerator")
 
-    int dest;
-    
-public:
-    BitComplementDist(Component* parent, Params &params) :
-        TargetGenerator(parent)
-    {
-    }
-    
-    ~BitComplementDist() {
-    }
-    
-    void initialize(int id, int num_peers) {
-        dest = num_peers - 1 - id;
-    }        
+            SST_ELI_DOCUMENT_PARAMS(
+            )
 
-    int getNextValue(void) {
-        return dest;
-    }
-    
-    void seed(uint32_t val) {
-    }
-};
+            int dest;
 
-} //namespace Merlin
+        public:
+            BitComplementDist(Component *parent, Params &params) :
+                TargetGenerator(parent) {
+            }
+
+            ~BitComplementDist() {
+            }
+
+            void initialize(int id, int num_peers) {
+                dest = num_peers - 1 - id;
+            }
+
+            int getNextValue(void) {
+                return dest;
+            }
+
+            void seed(uint32_t val) {
+            }
+        };
+
+    } //namespace Merlin
 } //namespace SST
 
 #endif

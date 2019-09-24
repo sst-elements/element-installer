@@ -27,20 +27,21 @@ namespace SST {
     namespace Scheduler {
 
         class Machine;
+
         class Job;
 
         class SimpleAllocator : public Allocator {
-            public:
+        public:
 
-                SimpleAllocator(Machine* m);
+            SimpleAllocator(Machine *m);
 
-                ~SimpleAllocator() {}
+            ~SimpleAllocator() {}
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* j);  //allocates j if possible
-                //returns information on the allocation or NULL if it wasn't possible
-                //(doesn't make allocation; merely returns info on possible allocation)
+            AllocInfo *allocate(Job *j);  //allocates j if possible
+            //returns information on the allocation or nullptr if it wasn't possible
+            //(doesn't make allocation; merely returns info on possible allocation)
         };
 
     }

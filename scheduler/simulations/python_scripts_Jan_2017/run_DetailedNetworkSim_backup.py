@@ -5,48 +5,49 @@ Created by  : Fulya Kaplan
 Description : This main python script runs scheduler and ember simulations successively until completion.
 '''
 
-import os, sys
-from xml.dom.minidom import parse
-import xml.dom.minidom
+import os
 
 from optparse import OptionParser
-import math
-import numpy as np
+
 
 # Function to run linux commands
 def run(cmd):
-    #print(cmd)
+    # print(cmd)
     rtn = os.system(cmd)
     return rtn
 
-def clear_files(options):
 
+def clear_files(options):
     erFile = open(options.emberRunningFile, 'w')
     ecFile = open(options.emberCompletedFile, 'w')
 
     erFile.close()
     ecFile.close()
 
-def delete_logs(options):
 
-    cmd = "rm %s/motif*.log" %(options.output_folder)
+def delete_logs(options):
+    cmd = "rm %s/motif*.log" % (options.output_folder)
     run(cmd)
 
-def run_sim (options):
 
+def run_sim(options):
     # Run scheduler for the first time and create the first snapshot
-    init_cmd  = "sst %s" %(options.schedPythonFile)
+    init_cmd = "sst %s" % (options.schedPythonFile)
     run(init_cmd)
 
     # Do the following in a loop until the simulation is completed
     # Parse scheduler snapshot->run ember->Parse ember output->run scheduler->...
     if options.shuffle == True:
-        ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s --shuffle > %s" %(options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing, options.rankmapper, options.emberOutFile)
+        ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s --shuffle > %s" % (
+        options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
+        options.rankmapper, options.emberOutFile)
     else:
-        ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s > %s" %(options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing, options.rankmapper, options.emberOutFile)
+        ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s > %s" % (
+        options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
+        options.rankmapper, options.emberOutFile)
 
-    #ember_cmd = "./%s --xml %s > %s" %(options.sched_parser, options.xmlFile, options.emberOutFile)
-    #ember_cmd = "./%s --xml %s --alpha %s" %(options.sched_parser, options.xmlFile, options.alpha)
+    # ember_cmd = "./%s --xml %s > %s" %(options.sched_parser, options.xmlFile, options.emberOutFile)
+    # ember_cmd = "./%s --xml %s --alpha %s" %(options.sched_parser, options.xmlFile, options.alpha)
     run(ember_cmd)
 
     '''
@@ -63,15 +64,16 @@ def run_sim (options):
 
     delete_logs(options)
 
-def is_not_empty(fileName):
 
+def is_not_empty(fileName):
     try:
         if os.stat(fileName).st_size > 0:
             return True
         else:
-            return False 
+            return False
     except OSError:
         print "No file"
+
 
 '''
 def set_path_emberLoad(options):
@@ -81,8 +83,9 @@ def set_path_emberLoad(options):
     print cmd
     run(cmd)
 '''
-def grep_set_fileNames(options):
 
+
+def grep_set_fileNames(options):
     # Parser script names are defined by default
     options.sched_parser = "snapshotParser_sched.py"
     options.ember_parser = "snapshotParser_ember.py"
@@ -109,12 +112,12 @@ def grep_set_fileNames(options):
             temp = line.split(':')[1]
             temp = temp.split('\"')[1]
             options.emberCompletedFile = options.output_folder + temp
-            #print options.emberCompletedFile
+            # print options.emberCompletedFile
         elif "runningJobsTrace" in line:
             temp = line.split(':')[1]
             temp = temp.split('\"')[1]
             options.emberRunningFile = options.output_folder + temp
-            #print options.emberRunningFile
+            # print options.emberRunningFile
 
     inputPythonFile.close()
 
@@ -122,23 +125,24 @@ def grep_set_fileNames(options):
 
 
 def main():
-
     parser = OptionParser(usage="usage: %prog [options]")
-    parser.add_option("--emberOut",  action='store', dest="emberOutFile", help="Name of the ember output file.")
-    parser.add_option("--schedPy",  action='store', dest="schedPythonFile", help="Name of the python file that holds the scheduler parameters.")
-    parser.add_option("--alpha",  action='store', dest="alpha", help="Alpha = Global_link_BW / Local_link_BW.") 
-    parser.add_option("--link_arrangement",  action='store', dest="link_arrangement", help="Global link arrangement for dragonfly.") 
-    parser.add_option("--routing",  action='store', dest="routing", help="Routing algorithm.") 
-    parser.add_option("--rankmapper",  action='store', dest="rankmapper", help="Custom or linear mapping.") 
-    parser.add_option("--shuffle",  action='store_true', dest="shuffle", help="Random shuffling of the node list order.") 
+    parser.add_option("--emberOut", action='store', dest="emberOutFile", help="Name of the ember output file.")
+    parser.add_option("--schedPy", action='store', dest="schedPythonFile",
+                      help="Name of the python file that holds the scheduler parameters.")
+    parser.add_option("--alpha", action='store', dest="alpha", help="Alpha = Global_link_BW / Local_link_BW.")
+    parser.add_option("--link_arrangement", action='store', dest="link_arrangement",
+                      help="Global link arrangement for dragonfly.")
+    parser.add_option("--routing", action='store', dest="routing", help="Routing algorithm.")
+    parser.add_option("--rankmapper", action='store', dest="rankmapper", help="Custom or linear mapping.")
+    parser.add_option("--shuffle", action='store_true', dest="shuffle", help="Random shuffling of the node list order.")
 
     (options, args) = parser.parse_args()
 
     options = grep_set_fileNames(options)
     clear_files(options)
-    #set_path_emberLoad(options)
+    # set_path_emberLoad(options)
     run_sim(options)
-    
+
 
 if __name__ == '__main__':
     main()

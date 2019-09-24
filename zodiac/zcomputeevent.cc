@@ -22,17 +22,17 @@ using namespace SST::Zodiac;
 using namespace SST;
 
 ZodiacComputeEvent::ZodiacComputeEvent(double time) {
-	computeTime = time;
+    computeTime = time;
 }
 
 ZodiacEventType ZodiacComputeEvent::getEventType() {
-	return Z_COMPUTE;
+    return Z_COMPUTE;
 }
 
 double ZodiacComputeEvent::getComputeDuration() {
-	return computeTime;
+    return computeTime;
 }
 
 double ZodiacComputeEvent::getComputeDurationNano() {
-	return computeTime * 1000000000.0;
+    return computeTime * 1000000000.0;
 }

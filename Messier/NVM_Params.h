@@ -32,207 +32,208 @@
 
 using namespace SST; //::MessierComponent;
 
-namespace SST{ namespace MessierComponent{
+namespace SST {
+    namespace MessierComponent {
 
 //using namespace SST::MessierComponent;
 
-class NVM_PARAMS
-{ 
-	public:
+        class NVM_PARAMS {
+        public:
 
-		// The size of the whole rank in KB
-		long long int size;
+            // The size of the whole rank in KB
+            long long int size;
 
-		// The size of the write buffer in number of entries
-		int write_buffer_size;	
+            // The size of the write buffer in number of entries
+            int write_buffer_size;
 
-		// This determines the number of maximum buffer requests inside the controller
-		int max_requests;
+            // This determines the number of maximum buffer requests inside the controller
+            int max_requests;
 
-		// The number of possible outstanding requests inside the internal controller (not that once writes are written to the write buffer, they are deleted)
-		int max_outstanding;
+            // The number of possible outstanding requests inside the internal controller (not that once writes are written to the write buffer, they are deleted)
+            int max_outstanding;
 
-		// For power budget (at any time, the controller enforces write_weight*num_current_writes + read_weight*num_current_reads less than or equal max_current_weight
-		float max_current_weight;
+            // For power budget (at any time, the controller enforces write_weight*num_current_writes + read_weight*num_current_reads less than or equal max_current_weight
+            float max_current_weight;
 
-		// This determines the relative power consumption of a PCM write operation
-		float write_weight;
+            // This determines the relative power consumption of a PCM write operation
+            float write_weight;
 
-		// This determines the relative power consumption of a PCM read operation
-		float read_weight;
+            // This determines the relative power consumption of a PCM read operation
+            float read_weight;
 
-		// The clock of the internal controller of the DIMM in GHz
-		float clock; 
+            // The clock of the internal controller of the DIMM in GHz
+            float clock;
 
-		// The clock of the internal PCM memory
-		float memory_clock;
+            // The clock of the internal PCM memory
+            float memory_clock;
 
-		// The clock of the IO bus, this typically should be similar to the internal controller clock
-		float io_clock;
+            // The clock of the IO bus, this typically should be similar to the internal controller clock
+            float io_clock;
 
-		// The time to send a command from the internal controller till buffered inside the NVM chips
-		int tCMD;
+            // The time to send a command from the internal controller till buffered inside the NVM chips
+            int tCMD;
 
-		// This is the access latency of a column for an already activated row buffer
-		int tCL;
+            // This is the access latency of a column for an already activated row buffer
+            int tCL;
 
-		// This is the actual read latency of a row and installing it on the row buffer
-		int tRCD;
+            // This is the actual read latency of a row and installing it on the row buffer
+            int tRCD;
 
-		// The latency of writing a column. Note that we assume internal PCMs write it directly to the PCM cells and update the row buffer (in case it was row-buffer hit)
-		int tCL_W;
+            // The latency of writing a column. Note that we assume internal PCMs write it directly to the PCM cells and update the row buffer (in case it was row-buffer hit)
+            int tCL_W;
 
-		// The time needed for submitting a data burst on the bus
-		int tBURST;
+            // The time needed for submitting a data burst on the bus
+            int tBURST;
 
-		// This determines the device width in bits
-		int device_width;
+            // This determines the device width in bits
+            int device_width;
 
-		// num ranks
-		int num_ranks;
+            // num ranks
+            int num_ranks;
 
-		// This determines the number of devices on the DIMM Ranks (the DIMM bus width is num_devices X  device_width)
-		int num_devices;
+            // This determines the number of devices on the DIMM Ranks (the DIMM bus width is num_devices X  device_width)
+            int num_devices;
 
-		// This determines the number of banks on each Rank
-		int num_banks;
+            // This determines the number of banks on each Rank
+            int num_banks;
 
-		// This determines the row buffer size	
-		int row_buffer_size;
+            // This determines the row buffer size
+            int row_buffer_size;
 
-		// This indicates the threshold for starting the write buffer flushing
-		int flush_th; 
+            // This indicates the threshold for starting the write buffer flushing
+            int flush_th;
 
-		// This indicates the low flush threshold
-		int flush_th_low;
+            // This indicates the low flush threshold
+            int flush_th_low;
 
-		// This indicates the maximum number of conccurent writes to NVM chips (not including those on the write buffer)
-		int max_writes;
+            // This indicates the maximum number of conccurent writes to NVM chips (not including those on the write buffer)
+            int max_writes;
 
-		// Determines if cacheline interleaving or bank interleaving
-		bool cacheline_interleaving;
+            // Determines if cacheline interleaving or bank interleaving
+            bool cacheline_interleaving;
 
-		// This implements the adaptive writes policy for NVM devices
-		bool adaptive_writes;
-		
-		// This indicates if there is enough power to back-up the internal cache
-		bool cache_persistent;
+            // This implements the adaptive writes policy for NVM devices
+            bool adaptive_writes;
 
-		// This indicates if the cache is enabled
-		bool cache_enabled;
+            // This indicates if there is enough power to back-up the internal cache
+            bool cache_persistent;
 
-		// This indidicates the cache size in KB
-		long long int cache_size;
-		
-		// This is the associativity of the internal cache
-		long long int cache_assoc;
+            // This indicates if the cache is enabled
+            bool cache_enabled;
 
-		// This indicates the latency of the cache
-		int cache_latency;
+            // This indidicates the cache size in KB
+            long long int cache_size;
 
-		// This indicates the cache block size
-		int cache_bs;
+            // This is the associativity of the internal cache
+            long long int cache_assoc;
 
-		// This inidicates the size of the group of banks to be locked when writing in case of adaptive writes
-		int group_size;
+            // This indicates the latency of the cache
+            int cache_latency;
 
-		// This inidicates the locking period in case of adaptive writes
-		int lock_period;
+            // This indicates the cache block size
+            int cache_bs;
 
-		// This indicates if the module scheduling of reads/writes is used
-		bool modulo;
+            // This inidicates the size of the group of banks to be locked when writing in case of adaptive writes
+            int group_size;
 
-		// This indicates the unit of module, if N, this means for each N reads, we service one write
-		int modulo_unit;
+            // This inidicates the locking period in case of adaptive writes
+            int lock_period;
 
-		// This indicates if the write cancellation technique is used
-		bool write_cancel;
+            // This indicates if the module scheduling of reads/writes is used
+            bool modulo;
 
-		// This indicates the write cancellation threshold
-		int write_cancel_th;
+            // This indicates the unit of module, if N, this means for each N reads, we service one write
+            int modulo_unit;
 
+            // This indicates if the write cancellation technique is used
+            bool write_cancel;
 
-	public:
+            // This indicates the write cancellation threshold
+            int write_cancel_th;
 
-		void operator = (const NVM_PARAMS &D ) { 
 
+        public:
 
-			cache_enabled = D.cache_enabled;
+            void operator=(const NVM_PARAMS &D) {
 
-			cache_size = D.cache_size;
 
-			cache_assoc = D.cache_assoc;
+                cache_enabled = D.cache_enabled;
 
-			cache_latency = D.cache_latency;
+                cache_size = D.cache_size;
 
-			cache_bs = D.cache_bs;
+                cache_assoc = D.cache_assoc;
 
-			size = D.size;  // in KB, which mean 8GB
+                cache_latency = D.cache_latency;
 
-			cacheline_interleaving = D.cacheline_interleaving;
-			
-			adaptive_writes = D.adaptive_writes;
+                cache_bs = D.cache_bs;
 
-			write_buffer_size = D.write_buffer_size;	
+                size = D.size;  // in KB, which mean 8GB
 
-			max_outstanding = D.max_outstanding;
+                cacheline_interleaving = D.cacheline_interleaving;
 
-			max_current_weight = D.max_current_weight;;
+                adaptive_writes = D.adaptive_writes;
 
-			write_weight = D.write_weight;
+                write_buffer_size = D.write_buffer_size;
 
-			read_weight = D.read_weight;
+                max_outstanding = D.max_outstanding;
 
-			clock = D.clock; 
+                max_current_weight = D.max_current_weight;;
 
-			memory_clock = D.clock;
+                write_weight = D.write_weight;
 
-			io_clock = D.io_clock;;
+                read_weight = D.read_weight;
 
-			tCMD = D.tCMD;
+                clock = D.clock;
 
-			tCL = D.tCL;
+                memory_clock = D.clock;
 
-			tRCD = D.tRCD;
+                io_clock = D.io_clock;;
 
-			tCL_W = D.tCL_W;
+                tCMD = D.tCMD;
 
-			tBURST = D.tBURST;
+                tCL = D.tCL;
 
-			device_width = D.device_width;
+                tRCD = D.tRCD;
 
-			num_ranks = D.num_ranks;
+                tCL_W = D.tCL_W;
 
-			num_devices = D.num_devices;
+                tBURST = D.tBURST;
 
-			num_banks = D.num_banks;
+                device_width = D.device_width;
 
-			row_buffer_size = D.row_buffer_size;
+                num_ranks = D.num_ranks;
 
-			flush_th = D.flush_th;
+                num_devices = D.num_devices;
 
-			max_requests = D.max_requests;
+                num_banks = D.num_banks;
 
-			max_writes = D.max_writes;
-			
-			flush_th_low = D.flush_th_low;
+                row_buffer_size = D.row_buffer_size;
 
-			cache_persistent = D.cache_persistent;
+                flush_th = D.flush_th;
 
-			group_size = D.group_size;
-			
-			lock_period = D.lock_period;
+                max_requests = D.max_requests;
 
-			modulo = D.modulo;
+                max_writes = D.max_writes;
 
-			modulo_unit = D.modulo_unit;
-			
-			write_cancel = D.write_cancel;
+                flush_th_low = D.flush_th_low;
 
-			write_cancel_th = D.write_cancel_th;
+                cache_persistent = D.cache_persistent;
 
-		}
-};
-}}
+                group_size = D.group_size;
+
+                lock_period = D.lock_period;
+
+                modulo = D.modulo;
+
+                modulo_unit = D.modulo_unit;
+
+                write_cancel = D.write_cancel;
+
+                write_cancel_th = D.write_cancel_th;
+
+            }
+        };
+    }
+}
 
 #endif

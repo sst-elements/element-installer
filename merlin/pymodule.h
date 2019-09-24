@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-void* genMerlinPyModule(void);
+void *genMerlinPyModule(void);
 
 #ifdef __cplusplus
 }

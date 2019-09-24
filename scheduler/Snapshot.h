@@ -27,23 +27,27 @@ namespace SST {
 
         class Snapshot {
 
-            public:
-                Snapshot();
+        public:
+            Snapshot();
 
-                ~Snapshot();
+            ~Snapshot();
 
-                //void append(SnapshotEvent *ev);
-                void append(SimTime_t snapshotTime, unsigned long nextArrivalTime, std::map<int, ITMI> runningJobs);
+            //void append(SnapshotEvent *ev);
+            void append(SimTime_t snapshotTime, unsigned long nextArrivalTime,
+                        std::map<int, ITMI> runningJobs);
 
-                std::map<int, ITMI> runningJobs;
-                
-                SimTime_t getSnapshotTime() const { return snapshotTime; }
-                unsigned long getNextArrivalTime() const { return nextArrivalTime; }
-                bool getSimFinished() const { return simFinished; }
-            private:   
-                SimTime_t snapshotTime;   //current time of the snapshot
-                unsigned long nextArrivalTime; //arrival time of the next jobfor ember
-                bool simFinished;
+            std::map<int, ITMI> runningJobs;
+
+            SimTime_t getSnapshotTime() const { return snapshotTime; }
+
+            unsigned long getNextArrivalTime() const { return nextArrivalTime; }
+
+            bool getSimFinished() const { return simFinished; }
+
+        private:
+            SimTime_t snapshotTime;   //current time of the snapshot
+            unsigned long nextArrivalTime; //arrival time of the next jobfor ember
+            bool simFinished;
         };
     }
 }

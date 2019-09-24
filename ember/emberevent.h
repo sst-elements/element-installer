@@ -23,12 +23,12 @@
 #include <sst/elements/hermes/shmemapi.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
 #define EVENT_MASK (1<<2)
 
-typedef Hermes::MP::Functor FOO;
-typedef Hermes::Callback Callback;
+        typedef Hermes::MP::Functor FOO;
+        typedef Hermes::Callback Callback;
 
 #undef FOREACH_ENUM
 #define FOREACH_ENUM(NAME) \
@@ -41,90 +41,97 @@ typedef Hermes::Callback Callback;
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
 
-typedef Statistic<uint32_t> EmberEventTimeStatistic;
+        typedef Statistic <uint32_t> EmberEventTimeStatistic;
 
-class EmberEvent : public SST::Event {
+        class EmberEvent : public SST::Event {
 
-public:
+        public:
 
-    enum State { 
-        FOREACH_ENUM(GENERATE_ENUM)
-    } m_state;
+            enum State {
+                FOREACH_ENUM(GENERATE_ENUM)
+            } m_state;
 
-	EmberEvent( Output* output, EmberEventTimeStatistic* stat = NULL) :
-        m_state(Issue), m_output(output), m_evStat(stat), m_completeDelayNS(0), m_retvalPtr(NULL)
-	{}
-	EmberEvent( Output* output, int* retval) :
-        m_state(Issue), m_output(output), m_evStat(NULL), m_completeDelayNS(0), m_retvalPtr(retval)
-	{}
-	EmberEvent( ) : 
-        m_state(Issue), m_output(NULL), m_evStat(NULL), m_completeDelayNS(0), m_retvalPtr(NULL) {}
-	~EmberEvent() {} 
+            EmberEvent(Output *output, EmberEventTimeStatistic *stat = nullptr) :
+                m_state(Issue), m_output(output), m_evStat(stat), m_completeDelayNS(0),
+                m_retvalPtr(nullptr) {}
 
-	virtual std::string getName() { return "?????"; };
+            EmberEvent(Output *output, int *retval) :
+                m_state(Issue), m_output(output), m_evStat(nullptr), m_completeDelayNS(0),
+                m_retvalPtr(retval) {}
 
-    State state() { return m_state; }
-    std::string stateName( State i ) { return m_enumName[i]; }
+            EmberEvent() :
+                m_state(Issue), m_output(nullptr), m_evStat(nullptr), m_completeDelayNS(0),
+                m_retvalPtr(nullptr) {}
 
-    virtual void issue( uint64_t time, FOO* = NULL ) {
-        if ( m_output ) {
-            m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n",getName().c_str());
-        }
-        m_issueTime = time;
-        m_state = Complete;
+            ~EmberEvent() {}
+
+            virtual std::string getName() { return "?????"; };
+
+            State state() { return m_state; }
+
+            std::string stateName(State i) { return m_enumName[i]; }
+
+            virtual void issue(uint64_t time, FOO * = nullptr) {
+                if (m_output) {
+                    m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n", getName().c_str());
+                }
+                m_issueTime = time;
+                m_state = Complete;
+            }
+
+            virtual void issue(uint64_t time, Callback) {
+                if (m_output) {
+                    m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n", getName().c_str());
+                }
+                m_issueTime = time;
+                m_state = Complete;
+            }
+
+            virtual void issue(uint64_t time, Callback *) {
+                if (m_output) {
+                    m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n", getName().c_str());
+                }
+                m_issueTime = time;
+                m_state = Complete;
+            }
+
+            virtual bool complete(uint64_t time, int retval = 0) {
+
+                if (m_output) {
+                    m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n", getName().c_str());
+                }
+
+                if (m_retvalPtr) {
+                    *m_retvalPtr = retval;
+                }
+
+                if (m_evStat) {
+                    m_evStat->addData(time - m_issueTime);
+                }
+                return true;
+            }
+
+            virtual uint64_t completeDelayNS() {
+                m_output->debug(CALL_INFO, 2, EVENT_MASK, "delay=%"
+                PRIu64
+                " ns\n",
+                    m_completeDelayNS);
+                return m_completeDelayNS;
+            }
+
+
+        protected:
+            static const char *m_enumName[];
+            Output *m_output;
+            EmberEventTimeStatistic *m_evStat;
+            uint64_t m_completeDelayNS;
+            uint64_t m_issueTime;
+            int *m_retvalPtr;
+
+            NotSerializable(EmberEvent)
+        };
+
     }
-
-    virtual void issue( uint64_t time, Callback ) {
-        if ( m_output ) {
-            m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n",getName().c_str());
-        }
-        m_issueTime = time;
-        m_state = Complete;
-    }
-
-    virtual void issue( uint64_t time, Callback* ) {
-        if ( m_output ) {
-            m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n",getName().c_str());
-        }
-        m_issueTime = time;
-        m_state = Complete;
-    }
-
-    virtual bool complete( uint64_t time, int retval = 0 ) {
-
-        if ( m_output ) {
-            m_output->debug(CALL_INFO, 3, EVENT_MASK, "%s\n",getName().c_str());
-        }
-
-        if ( m_retvalPtr ) {
-            *m_retvalPtr = retval;
-        }
-        
-        if ( m_evStat ) {
-            m_evStat->addData( time - m_issueTime );
-        }  
-        return true; 
-    }
-
-    virtual uint64_t completeDelayNS() {
-        m_output->debug(CALL_INFO, 2, EVENT_MASK, "delay=%" PRIu64 " ns\n",
-                                                m_completeDelayNS);
-        return m_completeDelayNS;
-    }
-
-
-  protected:
-    static const char*  m_enumName[];
-    Output*             m_output;
-    EmberEventTimeStatistic*  m_evStat;
-    uint64_t            m_completeDelayNS;
-    uint64_t            m_issueTime;
-    int*                m_retvalPtr;
-    
-    NotSerializable(EmberEvent)
-};
-
-}
 }
 
 #endif

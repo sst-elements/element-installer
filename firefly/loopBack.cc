@@ -26,28 +26,27 @@
 using namespace SST;
 using namespace SST::Firefly;
 
-LoopBack::LoopBack(ComponentId_t id, Params& params ) :
-        Component( id )
-{
-    int numCores = params.find<int>("numCores", 1 );
+LoopBack::LoopBack(ComponentId_t id, Params &params) :
+    Component(id) {
+    int numCores = params.find<int>("numCores", 1);
 
-    for ( int i = 0; i < numCores; i++ ) {
+    for (int i = 0; i < numCores; i++) {
         std::ostringstream tmp;
-        tmp <<  i;
+        tmp << i;
 
-        Event::Handler<LoopBack,int>* handler =
-                new Event::Handler<LoopBack,int>(
-                                this, &LoopBack::handleCoreEvent, i );
+        Event::Handler<LoopBack, int> *handler =
+            new Event::Handler<LoopBack, int>(
+                this, &LoopBack::handleCoreEvent, i);
 
-        Link* link = configureLink("core" + tmp.str(), "1 ns", handler );
+        Link *link = configureLink("core" + tmp.str(), "1 ns", handler);
         assert(link);
-        m_links.push_back( link );
+        m_links.push_back(link);
     }
 }
 
-void LoopBack::handleCoreEvent( Event* ev, int src ) {
-    LoopBackEventBase* event = static_cast<LoopBackEventBase*>(ev);
+void LoopBack::handleCoreEvent(Event *ev, int src) {
+    LoopBackEventBase *event = static_cast<LoopBackEventBase *>(ev);
     int dest = event->core;
-    event->core = src; 
-    m_links[dest]->send(0,ev );
+    event->core = src;
+    m_links[dest]->send(0, ev);
 }

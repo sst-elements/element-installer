@@ -19,10 +19,10 @@
 #include <stdint.h>
 
 namespace SST {
-namespace Thornhill {
+    namespace Thornhill {
 
-typedef uint64_t SimVAddr;
+        typedef uint64_t SimVAddr;
 
-}
+    }
 }
 #endif

@@ -16,22 +16,23 @@
 import sst
 from sst.merlin import *
 
-def setRtrParams( networkParams ):
 
-	sst.merlin._params["link_lat"] = networkParams['link_lat']
-	sst.merlin._params["link_bw"] = networkParams['link_bw']
-	sst.merlin._params["xbar_bw"] = networkParams['link_bw']
-	sst.merlin._params["flit_size"] = networkParams['flitSize']
-	sst.merlin._params["input_latency"] = networkParams['input_latency']
-	sst.merlin._params["output_latency"] = networkParams['output_latency']
-	sst.merlin._params["input_buf_size"] = networkParams['buffer_size']
-	sst.merlin._params["output_buf_size"] = networkParams['buffer_size']
+def setRtrParams(networkParams):
+    sst.merlin._params["link_lat"] = networkParams['link_lat']
+    sst.merlin._params["link_bw"] = networkParams['link_bw']
+    sst.merlin._params["xbar_bw"] = networkParams['link_bw']
+    sst.merlin._params["flit_size"] = networkParams['flitSize']
+    sst.merlin._params["input_latency"] = networkParams['input_latency']
+    sst.merlin._params["output_latency"] = networkParams['output_latency']
+    sst.merlin._params["input_buf_size"] = networkParams['buffer_size']
+    sst.merlin._params["output_buf_size"] = networkParams['buffer_size']
 
-	if 'xbar_arb' in networkParams.keys():
-		sst.merlin._params["xbar_arb"] = networkParams['xbar_arb']
+    if 'xbar_arb' in networkParams.keys():
+        sst.merlin._params["xbar_arb"] = networkParams['xbar_arb']
 
-	if "network_inspectors" in networkParams.keys():
-		sst.merlin._params["network_inspectors"] = networkParams['network_inspectors']
+    if "network_inspectors" in networkParams.keys():
+        sst.merlin._params["network_inspectors"] = networkParams['network_inspectors']
 
-def setTopoParams( topParams ):
-	sst.merlin._params.update( topParams )
+
+def setTopoParams(topParams):
+    sst.merlin._params.update(topParams)

@@ -33,163 +33,193 @@
 #define NO_STRING_DEFINED "N/A"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class MemBackend : public SubComponent {
-public:
+        class MemBackend : public SubComponent {
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::MemBackend)
+            SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::MemBackend)
 
 #define MEMBACKEND_ELI_PARAMS {"debug_level",     "(uint) Debugging level: 0 (no output) to 10 (all output). Output also requires that SST Core be compiled with '--enable-debug'", "0"},\
             {"debug_mask",      "(uint) Mask on debug_level", "0"},\
             {"debug_location",  "(uint) 0: No debugging, 1: STDOUT, 2: STDERR, 3: FILE", "0"},\
-            {"clock", "(string) Clock frequency - inherited from MemController", NULL},\
+            {"clock", "(string) Clock frequency - inherited from MemController", nullptr},\
             {"max_requests_per_cycle", "(int) Maximum number of requests to accept each cycle. Use 0 or -1 for unlimited.", "-1"},\
             {"request_width", "(int) Maximum size, in bytes, for a request", "64"},\
-            {"mem_size", "(string) Size of memory with units (SI ok). E.g., '2GiB'.", NULL}
+            {"mem_size", "(string) Size of memory with units (SI ok). E.g., '2GiB'.", nullptr}
 
-    typedef MemBackendConvertor::ReqId ReqId;
-    MemBackend();
+            typedef MemBackendConvertor::ReqId ReqId;
 
-    MemBackend(Component *comp, Params &params) : SubComponent(comp) { build(params); }
-    MemBackend(ComponentId_t id, Params &params) : SubComponent(id) { build(params); }
-    void build(Params& params) 
-    {
-    	output = new SST::Output("@t:MemoryBackend[@p:@l]: ", 
-                params.find<uint32_t>("debug_level", 0),
-                params.find<uint32_t>("debug_mask", 0),
-                (Output::output_location_t)params.find<int>("debug_location", 0) );
+            MemBackend();
 
-        m_clockFreq = params.find<std::string>("clock");
-	
+            MemBackend(Component *comp, Params &params) : SubComponent(comp) { build(params); }
 
-        if ( m_clockFreq.empty() ) {
-            output->fatal(CALL_INFO, -1, "MemBackend: clock is not set\n");
-        }
+            MemBackend(ComponentId_t id, Params &params) : SubComponent(id) { build(params); }
 
-        m_maxReqPerCycle = params.find<>("max_requests_per_cycle",-1);
-        if (m_maxReqPerCycle == 0) m_maxReqPerCycle = -1;
-        m_reqWidth = params.find<>("request_width",64);
+            void build(Params &params) {
+                output = new SST::Output("@t:MemoryBackend[@p:@l]: ",
+                                         params.find<uint32_t>("debug_level", 0),
+                                         params.find<uint32_t>("debug_mask", 0),
+                                         (Output::output_location_t) params.find<int>(
+                                             "debug_location", 0));
 
-        bool found;
-        UnitAlgebra backendRamSize = UnitAlgebra(params.find<std::string>("mem_size", "0B", found));
-        if (!found) {
-            output->fatal(CALL_INFO, -1, "Param not specified (%s): backend.mem_size - memory controller must have a size specified, (NEW) WITH units. E.g., 8GiB or 1024MiB. \n", "MemBackendConvertor");
-        }
+                m_clockFreq = params.find<std::string>("clock");
 
-        if (!backendRamSize.hasUnits("B")) {
-            output->fatal(CALL_INFO, -1, "Invalid param (%s): backend.mem_size - definition has CHANGED! Now requires units in 'B' (SI OK, ex: 8GiB or 1024MiB).\nSince previous definition was implicitly MiB, you may simply append 'MiB' to the existing value. You specified '%s'\n", "MemBackendConvertor", backendRamSize.toString().c_str());
-        }
-        m_memSize = backendRamSize.getRoundedValue();
-    }
 
-    virtual ~MemBackend() {
-        delete output;
-    }
+                if (m_clockFreq.empty()) {
+                    output->fatal(CALL_INFO, -1, "MemBackend: clock is not set\n");
+                }
 
-    virtual void setGetRequestorHandler( std::function<const std::string(ReqId)> func ) {
-        m_getRequestor = func;
-    } 
+                m_maxReqPerCycle = params.find<>("max_requests_per_cycle", -1);
+                if (m_maxReqPerCycle == 0) m_maxReqPerCycle = -1;
+                m_reqWidth = params.find<>("request_width", 64);
 
-    const std::string getRequestor( ReqId id ) {
-        return m_getRequestor( id );
-    }
+                bool found;
+                UnitAlgebra backendRamSize = UnitAlgebra(
+                    params.find<std::string>("mem_size", "0B", found));
+                if (!found) {
+                    output->fatal(CALL_INFO, -1,
+                                  "Param not specified (%s): backend.mem_size - memory controller must have a size specified, (NEW) WITH units. E.g., 8GiB or 1024MiB. \n",
+                                  "MemBackendConvertor");
+                }
 
-    virtual void setup() {}
-    virtual void finish() {}
-    
-    /* Called by parent's clock() function */
-    virtual bool clock(Cycle_t UNUSED(cycle)) { return true; } 
-    
-    /* Interface to parent */
-    virtual size_t getMemSize() { return m_memSize; }
-    virtual uint32_t getRequestWidth() { return m_reqWidth; }
-    virtual int32_t getMaxReqPerCycle() { return m_maxReqPerCycle; } 
-    virtual const std::string& getClockFreq() { return m_clockFreq; }
-    virtual bool isClocked() { return true; }
-    virtual bool issueCustomRequest(ReqId, CustomCmdInfo*) {
-        output->fatal(CALL_INFO, -1, "Error (%s): This backend cannot handle custom requests\n", getName().c_str());
-        return false;
-    }
+                if (!backendRamSize.hasUnits("B")) {
+                    output->fatal(CALL_INFO, -1,
+                                  "Invalid param (%s): backend.mem_size - definition has CHANGED! Now requires units in 'B' (SI OK, ex: 8GiB or 1024MiB).\nSince previous definition was implicitly MiB, you may simply append 'MiB' to the existing value. You specified '%s'\n",
+                                  "MemBackendConvertor", backendRamSize.toString().c_str());
+                }
+                m_memSize = backendRamSize.getRoundedValue();
+            }
 
-protected:
-    Output*         output;
-    std::string     m_clockFreq;
-    int32_t         m_maxReqPerCycle;
-    size_t          m_memSize;
-    int32_t         m_reqWidth;
+            virtual ~MemBackend() {
+                delete output;
+            }
 
-    std::function<const std::string(ReqId)> m_getRequestor;
-};
+            virtual void setGetRequestorHandler(std::function<const std::string(ReqId)> func) {
+                m_getRequestor = func;
+            }
+
+            const std::string getRequestor(ReqId id) {
+                return m_getRequestor(id);
+            }
+
+            virtual void setup() {}
+
+            virtual void finish() {}
+
+            /* Called by parent's clock() function */
+            virtual bool clock(Cycle_t UNUSED(cycle)) { return true; }
+
+            /* Interface to parent */
+            virtual size_t getMemSize() { return m_memSize; }
+
+            virtual uint32_t getRequestWidth() { return m_reqWidth; }
+
+            virtual int32_t getMaxReqPerCycle() { return m_maxReqPerCycle; }
+
+            virtual const std::string &getClockFreq() { return m_clockFreq; }
+
+            virtual bool isClocked() { return true; }
+
+            virtual bool issueCustomRequest(ReqId, CustomCmdInfo *) {
+                output->fatal(CALL_INFO, -1,
+                              "Error (%s): This backend cannot handle custom requests\n",
+                              getName().c_str());
+                return false;
+            }
+
+        protected:
+            Output *output;
+            std::string m_clockFreq;
+            int32_t m_maxReqPerCycle;
+            size_t m_memSize;
+            int32_t m_reqWidth;
+
+            std::function<const std::string(ReqId)> m_getRequestor;
+        };
 
 /* MemBackend - timing only */
-class SimpleMemBackend : public MemBackend {
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::SimpleMemBackend, SST::MemHierarchy::MemBackend)
+        class SimpleMemBackend : public MemBackend {
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::SimpleMemBackend, SST::MemHierarchy::MemBackend
+            )
 
-    SimpleMemBackend() : MemBackend() {} 
-    SimpleMemBackend(Component *comp, Params &params) : MemBackend(comp,params) {}  
-    SimpleMemBackend(ComponentId_t id, Params &params) : MemBackend(id,params) {}  
+            SimpleMemBackend() : MemBackend() {}
 
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, unsigned numBytes ) = 0; 
+            SimpleMemBackend(Component *comp, Params &params) : MemBackend(comp, params) {}
 
-    void handleMemResponse( ReqId id ) {
-        m_respFunc( id );
-    }
+            SimpleMemBackend(ComponentId_t id, Params &params) : MemBackend(id, params) {}
 
-    virtual void setResponseHandler( std::function<void(ReqId)> func ) {
-        m_respFunc = func;
-    }
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, unsigned numBytes) = 0;
 
-  private:
-    std::function<void(ReqId)> m_respFunc;
-};
+            void handleMemResponse(ReqId id) {
+                m_respFunc(id);
+            }
+
+            virtual void setResponseHandler(std::function<void(ReqId)> func) {
+                m_respFunc = func;
+            }
+
+        private:
+            std::function<void(ReqId)> m_respFunc;
+        };
 
 /* MemBackend - timing and passes request/response flags */
-class FlagMemBackend : public MemBackend {
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::FlagMemBackend, SST::MemHierarchy::MemBackend)
-    FlagMemBackend(Component *comp, Params &params) : MemBackend(comp,params) {}  
-    FlagMemBackend(ComponentId_t id, Params &params) : MemBackend(id,params) {}  
-    virtual bool issueRequest( ReqId, Addr, bool isWrite, uint32_t flags, unsigned numBytes ) = 0;
+        class FlagMemBackend : public MemBackend {
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::FlagMemBackend, SST::MemHierarchy::MemBackend
+            )
 
-    void handleMemResponse( ReqId id, uint32_t flags ) {
-        m_respFunc( id, flags );
+            FlagMemBackend(Component *comp, Params &params) : MemBackend(comp, params) {}
+
+            FlagMemBackend(ComponentId_t id, Params &params) : MemBackend(id, params) {}
+
+            virtual bool issueRequest(ReqId, Addr, bool isWrite, uint32_t flags,
+                                      unsigned numBytes) = 0;
+
+            void handleMemResponse(ReqId id, uint32_t flags) {
+                m_respFunc(id, flags);
+            }
+
+            virtual void setResponseHandler(std::function<void(ReqId, uint32_t)> func) {
+                m_respFunc = func;
+            }
+
+        private:
+            std::function<void(ReqId, uint32_t)> m_respFunc;
+        };
+
+        class ExtMemBackend : public MemBackend {
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::ExtMemBackend, SST::MemHierarchy::MemBackend
+            )
+
+            ExtMemBackend(Component *comp, Params &params) : MemBackend(comp, params) {}
+
+            ExtMemBackend(ComponentId_t id, Params &params) : MemBackend(id, params) {}
+
+            virtual bool issueRequest(ReqId, Addr, bool isWrite,
+                                      std::vector <uint64_t> ins,
+                                      uint32_t flags, unsigned numBytes) = 0;
+
+            virtual bool issueCustomRequest(ReqId, Addr, uint32_t Cmd,
+                                            std::vector <uint64_t> ins,
+                                            uint32_t flags, unsigned numBytes) = 0;
+
+            void handleMemResponse(ReqId id, uint32_t flags) {
+                m_respFunc(id, flags);
+            }
+
+            virtual void setResponseHandler(std::function<void(ReqId, uint32_t)> func) {
+                m_respFunc = func;
+            }
+
+        private:
+            std::function<void(ReqId, uint32_t)> m_respFunc;
+        };
+
     }
-
-    virtual void setResponseHandler( std::function<void(ReqId,uint32_t)> func ) {
-        m_respFunc = func;
-    }
-
-  private:
-    std::function<void(ReqId,uint32_t)> m_respFunc;
-};
-
-class ExtMemBackend : public MemBackend {
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED_API(SST::MemHierarchy::ExtMemBackend, SST::MemHierarchy::MemBackend)
-    ExtMemBackend(Component *comp, Params &params) : MemBackend(comp,params) {}  
-    ExtMemBackend(ComponentId_t id, Params &params) : MemBackend(id,params) {}  
-    virtual bool issueRequest( ReqId, Addr, bool isWrite,
-                               std::vector<uint64_t> ins,
-                               uint32_t flags, unsigned numBytes ) = 0;
-    virtual bool issueCustomRequest( ReqId, Addr, uint32_t Cmd,
-                                     std::vector<uint64_t> ins,
-                                     uint32_t flags, unsigned numBytes ) = 0;
-
-    void handleMemResponse( ReqId id, uint32_t flags ) {
-        m_respFunc( id, flags );
-    }
-
-    virtual void setResponseHandler( std::function<void(ReqId,uint32_t)> func ) {
-        m_respFunc = func;
-    }
-
-  private:
-    std::function<void(ReqId,uint32_t)> m_respFunc;
-};
-
-}}
+}
 
 #endif
 

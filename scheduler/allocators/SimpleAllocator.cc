@@ -22,13 +22,11 @@
 
 using namespace SST::Scheduler;
 
-SimpleAllocator::SimpleAllocator(Machine* m) : Allocator(*m)
-{
+SimpleAllocator::SimpleAllocator(Machine *m) : Allocator(*m) {
 
 }
 
-std::string SimpleAllocator::getSetupInfo(bool comment) const
-{
+std::string SimpleAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -38,16 +36,15 @@ std::string SimpleAllocator::getSetupInfo(bool comment) const
     return com + "Simple Allocator";
 }
 
-AllocInfo* SimpleAllocator::allocate(Job* j) 
-{  
+AllocInfo *SimpleAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, machine);
-        std::vector<int>* freeNodes = machine.getFreeNodes();
-        for(int i = 0; i < ai->getNodesNeeded(); i++) {
+        AllocInfo *ai = new AllocInfo(j, machine);
+        std::vector<int> *freeNodes = machine.getFreeNodes();
+        for (int i = 0; i < ai->getNodesNeeded(); i++) {
             ai->nodeIndices[i] = freeNodes->at(i);
         }
         delete freeNodes;
         return ai;
     }
-    return NULL;
+    return nullptr;
 }

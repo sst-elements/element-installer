@@ -19,51 +19,56 @@
 
 using namespace SST::Prospero;
 
-ProsperoTextTraceReader::ProsperoTextTraceReader( Component* owner, Params& params ) :
-	ProsperoTraceReader(owner, params) {
+ProsperoTextTraceReader::ProsperoTextTraceReader(Component *owner, Params &params) :
+    ProsperoTraceReader(owner, params) {
 
-	std::string traceFile = params.find<std::string>("file", "");
-	traceInput = fopen(traceFile.c_str(), "rt");
+    std::string traceFile = params.find<std::string>("file", "");
+    traceInput = fopen(traceFile.c_str(), "rt");
 
-	if(NULL == traceInput) {
-		fprintf(stderr, "Fatal: Unable to open file: %s in text reader.\n",
-			traceFile.c_str());
-		exit(-1);
-	}
+    if (nullptr == traceInput) {
+        fprintf(stderr, "Fatal: Unable to open file: %s in text reader.\n",
+                traceFile.c_str());
+        exit(-1);
+    }
 
 }
 
-ProsperoTextTraceReader::ProsperoTextTraceReader( ComponentId_t id, Params& params, Output* out ) :
-	ProsperoTraceReader(id, params, out) {
+ProsperoTextTraceReader::ProsperoTextTraceReader(ComponentId_t id, Params &params, Output *out) :
+    ProsperoTraceReader(id, params, out) {
 
-	std::string traceFile = params.find<std::string>("file", "");
-	traceInput = fopen(traceFile.c_str(), "rt");
+    std::string traceFile = params.find<std::string>("file", "");
+    traceInput = fopen(traceFile.c_str(), "rt");
 
-	if(NULL == traceInput) {
-            output->fatal(CALL_INFO, -1, "%s, Fatal: Unable to open file: %s in text reader.\n",
-                    getName().c_str(), traceFile.c_str());
-	}
+    if (nullptr == traceInput) {
+        output->fatal(CALL_INFO, -1, "%s, Fatal: Unable to open file: %s in text reader.\n",
+                      getName().c_str(), traceFile.c_str());
+    }
 
 }
 
 ProsperoTextTraceReader::~ProsperoTextTraceReader() {
-	if(NULL != traceInput) {
-		fclose(traceInput);
-	}
+    if (nullptr != traceInput) {
+        fclose(traceInput);
+    }
 }
 
-ProsperoTraceEntry* ProsperoTextTraceReader::readNextEntry() {
-	uint64_t reqAddress = 0;
-	uint64_t reqCycles  = 0;
-	char reqType = 'R';
-	uint32_t reqLength  = 0;
+ProsperoTraceEntry *ProsperoTextTraceReader::readNextEntry() {
+    uint64_t reqAddress = 0;
+    uint64_t reqCycles = 0;
+    char reqType = 'R';
+    uint32_t reqLength = 0;
 
-	if(EOF == fscanf(traceInput, "%" PRIu64 " %c %" PRIu64 " %" PRIu32 "",
-		&reqCycles, &reqType, &reqAddress, &reqLength) ) {
-		return NULL;
-	} else {
-		return new ProsperoTraceEntry(reqCycles, reqAddress,
-			reqLength,
-			(reqType == 'R' || reqType == 'r') ? READ : WRITE);
-	}
+    if (EOF == fscanf(traceInput, "%" PRIu64
+    " %c %"
+    PRIu64
+    " %"
+    PRIu32
+    "",
+        &reqCycles, &reqType, &reqAddress, &reqLength)) {
+        return nullptr;
+    } else {
+        return new ProsperoTraceEntry(reqCycles, reqAddress,
+                                      reqLength,
+                                      (reqType == 'R' || reqType == 'r') ? READ : WRITE);
+    }
 }

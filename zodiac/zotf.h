@@ -33,36 +33,40 @@ using namespace std;
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacOTFTraceReader : public SST::Component {
-public:
+        class ZodiacOTFTraceReader : public SST::Component {
+        public:
 
-  ZodiacOTFTraceReader(SST::ComponentId_t id, SST::Params& params);
-  void setup() { }
-  void finish() { 
-  }
+            ZodiacOTFTraceReader(SST::ComponentId_t id, SST::Params &params);
 
-private:
-  ~ZodiacOTFTraceReader();
-  ZodiacOTFTraceReader();  // for serialization only
-  ZodiacOTFTraceReader(const ZodiacOTFTraceReader&); // do not implement
-  void operator=(const ZodiacOTFTraceReader&); // do not implement
+            void setup() {}
 
-  void handleEvent( SST::Event *ev );
-  virtual bool clockTic( SST::Cycle_t );
+            void finish() {
+            }
 
-  ////////////////////////////////////////////////////////
+        private:
+            ~ZodiacOTFTraceReader();
 
-  MessageInterface* msgapi;
-  OTFReader* reader;
-  std::queue<ZodiacEvent*>* eventQ;
+            ZodiacOTFTraceReader();  // for serialization only
+            ZodiacOTFTraceReader(const ZodiacOTFTraceReader &); // do not implement
+            void operator=(const ZodiacOTFTraceReader &); // do not implement
 
-  ////////////////////////////////////////////////////////
+            void handleEvent(SST::Event *ev);
 
-};
+            virtual bool clockTic(SST::Cycle_t);
 
-}
+            ////////////////////////////////////////////////////////
+
+            MessageInterface *msgapi;
+            OTFReader *reader;
+            std::queue<ZodiacEvent *> *eventQ;
+
+            ////////////////////////////////////////////////////////
+
+        };
+
+    }
 }
 
 #endif /* _ZODIAC_TRACE_READER_H */

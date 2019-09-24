@@ -28,41 +28,43 @@ using namespace std;
 namespace SST {
     namespace Scheduler {
 
-    class Machine;
+        class Machine;
 
-    //Spectral Mapping algorithm is based on the paper
-    // Leordeanu, M.; Hebert, M., "A spectral technique for correspondence problems using pairwise
-    // constraints," Computer Vision, 2005. ICCV 2005. Tenth IEEE International Conference on ,
-    // vol.2, no., pp.1482,1489 Vol. 2, 17-21 Oct. 2005 doi: 10.1109/ICCV.2005.20
+        //Spectral Mapping algorithm is based on the paper
+        // Leordeanu, M.; Hebert, M., "A spectral technique for correspondence problems using pairwise
+        // constraints," Computer Vision, 2005. ICCV 2005. Tenth IEEE International Conference on ,
+        // vol.2, no., pp.1482,1489 Vol. 2, 17-21 Oct. 2005 doi: 10.1109/ICCV.2005.20
 
-    class SpectralAllocMapper : public AllocMapper {
+        class SpectralAllocMapper : public AllocMapper {
 
         public:
-            SpectralAllocMapper(const Machine & mach, bool alloacateAndMap , int rngSeed = -1);
+            SpectralAllocMapper(const Machine &mach, bool alloacateAndMap, int rngSeed = -1);
+
             ~SpectralAllocMapper();
 
             string getSetupInfo(bool comment) const;
 
             //allocation & mapping function
-            void allocMap(const AllocInfo & ai,
-                          std::vector<long int> & usedNodes,
-                          std::vector<int> & taskToNode);
+            void allocMap(const AllocInfo &ai,
+                          std::vector<long int> &usedNodes,
+                          std::vector<int> &taskToNode);
 
         private:
             //SST::RNG::MersenneRNG randNG;   //random number generator
-            vector<pair<unsigned int, unsigned long int> > possPairs; //possible pairs
+            vector <pair<unsigned int, unsigned long int>> possPairs; //possible pairs
             list<unsigned long int> pairIndices; //indices of available pairs - for optimization
-            vector<map<int,int> >* commMatrix;
+            vector <map<int, int>> *commMatrix;
 
             //returns the approximate principle eigenvector for the given tasks & nodes
             //uses Power (Von Mises) iteration
             //matrix should be symmetric & positive
-            vector<double>* principalEigenVector(const unsigned int maxIteration = 100,
+            vector<double> *principalEigenVector(const unsigned int maxIteration = 100,
                                                  const double epsilon = 5e-3) const; //error margin
             //O(inVector.size()^2)
             //multiply with M matrix - refer to paper for definition
-            vector<double>* multWithM(const vector<double> & inVector) const;
-            void normalize(vector<double> & inVector) const;
+            vector<double> *multWithM(const vector<double> &inVector) const;
+
+            void normalize(vector<double> &inVector) const;
         };
 
     }

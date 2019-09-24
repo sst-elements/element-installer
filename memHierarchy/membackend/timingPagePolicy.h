@@ -16,79 +16,87 @@
 #include <sst/core/subcomponent.h>
 
 namespace SST {
-namespace MemHierarchy {
-namespace TimingDRAM_NS {
+    namespace MemHierarchy {
+        namespace TimingDRAM_NS {
 
-class PagePolicy : public SST::SubComponent {
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
+            class PagePolicy : public SST::SubComponent {
+            public:
+                SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
 
-    PagePolicy( Component* owner, Params& params ) : SubComponent( owner )  { }
-    PagePolicy( ComponentId_t id, Params& params ) : SubComponent( id )  { }
-    virtual bool shouldClose( SimTime_t current ) = 0;
-};
+                PagePolicy(Component *owner, Params &params) : SubComponent(owner) {}
 
-class SimplePagePolicy : public PagePolicy {
-  public:
+                PagePolicy(ComponentId_t id, Params &params) : SubComponent(id) {}
+
+                virtual bool shouldClose(SimTime_t current) = 0;
+            };
+
+            class SimplePagePolicy : public PagePolicy {
+            public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(SimplePagePolicy, "memHierarchy", "simplePagePolicy", SST_ELI_ELEMENT_VERSION(1,0,0),
-            "static page open or close policy", SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
-    
-    SST_ELI_DOCUMENT_PARAMS( {"close", "Whether to use a closed (true) or open (false) page policy", "true"} )
+                SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(SimplePagePolicy,
+                "memHierarchy", "simplePagePolicy", SST_ELI_ELEMENT_VERSION(1,0,0),
+                "static page open or close policy", SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
+
+                SST_ELI_DOCUMENT_PARAMS( { "close", "Whether to use a closed (true) or open (false) page policy", "true" } )
 
 /* Begin class definition */
-    SimplePagePolicy( Component* owner, Params& params ) : PagePolicy( owner, params )  {
-        m_close = params.find<bool>("close", true);
-    }
-    SimplePagePolicy( ComponentId_t id, Params& params ) : PagePolicy( id, params )  {
-        m_close = params.find<bool>("close", true);
-    }
+                SimplePagePolicy(Component *owner, Params &params) : PagePolicy(owner, params) {
+                    m_close = params.find<bool>("close", true);
+                }
 
-    bool shouldClose( SimTime_t current ) {
-        return m_close;
-    }
-  protected:
-    bool m_close;
-};
+                SimplePagePolicy(ComponentId_t id, Params &params) : PagePolicy(id, params) {
+                    m_close = params.find<bool>("close", true);
+                }
 
-class TimeoutPagePolicy : public PagePolicy {
-  public:
+                bool shouldClose(SimTime_t current) {
+                    return m_close;
+                }
+
+            protected:
+                bool m_close;
+            };
+
+            class TimeoutPagePolicy : public PagePolicy {
+            public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(TimeoutPagePolicy, "memHierarchy", "timeoutPagePolicy", SST_ELI_ELEMENT_VERSION(1,0,0),
-            "timeout based page open or close policy", SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
-    
-    SST_ELI_DOCUMENT_PARAMS( {"timeoutCycles", "Timeout (close page) after this many cycles", "5"} )
+                SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(TimeoutPagePolicy,
+                "memHierarchy", "timeoutPagePolicy", SST_ELI_ELEMENT_VERSION(1,0,0),
+                "timeout based page open or close policy", SST::MemHierarchy::TimingDRAM_NS::PagePolicy)
+
+                SST_ELI_DOCUMENT_PARAMS( { "timeoutCycles", "Timeout (close page) after this many cycles", "5" } )
 
 /* Begin class definition */
-    TimeoutPagePolicy( ComponentId_t id, Params& params ) : PagePolicy( id, params ),
-        m_numCyclesLeft(0), m_lastCycle(-2) { 
-        m_cycles = params.find<SimTime_t>("timeoutCycles", 5);
-    }
+                TimeoutPagePolicy(ComponentId_t id, Params &params) : PagePolicy(id, params),
+                                                                      m_numCyclesLeft(0),
+                                                                      m_lastCycle(-2) {
+                    m_cycles = params.find<SimTime_t>("timeoutCycles", 5);
+                }
 
-    TimeoutPagePolicy( Component* owner, Params& params ) : PagePolicy( owner, params ),
-        m_numCyclesLeft(0), m_lastCycle(-2) { 
-        m_cycles = params.find<SimTime_t>("timeoutCycles", 5);
-    }
+                TimeoutPagePolicy(Component *owner, Params &params) : PagePolicy(owner, params),
+                                                                      m_numCyclesLeft(0),
+                                                                      m_lastCycle(-2) {
+                    m_cycles = params.find<SimTime_t>("timeoutCycles", 5);
+                }
 
-    bool shouldClose( SimTime_t current ) {
+                bool shouldClose(SimTime_t current) {
 
-        if ( 0 == m_numCyclesLeft && current != m_lastCycle + 1 ) {
-            m_numCyclesLeft = m_cycles + 1;
+                    if (0 == m_numCyclesLeft && current != m_lastCycle + 1) {
+                        m_numCyclesLeft = m_cycles + 1;
+                    }
+                    --m_numCyclesLeft;
+                    m_lastCycle = current;
+
+                    return (m_numCyclesLeft == 0);
+                }
+
+            protected:
+                SimTime_t m_lastCycle;
+                SimTime_t m_cycles;
+                SimTime_t m_numCyclesLeft;
+            };
+
         }
-        --m_numCyclesLeft;
-        m_lastCycle = current;
-
-        return (m_numCyclesLeft == 0);
     }
-
-  protected:
-    SimTime_t m_lastCycle;
-    SimTime_t m_cycles;
-    SimTime_t m_numCyclesLeft;
-};
-
-}
-}
 }
 
 #endif

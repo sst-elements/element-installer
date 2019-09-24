@@ -20,26 +20,27 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberInitShmemEvent : public EmberShmemEvent {
+        class EmberInitShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberInitShmemEvent( Shmem::Interface& api, Output* output,
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ){}
-	~EmberInitShmemEvent() {}
+        public:
+            EmberInitShmemEvent(Shmem::Interface &api, Output *output,
+                                EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat) {}
 
-    std::string getName() { return "Init"; }
+            ~EmberInitShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Init"; }
 
-        EmberEvent::issue( time );
-        m_api.init( callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.init(callback);
+            }
+        };
+
     }
-};
-
-}
 }
 
 #endif

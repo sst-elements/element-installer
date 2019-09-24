@@ -19,51 +19,52 @@
 #include <sst/core/component.h>
 
 namespace SST {
-namespace SimpleParamComponent {
+    namespace SimpleParamComponent {
 
-class simpleParamComponent : public SST::Component 
-{
-public:
+        class simpleParamComponent : public SST::Component {
+        public:
 
-    // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_COMPONENT(
-        simpleParamComponent,
-        "simpleElementExample",
-        "simpleParamComponent",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Param Check Component",
-        COMPONENT_CATEGORY_UNCATEGORIZED
-    )
-    
-    SST_ELI_DOCUMENT_PARAMS(
- 	{ "int-param",  "Check for integer values", "-1" },
-	{ "str-param",  "Check for string values",  "test" },
-	{ "bool-param", "Check for bool values", "true" }
-    )
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(
+                simpleParamComponent,
+            "simpleElementExample",
+            "simpleParamComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Param Check Component",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_STATISTICS(
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "int-param", "Check for integer values", "-1" },
+            { "str-param", "Check for string values", "test" },
+            { "bool-param", "Check for bool values", "true" }
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_PORTS(
-    )
-    
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_STATISTICS(
+            )
 
-    simpleParamComponent(SST::ComponentId_t id, SST::Params& params);
-    void setup()  { }
-    void finish() { }
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_PORTS(
+            )
 
-private:
-    simpleParamComponent();  // for serialization only
-    simpleParamComponent(const simpleParamComponent&); // do not implement
-    void operator=(const simpleParamComponent&); // do not implement
-};
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            )
 
-} // namespace simpleParamComponent
+            simpleParamComponent(SST::ComponentId_t id, SST::Params &params);
+
+            void setup() {}
+
+            void finish() {}
+
+        private:
+            simpleParamComponent();  // for serialization only
+            simpleParamComponent(const simpleParamComponent &); // do not implement
+            void operator=(const simpleParamComponent &); // do not implement
+        };
+
+    } // namespace simpleParamComponent
 } // namespace SST
 
 #endif /* simpleParamComponent */

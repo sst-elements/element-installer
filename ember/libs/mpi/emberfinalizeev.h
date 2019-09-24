@@ -20,30 +20,31 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFinalizeEvent : public EmberMPIEvent {
+        class EmberFinalizeEvent : public EmberMPIEvent {
 
-public:
-	EmberFinalizeEvent( MP::Interface& api, Output* output,
-                        EmberEventTimeStatistic* stat ) :
-            EmberMPIEvent( api, output, stat ){}
-	~EmberFinalizeEvent() {}
+        public:
+            EmberFinalizeEvent(MP::Interface &api, Output *output,
+                               EmberEventTimeStatistic *stat) :
+                EmberMPIEvent(api, output, stat) {}
 
-    std::string getName() { return "Finalize"; }
+            ~EmberFinalizeEvent() {}
 
-    void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "Finalize"; }
 
-        EmberEvent::issue( time );
+            void issue(uint64_t time, FOO *functor) {
 
-        m_api.fini( functor );
+                EmberEvent::issue(time);
+
+                m_api.fini(functor);
+            }
+
+        private:
+
+        };
+
     }
-
-  private:
-
-};
-
-}
 }
 
 #endif

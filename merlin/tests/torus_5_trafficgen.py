@@ -12,8 +12,9 @@
 # distribution.
 
 import sst
+
 sst.setStatisticLoadLevel(3)
-sst.setStatisticOutput("sst.statOutputCSV", {"filepath" : "./TestOutput.csv","separator" : "," } )
+sst.setStatisticOutput("sst.statOutputCSV", {"filepath": "./TestOutput.csv", "separator": ","})
 
 from sst.merlin import *
 
@@ -27,10 +28,10 @@ sst.merlin._params["output_buf_size"] = "16.0KB"
 sst.merlin._params["link_lat"] = "5000ns"
 
 merlintorusparams = {}
-merlintorusparams["num_dims"]=1
-merlintorusparams["torus:shape"]="5"
-merlintorusparams["torus:width"]="1"
-merlintorusparams["torus:local_ports"]=1
+merlintorusparams["num_dims"] = 1
+merlintorusparams["torus:shape"] = "5"
+merlintorusparams["torus:width"] = "1"
+merlintorusparams["torus:local_ports"] = 1
 sst.merlin._params.update(merlintorusparams)
 topo = topoTorus()
 topo.prepParams()
@@ -56,4 +57,4 @@ endPoint.prepParams()
 topo.setEndPoint(endPoint)
 topo.build()
 
-sst.enableAllStatisticsForAllComponents({"type":"sst.AccumulatorStatistic","rate":"0ns"})
+sst.enableAllStatisticsForAllComponents({"type": "sst.AccumulatorStatistic", "rate": "0ns"})

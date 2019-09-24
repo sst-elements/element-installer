@@ -19,101 +19,98 @@
 #include "ctrlMsgCommReq.h"
 
 namespace SST {
-namespace Firefly {
-namespace CtrlMsg {
+    namespace Firefly {
+        namespace CtrlMsg {
 
-class WaitReq {
-    struct X {
-        X( _CommReq* _req, MP::MessageResponse* _resp = NULL ) : 
-            pos(0), req(_req), resp(_resp) {}
+            class WaitReq {
+                struct X {
+                    X(_CommReq *_req, MP::MessageResponse *_resp = nullptr) :
+                        pos(0), req(_req), resp(_resp) {}
 
-        X( int _pos, _CommReq* _req, MP::MessageResponse* _resp = NULL ) : 
-            pos(_pos), req(_req), resp(_resp) {}
+                    X(int _pos, _CommReq *_req, MP::MessageResponse *_resp = nullptr) :
+                        pos(_pos), req(_req), resp(_resp) {}
 
-        int pos;
-        _CommReq* req;
-        MP::MessageResponse* resp;
-    };
+                    int pos;
+                    _CommReq *req;
+                    MP::MessageResponse *resp;
+                };
 
-  public:
-    WaitReq( _CommReq* req ) : indexPtr(NULL) {
-        reqQ.push_back( X( req ) ); 
-    }
-
-    WaitReq( std::vector<_CommReq*> reqs ) : indexPtr(NULL) {
-        for ( unsigned int i = 0; i < reqs.size(); i++ ) {
-            reqQ.push_back( X( i, reqs[i] ) ); 
-        } 
-    }
-
-    WaitReq( MP::MessageRequest req, MP::MessageResponse* resp ) :
-        indexPtr(NULL)
-    {
-        reqQ.push_back( X( static_cast<_CommReq*>(req), resp ) );
-    }
-
-    WaitReq( int count, MP::MessageRequest req[], int *index,
-                                        MP::MessageResponse* resp ) :
-        indexPtr(index)
-    {
-        for ( int i = 0; i < count; i++ ) {
-            reqQ.push_back( X( i, static_cast<_CommReq*>(req[i]), resp ) );
-        }
-    }
-
-    WaitReq( int count, MP::MessageRequest req[],
-                                        MP::MessageResponse* resp[] ) : 
-        indexPtr(NULL)
-    {
-        MP::MessageResponse* tmp = (MP::MessageResponse*)resp;
-        for ( int i = 0; i < count; i++ ) {
-			if ( resp ) {
-                reqQ.push_back( X( i, static_cast<_CommReq*>(req[i]), &tmp[i] ) );
-			} else {
-                reqQ.push_back( X( i, static_cast<_CommReq*>(req[i]) ) );
-			}
-        }
-    }
-
-    bool isDone() {
-        return reqQ.empty();
-    }
-
-    _CommReq* getFiniReq() {
-        std::deque<X>::iterator iter = reqQ.begin();
-
-        while ( iter != reqQ.end() ) {
-            if ( iter->req->isDone() ) {
-
-                _CommReq* req = iter->req;
-
-                if ( iter->resp ) {
-                    *iter->resp = *iter->req->getResp(  );
+            public:
+                WaitReq(_CommReq *req) : indexPtr(nullptr) {
+                    reqQ.push_back(X(req));
                 }
 
-                // a waitany will have an valid indexPtr
-                if ( indexPtr ) { 
-                    *indexPtr = iter->pos;
-                    reqQ.clear();
-                } else {
-                    iter = reqQ.erase( iter );
+                WaitReq(std::vector<_CommReq *> reqs) : indexPtr(nullptr) {
+                    for (unsigned int i = 0; i < reqs.size(); i++) {
+                        reqQ.push_back(X(i, reqs[i]));
+                    }
                 }
-                return req;
 
-            } else {
-                ++iter;
-            }
-        } 
-        return NULL;
+                WaitReq(MP::MessageRequest req, MP::MessageResponse *resp) :
+                    indexPtr(nullptr) {
+                    reqQ.push_back(X(static_cast<_CommReq *>(req), resp));
+                }
+
+                WaitReq(int count, MP::MessageRequest req[], int *index,
+                        MP::MessageResponse *resp) :
+                    indexPtr(index) {
+                    for (int i = 0; i < count; i++) {
+                        reqQ.push_back(X(i, static_cast<_CommReq *>(req[i]), resp));
+                    }
+                }
+
+                WaitReq(int count, MP::MessageRequest req[],
+                        MP::MessageResponse *resp[]) :
+                    indexPtr(nullptr) {
+                    MP::MessageResponse *tmp = (MP::MessageResponse *) resp;
+                    for (int i = 0; i < count; i++) {
+                        if (resp) {
+                            reqQ.push_back(X(i, static_cast<_CommReq *>(req[i]), &tmp[i]));
+                        } else {
+                            reqQ.push_back(X(i, static_cast<_CommReq *>(req[i])));
+                        }
+                    }
+                }
+
+                bool isDone() {
+                    return reqQ.empty();
+                }
+
+                _CommReq *getFiniReq() {
+                    std::deque<X>::iterator iter = reqQ.begin();
+
+                    while (iter != reqQ.end()) {
+                        if (iter->req->isDone()) {
+
+                            _CommReq *req = iter->req;
+
+                            if (iter->resp) {
+                                *iter->resp = *iter->req->getResp();
+                            }
+
+                            // a waitany will have an valid indexPtr
+                            if (indexPtr) {
+                                *indexPtr = iter->pos;
+                                reqQ.clear();
+                            } else {
+                                iter = reqQ.erase(iter);
+                            }
+                            return req;
+
+                        } else {
+                            ++iter;
+                        }
+                    }
+                    return nullptr;
+                }
+
+            private:
+                std::deque <X> reqQ;
+                int *indexPtr;
+            };
+
+        }
     }
-
-  private:
-    std::deque< X > reqQ;
-    int* indexPtr; 
-};
-
-}
-}
 }
 
 #endif

@@ -29,13 +29,13 @@
 using namespace SST;
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-    // Library wide Output object.  Mostly used for fatal() calls
-    static Output merlin_abort("Merlin: ", 5, -1, Output::STDERR);
-    static Output merlin_abort_full("Merlin: @f, line @l: ", 5, -1, Output::STDOUT);
-    
-}
+        // Library wide Output object.  Mostly used for fatal() calls
+        static Output merlin_abort("Merlin: ", 5, -1, Output::STDERR);
+        static Output merlin_abort_full("Merlin: @f, line @l: ", 5, -1, Output::STDOUT);
+
+    }
 }
 
 #endif // COMPONENTS_MERLIN_MERLIN_H

@@ -45,9 +45,13 @@
 namespace SST {
     namespace n_Bank {
         class c_AddressHasher;
+
         class c_TxnScheduler;
+
         class c_DeviceDriver;
+
         class c_TxnConverter;
+
         class c_CmdScheduler;
 
         class c_Controller : public SST::Component {
@@ -56,39 +60,45 @@ namespace SST {
 
             SST_ELI_REGISTER_COMPONENT(
                 c_Controller,
-                "CramSim",
-                "c_Controller",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Memory Controller",
-                COMPONENT_CATEGORY_UNCATEGORIZED
+            "CramSim",
+            "c_Controller",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Memory Controller",
+            COMPONENT_CATEGORY_UNCATEGORIZED
             )
 
             SST_ELI_DOCUMENT_PARAMS(
-                {"AddrMapper", "address hasher", "CramSim.c_AddressHasher"},
-                {"TxnScheduler", "Transaction Scheduler", "CramSim.c_TxnScheduler"},
-                {"TxnConverter", "Transaction Converter", "CramSim.c_TxnConverter"},
-                {"CmdScheduler", "Command Scheduler", "CramSim.c_CmdScheduler"},
-                {"DeviceDriver", "device driver", "CramSim.c_DeviceDriver"},
+            { "AddrMapper", "address hasher", "CramSim.c_AddressHasher" },
+            { "TxnScheduler", "Transaction Scheduler", "CramSim.c_TxnScheduler" },
+            { "TxnConverter", "Transaction Converter", "CramSim.c_TxnConverter" },
+            { "CmdScheduler", "Command Scheduler", "CramSim.c_CmdScheduler" },
+            { "DeviceDriver", "device driver", "CramSim.c_DeviceDriver" },
             )
 
             SST_ELI_DOCUMENT_PORTS(
-                {"txngenLink", "link to txn generator / txn dispatcher", {"c_txnGenReqEvent"} },
-                {"memLink", "link to memory", {"c_DeviceResEvent"} },
+            { "txngenLink", "link to txn generator / txn dispatcher", {"c_txnGenReqEvent"}},
+            { "memLink", "link to memory", {"c_DeviceResEvent"}},
             )
 
             c_Controller(SST::ComponentId_t id, SST::Params &params);
+
             ~c_Controller();
 
-            c_TxnScheduler* getTxnScheduler() {return m_txnScheduler;}
-            c_AddressHasher* getAddrHasher() {return m_addrHasher;}
-            c_DeviceDriver* getDeviceDriver() {return m_deviceDriver;}
-            c_CmdScheduler* getCmdScheduler() {return m_cmdScheduler;}
-            c_TxnConverter* getTxnConverter() {return m_txnConverter;}
-            Output * getOutput() {return output;}
+            c_TxnScheduler *getTxnScheduler() { return m_txnScheduler; }
 
-            void sendCommand(c_BankCommand* cmd);
+            c_AddressHasher *getAddrHasher() { return m_addrHasher; }
 
-            SimTime_t getSimCycle(){return m_simCycle;}
+            c_DeviceDriver *getDeviceDriver() { return m_deviceDriver; }
+
+            c_CmdScheduler *getCmdScheduler() { return m_cmdScheduler; }
+
+            c_TxnConverter *getTxnConverter() { return m_txnConverter; }
+
+            Output *getOutput() { return output; }
+
+            void sendCommand(c_BankCommand *cmd);
+
+            SimTime_t getSimCycle() { return m_simCycle; }
 
         private:
             c_Controller(); // for serialization only
@@ -98,8 +108,11 @@ namespace SST {
 
 
             void sendResponse();
+
             void sendRequest();
+
             void configure_link();
+
             // Transaction Generator <-> Controller Handlers
             void handleIncomingTransaction(SST::Event *ev);
 
@@ -110,8 +123,8 @@ namespace SST {
 
             SST::Output *output;
 
-            std::deque<c_Transaction*> m_ReqQ;
-            std::deque<c_Transaction*> m_ResQ;
+            std::deque<c_Transaction *> m_ReqQ;
+            std::deque<c_Transaction *> m_ResQ;
 
             // Subcomponents
             c_TxnScheduler *m_txnScheduler;
@@ -123,8 +136,8 @@ namespace SST {
             // params for system configuration
             int k_enableQuickResponse;
 
-		    // clock frequency
-			std::string k_controllerClockFreqStr;
+            // clock frequency
+            std::string k_controllerClockFreqStr;
 
             // Transaction Generator <-> Controller Links
             SST::Link *m_txngenLink;

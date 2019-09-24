@@ -20,26 +20,30 @@
 #include "sst/elements/thornhill/memoryHeapLink.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class Info;
-class VirtNic;
+        class Info;
 
-class ProtocolAPI : public SST::SubComponent 
-{
-  public:
+        class VirtNic;
 
-    ProtocolAPI( Component* parent ) : SubComponent( parent ) {}
-    virtual ~ProtocolAPI() {}
+        class ProtocolAPI : public SST::SubComponent {
+        public:
+
+            ProtocolAPI(Component *parent) : SubComponent(parent) {}
+
+            virtual ~ProtocolAPI() {}
+
 #if 0
-    virtual void printStatus( Output& ) {}
-    virtual void setup() {};
-    virtual void finish() {};
+            virtual void printStatus( Output& ) {}
+            virtual void setup() {};
+            virtual void finish() {};
 #endif
-    virtual void setVars( Info*, VirtNic*, Thornhill::MemoryHeapLink*, Link* ) = 0;  
-    virtual std::string name() = 0;
-};
 
-}
+            virtual void setVars(Info *, VirtNic *, Thornhill::MemoryHeapLink *, Link *) = 0;
+
+            virtual std::string name() = 0;
+        };
+
+    }
 }
 #endif

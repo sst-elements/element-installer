@@ -27,11 +27,14 @@
 
 namespace SST {
     namespace Scheduler {
-    	class TaskMapInfo;
-		
-		struct ITMI {int i; TaskMapInfo *tmi;};
+        class TaskMapInfo;
 
-	}
+        struct ITMI {
+            int i;
+            TaskMapInfo *tmi;
+        };
+
+    }
 }
 
 #endif

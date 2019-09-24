@@ -30,42 +30,42 @@
 
 //typedef  VaultCompleteFn; 
 
-static size_t MEMSIZE = size_t(4096)*size_t(1024*1024);
+static size_t MEMSIZE = size_t(4096) * size_t(1024 * 1024);
 
 using namespace SST::VaultSim;
 using namespace SST::MemHierarchy;
 
-VaultSimC::VaultSimC( ComponentId_t id, Params& params ) :
-    Component( id ), numOutstanding(0) {
-    dbg.init("@R:Vault::@p():@l " + getName() + ": ", 0, 0, 
-             (Output::output_location_t)params.find<uint32_t>("debug", 0));  
-    
+VaultSimC::VaultSimC(ComponentId_t id, Params &params) :
+    Component(id), numOutstanding(0) {
+    dbg.init("@R:Vault::@p():@l " + getName() + ": ", 0, 0,
+             (Output::output_location_t) params.find<uint32_t>("debug", 0));
+
     std::string frequency = "1.0 GHz";
     frequency = params.find<std::string>("clock", "1.0 Ghz");
-    
+
     // number of bits to determin vault address
-    int nv2 = params.find( "numVaults2", -1 );
-    if ( -1 == nv2) {
-        dbg.fatal(CALL_INFO, -1,"numVaults2 (number of bits to determine vault "
-               "address) not set! Should be log2(number of vaults per cube)\n");
+    int nv2 = params.find("numVaults2", -1);
+    if (-1 == nv2) {
+        dbg.fatal(CALL_INFO, -1, "numVaults2 (number of bits to determine vault "
+                                 "address) not set! Should be log2(number of vaults per cube)\n");
     } else {
         numVaults2 = nv2;
     }
 
     //DBG("new id=%lu\n",id);
-  
-    m_memChan = configureLink( "bus", "1 ns" );
-  
+
+    m_memChan = configureLink("bus", "1 ns");
+
     int vid = params.find("VaultID", -1);
-    if ( -1 == vid) {
-        dbg.fatal(CALL_INFO, -1,"not VaultID Set\n");
+    if (-1 == vid) {
+        dbg.fatal(CALL_INFO, -1, "not VaultID Set\n");
     } else {
         vaultID = vid;
     }
 
-  
+
 #if HAVE_LIBPHX == 1
-    registerClock( frequency, 
+    registerClock( frequency,
                    new Clock::Handler<VaultSimC>(this, &VaultSimC::clock_phx) );
 
     // Phx Library configuratoin
@@ -83,41 +83,39 @@ VaultSimC::VaultSimC( ComponentId_t id, Params& params ) :
 #else
     // Configuration if we're not using Phx Library
 
-    registerClock( frequency, 
-                   new Clock::Handler<VaultSimC>(this, &VaultSimC::clock) );
+    registerClock(frequency,
+                  new Clock::Handler<VaultSimC>(this, &VaultSimC::clock));
 
     std::string delay = "40ns";
     delay = params.find<std::string>("delay", "40ns");
-    delayLine = configureSelfLink( "delayLine", delay);
+    delayLine = configureSelfLink("delayLine", delay);
 #endif /* HAVE_LIBPHX */
 
     // setup backing store
     size_t memSize = MEMSIZE;
-    /*memBuffer = (uint8_t*)mmap(NULL, memSize, PROT_READ|PROT_WRITE, 
+    /*memBuffer = (uint8_t*)mmap(nullptr, memSize, PROT_READ|PROT_WRITE, 
                                MAP_PRIVATE|MAP_ANON, -1, 0);
     if ( !memBuffer ) {
         dbg.fatal(CALL_INFO, -1, "Unable to MMAP backing store for Memory\n");
     }
 */
-    memOutStat = registerStatistic<uint64_t>("Mem_Outstanding","1");
+    memOutStat = registerStatistic<uint64_t>("Mem_Outstanding", "1");
 }
 
-    int VaultSimC::Finish() 
-{
+int VaultSimC::Finish() {
     //munmap(memBuffer, MEMSIZE);
 
     return 0;
 }
 
-void VaultSimC::init(unsigned int phase)
-{
-    SST::Event *ev = NULL;
-    while ( (ev = m_memChan->recvInitData()) != NULL ) {
+void VaultSimC::init(unsigned int phase) {
+    SST::Event *ev = nullptr;
+    while ((ev = m_memChan->recvInitData()) != nullptr) {
         assert(0);
-        MemEvent *me = dynamic_cast<MemEvent*>(ev);
-        if ( me ) {
+        MemEvent *me = dynamic_cast<MemEvent *>(ev);
+        if (me) {
             /* Push data to memory */
-            if ( me->isWriteback() ) {
+            if (me->isWriteback()) {
                 //printf("Vault received Init Command: of size 0x%x at addr 0x%lx\n", me->getSize(), me->getAddr() );
                 uint32_t chunkSize = (1 << VAULT_SHIFT);
                 if (me->getSize() > chunkSize)
@@ -208,7 +206,7 @@ bool VaultSimC::clock_phx( Cycle_t current ) {
     while ((e = m_memChan->recv())) {
         // process incoming events
         MemEvent *event  = dynamic_cast<MemEvent*>(e);
-        if (event == NULL) {
+        if (event == nullptr) {
             dbg.fatal(CALL_INFO, -1, "vault got bad event\n");
         }
     
@@ -252,12 +250,12 @@ bool VaultSimC::clock_phx( Cycle_t current ) {
 
 // without PHX library ...
 
-bool VaultSimC::clock( Cycle_t current ) {
+bool VaultSimC::clock(Cycle_t current) {
     SST::Event *e = 0;
-    while (NULL != (e = m_memChan->recv())) {
+    while (nullptr != (e = m_memChan->recv())) {
         // process incoming events
-        MemReqEvent *event  = dynamic_cast<MemReqEvent*>(e);
-        if (NULL == event) {
+        MemReqEvent *event = dynamic_cast<MemReqEvent *>(e);
+        if (nullptr == event) {
             dbg.fatal(CALL_INFO, -1, "vault got bad event\n");
         }
         // handle event...
@@ -266,14 +264,14 @@ bool VaultSimC::clock( Cycle_t current ) {
     }
 
     e = 0;
-    while (NULL != (e = delayLine->recv())) {
+    while (nullptr != (e = delayLine->recv())) {
         // process returned events
-        MemReqEvent *event  = dynamic_cast<MemReqEvent*>(e);
-        if (NULL == event) {
+        MemReqEvent *event = dynamic_cast<MemReqEvent *>(e);
+        if (nullptr == event) {
             dbg.fatal(CALL_INFO, -1, "vault got bad event from delay line\n");
         } else {
-            MemRespEvent *respEvent = new MemRespEvent( 
-				event->getReqId(), event->getAddr(), event->getFlags() );
+            MemRespEvent *respEvent = new MemRespEvent(
+                event->getReqId(), event->getAddr(), event->getFlags());
 
             m_memChan->send(respEvent);
             numOutstanding--;

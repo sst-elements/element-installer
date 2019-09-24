@@ -22,52 +22,58 @@
 #include <string.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAMRFile {
+        class EmberAMRFile {
 
-public:
-	EmberAMRFile(char* amrPath, Output* out) :
-		amrFilePath(amrPath),
-		output(out) {
-	}
+        public:
+            EmberAMRFile(char *amrPath, Output *out) :
+                amrFilePath(amrPath),
+                output(out) {
+            }
 
-	virtual ~EmberAMRFile() {
+            virtual ~EmberAMRFile() {
 
-	}
+            }
 
-    virtual void readNodeMeshLine(uint32_t* blockCount) = 0;
-	virtual void readNextMeshLine(uint32_t* blockID, uint32_t* refineLev,
-		int32_t* xDown, int32_t* xUp,
-		int32_t* yDown, int32_t* yUp,
-        int32_t* zDown, int32_t* zUp) = 0;
+            virtual void readNodeMeshLine(uint32_t *blockCount) = 0;
 
-	uint32_t getBlocksX() const { return (uint32_t) blocksX; }
-	uint32_t getBlocksY() const { return (uint32_t) blocksY; }
-	uint32_t getBlocksZ() const { return (uint32_t) blocksZ; }
+            virtual void readNextMeshLine(uint32_t *blockID, uint32_t *refineLev,
+                                          int32_t *xDown, int32_t *xUp,
+                                          int32_t *yDown, int32_t *yUp,
+                                          int32_t *zDown, int32_t *zUp) = 0;
 
-	uint32_t getBlockCount() const { return (uint32_t) totalBlockCount; }
-	uint32_t getMaxRefinement() const { return (uint32_t) maxRefinementLevel; }
+            uint32_t getBlocksX() const { return (uint32_t) blocksX; }
 
-	virtual bool isBinary() { return false; }
-        virtual void locateRankEntries(uint32_t rank) {
-        	output->fatal(CALL_INFO, -1, "Called locate on an AMR file which does not support seek operations.\n");
-	}
+            uint32_t getBlocksY() const { return (uint32_t) blocksY; }
 
-protected:
-	char* amrFilePath;
-	Output* output;
-	FILE* amrFile;
+            uint32_t getBlocksZ() const { return (uint32_t) blocksZ; }
 
-	int totalBlockCount;
-	int maxRefinementLevel;
-	int blocksX;
-	int blocksY;
-	int blocksZ;
+            uint32_t getBlockCount() const { return (uint32_t) totalBlockCount; }
 
-};
+            uint32_t getMaxRefinement() const { return (uint32_t) maxRefinementLevel; }
 
-}
+            virtual bool isBinary() { return false; }
+
+            virtual void locateRankEntries(uint32_t rank) {
+                output->fatal(CALL_INFO, -1,
+                              "Called locate on an AMR file which does not support seek operations.\n");
+            }
+
+        protected:
+            char *amrFilePath;
+            Output *output;
+            FILE *amrFile;
+
+            int totalBlockCount;
+            int maxRefinementLevel;
+            int blocksX;
+            int blocksY;
+            int blocksZ;
+
+        };
+
+    }
 }
 
 #endif

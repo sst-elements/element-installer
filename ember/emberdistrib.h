@@ -21,18 +21,20 @@
 #include <sst/core/params.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberComputeDistribution : public SST::Module {
+        class EmberComputeDistribution : public SST::Module {
 
-public:
-	EmberComputeDistribution(Component* owner, Params& params);
-	~EmberComputeDistribution();
-	virtual double sample(uint64_t now) = 0;
+        public:
+            EmberComputeDistribution(Component *owner, Params &params);
 
-};
+            ~EmberComputeDistribution();
 
-}
+            virtual double sample(uint64_t now) = 0;
+
+        };
+
+    }
 }
 
 #endif

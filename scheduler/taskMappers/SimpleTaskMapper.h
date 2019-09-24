@@ -24,18 +24,20 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Machine;
+
         class TaskMapInfo;
 
         class SimpleTaskMapper : public TaskMapper {
-        
-	        public:
-	        
-		        SimpleTaskMapper(const Machine & mach) : TaskMapper(mach) { };
-		        
-		        std::string getSetupInfo(bool comment) const;
 
-		        TaskMapInfo* mapTasks(AllocInfo* allocInfo);
+        public:
+
+            SimpleTaskMapper(const Machine &mach) : TaskMapper(mach) {};
+
+            std::string getSetupInfo(bool comment) const;
+
+            TaskMapInfo *mapTasks(AllocInfo *allocInfo);
         };
     }
 }

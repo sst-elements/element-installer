@@ -20,47 +20,46 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAllreduceEvent : public EmberMPIEvent {
-public:
-    EmberAllreduceEvent( MP::Interface& api, Output* output,
-                        EmberEventTimeStatistic* stat,
-            const Hermes::MemAddr& mydata, 
-            const Hermes::MemAddr& result,
-            uint32_t count, PayloadDataType dtype,
-            ReductionOperation op, Communicator group ) :
-        EmberMPIEvent( api, output, stat ),
-        m_mydata(mydata),
-        m_result(result),
-        m_count(count),
-        m_dtype(dtype),
-        m_op(op), 
-        m_group(group)
-    {}
+        class EmberAllreduceEvent : public EmberMPIEvent {
+        public:
+            EmberAllreduceEvent(MP::Interface &api, Output *output,
+                                EmberEventTimeStatistic *stat,
+                                const Hermes::MemAddr &mydata,
+                                const Hermes::MemAddr &result,
+                                uint32_t count, PayloadDataType dtype,
+                                ReductionOperation op, Communicator group) :
+                EmberMPIEvent(api, output, stat),
+                m_mydata(mydata),
+                m_result(result),
+                m_count(count),
+                m_dtype(dtype),
+                m_op(op),
+                m_group(group) {}
 
-	~EmberAllreduceEvent() {}
+            ~EmberAllreduceEvent() {}
 
-    std::string getName() { return "Allreduce"; }
+            std::string getName() { return "Allreduce"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.allreduce( m_mydata, m_result, m_count, m_dtype, m_op,
-                                                    m_group, functor );
+                m_api.allreduce(m_mydata, m_result, m_count, m_dtype, m_op,
+                                m_group, functor);
+            }
+
+        private:
+            Hermes::MemAddr m_mydata;
+            Hermes::MemAddr m_result;
+            uint32_t m_count;
+            PayloadDataType m_dtype;
+            ReductionOperation m_op;
+            Communicator m_group;
+        };
+
     }
-
-private:
-    Hermes::MemAddr     m_mydata;
-    Hermes::MemAddr     m_result;
-    uint32_t            m_count;
-    PayloadDataType     m_dtype;
-    ReductionOperation  m_op;
-    Communicator        m_group;
-};
-
-}
 }
 
 #endif

@@ -22,20 +22,22 @@
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielExitEvent : public ArielEvent {
+        class ArielExitEvent : public ArielEvent {
 
-    public:
-        ArielExitEvent() {}
-        ~ArielExitEvent() {}
-        ArielEventType getEventType() const {
+        public:
+            ArielExitEvent() {}
+
+            ~ArielExitEvent() {}
+
+            ArielEventType getEventType() const {
                 return CORE_EXIT;
-        }
+            }
 
-};
+        };
 
-}
+    }
 }
 
 #endif

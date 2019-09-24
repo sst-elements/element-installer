@@ -20,7 +20,7 @@
 using namespace SST;
 using namespace SST::Firefly;
 
-void Nic::RecvMachine::printStatus( Output& out ) {
+void Nic::RecvMachine::printStatus(Output &out) {
 #ifdef NIC_RECV_DEBUG
     if ( m_nic.m_linkControl->requestToReceive( 0 ) ) {
         out.output( "%lu: %d: RecvMachine `%s` msgCount=%d runCount=%d,"

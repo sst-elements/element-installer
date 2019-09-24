@@ -20,31 +20,31 @@
 using namespace SST;
 using namespace SST::Firefly;
 
-Nic::RecvMachine::MsgStream::MsgStream( Output& output, Ctx* ctx,
-        int srcNode, int srcPid, int destPid, FireflyNetworkEvent* ev ) : 
-    StreamBase(output,ctx,srcNode,srcPid,destPid), m_blocked(false)
-{
+Nic::RecvMachine::MsgStream::MsgStream(Output &output, Ctx *ctx,
+                                       int srcNode, int srcPid, int destPid,
+                                       FireflyNetworkEvent *ev) :
+    StreamBase(output, ctx, srcNode, srcPid, destPid), m_blocked(false) {
     m_unit = m_ctx->allocRecvUnit();
-    m_dbg.debug(CALL_INFO,1,NIC_DBG_RECV_STREAM,"%p\n",this);
+    m_dbg.debug(CALL_INFO, 1, NIC_DBG_RECV_STREAM, "%p\n", this);
 
-    MsgHdr& hdr =           *(MsgHdr*) ev->bufPtr();
-    MatchMsgHdr& matchHdr = *(MatchMsgHdr*) ev->bufPtr( sizeof(MsgHdr) );
+    MsgHdr &hdr = *(MsgHdr *) ev->bufPtr();
+    MatchMsgHdr &matchHdr = *(MatchMsgHdr *) ev->bufPtr(sizeof(MsgHdr));
     m_matched_len = matchHdr.len;
     m_matched_tag = matchHdr.tag;
 
-    m_dbg.debug(CALL_INFO,1,NIC_DBG_RECV_STREAM,"Msg Operation srcNode=%d tag=%#x length=%lu\n",
-                            m_srcNode,matchHdr.tag,matchHdr.len);
+    m_dbg.debug(CALL_INFO, 1, NIC_DBG_RECV_STREAM, "Msg Operation srcNode=%d tag=%#x length=%lu\n",
+                m_srcNode, matchHdr.tag, matchHdr.len);
 
-    m_recvEntry = static_cast<DmaRecvEntry *>( m_ctx->findRecv( m_srcNode, m_srcPid, hdr, matchHdr ) );
+    m_recvEntry = static_cast<DmaRecvEntry *>( m_ctx->findRecv(m_srcNode, m_srcPid, hdr, matchHdr));
 
     Callback callback;
-    if ( NULL== m_recvEntry ) {
-        callback =  std::bind( &Nic::RecvMachine::StreamBase::needRecv, this, ev );
+    if (nullptr == m_recvEntry) {
+        callback = std::bind(&Nic::RecvMachine::StreamBase::needRecv, this, ev);
     } else {
         m_blocked = true;
-        ev->bufPop( sizeof(MsgHdr) + sizeof(MatchMsgHdr) );
+        ev->bufPop(sizeof(MsgHdr) + sizeof(MatchMsgHdr));
         ev->clearHdr();
-        callback = std::bind( &Nic::RecvMachine::MsgStream::processFirstPkt, this, ev );
+        callback = std::bind(&Nic::RecvMachine::MsgStream::processFirstPkt, this, ev);
     }
-    m_ctx->nic().schedCallback( callback,  m_ctx->getRxMatchDelay() );
+    m_ctx->nic().schedCallback(callback, m_ctx->getRxMatchDelay());
 }

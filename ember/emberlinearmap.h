@@ -20,71 +20,75 @@
 #include "embermap.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberLinearRankMap : public EmberRankMap {
-public:
+        class EmberLinearRankMap : public EmberRankMap {
+        public:
 
-    SST_ELI_REGISTER_MODULE(
-        EmberLinearRankMap,
-        "ember",
-        "LinearMap",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Performs a linear mapping of MPI ranks",
-        "SST::Ember::EmberRankMap"
-    ) 
+            SST_ELI_REGISTER_MODULE(
+                EmberLinearRankMap,
+            "ember",
+            "LinearMap",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Performs a linear mapping of MPI ranks",
+            "SST::Ember::EmberRankMap"
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-    ) 
+            SST_ELI_DOCUMENT_PARAMS(
+            )
 
-public:
+        public:
 
-	EmberLinearRankMap(Component* owner, Params& params) : EmberRankMap(owner, params) {}
-	~EmberLinearRankMap() {}
+            EmberLinearRankMap(Component *owner, Params &params) : EmberRankMap(owner, params) {}
 
-	void setEnvironment(const uint32_t rank, const uint32_t worldSize) {};
-	uint32_t mapRank(const uint32_t input) { return input; }
+            ~EmberLinearRankMap() {}
 
-	void getPosition(const int32_t rank, const int32_t px, const int32_t py, const int32_t pz,
-                int32_t* myX, int32_t* myY, int32_t* myZ) {
+            void setEnvironment(const uint32_t rank, const uint32_t worldSize) {};
 
-        	const int32_t my_plane  = rank % (px * py);
-        	*myY                    = my_plane / px;
-        	const int32_t remain    = my_plane % px;
-        	*myX                    = remain != 0 ? remain : 0;
-        	*myZ                    = rank / (px * py);
-	}
+            uint32_t mapRank(const uint32_t input) { return input; }
 
-	void getPosition(const int32_t rank, const int32_t px, const int32_t py,
-                int32_t* myX, int32_t* myY) {
+            void getPosition(const int32_t rank, const int32_t px, const int32_t py,
+                             const int32_t pz,
+                             int32_t *myX, int32_t *myY, int32_t *myZ) {
 
-        	*myX = rank % px;
-        	*myY = rank / px;
-	}
+                const int32_t my_plane = rank % (px * py);
+                *myY = my_plane / px;
+                const int32_t remain = my_plane % px;
+                *myX = remain != 0 ? remain : 0;
+                *myZ = rank / (px * py);
+            }
 
-	int32_t convertPositionToRank(const int32_t px, const int32_t py,
-        	const int32_t myX, const int32_t myY) {
+            void getPosition(const int32_t rank, const int32_t px, const int32_t py,
+                             int32_t *myX, int32_t *myY) {
 
-        	if( (myX < 0) || (myY < 0) || (myX >= px) || (myY >= py) ) {
-                	return -1;
-        	} else {
-                	return (myY * px) + myX;
-        	}
-	}
+                *myX = rank % px;
+                *myY = rank / px;
+            }
 
-	int32_t convertPositionToRank(const int32_t px, const int32_t py, const int32_t pz,
-        	const int32_t myX, const int32_t myY, const int32_t myZ) {
+            int32_t convertPositionToRank(const int32_t px, const int32_t py,
+                                          const int32_t myX, const int32_t myY) {
 
-        	if( (myX < 0) || (myY < 0) || (myZ < 0) || (myX >= px) || (myY >= py) || (myZ >= pz) ) {
-                	return -1;
-        	} else {
-                	return (myZ * (px * py)) + (myY * px) + myX;
-        	}
-	}
+                if ((myX < 0) || (myY < 0) || (myX >= px) || (myY >= py)) {
+                    return -1;
+                } else {
+                    return (myY * px) + myX;
+                }
+            }
 
-};
+            int32_t convertPositionToRank(const int32_t px, const int32_t py, const int32_t pz,
+                                          const int32_t myX, const int32_t myY, const int32_t myZ) {
 
-}
+                if ((myX < 0) || (myY < 0) || (myZ < 0) || (myX >= px) || (myY >= py) ||
+                    (myZ >= pz)) {
+                    return -1;
+                } else {
+                    return (myZ * (px * py)) + (myY * px) + myX;
+                }
+            }
+
+        };
+
+    }
 }
 
 #endif

@@ -27,39 +27,41 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class MeshLocation;
 
         class Allocator {
-            public:
-                Allocator(const Machine & mach) : machine(mach){ };
+        public:
+            Allocator(const Machine &mach) : machine(mach) {};
 
-                virtual ~Allocator() {}
+            virtual ~Allocator() {}
 
-                virtual std::string getSetupInfo(bool comment) const = 0;
+            virtual std::string getSetupInfo(bool comment) const = 0;
 
-                bool canAllocate(const Job & j)
-                {  
-                    return (machine.getNumFreeNodes() >= ceil((float) j.getProcsNeeded() / machine.coresPerNode ));
-                }
-                bool canAllocate(const Job & j, std::vector<MeshLocation*>* available)
-                {  
-                    return (available -> size() >= (unsigned int) ceil((float) j.getProcsNeeded() / machine.coresPerNode));
-                }
+            bool canAllocate(const Job &j) {
+                return (machine.getNumFreeNodes() >=
+                        ceil((float) j.getProcsNeeded() / machine.coresPerNode));
+            }
 
-                //allocates job if possible
-                //returns information on the allocation or NULL if it wasn't possible
-                //(doesn't make allocation; merely returns info on possible allocation)
-                virtual AllocInfo* allocate(Job* job) = 0;
+            bool canAllocate(const Job &j, std::vector<MeshLocation *> *available) {
+                return (available->size() >=
+                        (unsigned int) ceil((float) j.getProcsNeeded() / machine.coresPerNode));
+            }
 
-                //in case Allocator wants to know when a job is deallocated
-                //added for MBS, which wants to update its data structures
-                virtual void deallocate(AllocInfo* aInfo) { }
+            //allocates job if possible
+            //returns information on the allocation or nullptr if it wasn't possible
+            //(doesn't make allocation; merely returns info on possible allocation)
+            virtual AllocInfo *allocate(Job *job) = 0;
 
-                //called at end of simulation so allocator can report statistics
-                virtual void done() { }
+            //in case Allocator wants to know when a job is deallocated
+            //added for MBS, which wants to update its data structures
+            virtual void deallocate(AllocInfo *aInfo) {}
 
-            protected:
-                const Machine & machine;
+            //called at end of simulation so allocator can report statistics
+            virtual void done() {}
+
+        protected:
+            const Machine &machine;
 
         };
 

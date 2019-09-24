@@ -20,40 +20,40 @@
 #include "emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCommSplitEvent : public EmberMPIEvent {
+        class EmberCommSplitEvent : public EmberMPIEvent {
 
-public:
-    EmberCommSplitEvent( MP::Interface& api, Output* output,
-                        EmberEventTimeStatistic* stat,
-          Communicator oldComm, int color, int key, Communicator* newComm ) 
-      : EmberMPIEvent( api, output, stat ),
-        m_oldComm( oldComm), 
-        m_color(color), 
-        m_key(key), 
-        m_newComm(newComm)
-    {}
-    ~EmberCommSplitEvent() {}
+        public:
+            EmberCommSplitEvent(MP::Interface &api, Output *output,
+                                EmberEventTimeStatistic *stat,
+                                Communicator oldComm, int color, int key, Communicator *newComm)
+                : EmberMPIEvent(api, output, stat),
+                  m_oldComm(oldComm),
+                  m_color(color),
+                  m_key(key),
+                  m_newComm(newComm) {}
 
-   std::string getName() { return "CommSplit"; }
+            ~EmberCommSplitEvent() {}
 
-    void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "CommSplit"; }
 
-        EmberEvent::issue( time );
+            void issue(uint64_t time, FOO *functor) {
 
-        m_api.comm_split( m_oldComm, m_color, m_key, m_newComm, functor );
+                EmberEvent::issue(time);
+
+                m_api.comm_split(m_oldComm, m_color, m_key, m_newComm, functor);
+            }
+
+
+        private:
+            Communicator m_oldComm;
+            int m_color;
+            int m_key;
+            Communicator *m_newComm;
+        };
+
     }
-
-
-private:
-	Communicator m_oldComm;
-    int m_color;
-    int m_key;
-    Communicator* m_newComm;
-};
-
-}
 }
 
 #endif

@@ -20,43 +20,42 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberBcastEvent : public EmberMPIEvent {
-public:
-    EmberBcastEvent( MP::Interface& api, Output* output,
-                    EmberEventTimeStatistic* stat,
-            const Hermes::MemAddr& mydata,
-            uint32_t count, PayloadDataType dtype,
-            int root, Communicator group ) :
-        EmberMPIEvent( api, output, stat ),
-        m_mydata(mydata),
-        m_count(count),
-        m_dtype(dtype),
-        m_root( root ),
-        m_group(group)
-    {}
+        class EmberBcastEvent : public EmberMPIEvent {
+        public:
+            EmberBcastEvent(MP::Interface &api, Output *output,
+                            EmberEventTimeStatistic *stat,
+                            const Hermes::MemAddr &mydata,
+                            uint32_t count, PayloadDataType dtype,
+                            int root, Communicator group) :
+                EmberMPIEvent(api, output, stat),
+                m_mydata(mydata),
+                m_count(count),
+                m_dtype(dtype),
+                m_root(root),
+                m_group(group) {}
 
-	~EmberBcastEvent() {}
+            ~EmberBcastEvent() {}
 
-    std::string getName() { return "Bcast"; }
+            std::string getName() { return "Bcast"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.bcast( m_mydata, m_count, m_dtype, m_root, m_group, functor );
+                m_api.bcast(m_mydata, m_count, m_dtype, m_root, m_group, functor);
+            }
+
+        private:
+            Hermes::MemAddr m_mydata;
+            uint32_t m_count;
+            PayloadDataType m_dtype;
+            int m_root;
+            Communicator m_group;
+        };
+
     }
-
-private:
-    Hermes::MemAddr     m_mydata;
-    uint32_t            m_count;
-    PayloadDataType     m_dtype;
-    int                 m_root;
-    Communicator        m_group;
-};
-
-}
 }
 
 #endif

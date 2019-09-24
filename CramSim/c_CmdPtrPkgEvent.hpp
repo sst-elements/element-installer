@@ -37,24 +37,25 @@
 #include "c_BankCommand.hpp"
 
 namespace SST {
-namespace n_Bank {
-  
-class c_CmdPtrPkgEvent: public SST::Event {
-public:
-	std::vector<c_BankCommand*> m_payload;
-	c_CmdPtrPkgEvent() :
-			SST::Event() {
-	}
+    namespace n_Bank {
 
-	void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-		Event::serialize_order(ser);
-		ser & m_payload;
-	}
+        class c_CmdPtrPkgEvent : public SST::Event {
+        public:
+            std::vector<c_BankCommand *> m_payload;
 
-	ImplementSerializable (SST::n_Bank::c_CmdPtrPkgEvent);
+            c_CmdPtrPkgEvent() :
+                SST::Event() {
+            }
 
-};
-}
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & m_payload;
+            }
+
+            ImplementSerializable (SST::n_Bank::c_CmdPtrPkgEvent);
+
+        };
+    }
 }
 
 #endif /* C_CMDPTRPKGEVENT_HPP_ */

@@ -38,52 +38,52 @@
 
 namespace Neuron_Loader_Types {
 
-  // Neuron Configuration Transmission (NCT) (Floating-Point Format)
-  typedef struct {
-    float NrnThr; // Neuron Firing Potential
-    float NrnMin; // Neuron Minimum Allowed Potential
-    float NrnLkg; // Neuron Leakage Value
-  } T_NctFl;
+    // Neuron Configuration Transmission (NCT) (Floating-Point Format)
+    typedef struct {
+        float NrnThr; // Neuron Firing Potential
+        float NrnMin; // Neuron Minimum Allowed Potential
+        float NrnLkg; // Neuron Leakage Value
+    } T_NctFl;
 
 } // Neuron_Loader_Types
 
 namespace White_Matter_Types {
 
-  // White Matter Entry (WME) Format
-  // AFR: Changed to uint16
-  typedef struct {
-    uint16_t SynStr; // Synaptic Strength
-    uint16_t TmpOff; // Temporal Offset
-    uint16_t SubAdr; // Sub-Address
-    uint16_t Valid;  // Valid Flag
-  } T_Wme;
+    // White Matter Entry (WME) Format
+    // AFR: Changed to uint16
+    typedef struct {
+        uint16_t SynStr; // Synaptic Strength
+        uint16_t TmpOff; // Temporal Offset
+        uint16_t SubAdr; // Sub-Address
+        uint16_t Valid;  // Valid Flag
+    } T_Wme;
 
 } // White_Matter_Types
 
 namespace Ctx_Seq_Mem_Types {
 
-  // Context Sequence Entry (CSE) Format
-  typedef struct {
-    int      CtxNum; // Context Number
-    uint32_t LifCnt; // LIF Count 
-  } T_Cse;
+    // Context Sequence Entry (CSE) Format
+    typedef struct {
+        int CtxNum; // Context Number
+        uint32_t LifCnt; // LIF Count
+    } T_Cse;
 
 } // Ctx_Seq_Mem_Types
 
 namespace Ctrl_And_Stat_Types {
 
-  // Brain Wave Pulse (BWP) Format (Floating-Point Format)
-  typedef struct {
-    float InpValFl; // Input Value
-    int   InpNrn; // Input Neuron Number
-    int   TmpSft; // Temporal Shift
-  } T_BwpFl;
+    // Brain Wave Pulse (BWP) Format (Floating-Point Format)
+    typedef struct {
+        float InpValFl; // Input Value
+        int InpNrn; // Input Neuron Number
+        int TmpSft; // Temporal Shift
+    } T_BwpFl;
 
-  // Dump Tuple Format
-  typedef struct {
-    int NrnNum; // Neuron Number
-    int TmpIdx; // Temporal Index
-  } T_Dmp;
+    // Dump Tuple Format
+    typedef struct {
+        int NrnNum; // Neuron Number
+        int TmpIdx; // Temporal Index
+    } T_Dmp;
 
 } // Ctrl_And_Stat_Types
 

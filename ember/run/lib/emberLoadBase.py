@@ -13,7 +13,7 @@
 # information, see the LICENSE file in the top level directory of the
 # distribution.
 
-import sys,pprint
+import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -27,43 +27,44 @@ import rtrConfig as RtrConfig
 import emberConfig as EmberConfig
 import nullEmber as NullEmber
 
+
 def getOptions():
-	return NicConfig.getOptions() + RtrConfig.getOptions() + EmberConfig.getOptions()
+    return NicConfig.getOptions() + RtrConfig.getOptions() + EmberConfig.getOptions()
 
-def run( opts, platParamsName, topo, shape, jobs, perNicParams = None ):
 
-	topoInfo = TopoConfig.getTopoInfo( topo, shape )	
-	topoObj = TopoConfig.getTopoObj( topo )
+def run(opts, platParamsName, topo, shape, jobs, perNicParams=None):
+    topoInfo = TopoConfig.getTopoInfo(topo, shape)
+    topoObj = TopoConfig.getTopoObj(topo)
 
-	print 'Platform: configuration "{0}"'.format( platParamsName )
-	print 'Network: topo={0} shape={1} numNodes={2}'.format( topo, shape, topoInfo.getNumNodes() )
+    print 'Platform: configuration "{0}"'.format(platParamsName)
+    print 'Network: topo={0} shape={1} numNodes={2}'.format(topo, shape, topoInfo.getNumNodes())
 
-	platParams = Platform.getParams( platParamsName )
+    platParams = Platform.getParams(platParamsName)
 
-	nicConfig = NicConfig.NicConfig( platParams.nicParams, opts, perNicParams )
-	rtrConfig = RtrConfig.RtrConfig( platParams.networkParams, opts )
+    nicConfig = NicConfig.NicConfig(platParams.nicParams, opts, perNicParams)
+    rtrConfig = RtrConfig.RtrConfig(platParams.networkParams, opts)
 
-	hermesParams = platParams.hermesParams
-	emberParams = platParams.emberParams
+    hermesParams = platParams.hermesParams
+    emberParams = platParams.emberParams
 
-	Merlin.setTopoParams( topoInfo.getParams() )
-	Merlin.setRtrParams( rtrConfig.getParams() )
+    Merlin.setTopoParams(topoInfo.getParams())
+    Merlin.setRtrParams(rtrConfig.getParams())
 
-	nullEmber = NullEmber.create( emberParams, hermesParams) 
+    nullEmber = NullEmber.create(emberParams, hermesParams)
 
-	loadInfo = LoadInfo.LoadInfo( nicConfig, topoInfo.getNumNodes(), nullEmber )
+    loadInfo = LoadInfo.LoadInfo(nicConfig, topoInfo.getNumNodes(), nullEmber)
 
-	topoObj.setEndPointFunc( loadInfo.setNode )
+    topoObj.setEndPointFunc(loadInfo.setNode)
 
-	for job in jobs:
-	
-		if None == job.getNidlist():
-			nidList = LoadUtils.genNidList( topoInfo.getNumNodes(), \
-					job.getNumNodes(), job.getRandom() )
-			job.setNidList( nidList )
-		job.printInfo()
+    for job in jobs:
 
-		loadInfo.addEmberConfig( EmberConfig.EmberConfig( emberParams, hermesParams, job, opts ) )
+        if None == job.getNidlist():
+            nidList = LoadUtils.genNidList(topoInfo.getNumNodes(), \
+                                           job.getNumNodes(), job.getRandom())
+            job.setNidList(nidList)
+        job.printInfo()
 
-	topoObj.prepParams()
-	topoObj.build()
+        loadInfo.addEmberConfig(EmberConfig.EmberConfig(emberParams, hermesParams, job, opts))
+
+    topoObj.prepParams()
+    topoObj.build()

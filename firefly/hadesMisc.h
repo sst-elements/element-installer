@@ -23,45 +23,49 @@
 using namespace Hermes;
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class HadesMisc : public Misc::Interface
-{
-  public:
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        HadesMisc,
-        "firefly",
-        "hadesMisc",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class HadesMisc : public Misc::Interface {
+        public:
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                HadesMisc,
+            "firefly",
+            "hadesMisc",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-    HadesMisc(Component* owner, Params&) : Interface(owner), m_os(NULL) {}
-    ~HadesMisc() {}
+            HadesMisc(Component *owner, Params &) : Interface(owner), m_os(nullptr) {}
 
-    virtual void setup() {}
-    virtual void finish() {}
-    virtual std::string getName() { return "HadesMisc"; }
+            ~HadesMisc() {}
 
-    virtual void setOS( OS* os ) {
-        m_os = static_cast<Hades*>(os);
+            virtual void setup() {}
+
+            virtual void finish() {}
+
+            virtual std::string getName() { return "HadesMisc"; }
+
+            virtual void setOS(OS *os) {
+                m_os = static_cast<Hades *>(os);
+            }
+
+            void getNumNodes(int *ptr, Callback callback) {
+                *ptr = m_os->getNumNodes();
+                callback(0);
+            }
+
+            void getNodeNum(int *ptr, Callback callback) {
+                *ptr = m_os->getNodeNum();
+                callback(0);
+            }
+
+        private:
+            Hades *m_os;
+        };
+
     }
-    void getNumNodes( int* ptr, Callback callback) { 
-        *ptr = m_os->getNumNodes();
-        callback(0);
-    }
-
-    void getNodeNum( int* ptr, Callback callback) { 
-        *ptr = m_os->getNodeNum();
-        callback(0);
-    }
-  private:
-    Hades*      m_os;
-};
-
-}
 }
 
 #endif

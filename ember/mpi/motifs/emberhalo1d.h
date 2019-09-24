@@ -20,24 +20,25 @@
 #include "mpi/embermpigen.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberHalo1DGenerator : public EmberMessagePassingGenerator {
+        class EmberHalo1DGenerator : public EmberMessagePassingGenerator {
 
-public:
-	EmberHalo1DGenerator(SST::Component* owner, Params& params);
-    bool generate( std::queue<EmberEvent*>& evQ );
+        public:
+            EmberHalo1DGenerator(SST::Component *owner, Params &params);
 
-private:
-	uint32_t m_loopIndex;
-	uint32_t nsCompute;
-	uint32_t messageSize;
-	uint32_t iterations;
+            bool generate(std::queue<EmberEvent *> &evQ);
+
+        private:
+            uint32_t m_loopIndex;
+            uint32_t nsCompute;
+            uint32_t messageSize;
+            uint32_t iterations;
 //	uint32_t wrapAround;
 
-};
+        };
 
-}
+    }
 }
 
 #endif

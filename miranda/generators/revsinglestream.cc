@@ -20,55 +20,69 @@
 
 using namespace SST::Miranda;
 
-ReverseSingleStreamGenerator::ReverseSingleStreamGenerator( Component* owner, Params& params ) :
-	RequestGenerator(owner, params) {
-            build(params);
-        }
+ReverseSingleStreamGenerator::ReverseSingleStreamGenerator(Component *owner, Params &params) :
+    RequestGenerator(owner, params) {
+    build(params);
+}
 
-ReverseSingleStreamGenerator::ReverseSingleStreamGenerator( ComponentId_t id, Params& params ) :
-	RequestGenerator(id, params) {
-            build(params);
-        }
+ReverseSingleStreamGenerator::ReverseSingleStreamGenerator(ComponentId_t id, Params &params) :
+    RequestGenerator(id, params) {
+    build(params);
+}
 
-void ReverseSingleStreamGenerator::build(Params& params) {
+void ReverseSingleStreamGenerator::build(Params &params) {
 
-	const uint32_t verbose = params.find<uint32_t>("verbose", 0);
+    const uint32_t verbose = params.find<uint32_t>("verbose", 0);
 
-	out = new Output("ReverseSingleStreamGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
+    out = new Output("ReverseSingleStreamGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
 
-	stopIndex   = params.find<uint64_t>("stop_at", 0);
-	startIndex  = params.find<uint64_t>("start_at", 1024);
-	datawidth   = params.find<uint64_t>("datawidth", 8);
-	stride      = params.find<uint64_t>("stride", 1);
+    stopIndex = params.find<uint64_t>("stop_at", 0);
+    startIndex = params.find<uint64_t>("start_at", 1024);
+    datawidth = params.find<uint64_t>("datawidth", 8);
+    stride = params.find<uint64_t>("stride", 1);
 
-	if(startIndex < stopIndex) {
-		out->fatal(CALL_INFO, -1, "Start address (%" PRIu64 ") must be greater than stop address (%" PRIu64 ") in reverse stream generator",
-			startIndex, stopIndex);
-	}
+    if (startIndex < stopIndex) {
+        out->fatal(CALL_INFO, -1, "Start address (%"
+        PRIu64
+        ") must be greater than stop address (%"
+        PRIu64
+        ") in reverse stream generator",
+            startIndex, stopIndex);
+    }
 
-	out->verbose(CALL_INFO, 1, 0, "Start Address:         %" PRIu64 "\n", startIndex);
-	out->verbose(CALL_INFO, 1, 0, "Stop Address:          %" PRIu64 "\n", stopIndex);
-	out->verbose(CALL_INFO, 1, 0, "Data width:            %" PRIu64 "\n", datawidth);
-	out->verbose(CALL_INFO, 1, 0, "Stride:                %" PRIu64 "\n", stride);
+    out->verbose(CALL_INFO, 1, 0, "Start Address:         %"
+    PRIu64
+    "\n", startIndex);
+    out->verbose(CALL_INFO, 1, 0, "Stop Address:          %"
+    PRIu64
+    "\n", stopIndex);
+    out->verbose(CALL_INFO, 1, 0, "Data width:            %"
+    PRIu64
+    "\n", datawidth);
+    out->verbose(CALL_INFO, 1, 0, "Stride:                %"
+    PRIu64
+    "\n", stride);
 
-	nextIndex = startIndex;
+    nextIndex = startIndex;
 }
 
 ReverseSingleStreamGenerator::~ReverseSingleStreamGenerator() {
-	delete out;
+    delete out;
 }
 
-void ReverseSingleStreamGenerator::generate(MirandaRequestQueue<GeneratorRequest*>* q) {
-	out->verbose(CALL_INFO, 4, 0, "Generating next request at address: %" PRIu64 "\n", nextIndex);
+void ReverseSingleStreamGenerator::generate(MirandaRequestQueue<GeneratorRequest *> *q) {
+    out->verbose(CALL_INFO, 4, 0, "Generating next request at address: %"
+    PRIu64
+    "\n", nextIndex);
 
-	q->push_back(new MemoryOpRequest(nextIndex * datawidth, datawidth, READ));
+    q->push_back(new MemoryOpRequest(nextIndex * datawidth, datawidth, READ));
 
-	// What is the next address?
-	nextIndex = nextIndex - stride;
+    // What is the next address?
+    nextIndex = nextIndex - stride;
 }
 
 bool ReverseSingleStreamGenerator::isFinished() {
-	return (nextIndex == stopIndex);
+    return (nextIndex == stopIndex);
 }
 
 void ReverseSingleStreamGenerator::completed() {

@@ -20,64 +20,67 @@
 #include <sst/core/simulation.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberMotifLogRecord {
-	public:
-		EmberMotifLogRecord(const char* filePath) {
-			loggerFile = fopen(filePath, "wt");
-		}
+        class EmberMotifLogRecord {
+        public:
+            EmberMotifLogRecord(const char *filePath) {
+                loggerFile = fopen(filePath, "wt");
+            }
 
-		~EmberMotifLogRecord() {
-			if(NULL != loggerFile) {
-				fclose(loggerFile);
-			}
-		}
+            ~EmberMotifLogRecord() {
+                if (nullptr != loggerFile) {
+                    fclose(loggerFile);
+                }
+            }
 
-		void increment() {
+            void increment() {
 #ifndef _SST_EMBER_DISABLE_PARALLEL
-			__sync_fetch_and_add(&motifCount, 1);
+                __sync_fetch_and_add(&motifCount, 1);
 #else
-			motifCount++;
+                motifCount++;
 #endif
-		}
+            }
 
-		void decrement() {
+            void decrement() {
 #ifndef _SST_EMBER_DISABLE_PARALLEL
-			__sync_fetch_and_sub(&motifCount, 1);
+                __sync_fetch_and_sub(&motifCount, 1);
 #else
-			motifCount--;
+                motifCount--;
 #endif
-		}
+            }
 
-		uint32_t getCount() const {
-			return motifCount;
-		}
+            uint32_t getCount() const {
+                return motifCount;
+            }
 
-		FILE* getFile() {
-			return loggerFile;
-		}
+            FILE *getFile() {
+                return loggerFile;
+            }
 
-		void invalidateFile() {
-			loggerFile = NULL;
-		}
+            void invalidateFile() {
+                loggerFile = nullptr;
+            }
 
-	protected:
-		FILE* loggerFile;
-		uint32_t motifCount;
-};
+        protected:
+            FILE *loggerFile;
+            uint32_t motifCount;
+        };
 
-class EmberMotifLog {
-	public:
-		EmberMotifLog(const std::string logPath, const uint32_t jobID);
-		~EmberMotifLog();
-		void logMotifStart(const std::string name, const int motifNum);
-	protected:
-		EmberMotifLogRecord* logRecord;
+        class EmberMotifLog {
+        public:
+            EmberMotifLog(const std::string logPath, const uint32_t jobID);
 
-};
+            ~EmberMotifLog();
 
-}
+            void logMotifStart(const std::string name, const int motifNum);
+
+        protected:
+            EmberMotifLogRecord *logRecord;
+
+        };
+
+    }
 }
 
 #endif

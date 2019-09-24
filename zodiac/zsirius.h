@@ -37,131 +37,155 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacSiriusTraceReader : public SST::Component {
-public:
+        class ZodiacSiriusTraceReader : public SST::Component {
+        public:
 
-  ZodiacSiriusTraceReader(SST::ComponentId_t id, SST::Params& params);
-  void setup();
-  void finish();
-  void init(unsigned int phase);
+            ZodiacSiriusTraceReader(SST::ComponentId_t id, SST::Params &params);
 
-  SST_ELI_REGISTER_COMPONENT(
-        ZodiacSiriusTraceReader,
-        "zodiac",
-        "ZodiacSiriusTraceReader",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "SIRIUS MPI Trace Reader/Replay for Network Simulation",
-        COMPONENT_CATEGORY_PROCESSOR
-  )
+            void setup();
 
-  SST_ELI_DOCUMENT_PARAMS(
-	{ "trace", "Set the trace file to be read in for this end point." },
-	{ "os.module", "Sets the messaging API to use for generation and handling of the message protocol" },
-	{ "scalecompute", "Scale compute event times by a double precision value (allows dilation of times in traces), default is 1.0", "1.0" },
-	{ "verbose", "Sets the verbosity level for the component to output debug/information messages", "0" },
-	{ "buffer", "Sets the size of the buffer to use for message data backing, default is 4096 bytes", "4096" },
-    	{ "name","used internally","" },
-    	{ "module","used internally","" }
-  )
+            void finish();
 
-  SST_ELI_DOCUMENT_PORTS(
-	{ "nic", "Network Interface port", { "" } },
-    	{ "loop", "Firefly Loopback port", { "" } }
-  )
+            void init(unsigned int phase);
 
-private:
-  ~ZodiacSiriusTraceReader();
-  ZodiacSiriusTraceReader();  // for serialization only
-  ZodiacSiriusTraceReader(const ZodiacSiriusTraceReader&); // do not implement
-  void operator=(const ZodiacSiriusTraceReader&); // do not implement
+            SST_ELI_REGISTER_COMPONENT(
+                ZodiacSiriusTraceReader,
+            "zodiac",
+            "ZodiacSiriusTraceReader",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "SIRIUS MPI Trace Reader/Replay for Network Simulation",
+            COMPONENT_CATEGORY_PROCESSOR
+            )
 
-  void handleEvent( SST::Event *ev );
-  void handleSelfEvent(SST::Event *ev);
-  virtual bool clockTic( SST::Cycle_t );
-  void handleComputeEvent(ZodiacEvent* zEv);
-  void handleSendEvent(ZodiacEvent* zEv);
-  void handleRecvEvent(ZodiacEvent* zEv);
-  void handleIRecvEvent(ZodiacEvent* zEv);
-  void handleInitEvent(ZodiacEvent* zEv);
-  void handleWaitEvent(ZodiacEvent* zEv);
-  void handleFinalizeEvent(ZodiacEvent* zEv);
-  void handleAllreduceEvent(ZodiacEvent* zEv);
-  void handleBarrierEvent(ZodiacEvent* zEv);
-  bool completedFunction(int val);
-  bool completedRecvFunction(int val);
-  bool completedWaitFunction(int val);
-  bool completedAllreduceFunction(int val);
-  bool completedInitFunction(int val);
-  bool completedSendFunction(int val);
-  bool completedFinalizeFunction(int val);
-  bool completedIrecvFunction(int val);
-  bool completedBarrierFunction(int val);
+            SST_ELI_DOCUMENT_PARAMS(
+            { "trace", "Set the trace file to be read in for this end point." },
+            { "os.module", "Sets the messaging API to use for generation and handling of the message protocol" },
+            { "scalecompute", "Scale compute event times by a double precision value (allows dilation of times in traces), default is 1.0", "1.0" },
+            { "verbose", "Sets the verbosity level for the component to output debug/information messages", "0" },
+            { "buffer", "Sets the size of the buffer to use for message data backing, default is 4096 bytes", "4096" },
+            { "name", "used internally", "" },
+            { "module", "used internally", "" }
+            )
 
-  void enqueueNextEvent();
+            SST_ELI_DOCUMENT_PORTS(
+            { "nic", "Network Interface port", {""}},
+            { "loop", "Firefly Loopback port", {""}}
+            )
 
-  ////////////////////////////////////////////////////////
+        private:
+            ~ZodiacSiriusTraceReader();
 
-  typedef Arg_Functor<ZodiacSiriusTraceReader, int, bool> DerivedFunctor;
+            ZodiacSiriusTraceReader();  // for serialization only
+            ZodiacSiriusTraceReader(const ZodiacSiriusTraceReader &); // do not implement
+            void operator=(const ZodiacSiriusTraceReader &); // do not implement
 
-  Output zOut;
-  OS* os;
-  MP::Interface* msgapi;
-  SiriusReader* trace;
-  std::queue<ZodiacEvent*>* eventQ;
-  SST::Link* selfLink;
-  SST::TimeConverter* tConv;
-  char* emptyBuffer;
-  uint32_t emptyBufferSize;
+            void handleEvent(SST::Event *ev);
 
-  DerivedFunctor allreduceFunctor;
-  DerivedFunctor barrierFunctor;
-  DerivedFunctor finalizeFunctor;
-  DerivedFunctor initFunctor;
-  DerivedFunctor irecvFunctor;
-  DerivedFunctor recvFunctor;
-  DerivedFunctor retFunctor;
-  DerivedFunctor sendFunctor;
-  DerivedFunctor waitFunctor;
+            void handleSelfEvent(SST::Event *ev);
 
-  std::map<uint64_t, MessageRequest*> reqMap;
-  MessageResponse* currentRecv;
-  int rank;
-  string trace_file;
-  int verbosityLevel;
+            virtual bool clockTic(SST::Cycle_t);
 
-  uint64_t zSendCount;
-  uint64_t zRecvCount;
-  uint64_t zIRecvCount;
-  uint64_t zWaitCount;
-  uint64_t zAllreduceCount;
+            void handleComputeEvent(ZodiacEvent *zEv);
 
-  uint64_t zSendBytes;
-  uint64_t zRecvBytes;
-  uint64_t zIRecvBytes;
-  uint64_t zAllreduceBytes;
+            void handleSendEvent(ZodiacEvent *zEv);
 
-  uint64_t nanoCompute;
-  uint64_t nanoSend;
-  uint64_t nanoRecv;
-  uint64_t nanoAllreduce;
-  uint64_t nanoBarrier;
-  uint64_t nanoInit;
-  uint64_t nanoFinalize;
-  uint64_t nanoWait;
-  uint64_t nanoIRecv;
+            void handleRecvEvent(ZodiacEvent *zEv);
 
-  uint64_t currentlyProcessingWaitEvent;
-  uint64_t nextEventStartTimeNano;
-  uint64_t* accumulateTimeInto;
-  double scaleCompute;
+            void handleIRecvEvent(ZodiacEvent *zEv);
 
-  ////////////////////////////////////////////////////////
+            void handleInitEvent(ZodiacEvent *zEv);
 
-};
+            void handleWaitEvent(ZodiacEvent *zEv);
 
-}
+            void handleFinalizeEvent(ZodiacEvent *zEv);
+
+            void handleAllreduceEvent(ZodiacEvent *zEv);
+
+            void handleBarrierEvent(ZodiacEvent *zEv);
+
+            bool completedFunction(int val);
+
+            bool completedRecvFunction(int val);
+
+            bool completedWaitFunction(int val);
+
+            bool completedAllreduceFunction(int val);
+
+            bool completedInitFunction(int val);
+
+            bool completedSendFunction(int val);
+
+            bool completedFinalizeFunction(int val);
+
+            bool completedIrecvFunction(int val);
+
+            bool completedBarrierFunction(int val);
+
+            void enqueueNextEvent();
+
+            ////////////////////////////////////////////////////////
+
+            typedef Arg_Functor<ZodiacSiriusTraceReader, int, bool> DerivedFunctor;
+
+            Output zOut;
+            OS *os;
+            MP::Interface *msgapi;
+            SiriusReader *trace;
+            std::queue<ZodiacEvent *> *eventQ;
+            SST::Link *selfLink;
+            SST::TimeConverter *tConv;
+            char *emptyBuffer;
+            uint32_t emptyBufferSize;
+
+            DerivedFunctor allreduceFunctor;
+            DerivedFunctor barrierFunctor;
+            DerivedFunctor finalizeFunctor;
+            DerivedFunctor initFunctor;
+            DerivedFunctor irecvFunctor;
+            DerivedFunctor recvFunctor;
+            DerivedFunctor retFunctor;
+            DerivedFunctor sendFunctor;
+            DerivedFunctor waitFunctor;
+
+            std::map<uint64_t, MessageRequest *> reqMap;
+            MessageResponse *currentRecv;
+            int rank;
+            string trace_file;
+            int verbosityLevel;
+
+            uint64_t zSendCount;
+            uint64_t zRecvCount;
+            uint64_t zIRecvCount;
+            uint64_t zWaitCount;
+            uint64_t zAllreduceCount;
+
+            uint64_t zSendBytes;
+            uint64_t zRecvBytes;
+            uint64_t zIRecvBytes;
+            uint64_t zAllreduceBytes;
+
+            uint64_t nanoCompute;
+            uint64_t nanoSend;
+            uint64_t nanoRecv;
+            uint64_t nanoAllreduce;
+            uint64_t nanoBarrier;
+            uint64_t nanoInit;
+            uint64_t nanoFinalize;
+            uint64_t nanoWait;
+            uint64_t nanoIRecv;
+
+            uint64_t currentlyProcessingWaitEvent;
+            uint64_t nextEventStartTimeNano;
+            uint64_t *accumulateTimeInto;
+            double scaleCompute;
+
+            ////////////////////////////////////////////////////////
+
+        };
+
+    }
 }
 
 #endif /* _ZODIAC_TRACE_READER_H */

@@ -25,93 +25,107 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Job;
+
         class StencilMachine;
+
         class MeshLocation;
+
         class TaskCommInfo;
+
         class TaskMapInfo;
 
         class RCBTaskMapper : public TaskMapper {
 
             class Rotator;
 
+        public:
+
+            RCBTaskMapper(const StencilMachine &inMach);
+
+            ~RCBTaskMapper() {};
+
+            std::string getSetupInfo(bool comment) const;
+
+            TaskMapInfo *mapTasks(AllocInfo *allocInfo);
+
+        private:
+
+            typedef struct Dims {
+                double val[3];
+            } Dims;
+
+            //holds vector of locations along with the dimensions
+            template<typename T>
+            class Grouper {
             public:
+                std::vector <T> *elements;
 
-                RCBTaskMapper(const StencilMachine & inMach);
+                Grouper(std::vector <T> *elements, Rotator *rotator);
 
-                ~RCBTaskMapper() { };
+                ~Grouper();
 
-                std::string getSetupInfo(bool comment) const;
+                void sortDims(int sortedDims[3]) const; //sorts max to min.
+                void divideBy(int dim, Grouper<T> **first, Grouper<T> **second);
 
-                TaskMapInfo* mapTasks(AllocInfo* allocInfo);
+                double getDim(int dim) { return dims.val[dim]; }
 
             private:
+                Dims dims;
+                Rotator *rotator;
 
-                typedef struct Dims
-                {
-                    double val[3];
-                } Dims;
+                void sort_maxHeapify(std::vector <T> &v, int i, int dim);
 
-                //holds vector of locations along with the dimensions
-                template <typename T>
-                class Grouper {
-                    public:
-                        std::vector<T>* elements;
+                int sort_compByDim(T first, T second, int dim); //returns >= 0 if first >= second
 
-                        Grouper(std::vector<T>* elements, Rotator *rotator);
-                        ~Grouper();
+                friend class Rotator;
+            };
 
-                        void sortDims(int sortedDims[3]) const; //sorts max to min.
-                        void divideBy(int dim, Grouper<T>** first, Grouper<T>** second);
-                        double getDim(int dim) { return dims.val[dim]; }
+            //helps for rotations of the nodes
+            class Rotator {
+            public:
+                Rotator(const RCBTaskMapper &rcb,
+                        const StencilMachine &mach); //dummy rotator for Grouper initialization
+                Rotator(Grouper<MeshLocation> *meshLocs,
+                        Grouper<int> *jobLocs,
+                        const RCBTaskMapper &rcb,
+                        const StencilMachine &mach);
 
-                   private:
-                        Dims dims;
-                        Rotator *rotator;
-                        void sort_maxHeapify(std::vector<T> & v, int i, int dim);
-                        int sort_compByDim(T first, T second, int dim); //returns >= 0 if first >= second
+                ~Rotator();
 
-                   friend class Rotator;
-                };
+                //returns the dimensions (size) of the structure
+                template<typename T>
+                Dims getStrDims(const std::vector <T> &elements) const;
 
-                //helps for rotations of the nodes
-                class Rotator {
-                    public:
-                        Rotator(const RCBTaskMapper & rcb, const StencilMachine & mach); //dummy rotator for Grouper initialization
-                        Rotator(Grouper<MeshLocation> *meshLocs, 
-                                Grouper<int> *jobLocs,
-                                const RCBTaskMapper & rcb,
-                                const StencilMachine & mach );
-                        ~Rotator();
+                //returns the dimensions of an element:
+                template<typename T>
+                Dims getDims(T t) const; //template specialization workaround
+                Dims getDims(int taskID) const;
 
-                        //returns the dimensions (size) of the structure
-                        template <typename T>
-                        Dims getStrDims(const std::vector<T> & elements) const;
-                        //returns the dimensions of an element:
-                        template <typename T>
-                        Dims getDims(T t) const; //template specialization workaround
-                        Dims getDims(int taskID) const;
-                        Dims getDims(MeshLocation loc) const;
-                        //debug functions:
-                        template <typename T>
-                        int getTaskNum(T t) const; //template specialization workaround
-                        int getTaskNum(int taskID) const;
-                        int getTaskNum(MeshLocation loc) const;
+                Dims getDims(MeshLocation loc) const;
 
-                    private:
-                        const RCBTaskMapper & rcb;
-                        const StencilMachine & mach;
-                        int** locs;
-                        int* indMap; // the mesh locations may not be ordered. This saves the loc indexes
-                };
+                //debug functions:
+                template<typename T>
+                int getTaskNum(T t) const; //template specialization workaround
+                int getTaskNum(int taskID) const;
 
-                const StencilMachine & mMachine;
-                std::vector<MeshLocation> nodeLocs;
-                TaskCommInfo *tci;
-                Job* job;
+                int getTaskNum(MeshLocation loc) const;
 
-                //recursive helper function
-                void mapTaskHelper(Grouper<MeshLocation>* inLocs, Grouper<int>* jobs, TaskMapInfo* tmi);
+            private:
+                const RCBTaskMapper &rcb;
+                const StencilMachine &mach;
+                int **locs;
+                int *indMap; // the mesh locations may not be ordered. This saves the loc indexes
+            };
+
+            const StencilMachine &mMachine;
+            std::vector <MeshLocation> nodeLocs;
+            TaskCommInfo *tci;
+            Job *job;
+
+            //recursive helper function
+            void mapTaskHelper(Grouper<MeshLocation> *inLocs, Grouper<int> *jobs, TaskMapInfo *tmi);
         };
     }
 }

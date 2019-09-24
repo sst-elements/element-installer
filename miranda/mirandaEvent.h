@@ -22,42 +22,43 @@
 #include <sst/core/params.h>
 
 namespace SST {
-namespace Miranda {
+    namespace Miranda {
 
-class MirandaReqEvent : public SST::Event {
-public:
-    struct Generator {
-        std::string name;
-        SST::Params params;
-    };
+        class MirandaReqEvent : public SST::Event {
+        public:
+            struct Generator {
+                std::string name;
+                SST::Params params;
+            };
 
-	std::deque< std::pair< std::string, SST::Params> > generators;
+            std::deque <std::pair<std::string, SST::Params>> generators;
 
-	uint64_t 	key;
-private:
+            uint64_t key;
+        private:
 
-    void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-        Event::serialize_order(ser);
-        ser & key;
-		ser & generators;
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & key;
+                ser & generators;
+            }
+
+            ImplementSerializable(SST::Miranda::MirandaReqEvent);
+        };
+
+        class MirandaRspEvent : public SST::Event {
+        public:
+            uint64_t key;
+        private:
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & key;
+            }
+
+            ImplementSerializable(SST::Miranda::MirandaRspEvent);
+        };
+
+
     }
-
-    ImplementSerializable(SST::Miranda::MirandaReqEvent);
-};
-
-class MirandaRspEvent : public SST::Event {
-public:
-	uint64_t 	key;
-private:
-    void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-        Event::serialize_order(ser);
-		ser & key;
-	}
-    ImplementSerializable(SST::Miranda::MirandaRspEvent);
-};
-
-
-}
 }
 
 #endif

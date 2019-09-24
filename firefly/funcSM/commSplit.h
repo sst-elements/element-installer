@@ -19,33 +19,33 @@
 #include "funcSM/allgather.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class CommSplitFuncSM :  public AllgatherFuncSM
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        CommSplitFuncSM,
-        "firefly",
-        "CommSplit",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-  public:
-    CommSplitFuncSM( SST::Params& params )
-        : AllgatherFuncSM( params ), m_commSplitEvent(0) {}
+        class CommSplitFuncSM : public AllgatherFuncSM {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                CommSplitFuncSM,
+            "firefly",
+            "CommSplit",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
+        public:
+            CommSplitFuncSM(SST::Params &params)
+                : AllgatherFuncSM(params), m_commSplitEvent(0) {}
 
-    virtual void handleStartEvent( SST::Event*, Retval& );
-    virtual void handleEnterEvent( Retval& );
-    
-  private:
-    Hermes::MemAddr m_sendbuf; 
-    Hermes::MemAddr m_recvbuf;
-    CommSplitStartEvent* m_commSplitEvent;
-};
+            virtual void handleStartEvent(SST::Event *, Retval &);
 
-}
+            virtual void handleEnterEvent(Retval &);
+
+        private:
+            Hermes::MemAddr m_sendbuf;
+            Hermes::MemAddr m_recvbuf;
+            CommSplitStartEvent *m_commSplitEvent;
+        };
+
+    }
 }
 
 #endif

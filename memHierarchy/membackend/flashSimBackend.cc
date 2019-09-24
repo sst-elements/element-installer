@@ -20,12 +20,19 @@
 using namespace SST;
 using namespace SST::MemHierarchy;
 
-FlashDIMMSimMemory::FlashDIMMSimMemory(Component *comp, Params &params) : SimpleMemBackend(comp, params){ build(params); }
-FlashDIMMSimMemory::FlashDIMMSimMemory(ComponentId_t id, Params &params) : SimpleMemBackend(id, params){ build(params); }
+FlashDIMMSimMemory::FlashDIMMSimMemory(Component *comp, Params &params) : SimpleMemBackend(comp,
+                                                                                           params) {
+    build(params);
+}
 
-void FlashDIMMSimMemory::build(Params& params) {
+FlashDIMMSimMemory::FlashDIMMSimMemory(ComponentId_t id, Params &params) : SimpleMemBackend(id,
+                                                                                            params) {
+    build(params);
+}
+
+void FlashDIMMSimMemory::build(Params &params) {
     std::string deviceIniFilename = params.find<std::string>("device_ini", NO_STRING_DEFINED);
-    if(NO_STRING_DEFINED == deviceIniFilename)
+    if (NO_STRING_DEFINED == deviceIniFilename)
         output->fatal(CALL_INFO, -1, "Model must define a 'device_ini' file parameter\n");
 
     maxPendingRequests = params.find<uint32_t>("max_pending_reqs", 32);
@@ -34,34 +41,39 @@ void FlashDIMMSimMemory::build(Params& params) {
     // Create the acutal memory system
     memSystem = new FDSim::FlashDIMM(1, deviceIniFilename, "", "", "");
 
-    FDSim::Callback_t* readDataCB  = new FDSim::Callback<FlashDIMMSimMemory, void, uint, uint64_t, uint64_t>(this, &FlashDIMMSimMemory::FlashDIMMSimDone);
-    FDSim::Callback_t* writeDataCB = new FDSim::Callback<FlashDIMMSimMemory, void, uint, uint64_t, uint64_t>(this, &FlashDIMMSimMemory::FlashDIMMSimDone);
+    FDSim::Callback_t *readDataCB = new FDSim::Callback<FlashDIMMSimMemory, void, uint, uint64_t, uint64_t>(
+        this, &FlashDIMMSimMemory::FlashDIMMSimDone);
+    FDSim::Callback_t *writeDataCB = new FDSim::Callback<FlashDIMMSimMemory, void, uint, uint64_t, uint64_t>(
+        this, &FlashDIMMSimMemory::FlashDIMMSimDone);
 
     memSystem->RegisterCallbacks(readDataCB, writeDataCB);
 
     std::string traceOutput = params.find<std::string>("trace", "");
-    if("" != traceOutput) {
-	output->verbose(CALL_INFO, 1, 0, "Set FlashDIMM trace output to: %s\n", traceOutput.c_str());
-	memSystem->SetOutputFileName(traceOutput);
+    if ("" != traceOutput) {
+        output->verbose(CALL_INFO, 1, 0, "Set FlashDIMM trace output to: %s\n",
+                        traceOutput.c_str());
+        memSystem->SetOutputFileName(traceOutput);
     }
 
     output->verbose(CALL_INFO, 2, 0, "Flash DIMM Backend Initialization complete.\n");
 }
 
-bool FlashDIMMSimMemory::issueRequest(ReqId id, Addr addr, bool isWrite, unsigned ){
+bool FlashDIMMSimMemory::issueRequest(ReqId id, Addr addr, bool isWrite, unsigned) {
     // If we are up to the max pending requests, tell controller
     // we will not accept this transaction
-    if(pendingRequests == maxPendingRequests) {
-	return false;
+    if (pendingRequests == maxPendingRequests) {
+        return false;
     }
 
     bool ok = memSystem->addTransaction(isWrite, addr);
 
-    if(!ok) {
-	return false;  // This *SHOULD* always be OK
+    if (!ok) {
+        return false;  // This *SHOULD* always be OK
     }
 
-    output->verbose(CALL_INFO, 4, 0, "Backend issuing transaction for address %" PRIx64 "\n", (Addr) addr);
+    output->verbose(CALL_INFO, 4, 0, "Backend issuing transaction for address %"
+    PRIx64
+    "\n", (Addr) addr);
     dramReqs[addr].push_back(id);
 
     pendingRequests++;
@@ -78,16 +90,21 @@ void FlashDIMMSimMemory::finish() {
     memSystem->printStats();
 }
 
-void FlashDIMMSimMemory::FlashDIMMSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle){
-    std::deque<ReqId> &reqs = dramReqs[addr];
+void FlashDIMMSimMemory::FlashDIMMSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle) {
+    std::deque <ReqId> &reqs = dramReqs[addr];
 
-    output->verbose(CALL_INFO, 4, 0, "Backend retiring request for address %" PRIx64 ", Reqs: %" PRIu64 "\n",
-		(Addr) addr, (uint64_t) reqs.size());
+    output->verbose(CALL_INFO, 4, 0, "Backend retiring request for address %"
+    PRIx64
+    ", Reqs: %"
+    PRIu64
+    "\n",
+        (Addr) addr, (uint64_t) reqs.size());
 
-    if (reqs.size() == 0) output->fatal(CALL_INFO, -1, "Error: reqs.size() is 0 at DRAMSimMemory done\n");
+    if (reqs.size() == 0)
+        output->fatal(CALL_INFO, -1, "Error: reqs.size() is 0 at DRAMSimMemory done\n");
     ReqId req = reqs.front();
     reqs.pop_front();
-    if(0 == reqs.size())
+    if (0 == reqs.size())
         dramReqs.erase(addr);
 
     handleMemResponse(req);

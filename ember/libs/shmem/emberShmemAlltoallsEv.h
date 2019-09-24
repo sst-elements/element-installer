@@ -20,42 +20,47 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAlltoallsShmemEvent : public EmberShmemEvent {
+        class EmberAlltoallsShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberAlltoallsShmemEvent( Shmem::Interface& api, Output* output,
-               Hermes::Vaddr dest, Hermes::Vaddr src, int dst, int sst, size_t nelems, int elsize,
-               int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,  
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ),
-            m_dest(dest), m_src(src), m_dst(dst), m_sst(sst), m_nelems(nelems), m_elsize( elsize ),
-            m_pe_start(PE_start), m_stride( logPE_stride), m_size(PE_size), m_pSync(pSync) {}
-	~EmberAlltoallsShmemEvent() {}
+        public:
+            EmberAlltoallsShmemEvent(Shmem::Interface &api, Output *output,
+                                     Hermes::Vaddr dest, Hermes::Vaddr src, int dst, int sst,
+                                     size_t nelems, int elsize,
+                                     int PE_start, int logPE_stride, int PE_size,
+                                     Hermes::Vaddr pSync,
+                                     EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_dest(dest), m_src(src), m_dst(dst), m_sst(sst), m_nelems(nelems),
+                m_elsize(elsize),
+                m_pe_start(PE_start), m_stride(logPE_stride), m_size(PE_size), m_pSync(pSync) {}
 
-    std::string getName() { return "Alltoalls"; }
+            ~EmberAlltoallsShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Alltoalls"; }
 
-        EmberEvent::issue( time );
-        m_api.alltoalls( m_dest, m_src, m_dst, m_sst, m_nelems, m_elsize, m_pe_start,
-                                    m_stride, m_size, m_pSync, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.alltoalls(m_dest, m_src, m_dst, m_sst, m_nelems, m_elsize, m_pe_start,
+                                m_stride, m_size, m_pSync, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Hermes::Vaddr m_src;
+            int m_dst;
+            int m_sst;
+            size_t m_nelems;
+            int m_elsize;
+            int m_pe_start;
+            int m_stride;
+            int m_size;
+            Hermes::Vaddr m_pSync;
+        };
+
     }
-private:
-    Hermes::Vaddr m_dest;
-    Hermes::Vaddr m_src;
-    int m_dst;
-    int m_sst;
-    size_t m_nelems;
-    int m_elsize;
-    int m_pe_start;
-    int m_stride;
-    int m_size;
-    Hermes::Vaddr m_pSync;
-};
-
-}
 }
 
 #endif

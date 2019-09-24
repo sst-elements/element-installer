@@ -1,16 +1,17 @@
-import random, sys
+import random
 
-def generate( args ):
+
+def generate(args):
     args = args.split(',')
 
-    totalNodes = int(args[0])    
+    totalNodes = int(args[0])
     start = int(args[1])
     length = int(args[2])
 
-    random.seed( 0xf00dbeef )
-    nids = random.sample( xrange( totalNodes ), totalNodes)
+    random.seed(0xf00dbeef)
+    nids = random.sample(xrange(totalNodes), totalNodes)
 
-    tmp = nids[start:start+length]
-    nidList = ','.join( str(x) for x in tmp)
+    tmp = nids[start:start + length]
+    nidList = ','.join(str(x) for x in tmp)
 
-    return nidList 
+    return nidList

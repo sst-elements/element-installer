@@ -22,15 +22,15 @@ using namespace SST::Zodiac;
 using namespace SST;
 
 ZodiacBarrierEvent::ZodiacBarrierEvent(
-	Communicator group) {
+    Communicator group) {
 
-	msgComm = group;
+    msgComm = group;
 }
 
 ZodiacEventType ZodiacBarrierEvent::getEventType() {
-	return Z_BARRIER;
+    return Z_BARRIER;
 }
 
 Communicator ZodiacBarrierEvent::getCommunicatorGroup() {
-	return msgComm;
+    return msgComm;
 }

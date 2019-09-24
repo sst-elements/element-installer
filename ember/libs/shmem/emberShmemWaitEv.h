@@ -20,32 +20,34 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberWaitShmemEvent : public EmberShmemEvent {
+        class EmberWaitShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberWaitShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::Vaddr dest, Hermes::Shmem::WaitOp op, Hermes::Value value, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), 
-            m_dest(dest), m_op(op), m_value(value) {}
-	~EmberWaitShmemEvent() {}
+        public:
+            EmberWaitShmemEvent(Shmem::Interface &api, Output *output,
+                                Hermes::Vaddr dest, Hermes::Shmem::WaitOp op, Hermes::Value value,
+                                EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_dest(dest), m_op(op), m_value(value) {}
 
-    std::string getName() { return "Wait"; }
+            ~EmberWaitShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Wait"; }
 
-        EmberEvent::issue( time );
-        m_api.wait_until( m_dest, m_op, m_value, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.wait_until(m_dest, m_op, m_value, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Hermes::Value m_value;
+            Hermes::Shmem::WaitOp m_op;
+        };
+
     }
-private:
-    Hermes::Vaddr m_dest;
-    Hermes::Value m_value;
-    Hermes::Shmem::WaitOp m_op;
-};
-
-}
 }
 
 #endif

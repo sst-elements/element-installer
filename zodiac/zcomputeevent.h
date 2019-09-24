@@ -22,21 +22,24 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacComputeEvent : public ZodiacEvent{
+        class ZodiacComputeEvent : public ZodiacEvent {
 
-	public:
-		ZodiacComputeEvent(double timeSeconds);
-		double getComputeDuration();
-		double getComputeDurationNano();
-		ZodiacEventType getEventType();
+        public:
+            ZodiacComputeEvent(double timeSeconds);
 
-	private:
-		double computeTime;
-};
+            double getComputeDuration();
 
-}
+            double getComputeDurationNano();
+
+            ZodiacEventType getEventType();
+
+        private:
+            double computeTime;
+        };
+
+    }
 }
 
 #endif

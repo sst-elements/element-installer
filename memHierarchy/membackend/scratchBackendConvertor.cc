@@ -26,50 +26,53 @@ using namespace SST::MemHierarchy;
 #ifdef __SST_DEBUG_OUTPUT__
 #define Debug(level, fmt, ... ) m_dbg.debug( level, fmt, ##__VA_ARGS__  )
 #else
-#define Debug(level, fmt, ... )
+#define Debug(level, fmt, ...)
 #endif
 
-ScratchBackendConvertor::ScratchBackendConvertor(Component *comp, Params& params ) : 
-    SubComponent(comp), m_reqId(0)
-{ build(params); }
-ScratchBackendConvertor::ScratchBackendConvertor(ComponentId_t id, Params& params ) : 
-    SubComponent(id), m_reqId(0)
-{ build(params); }
+ScratchBackendConvertor::ScratchBackendConvertor(Component *comp, Params &params) :
+    SubComponent(comp), m_reqId(0) { build(params); }
 
-void ScratchBackendConvertor::build(Params& params) {
-    m_dbg.init("", 
-            params.find<uint32_t>("debug_level", 0),
-            params.find<uint32_t>("debug_mask", 0),
-            (Output::output_location_t)params.find<int>("debug_location", 0 ));
+ScratchBackendConvertor::ScratchBackendConvertor(ComponentId_t id, Params &params) :
+    SubComponent(id), m_reqId(0) { build(params); }
+
+void ScratchBackendConvertor::build(Params &params) {
+    m_dbg.init("",
+               params.find<uint32_t>("debug_level", 0),
+               params.find<uint32_t>("debug_mask", 0),
+               (Output::output_location_t) params.find<int>("debug_location", 0));
 
     m_backend = loadUserSubComponent<MemBackend>("backend");
     if (!m_backend) {
         // extract backend parameters for memH.
-        string backendName  = params.find<std::string>("backend", "memHierarchy.simpleMem");
+        string backendName = params.find<std::string>("backend", "memHierarchy.simpleMem");
         Params backendParams = params.find_prefix_params("backend.");
-        m_backend = loadAnonymousSubComponent<MemBackend>(backendName, "backend", 0, ComponentInfo::SHARE_PORTS | ComponentInfo::INSERT_STATS, backendParams);
+        m_backend = loadAnonymousSubComponent<MemBackend>(backendName, "backend", 0,
+                                                          ComponentInfo::SHARE_PORTS |
+                                                          ComponentInfo::INSERT_STATS,
+                                                          backendParams);
     }
 
     using std::placeholders::_1;
-    m_backend->setGetRequestorHandler( std::bind( &ScratchBackendConvertor::getRequestor, this, _1 )  );
+    m_backend->setGetRequestorHandler(std::bind(&ScratchBackendConvertor::getRequestor, this, _1));
 
-    m_frontendRequestWidth =  params.find<uint32_t>("request_width",64);
-    m_backendRequestWidth = static_cast<SimpleMemBackend*>(m_backend)->getRequestWidth();
-    if ( m_backendRequestWidth > m_frontendRequestWidth ) {
+    m_frontendRequestWidth = params.find<uint32_t>("request_width", 64);
+    m_backendRequestWidth = static_cast<SimpleMemBackend *>(m_backend)->getRequestWidth();
+    if (m_backendRequestWidth > m_frontendRequestWidth) {
         m_backendRequestWidth = m_frontendRequestWidth;
     }
 
-    stat_cyclesWithIssue = registerStatistic<uint64_t>( "cycles_with_issue" );
-    stat_cyclesAttemptIssueButRejected = registerStatistic<uint64_t>( "cycles_attempted_issue_but_rejected" );
-    stat_totalCycles     = registerStatistic<uint64_t>( "total_cycles" );
-    stat_GetSReqReceived    = registerStatistic<uint64_t>("requests_received_GetS");
-    stat_GetSXReqReceived  = registerStatistic<uint64_t>("requests_received_GetSX");
-    stat_GetXReqReceived    = registerStatistic<uint64_t>("requests_received_GetX");
-    stat_PutMReqReceived    = registerStatistic<uint64_t>("requests_received_PutM");
-    stat_GetSLatency        = registerStatistic<uint64_t>("latency_GetS");
-    stat_GetSXLatency      = registerStatistic<uint64_t>("latency_GetSX");
-    stat_GetXLatency        = registerStatistic<uint64_t>("latency_GetX");
-    stat_PutMLatency        = registerStatistic<uint64_t>("latency_PutM");
+    stat_cyclesWithIssue = registerStatistic<uint64_t>("cycles_with_issue");
+    stat_cyclesAttemptIssueButRejected = registerStatistic<uint64_t>(
+        "cycles_attempted_issue_but_rejected");
+    stat_totalCycles = registerStatistic<uint64_t>("total_cycles");
+    stat_GetSReqReceived = registerStatistic<uint64_t>("requests_received_GetS");
+    stat_GetSXReqReceived = registerStatistic<uint64_t>("requests_received_GetSX");
+    stat_GetXReqReceived = registerStatistic<uint64_t>("requests_received_GetX");
+    stat_PutMReqReceived = registerStatistic<uint64_t>("requests_received_PutM");
+    stat_GetSLatency = registerStatistic<uint64_t>("latency_GetS");
+    stat_GetSXLatency = registerStatistic<uint64_t>("latency_GetSX");
+    stat_GetXLatency = registerStatistic<uint64_t>("latency_GetX");
+    stat_PutMLatency = registerStatistic<uint64_t>("latency_PutM");
 
 }
 
@@ -77,14 +80,18 @@ void ScratchBackendConvertor::setCallbackHandler(std::function<void(Event::id_ty
     m_notifyResponse = respCB;
 }
 
-void ScratchBackendConvertor::handleMemEvent(  MemEvent * ev ) {
+void ScratchBackendConvertor::handleMemEvent(MemEvent *ev) {
 
     ev->setDeliveryTime(m_cycleCount);
 
-    doReceiveStat( ev->getCmd() );
+    doReceiveStat(ev->getCmd());
 
-    Debug(_L10_,"Creating MemReq. BaseAddr = %" PRIx64 ", Size: %" PRIu32 ", %s\n",
-                        ev->getBaseAddr(), ev->getSize(), CommandString[(int)ev->getCmd()]);
+    Debug(_L10_, "Creating MemReq. BaseAddr = %"
+        PRIx64
+        ", Size: %"
+        PRIu32
+        ", %s\n",
+          ev->getBaseAddr(), ev->getSize(), CommandString[(int) ev->getCmd()]);
 
     setupMemReq(ev);
 }
@@ -94,14 +101,14 @@ bool ScratchBackendConvertor::clock(Cycle_t cycle) {
     doClockStat();
 
     int reqsThisCycle = 0;
-    while ( !m_requestQueue.empty()) {
-        if ( reqsThisCycle == m_backend->getMaxReqPerCycle() ) {
+    while (!m_requestQueue.empty()) {
+        if (reqsThisCycle == m_backend->getMaxReqPerCycle()) {
             break;
         }
 
-        MemReq* req = m_requestQueue.front();
+        MemReq *req = m_requestQueue.front();
 
-        if ( issue( req ) ) {
+        if (issue(req)) {
             stat_cyclesWithIssue->addData(1);
         } else {
             stat_cyclesAttemptIssueButRejected->addData(1);
@@ -109,9 +116,9 @@ bool ScratchBackendConvertor::clock(Cycle_t cycle) {
         }
 
         reqsThisCycle++;
-        req->increment( m_backendRequestWidth );
+        req->increment(m_backendRequestWidth);
 
-        if ( req->processed() >= m_backendRequestWidth ) {
+        if (req->processed() >= m_backendRequestWidth) {
             Debug(_L10_, "Completed issue of request\n");
             m_requestQueue.pop_front();
         }
@@ -123,31 +130,31 @@ bool ScratchBackendConvertor::clock(Cycle_t cycle) {
 }
 
 
-bool ScratchBackendConvertor::doResponse( ReqId reqId, SST::Event::id_type & respId ) {
+bool ScratchBackendConvertor::doResponse(ReqId reqId, SST::Event::id_type &respId) {
 
     uint32_t id = MemReq::getBaseId(reqId);
     bool sendResponse = false;
 
-    if ( m_pendingRequests.find( id ) == m_pendingRequests.end() ) {
+    if (m_pendingRequests.find(id) == m_pendingRequests.end()) {
         m_dbg.fatal(CALL_INFO, -1, "%s, memory request not found\n", getName().c_str());
     }
 
-    MemReq* req = m_pendingRequests[id];
+    MemReq *req = m_pendingRequests[id];
 
-    req->decrement( );
+    req->decrement();
 
-    if ( req->isDone() ) {
+    if (req->isDone()) {
         m_pendingRequests.erase(id);
-        MemEvent* event = req->getMemEvent();
+        MemEvent *event = req->getMemEvent();
 
-        if ( !event->queryFlag(MemEvent::F_NORESPONSE ) ) {
+        if (!event->queryFlag(MemEvent::F_NORESPONSE)) {
             respId = event->getID();
             sendResponse = true;
         }
 
         Cycle_t latency = m_cycleCount - event->getDeliveryTime();
 
-        doResponseStat( event->getCmd(), latency );
+        doResponseStat(event->getCmd(), latency);
 
         // MemReq deletes its Event
         delete req;
@@ -156,7 +163,7 @@ bool ScratchBackendConvertor::doResponse( ReqId reqId, SST::Event::id_type & res
     return sendResponse;
 }
 
-void ScratchBackendConvertor::notifyResponse( SST::Event::id_type id) {
+void ScratchBackendConvertor::notifyResponse(SST::Event::id_type id) {
 
     m_notifyResponse(id);
 
@@ -166,7 +173,7 @@ void ScratchBackendConvertor::finish(void) {
     m_backend->finish();
 }
 
-const std::string& ScratchBackendConvertor::getClockFreq() {
+const std::string &ScratchBackendConvertor::getClockFreq() {
     return m_backend->getClockFreq();
 }
 

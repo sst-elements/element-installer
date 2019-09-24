@@ -5,53 +5,57 @@ Created by  : Fulya Kaplan
 Description : Run a batch of sst jobs with NetworkSim
 '''
 
-import os, sys
-
+import os
+import os.path
+import sys
 from optparse import OptionParser
-import os.path, math
-import numpy as np
-import copy
-import csv
 
 
 # Function to run linux commands
 def run(cmd):
-    #print(cmd)
+    # print(cmd)
     os.system(cmd)
 
+
 def submit_job(options):
-    exp_name = "%s_%s_%s_%sKB_N%s_alpha%s_%s_%s_%s_iter%s" %(options.system_name, options.link_arrangement, options.routing, options.message_size, options.N, options.alpha, options.application, options.allocator, options.mapper, options.iteration)
+    exp_name = "%s_%s_%s_%sKB_N%s_alpha%s_%s_%s_%s_iter%s" % (
+    options.system_name, options.link_arrangement, options.routing, options.message_size, options.N, options.alpha,
+    options.application, options.allocator, options.mapper, options.iteration)
 
-    options.outdir = "%s/%s/%s" %(options.main_sim_path, options.exp_folder, exp_name)
-    #os.environ['SIMOUTPUT'] = folder
-    execcommand  = "hostname\n"
+    options.outdir = "%s/%s/%s" % (options.main_sim_path, options.exp_folder, exp_name)
+    # os.environ['SIMOUTPUT'] = folder
+    execcommand = "hostname\n"
     execcommand += "date\n"
-    execcommand += "source %s\n" %(options.env_script)
-    execcommand += "export SIMOUTPUT=%s/\n" %(options.outdir)
-    if options.application == "alltoall" or options.application == "alltoallnative" or options.application == "bisection":        
-        execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper linear --routing %s --shuffle --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" %(options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator, options.mapper, options.application, options.N, options.message_size)
+    execcommand += "source %s\n" % (options.env_script)
+    execcommand += "export SIMOUTPUT=%s/\n" % (options.outdir)
+    if options.application == "alltoall" or options.application == "alltoallnative" or options.application == "bisection":
+        execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper linear --routing %s --shuffle --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" % (
+        options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
+        options.mapper, options.application, options.N, options.message_size)
     else:
-        execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper custom --routing %s --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" %(options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator, options.mapper, options.application, options.N, options.message_size)
+        execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper custom --routing %s --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" % (
+        options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
+        options.mapper, options.application, options.N, options.message_size)
     execcommand += "date\n"
 
-    shfile = "%s/%s.sh" %(options.outdir, exp_name)
-    outfile = "%s/%s.out" %(options.outdir, exp_name)
+    shfile = "%s/%s.sh" % (options.outdir, exp_name)
+    outfile = "%s/%s.out" % (options.outdir, exp_name)
 
-    #Check name only
+    # Check name only
     if options.check == True:
         print(options.outdir)
         print(execcommand)
         print(shfile)
         print(outfile)
         print
-    #Launch the experiment
+    # Launch the experiment
     else:
         if os.path.exists(options.outdir) == 1:
             if options.force == 1:
-                print("Clobbering %s... used -f flag" %(exp_name))
+                print("Clobbering %s... used -f flag" % (exp_name))
                 run("rm -rf " + options.outdir)
             else:
-                print("Experiment %s exists... quitting. use -f to force" %(options.exp_name))
+                print("Experiment %s exists... quitting. use -f to force" % (options.exp_name))
                 sys.exit(1)
         run("mkdir -p " + options.outdir)
 
@@ -59,18 +63,20 @@ def submit_job(options):
         shellfile.writelines(execcommand)
         shellfile.close()
 
-        cmd = "chmod +x %s" %(shfile)
+        cmd = "chmod +x %s" % (shfile)
         run(cmd)
-        cmd = ("qsub -q bme.q,budge.q,bungee.q,icsg.q -cwd -l mem_free=16G,s_vmem=16G -S /bin/bash -o %s -j y %s" % (outfile, shfile))
+        cmd = ("qsub -q bme.q,budge.q,bungee.q,icsg.q -cwd -l mem_free=16G,s_vmem=16G -S /bin/bash -o %s -j y %s" % (
+        outfile, shfile))
         run(cmd)
-        #run("%s" %(shfile))
+        # run("%s" %(shfile))
+
 
 def main():
-
     parser = OptionParser(usage="usage: %prog [options]")
-    parser.add_option("-c",  action='store_true', dest="check", help="Check the experiment file names.")
-    parser.add_option("-f",  action='store_true', dest="force", help="Force the experiment, will clobber old results.")
-    parser.add_option("-e",  action='store', dest="exp_folder", help="Main experiment folder that holds all subfolders of the experiment.")
+    parser.add_option("-c", action='store_true', dest="check", help="Check the experiment file names.")
+    parser.add_option("-f", action='store_true', dest="force", help="Force the experiment, will clobber old results.")
+    parser.add_option("-e", action='store', dest="exp_folder",
+                      help="Main experiment folder that holds all subfolders of the experiment.")
 
     (options, args) = parser.parse_args()
 
@@ -81,9 +87,9 @@ def main():
 
     options.main_sim_path = "/mnt/nokrb/fkaplan3/SST/git/sst/sst-elements/src/sst/elements/scheduler/simulations"
     options.env_script = "/mnt/nokrb/fkaplan3/tools/addsimulator.sh"
-    
-    #system_name = "system_110nodes_220cores"
-    #system_name = "system_72nodes_144cores"
+
+    # system_name = "system_110nodes_220cores"
+    # system_name = "system_72nodes_144cores"
     system_name = "system_272nodes_544cores"
 
     '''
@@ -139,12 +145,12 @@ def main():
                                     submit_job(options)
 
     '''
-    for N in [1]: # Each job uses 1/N of the machine
+    for N in [1]:  # Each job uses 1/N of the machine
         for message_size in [100]:
             if N == 1:
-                #applications = ['alltoallnative', 'bisection', 'stencil']
+                # applications = ['alltoallnative', 'bisection', 'stencil']
                 applications = ['alltoall']
-                #applications = ['bisection']
+                # applications = ['bisection']
                 allocators = ['simple']
             else:
                 applications = ['alltoallnative', 'stencil']
@@ -177,7 +183,6 @@ def main():
                                         options.iteration = iteration
                                         submit_job(options)
 
-    
     '''
     for N in [1]: # Each job uses 1/N of the machine
         for message_size in [1000]:
@@ -212,6 +217,7 @@ def main():
                                         options.iteration = iteration
                                         submit_job(options)
     '''
+
 
 if __name__ == '__main__':
     main()

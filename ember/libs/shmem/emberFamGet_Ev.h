@@ -20,34 +20,37 @@
 #include "emberFamEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFamGet_Event : public EmberFamEvent {
+        class EmberFamGet_Event : public EmberFamEvent {
 
-public:
-	EmberFamGet_Event( Shmem::Interface& api, Output* output,
-            Hermes::Vaddr dest, Shmem::Fam_Descriptor fd, uint64_t offset, uint64_t nbytes, bool blocking,
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberFamEvent( api, output, stat ), 
-            m_dest(dest), m_fd(fd), m_offset(offset), m_nbytes(nbytes), m_blocking(blocking) {}
-	~EmberFamGet_Event() {}
+        public:
+            EmberFamGet_Event(Shmem::Interface &api, Output *output,
+                              Hermes::Vaddr dest, Shmem::Fam_Descriptor fd, uint64_t offset,
+                              uint64_t nbytes, bool blocking,
+                              EmberEventTimeStatistic *stat = nullptr) :
+                EmberFamEvent(api, output, stat),
+                m_dest(dest), m_fd(fd), m_offset(offset), m_nbytes(nbytes), m_blocking(blocking) {}
 
-    std::string getName() { return "FamGet"; }
+            ~EmberFamGet_Event() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "FamGet"; }
 
-        EmberEvent::issue( time );
-        m_api.fam_get( m_dest, m_fd, m_offset, m_nbytes, m_blocking, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.fam_get(m_dest, m_fd, m_offset, m_nbytes, m_blocking, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Shmem::Fam_Descriptor m_fd;
+            uint64_t m_offset;
+            uint64_t m_nbytes;
+            bool m_blocking;
+        };
+
     }
-private:
-    Hermes::Vaddr m_dest;
-	Shmem::Fam_Descriptor m_fd;
-	uint64_t m_offset;
-	uint64_t m_nbytes;
-	bool m_blocking;
-};
-
-}
 }
 
 #endif

@@ -23,31 +23,30 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberGetNumNodesEvent : public EmberMiscEvent {
-public:
-	EmberGetNumNodesEvent( Misc::Interface& api, Output* output, int* ptr, EmberEventTimeStatistic* stat = NULL ) :
-        EmberMiscEvent( api, output, stat ),
-        m_ptr(ptr)
-    { }
+        class EmberGetNumNodesEvent : public EmberMiscEvent {
+        public:
+            EmberGetNumNodesEvent(Misc::Interface &api, Output *output, int *ptr,
+                                  EmberEventTimeStatistic *stat = nullptr) :
+                EmberMiscEvent(api, output, stat),
+                m_ptr(ptr) {}
 
-	~EmberGetNumNodesEvent() {} 
+            ~EmberGetNumNodesEvent() {}
 
-    std::string getName() { return "GetNumNodes"; }
+            std::string getName() { return "GetNumNodes"; }
 
-    virtual void issue( uint64_t time, Callback* callback ) 
-    {
-        EmberEvent::issue( time );
-        //m_output->verbose(CALL_INFO, 2, 0, "\n");
-        m_api.getNumNodes( m_ptr, callback );
+            virtual void issue(uint64_t time, Callback *callback) {
+                EmberEvent::issue(time);
+                //m_output->verbose(CALL_INFO, 2, 0, "\n");
+                m_api.getNumNodes(m_ptr, callback);
+            }
+
+        private:
+            int *m_ptr;
+        };
+
     }
-
-private:
-	int* m_ptr; 
-};
-
-}
 }
 
 #endif

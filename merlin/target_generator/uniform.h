@@ -26,70 +26,69 @@
 
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
 
-class UniformDist : public TargetGenerator {
+        class UniformDist : public TargetGenerator {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        UniformDist,
-        "merlin",
-        "targetgen.uniform",
-        SST_ELI_ELEMENT_VERSION(0,0,1),
-        "Generates a uniform random set of target IDs.",
-        "SST::Merlin::DestGenerator")
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        {"min",   "Minimum address to generate","0"},
-        {"max",   "Maximum address to generate","numpeers - 1"} 
-   )
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                UniformDist,
+            "merlin",
+            "targetgen.uniform",
+            SST_ELI_ELEMENT_VERSION(0,0,1),
+            "Generates a uniform random set of target IDs.",
+            "SST::Merlin::DestGenerator")
 
-    MersenneRNG* gen;
-    SSTUniformDistribution* dist;
-    
-    int min;
-    int max;
+            SST_ELI_DOCUMENT_PARAMS(
+            { "min", "Minimum address to generate", "0" },
+            { "max", "Maximum address to generate", "numpeers - 1" }
+            )
 
-    
-public:
-    UniformDist(Component* parent, Params &params) :
-        TargetGenerator(parent)
-    {
-        min = params.find<int>("min",-1);
-        max = params.find<int>("max",-1);        
-    }
-    
-    ~UniformDist() {
-        delete dist;
-        delete gen;
-    }
-    
-    void initialize(int id, int num_peers) {
-        gen = new MersenneRNG(id);
+            MersenneRNG *gen;
+            SSTUniformDistribution *dist;
 
-        if ( min == -1 ) min = 0;
-        if ( max == -1 ) max = num_peers;
+            int min;
+            int max;
 
-        int dist_size = std::max(1, max-min);
-        dist = new SSTUniformDistribution(dist_size, gen);
-    }        
 
-    int getNextValue(void) {
-        // TraceFunction trace(CALL_INFO);
-        return (int)dist->getNextDouble() + min - 1;
-    }
-    
-    void seed(uint32_t val) {
-        delete dist;
-        delete gen;
-        gen = new MersenneRNG((unsigned int) val);
-        dist = new SSTUniformDistribution(std::max(1, max-min),gen);
-    }
-};
+        public:
+            UniformDist(Component *parent, Params &params) :
+                TargetGenerator(parent) {
+                min = params.find<int>("min", -1);
+                max = params.find<int>("max", -1);
+            }
 
-} //namespace Merlin
+            ~UniformDist() {
+                delete dist;
+                delete gen;
+            }
+
+            void initialize(int id, int num_peers) {
+                gen = new MersenneRNG(id);
+
+                if (min == -1) min = 0;
+                if (max == -1) max = num_peers;
+
+                int dist_size = std::max(1, max - min);
+                dist = new SSTUniformDistribution(dist_size, gen);
+            }
+
+            int getNextValue(void) {
+                // TraceFunction trace(CALL_INFO);
+                return (int) dist->getNextDouble() + min - 1;
+            }
+
+            void seed(uint32_t val) {
+                delete dist;
+                delete gen;
+                gen = new MersenneRNG((unsigned int) val);
+                dist = new SSTUniformDistribution(std::max(1, max - min), gen);
+            }
+        };
+
+    } //namespace Merlin
 } //namespace SST
 
 #endif

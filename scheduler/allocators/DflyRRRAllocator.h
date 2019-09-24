@@ -18,19 +18,21 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class DragonFlyMachine;
+
         class Job;
 
         class DflyRRRAllocator : public DragonflyAllocator {
-            public:
+        public:
 
-                DflyRRRAllocator(const DragonflyMachine & mach);
+            DflyRRRAllocator(const DragonflyMachine &mach);
 
-                ~DflyRRRAllocator();
+            ~DflyRRRAllocator();
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* j);
+            AllocInfo *allocate(Job *j);
 
         };
 

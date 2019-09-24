@@ -18,19 +18,18 @@
 #include "testInspector.h"
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-TestNetworkInspector::TestNetworkInspector(Component* parent, Params& params) :
-    SimpleNetwork::NetworkInspector(parent)
-{}
+        TestNetworkInspector::TestNetworkInspector(Component *parent, Params &params) :
+            SimpleNetwork::NetworkInspector(parent) {}
 
-void TestNetworkInspector::initialize(string id) {
-    test_count = registerStatistic<uint64_t>("test_count", id);
-}
+        void TestNetworkInspector::initialize(string id) {
+            test_count = registerStatistic<uint64_t>("test_count", id);
+        }
 
-void TestNetworkInspector::inspectNetworkData(SimpleNetwork::Request* req) {
-    test_count->addData(1);
-}
+        void TestNetworkInspector::inspectNetworkData(SimpleNetwork::Request *req) {
+            test_count->addData(1);
+        }
 
-} // namespace Merlin
+    } // namespace Merlin
 } // namespace SST

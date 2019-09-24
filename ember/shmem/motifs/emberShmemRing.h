@@ -22,110 +22,114 @@
 #include <cxxabi.h>
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-template< class TYPE >
-class EmberShmemRingGenerator : public EmberShmemGenerator {
+        template<class TYPE>
+        class EmberShmemRingGenerator : public EmberShmemGenerator {
 
-public:
-	EmberShmemRingGenerator(SST::Component* owner, Params& params) :
-		EmberShmemGenerator(owner, params, "ShmemRing" ), m_phase(-2) 
-	{ 
-		m_iterations = (uint32_t) params.find("arg.iterations", 1);
-		m_count = (uint32_t) params.find("arg.count", 1) - 1;
-	}
-
-    bool generate( std::queue<EmberEvent*>& evQ) 
-	{
-        if ( -2 == m_phase ) {
-            enQ_init( evQ );
-            enQ_n_pes( evQ, &m_num_pes );
-            enQ_my_pe( evQ, &m_my_pe );
-            enQ_malloc( evQ, &m_src, sizeof(TYPE) * ( m_count * 2 + 1 ) );
-		} else if ( -1 == m_phase ) {
-
-            if ( 0 == m_my_pe ) {
-                printf("%d:%s: num_pes=%d \n",m_my_pe, getMotifName().c_str(), m_num_pes);
-            }
-			
-			m_dest = m_src.offset<TYPE>(m_count);
-			m_flag = m_dest.offset<TYPE>(m_count);
-			m_flag.at<TYPE>(0) = 0;
-
-            enQ_barrier_all( evQ );
-			enQ_getTime( evQ, &m_startTime );
-
-		} else if ( m_phase < m_iterations ) {
-
-			if ( 0 == m_my_pe ) {
-            	enQ_put( evQ, m_dest, m_src, m_count * sizeof(TYPE), (m_my_pe + 1) % m_num_pes );
-				enQ_putv( evQ, m_flag, m_phase+1, (m_my_pe + 1) % m_num_pes );
-				enQ_wait_until( evQ, m_flag, Hermes::Shmem::EQ, m_phase + 1 );
-
-			} else {
-				enQ_wait_until( evQ, m_flag, Hermes::Shmem::EQ, m_phase + 1 );
-            	enQ_put( evQ, m_dest, m_src, m_count * sizeof(TYPE), (m_my_pe + 1) % m_num_pes );
-				enQ_putv( evQ, m_flag, m_phase+1, (m_my_pe + 1) % m_num_pes );
-			}
-            if ( m_phase + 1 == m_iterations ) {
-                enQ_getTime( evQ, &m_stopTime );
-            	enQ_barrier_all( evQ );
+        public:
+            EmberShmemRingGenerator(SST::Component *owner, Params &params) :
+                EmberShmemGenerator(owner, params, "ShmemRing"), m_phase(-2) {
+                m_iterations = (uint32_t) params.find("arg.iterations", 1);
+                m_count = (uint32_t) params.find("arg.count", 1) - 1;
             }
 
-		} else {
-            if ( 0 == m_my_pe ) {
-                double totalTime = (double)(m_stopTime - m_startTime)/1000000000.0;
-                double latency = ((totalTime/m_iterations)/m_num_pes);
-                printf("%d:%s: message-size %d, iterations %d, total-time %.3lf us, time-per %.3lf us, %.3f GB/s\n",m_my_pe,
-                            getMotifName().c_str(), 
-							(int)(m_count * sizeof(TYPE)), 
-							m_iterations, 
-							totalTime * 1000000.0,
-							latency * 1000000.0,
-                            (m_count*sizeof(TYPE) / latency )/1000000000.0);
+            bool generate(std::queue<EmberEvent *> &evQ) {
+                if (-2 == m_phase) {
+                    enQ_init(evQ);
+                    enQ_n_pes(evQ, &m_num_pes);
+                    enQ_my_pe(evQ, &m_my_pe);
+                    enQ_malloc(evQ, &m_src, sizeof(TYPE) * (m_count * 2 + 1));
+                } else if (-1 == m_phase) {
+
+                    if (0 == m_my_pe) {
+                        printf("%d:%s: num_pes=%d \n", m_my_pe, getMotifName().c_str(), m_num_pes);
+                    }
+
+                    m_dest = m_src.offset<TYPE>(m_count);
+                    m_flag = m_dest.offset<TYPE>(m_count);
+                    m_flag.at<TYPE>(0) = 0;
+
+                    enQ_barrier_all(evQ);
+                    enQ_getTime(evQ, &m_startTime);
+
+                } else if (m_phase < m_iterations) {
+
+                    if (0 == m_my_pe) {
+                        enQ_put(evQ, m_dest, m_src, m_count * sizeof(TYPE),
+                                (m_my_pe + 1) % m_num_pes);
+                        enQ_putv(evQ, m_flag, m_phase + 1, (m_my_pe + 1) % m_num_pes);
+                        enQ_wait_until(evQ, m_flag, Hermes::Shmem::EQ, m_phase + 1);
+
+                    } else {
+                        enQ_wait_until(evQ, m_flag, Hermes::Shmem::EQ, m_phase + 1);
+                        enQ_put(evQ, m_dest, m_src, m_count * sizeof(TYPE),
+                                (m_my_pe + 1) % m_num_pes);
+                        enQ_putv(evQ, m_flag, m_phase + 1, (m_my_pe + 1) % m_num_pes);
+                    }
+                    if (m_phase + 1 == m_iterations) {
+                        enQ_getTime(evQ, &m_stopTime);
+                        enQ_barrier_all(evQ);
+                    }
+
+                } else {
+                    if (0 == m_my_pe) {
+                        double totalTime = (double) (m_stopTime - m_startTime) / 1000000000.0;
+                        double latency = ((totalTime / m_iterations) / m_num_pes);
+                        printf(
+                            "%d:%s: message-size %d, iterations %d, total-time %.3lf us, time-per %.3lf us, %.3f GB/s\n",
+                            m_my_pe,
+                            getMotifName().c_str(),
+                            (int) (m_count * sizeof(TYPE)),
+                            m_iterations,
+                            totalTime * 1000000.0,
+                            latency * 1000000.0,
+                            (m_count * sizeof(TYPE) / latency) / 1000000000.0);
+                    }
+
+                }
+                ++m_phase;
+
+                return m_phase == m_iterations + 1;
             }
 
-        }
-        ++m_phase;
+        private:
 
-		return m_phase == m_iterations + 1;
-	}
-  private:
-	
-   	uint64_t m_startTime;
-    uint64_t m_stopTime;
-    Hermes::MemAddr m_src;
-    Hermes::MemAddr m_dest;
-    Hermes::MemAddr m_flag;
+            uint64_t m_startTime;
+            uint64_t m_stopTime;
+            Hermes::MemAddr m_src;
+            Hermes::MemAddr m_dest;
+            Hermes::MemAddr m_flag;
 //	TYPE m_value;
-	TYPE m_waitValue;
-	int m_count;
-	int m_iterations;
-    int m_phase;
-    int m_my_pe;
-    int m_num_pes;
-};
-class EmberShmemRingIntGenerator : public EmberShmemRingGenerator<int> {
-public:
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        EmberShmemRingIntGenerator,
-        "ember",
-        "ShmemRingIntMotif",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "SHMEM ring2 int",
-        "SST::Ember::EmberGenerator"
+            TYPE m_waitValue;
+            int m_count;
+            int m_iterations;
+            int m_phase;
+            int m_my_pe;
+            int m_num_pes;
+        };
 
-    )
+        class EmberShmemRingIntGenerator : public EmberShmemRingGenerator<int> {
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                EmberShmemRingIntGenerator,
+            "ember",
+            "ShmemRingIntMotif",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "SHMEM ring2 int",
+            "SST::Ember::EmberGenerator"
 
-    SST_ELI_DOCUMENT_PARAMS(
-    )
+            )
 
-public:
-    EmberShmemRingIntGenerator( SST::Component* owner, Params& params ) :
-        EmberShmemRingGenerator(owner,  params) { }
-};
+            SST_ELI_DOCUMENT_PARAMS(
+            )
 
-}
+        public:
+            EmberShmemRingIntGenerator(SST::Component *owner, Params &params) :
+                EmberShmemRingGenerator(owner, params) {}
+        };
+
+    }
 }
 
 #endif

@@ -19,26 +19,23 @@
 
 using namespace SST::Firefly;
 
-CancelFuncSM::CancelFuncSM( SST::Params& params ) :
-    FunctionSMInterface( params ),
-    m_event( NULL )
-{
+CancelFuncSM::CancelFuncSM(SST::Params &params) :
+    FunctionSMInterface(params),
+    m_event(nullptr) {
 }
 
-void CancelFuncSM::handleStartEvent( SST::Event *e, Retval& retval ) 
-{
-    assert( NULL == m_event );
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void CancelFuncSM::handleStartEvent(SST::Event *e, Retval &retval) {
+    assert(nullptr == m_event);
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
 
-    m_event = static_cast< CancelStartEvent* >(e);
+    m_event = static_cast< CancelStartEvent * >(e);
 
-    proto()->cancel( m_event->req );
+    proto()->cancel(m_event->req);
 }
 
-void CancelFuncSM::handleEnterEvent( Retval& retval )
-{
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void CancelFuncSM::handleEnterEvent(Retval &retval) {
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
     retval.setExit(0);
     delete m_event;
-    m_event = NULL;
+    m_event = nullptr;
 }

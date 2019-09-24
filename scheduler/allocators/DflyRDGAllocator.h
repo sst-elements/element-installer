@@ -20,22 +20,24 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class DragonFlyMachine;
+
         class Job;
 
         class DflyRDGAllocator : public DragonflyAllocator {
-            public:
+        public:
 
-                DflyRDGAllocator(const DragonflyMachine & mach);
+            DflyRDGAllocator(const DragonflyMachine &mach);
 
-                ~DflyRDGAllocator();
+            ~DflyRDGAllocator();
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* j);
+            AllocInfo *allocate(Job *j);
 
-            private:
-                SST::RNG::SSTRandom* rng; //random number generator
+        private:
+            SST::RNG::SSTRandom *rng; //random number generator
         };
 
     }

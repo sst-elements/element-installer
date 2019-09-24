@@ -26,42 +26,41 @@ using namespace SST;
 using namespace SST::Miranda;
 using namespace SST::Thornhill;
 
-SingleThread::SingleThread( Component* owner, 
-        Params& params )
-        : DetailedCompute( owner ), m_link(NULL)
-{
-    std::string portName = params.find<std::string>( "portName", "detailed0" );
-    
-    if ( owner->isPortConnected( portName.c_str() ) ) {
-        m_link = configureLink( portName.c_str(), "0ps", 
-            new Event::Handler<SingleThread>(
-                    this,&SingleThread::eventHandler ) ); 
+SingleThread::SingleThread(Component *owner,
+                           Params &params)
+    : DetailedCompute(owner), m_link(nullptr) {
+    std::string portName = params.find<std::string>("portName", "detailed0");
+
+    if (owner->isPortConnected(portName.c_str())) {
+        m_link = configureLink(portName.c_str(), "0ps",
+                               new Event::Handler<SingleThread>(
+                                   this, &SingleThread::eventHandler));
         assert(m_link);
     }
 }
 
-void SingleThread::eventHandler( SST::Event* ev )
-{
-    MirandaRspEvent* event = static_cast<MirandaRspEvent*>(ev);
+void SingleThread::eventHandler(SST::Event *ev) {
+    MirandaRspEvent *event = static_cast<MirandaRspEvent *>(ev);
 
-	Entry* entry = static_cast<Entry*>((void*)event->key);
-	entry->finiHandler();
-	delete entry;
+    Entry *entry = static_cast<Entry *>((void *) event->key);
+    entry->finiHandler();
+    delete entry;
 }
 
-void SingleThread::start( const std::deque< std::pair< std::string, SST::Params> >& generators,
-                 std::function<int()> retHandler, std::function<int()> finiHandler )
-{
-    MirandaReqEvent* event = new MirandaReqEvent;
-	
-	if ( finiHandler ) {
-		retHandler();
-		event->key = (uint64_t) new Entry( finiHandler );
-	} else {	
-		event->key = (uint64_t) new Entry( retHandler );
-	}
+void SingleThread::start(const std::deque <std::pair<std::string, SST::Params>> &generators,
+                         std::function<int()> retHandler, std::function<int()> finiHandler) {
+    MirandaReqEvent *event = new MirandaReqEvent;
 
-	event->generators = generators;
+    if (finiHandler) {
+        retHandler();
+        event->key = (uint64_t)
+        new Entry(finiHandler);
+    } else {
+        event->key = (uint64_t)
+        new Entry(retHandler);
+    }
 
-	m_link->send( 0, event );
+    event->generators = generators;
+
+    m_link->send(0, event);
 }

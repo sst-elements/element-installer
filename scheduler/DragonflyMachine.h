@@ -28,80 +28,83 @@ namespace SST {
     namespace Scheduler {
 
         class DragonflyMachine : public Machine {
-                
-            public:
-                enum localTopo{
-                    ALLTOALL,
-                };
-                
-                enum globalTopo{
-                    CIRCULANT,
-                    ABSOLUTE,
-                    RELATIVE,
-                };
-                
-                DragonflyMachine(int routersPerGroup, int portsPerRouter, int opticalsPerRouter,
-                    int nodesPerRouter, int coresPerNode, localTopo lt, globalTopo gt,
-                    double** D_matrix = NULL);
-                ~DragonflyMachine() { };
-				
-				AllocInfo* getBaselineAllocation(Job* job) const;
 
-                std::string getSetupInfo(bool comment);
-                
-                //returns the network distance of the given nodes
-                int getNodeDistance(int node0, int node1) const;
-                
-                //returns the free nodes at the given Distance
-                std::list<int>* getFreeAtDistance(int center, int distance) const;
-                
-                //max number of nodes at the given distance - NearestAllocMapper uses this
-                int nodesAtDistance(int dist) const;
-                
-                //DragonflyMachine default routing is shortest path
-                //@return list of link indices
-                std::list<int>* getRoute(int node0, int node1, double commWeight) const;
-                
-                const localTopo ltopo;
-                const globalTopo gtopo;
-                const int routersPerGroup;
-                const int nodesPerRouter;
-                const int portsPerRouter;
-                const int opticalsPerRouter;
-                const int numGroups;
-                const int numNodes;
-                const int numRouters;
-                const int numLinks;
+        public:
+            enum localTopo {
+                ALLTOALL,
+            };
 
-                inline int routerOf(int nodeID) const { return nodeID / nodesPerRouter; }
-                inline int groupOf(int routerID) const { return routerID / routersPerGroup; }
-                inline int localIdOf(int routerID) const { return routerID % routersPerGroup; }
-                
-            private:                
-                //constructor helpers
-                int getNumNodes(int opticalsPerRouter, int routersPerGroup, int nodesPerRouter) const
-                {
-                    int numGroups = getNumGroups(routersPerGroup, opticalsPerRouter);
-                    return (numGroups * routersPerGroup * nodesPerRouter);
-                }
-                int getNumLinks(int portsPerRouter, int nodesPerRouter, int routersPerGroup, int opticalsPerRouter) const
-                {
-                    int numRouters = getNumRouters(routersPerGroup, opticalsPerRouter);
-                    return ((portsPerRouter + nodesPerRouter) * numRouters / 2);
-                }
-                int getNumRouters(int routersPerGroup, int opticalsPerRouter) const
-                {
-                    int numGroups = getNumGroups(routersPerGroup, opticalsPerRouter);
-                    return (routersPerGroup * numGroups);
-                }
-                int getNumGroups(int routersPerGroup, int opticalsPerRouter) const
-                {
-                    return (routersPerGroup * opticalsPerRouter + 1);
-                }
+            enum globalTopo {
+                CIRCULANT,
+                ABSOLUTE,
+                RELATIVE,
+            };
 
-                //router graph: routers[routerID] = map<targetRouterID, linkInd>
-                std::vector<std::map<int,int> > routers;
-                std::vector<int> nodesAtDistances;                
+            DragonflyMachine(int routersPerGroup, int portsPerRouter, int opticalsPerRouter,
+                             int nodesPerRouter, int coresPerNode, localTopo lt, globalTopo gt,
+                             double **D_matrix = nullptr);
+
+            ~DragonflyMachine() {};
+
+            AllocInfo *getBaselineAllocation(Job *job) const;
+
+            std::string getSetupInfo(bool comment);
+
+            //returns the network distance of the given nodes
+            int getNodeDistance(int node0, int node1) const;
+
+            //returns the free nodes at the given Distance
+            std::list<int> *getFreeAtDistance(int center, int distance) const;
+
+            //max number of nodes at the given distance - NearestAllocMapper uses this
+            int nodesAtDistance(int dist) const;
+
+            //DragonflyMachine default routing is shortest path
+            //@return list of link indices
+            std::list<int> *getRoute(int node0, int node1, double commWeight) const;
+
+            const localTopo ltopo;
+            const globalTopo gtopo;
+            const int routersPerGroup;
+            const int nodesPerRouter;
+            const int portsPerRouter;
+            const int opticalsPerRouter;
+            const int numGroups;
+            const int numNodes;
+            const int numRouters;
+            const int numLinks;
+
+            inline int routerOf(int nodeID) const { return nodeID / nodesPerRouter; }
+
+            inline int groupOf(int routerID) const { return routerID / routersPerGroup; }
+
+            inline int localIdOf(int routerID) const { return routerID % routersPerGroup; }
+
+        private:
+            //constructor helpers
+            int getNumNodes(int opticalsPerRouter, int routersPerGroup, int nodesPerRouter) const {
+                int numGroups = getNumGroups(routersPerGroup, opticalsPerRouter);
+                return (numGroups * routersPerGroup * nodesPerRouter);
+            }
+
+            int getNumLinks(int portsPerRouter, int nodesPerRouter, int routersPerGroup,
+                            int opticalsPerRouter) const {
+                int numRouters = getNumRouters(routersPerGroup, opticalsPerRouter);
+                return ((portsPerRouter + nodesPerRouter) * numRouters / 2);
+            }
+
+            int getNumRouters(int routersPerGroup, int opticalsPerRouter) const {
+                int numGroups = getNumGroups(routersPerGroup, opticalsPerRouter);
+                return (routersPerGroup * numGroups);
+            }
+
+            int getNumGroups(int routersPerGroup, int opticalsPerRouter) const {
+                return (routersPerGroup * opticalsPerRouter + 1);
+            }
+
+            //router graph: routers[routerID] = map<targetRouterID, linkInd>
+            std::vector <std::map<int, int>> routers;
+            std::vector<int> nodesAtDistances;
         };
     }
 }

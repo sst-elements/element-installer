@@ -20,32 +20,32 @@
 #include "emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCommDestroyEvent : public EmberMPIEvent {
+        class EmberCommDestroyEvent : public EmberMPIEvent {
 
-public:
-    EmberCommDestroyEvent( MP::Interface& api, Output* output,
-                          EmberEventTimeStatistic* stat,
-        Communicator comm )
-      : EmberMPIEvent( api, output, stat ),
-        m_comm( comm)
-    {}
-    ~EmberCommDestroyEvent() {}
+        public:
+            EmberCommDestroyEvent(MP::Interface &api, Output *output,
+                                  EmberEventTimeStatistic *stat,
+                                  Communicator comm)
+                : EmberMPIEvent(api, output, stat),
+                  m_comm(comm) {}
 
-   std::string getName() { return "CommDestroy"; }
+            ~EmberCommDestroyEvent() {}
 
-    void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "CommDestroy"; }
 
-        EmberEvent::issue( time );
-        m_api.comm_destroy( m_comm, functor );
+            void issue(uint64_t time, FOO *functor) {
+
+                EmberEvent::issue(time);
+                m_api.comm_destroy(m_comm, functor);
+            }
+
+        private:
+            Communicator m_comm;
+        };
+
     }
-
-private:
-	Communicator m_comm;
-};
-
-}
 }
 
 #endif

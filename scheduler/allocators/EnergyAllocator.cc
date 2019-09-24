@@ -40,60 +40,56 @@
 
 using namespace SST::Scheduler;
 
-EnergyAllocator::EnergyAllocator(std::vector<std::string>* params, const Machine & mach) : Allocator(mach)
-{
+EnergyAllocator::EnergyAllocator(std::vector <std::string> *params, const Machine &mach)
+    : Allocator(mach) {
     schedout.init("", 8, 0, Output::STDOUT);
     configName = "Energy";
 }
 
 
-std::string EnergyAllocator::getParamHelp()
-{
+std::string EnergyAllocator::getParamHelp() {
     return "This allocator requires d_matrix input.";
 }
 
-std::string EnergyAllocator::getSetupInfo(bool comment) const
-{ 
+std::string EnergyAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
-        com="# ";
-    } else  {
-        com="";
+        com = "# ";
+    } else {
+        com = "";
     }
     std::stringstream ret;
-    ret <<com<<"Energy Allocator ("<<configName<<")";
+    ret << com << "Energy Allocator (" << configName << ")";
     return ret.str();
 }
 
-AllocInfo* EnergyAllocator::allocate(Job* job)
-{
-    std::vector<int>* available = machine.getFreeNodes();    
+AllocInfo *EnergyAllocator::allocate(Job *job) {
+    std::vector<int> *available = machine.getFreeNodes();
     return allocate(job, available);
 }
 
 //Allocates job if possible.
 //Returns information on the allocation or null if it wasn't possible
 //(doesn't make allocation; merely returns info on possible allocation).
-AllocInfo* EnergyAllocator::allocate(Job* job, std::vector<int>* available) 
-{
+AllocInfo *EnergyAllocator::allocate(Job *job, std::vector<int> *available) {
     if (!canAllocate(*job)) {
-        return NULL;
+        return nullptr;
     }
 
-    AllocInfo* retVal = new AllocInfo(job, machine);
+    AllocInfo *retVal = new AllocInfo(job, machine);
 
     int nodesNeeded = ceil((double) job->getProcsNeeded() / machine.coresPerNode);
-    
+
     //optimization: if exactly enough procs are free, just return them
-    if ((unsigned int) nodesNeeded == available -> size()) {
+    if ((unsigned int) nodesNeeded == available->size()) {
         for (int i = 0; i < nodesNeeded; i++) {
-            retVal -> nodeIndices[i] = available->at(i);
+            retVal->nodeIndices[i] = available->at(i);
         }
         delete available;
         return retVal;
     }
 
-    std::vector<int>* ret = EnergyHelpers::getEnergyNodes(available, nodesNeeded, machine);
+    std::vector<int> *ret = EnergyHelpers::getEnergyNodes(available, nodesNeeded, machine);
     for (int i = 0; i < nodesNeeded; i++) {
         retVal->nodeIndices[i] = ret->at(i);
     }

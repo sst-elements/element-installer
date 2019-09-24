@@ -25,41 +25,47 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 using namespace SST::Cassini;
 
-NextBlockPrefetcher::NextBlockPrefetcher(Component* comp, Params& params) : CacheListener(comp, params) {
+NextBlockPrefetcher::NextBlockPrefetcher(Component *comp, Params &params) : CacheListener(comp,
+                                                                                          params) {
     Output out("", 1, 0, Output::STDOUT);
-    out.fatal(CALL_INFO, -1, "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n", getName().c_str());
+    out.fatal(CALL_INFO, -1,
+              "%s, Error: SubComponent does not support legacy loadSubComponent call; use new calls (loadUserSubComponent or loadAnonymousSubComponent)\n",
+              getName().c_str());
 }
 
-NextBlockPrefetcher::NextBlockPrefetcher(ComponentId_t id, Params& params) : CacheListener(id, params) {
+NextBlockPrefetcher::NextBlockPrefetcher(ComponentId_t id, Params &params) : CacheListener(id,
+                                                                                           params) {
     Simulation::getSimulation()->requireEvent("memHierarchy.MemEvent");
 
     blockSize = params.find<uint64_t>("cache_line_size", 64);
 
     statPrefetchEventsIssued = registerStatistic<uint64_t>("prefetches_issued");
-    statMissEventsProcessed  = registerStatistic<uint64_t>("miss_events_processed");
-    statHitEventsProcessed   = registerStatistic<uint64_t>("hit_events_processed");
+    statMissEventsProcessed = registerStatistic<uint64_t>("miss_events_processed");
+    statHitEventsProcessed = registerStatistic<uint64_t>("hit_events_processed");
 }
 
 NextBlockPrefetcher::~NextBlockPrefetcher() {}
 
-void NextBlockPrefetcher::notifyAccess(const CacheListenerNotification& notify) {
+void NextBlockPrefetcher::notifyAccess(const CacheListenerNotification &notify) {
     const NotifyAccessType notifyType = notify.getAccessType();
     const NotifyResultType notifyResType = notify.getResultType();
     const Addr addr = notify.getPhysicalAddress();
 
     if (notifyType == READ || notifyType == WRITE) { // ignore evicts
-        if(notifyResType == MISS) {
+        if (notifyResType == MISS) {
             statMissEventsProcessed->addData(1);
-            
+
             Addr nextBlockAddr = (addr - (addr % blockSize)) + blockSize;
-            std::vector<Event::HandlerBase*>::iterator callbackItr;
+            std::vector<Event::HandlerBase *>::iterator callbackItr;
             statPrefetchEventsIssued->addData(1);
-            
+
             // Cycle over each registered call back and notify them that we want to issue a prefetch request
-            for(callbackItr = registeredCallbacks.begin(); callbackItr != registeredCallbacks.end(); callbackItr++) {
+            for (callbackItr = registeredCallbacks.begin();
+                 callbackItr != registeredCallbacks.end(); callbackItr++) {
                 // Create a new read request, we cannot issue a write because the data will get
                 // overwritten and corrupt memory (even if we really do want to do a write)
-                MemEvent* newEv = new MemEvent(getName(), nextBlockAddr, nextBlockAddr, Command::GetS, getCurrentSimTimeNano());
+                MemEvent *newEv = new MemEvent(getName(), nextBlockAddr, nextBlockAddr,
+                                               Command::GetS, getCurrentSimTimeNano());
                 newEv->setSize(blockSize);
                 newEv->setPrefetchFlag(true);
                 (*(*callbackItr))(newEv);
@@ -74,6 +80,6 @@ void NextBlockPrefetcher::registerResponseCallback(Event::HandlerBase *handler) 
     registeredCallbacks.push_back(handler);
 }
 
-void NextBlockPrefetcher::printStats(Output& out) {
+void NextBlockPrefetcher::printStats(Output &out) {
 
 }

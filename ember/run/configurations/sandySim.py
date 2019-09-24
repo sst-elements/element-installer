@@ -17,8 +17,8 @@
 
 # numNodes = -1 implies use all nodes on network
 
-numNodes = -1 
-ranksPerNode = 1 
+numNodes = -1
+ranksPerNode = 1
 
 platform = 'defaultParams'
 
@@ -29,49 +29,54 @@ detailedNodes = [0]
 detailedMotifs = [0]
 detailedNics = [0]
 
-detailedModel = "sandyBridgeModel" 
-detailedModelParams = "sandyBridgeModelParams" 
+detailedModel = "sandyBridgeModel"
+detailedModelParams = "sandyBridgeModelParams"
 
-arguments = 'messagesize=100000 printRank=-1' 
+arguments = 'messagesize=100000 printRank=-1'
 
 detailedMotif = "DetailedRing " + arguments
-#detailedMotif = "DetailedRing computeTime=1000 " + arguments
+# detailedMotif = "DetailedRing computeTime=1000 " + arguments
 
 nonDetailedMotif = "Ring computeTime=1000 " + arguments
 
-def genWorkFlow( defaults, nodeNum = None ):
 
-	#print 'genWorkFlow()'
+def genWorkFlow(defaults, nodeNum=None):
+    # print 'genWorkFlow()'
 
-	workFlow = []
-	motif = dict.copy( defaults )
-	motif['cmd'] = "Init"
-	workFlow.append( motif )
+    workFlow = []
+    motif = dict.copy(defaults)
+    motif['cmd'] = "Init"
+    workFlow.append(motif)
 
-	motif = dict.copy( defaults )
-	if nodeNum in detailedMotifs:
-		motif['cmd'] = detailedMotif
-	else:
-		motif['cmd'] = nonDetailedMotif
-	workFlow.append( motif )
+    motif = dict.copy(defaults)
+    if nodeNum in detailedMotifs:
+        motif['cmd'] = detailedMotif
+    else:
+        motif['cmd'] = nonDetailedMotif
+    workFlow.append(motif)
 
-	motif = dict.copy( defaults )
-	motif['cmd'] = "Fini"
-	workFlow.append( motif )
+    motif = dict.copy(defaults)
+    motif['cmd'] = "Fini"
+    workFlow.append(motif)
 
-	return workFlow
+    return workFlow
+
 
 def getNumNodes():
-	return numNodes
+    return numNodes
+
 
 def getRanksPerNode():
-	return ranksPerNode 
+    return ranksPerNode
+
 
 def getTopo():
-	return topo, shape 
+    return topo, shape
+
 
 def getPlatform():
-	return platform 
+    return platform
+
 
 def getPerNicParams(nodeNum):
     params = {}
@@ -80,5 +85,6 @@ def getPerNicParams(nodeNum):
 
     return params
 
+
 def getDetailedModel():
-    return detailedModel,detailedModelParams,detailedNodes
+    return detailedModel, detailedModelParams, detailedNodes

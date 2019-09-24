@@ -25,20 +25,21 @@ using namespace std;
 using namespace SST::Scheduler;
 
 //set aside memory for mappings
-std::map<long int, std::vector<int>*> AllocMapper::mappings = std::map<long int, std::vector<int>*>();
+std::map<long int, std::vector < int>*>
+AllocMapper::mappings = std::map < long int, std::vector<int>
+*>();
 
-AllocInfo* AllocMapper::allocate(Job* job)
-{
-    if (!canAllocate(*job)){
-        return NULL;
+AllocInfo *AllocMapper::allocate(Job *job) {
+    if (!canAllocate(*job)) {
+        return nullptr;
     }
     AllocInfo *ai = new AllocInfo(job, mach);
     int nodesNeeded = ai->getNodesNeeded();
     int jobSize = job->getProcsNeeded();
 
     //create mapping data
-    vector<int>taskToNode(jobSize, -1);
-    vector<long int>usedNodes(nodesNeeded, -1);
+    vector<int> taskToNode(jobSize, -1);
+    vector<long int> usedNodes(nodesNeeded, -1);
 
     //get free node info
     isFree = mach.freeNodeList();
@@ -46,12 +47,12 @@ AllocInfo* AllocMapper::allocate(Job* job)
     allocMap(*ai, usedNodes, taskToNode);
 
     //fill the allocInfo
-    for(int i = 0; i < nodesNeeded; i++){
+    for (int i = 0; i < nodesNeeded; i++) {
         ai->nodeIndices[i] = usedNodes[i];
     }
 
     //store mapping if required
-    if(allocateAndMap){
+    if (allocateAndMap) {
         std::vector<int> *mapping = new std::vector<int>(taskToNode);
         AllocMapper::mappings[job->getJobNum()] = mapping;
     }
@@ -62,22 +63,21 @@ AllocInfo* AllocMapper::allocate(Job* job)
     return ai;
 }
 
-TaskMapInfo* AllocMapper::mapTasks(AllocInfo* allocInfo)
-{
+TaskMapInfo *AllocMapper::mapTasks(AllocInfo *allocInfo) {
     long int jobNum = allocInfo->job->getJobNum();
     int nodesNeeded = allocInfo->getNodesNeeded();
     int jobSize = allocInfo->job->getProcsNeeded();
     vector<int> *taskToNode;
 
     //check if already mapped
-    if(mappings.count(jobNum) == 0){ //if not,
+    if (mappings.count(jobNum) == 0) { //if not,
         //map AND allocate
         //create mapping data
-        vector<long int>usedNodes(nodesNeeded, -1);
+        vector<long int> usedNodes(nodesNeeded, -1);
         taskToNode = new vector<int>(jobSize, -1);
         //create virtual free nodes
         isFree = new vector<bool>(mach.numNodes, false);
-        for(int i = 0; i < nodesNeeded; i++){
+        for (int i = 0; i < nodesNeeded; i++) {
             isFree->at(allocInfo->nodeIndices[i]) = true;
         }
         //allocate
@@ -88,8 +88,8 @@ TaskMapInfo* AllocMapper::mapTasks(AllocInfo* allocInfo)
         mappings.erase(jobNum);
     }
 
-    TaskMapInfo* tmi = new TaskMapInfo(allocInfo, mach);
-    for(long int taskIt = 0; taskIt < jobSize; taskIt++){
+    TaskMapInfo *tmi = new TaskMapInfo(allocInfo, mach);
+    for (long int taskIt = 0; taskIt < jobSize; taskIt++) {
         tmi->insert(taskIt, taskToNode->at(taskIt));
     }
 

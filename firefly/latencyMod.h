@@ -20,14 +20,14 @@
 #include <sst/core/module.h>
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class LatencyMod : public SST::Module {
-  public:
-    virtual size_t getLatency( size_t value ) = 0;
-};
+        class LatencyMod : public SST::Module {
+        public:
+            virtual size_t getLatency(size_t value) = 0;
+        };
 
-}
+    }
 }
 
 #endif

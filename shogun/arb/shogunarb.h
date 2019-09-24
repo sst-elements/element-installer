@@ -9,38 +9,37 @@
 using namespace SST::Shogun;
 
 namespace SST {
-namespace Shogun {
+    namespace Shogun {
 
-    class ShogunArbitrator {
+        class ShogunArbitrator {
 
-    public:
-        ShogunArbitrator() {}
-        virtual ~ShogunArbitrator() {}
+        public:
+            ShogunArbitrator() {}
 
-    virtual void moveEvents(const int num_events,
-                            const int port_count,
-                            ShogunQueue<ShogunEvent*>** inputQueues,
-                            int32_t output_slots,
-                            ShogunEvent*** outputEvents,
-                            uint64_t cycle )
-                            = 0;
+            virtual ~ShogunArbitrator() {}
 
-        void setOutput(SST::Output* out)
-        {
-            output = out;
-        }
+            virtual void moveEvents(const int num_events,
+                                    const int port_count,
+                                    ShogunQueue<ShogunEvent *> **inputQueues,
+                                    int32_t output_slots,
+                                    ShogunEvent ***outputEvents,
+                                    uint64_t cycle)
+            = 0;
 
-        void setStatisticsBundle(ShogunStatisticsBundle* b)
-        {
-            bundle = b;
-        }
+            void setOutput(SST::Output *out) {
+                output = out;
+            }
 
-    protected:
-        SST::Output* output;
-        ShogunStatisticsBundle* bundle;
-    };
+            void setStatisticsBundle(ShogunStatisticsBundle *b) {
+                bundle = b;
+            }
 
-}
+        protected:
+            SST::Output *output;
+            ShogunStatisticsBundle *bundle;
+        };
+
+    }
 }
 
 #endif

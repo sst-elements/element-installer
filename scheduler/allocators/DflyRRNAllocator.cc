@@ -19,17 +19,14 @@
 
 using namespace SST::Scheduler;
 
-DflyRRNAllocator::DflyRRNAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+DflyRRNAllocator::DflyRRNAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
 }
 
-DflyRRNAllocator::~DflyRRNAllocator()
-{
+DflyRRNAllocator::~DflyRRNAllocator() {
 }
 
-std::string DflyRRNAllocator::getSetupInfo(bool comment) const
-{
+std::string DflyRRNAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -40,12 +37,12 @@ std::string DflyRRNAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
-AllocInfo* DflyRRNAllocator::allocate(Job* j)
-{
+AllocInfo *DflyRRNAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         //This set keeps track of allocated nodes in the current allocation.
         std::set<int> occupiedNodes;
         const int jobSize = ai->getNodesNeeded();
@@ -56,30 +53,26 @@ AllocInfo* DflyRRNAllocator::allocate(Job* j)
             int localNodeID = 0;
             while (true) {
                 int nodeID = groupID * nodesPerGroup + localNodeID;
-                if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                     ai->nodeIndices[i] = nodeID;
                     occupiedNodes.insert(nodeID);
                     //std::cout << nodeID << " ";
                     //change group.
                     if (groupID < dMach.numGroups - 1) {
                         ++groupID;
-                    }
-                    else {
+                    } else {
                         groupID = 0;
                     }
                     break;
-                }
-                else {
+                } else {
                     if (localNodeID < nodesPerGroup - 1) {
                         ++localNodeID;
                         continue;
-                    }
-                    else {
+                    } else {
                         //change group.
                         if (groupID < dMach.numGroups - 1) {
                             ++groupID;
-                        }
-                        else {
+                        } else {
                             groupID = 0;
                         }
                         localNodeID = 0;
@@ -91,6 +84,6 @@ AllocInfo* DflyRRNAllocator::allocate(Job* j)
         //std::cout << endl;
         return ai;
     }
-    return NULL;
+    return nullptr;
 }
 

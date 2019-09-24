@@ -20,37 +20,51 @@
 #include "shmem/common.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class HadesSHMEM;
+        class HadesSHMEM;
 
-class ShmemBarrier : protected ShmemCollective {
-  public:
-    ShmemBarrier( HadesSHMEM& api, ShmemCommon& common ) : ShmemCollective( api, common )
-    { 
-		m_prefix = "@t:" + std::to_string(common.my_pe()) + ":ShmemBarrier::@p():@l ";
-	}
-    void start( int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync, Hermes::Shmem::Callback );
-  private:
+        class ShmemBarrier : protected ShmemCollective {
+        public:
+            ShmemBarrier(HadesSHMEM &api, ShmemCommon &common) : ShmemCollective(api, common) {
+                m_prefix = "@t:" + std::to_string(common.my_pe()) + ":ShmemBarrier::@p():@l ";
+            }
 
-    void not_leaf_0(int);
-    void root_0(int);
-    void root_1(int);
-    void root_2(int);
-    void node_0(int);
-    void node_1(int);
-    void node_2(int);
-    void node_3(int);
-    void node_4(int);
-    void leaf_0(int);
-    void leaf_1(int);
-    void leaf_2(int);
-    void leaf_3(int);
+            void start(int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,
+                       Hermes::Shmem::Callback);
 
-    int     m_iteration;
-};
+        private:
 
-}
+            void not_leaf_0(int);
+
+            void root_0(int);
+
+            void root_1(int);
+
+            void root_2(int);
+
+            void node_0(int);
+
+            void node_1(int);
+
+            void node_2(int);
+
+            void node_3(int);
+
+            void node_4(int);
+
+            void leaf_0(int);
+
+            void leaf_1(int);
+
+            void leaf_2(int);
+
+            void leaf_3(int);
+
+            int m_iteration;
+        };
+
+    }
 }
 
 #endif

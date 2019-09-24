@@ -42,201 +42,185 @@
 using namespace std;
 using namespace SST;
 
-namespace SST{ namespace MessierComponent {
+namespace SST {
+    namespace MessierComponent {
 
-	// This defines the internal inside the NVM-based DIMM memory
-	class NVM_CACHE
-	{
-
-
-		int size; // The size in KB
-
-		int latency; // Latency
-
-		int assoc; // Associativity
-
-		int bs; // This is the block size of the internal cache
-
-		int ** lru; // This indicates the LRU information
-
-		bool ** valid;
-
-		bool ** dirty;
-
-		long long int ** tag_array; // This indicates the tag array
-
-		long long int num_sets; // This inidicates the number of sets
-
-		public:
+        // This defines the internal inside the NVM-based DIMM memory
+        class NVM_CACHE {
 
 
-		NVM_CACHE(int Size, int Assoc, int Latency, int BS)
-		{
+            int size; // The size in KB
 
-			size = Size;
-			assoc = Assoc;
-			latency = Latency;
-			bs = BS;
+            int latency; // Latency
 
-			num_sets = ((long long int) size*1024)/(bs*assoc); // Assigning the number of sets
+            int assoc; // Associativity
 
-			tag_array = new long long int *[num_sets];
-			lru =  new int * [num_sets];
-			valid = new bool * [num_sets];
-			dirty = new bool * [num_sets];
+            int bs; // This is the block size of the internal cache
 
-			for(int i = 0; i < num_sets; i++)
-			{
-				tag_array[i] = new long long int[assoc];
-				lru[i] = new int [assoc];
-				valid[i] = new bool [assoc];
-				dirty[i] = new bool [assoc];
+            int **lru; // This indicates the LRU information
 
-				for(int j=0; j<assoc; j++)
-				{
-					tag_array[i][j] = -1;
-					lru[i][j] = j;
-					valid[i][j] = false;
-					dirty[i][j] = false;
-				}		
+            bool **valid;
+
+            bool **dirty;
+
+            long long int **tag_array; // This indicates the tag array
+
+            long long int num_sets; // This inidicates the number of sets
+
+        public:
 
 
-			}
+            NVM_CACHE(int Size, int Assoc, int Latency, int BS) {
 
+                size = Size;
+                assoc = Assoc;
+                latency = Latency;
+                bs = BS;
 
+                num_sets =
+                    ((long long int) size * 1024) / (bs * assoc); // Assigning the number of sets
 
-		}
+                tag_array = new long long int *[num_sets];
+                lru = new int *[num_sets];
+                valid = new bool *[num_sets];
+                dirty = new bool *[num_sets];
 
-		// Check if a hit or miss
-		bool check_hit(long long int add)
-		{
+                for (int i = 0; i < num_sets; i++) {
+                    tag_array[i] = new long long int[assoc];
+                    lru[i] = new int[assoc];
+                    valid[i] = new bool[assoc];
+                    dirty[i] = new bool[assoc];
 
-			long long int set = (add/bs)%num_sets;
+                    for (int j = 0; j < assoc; j++) {
+                        tag_array[i][j] = -1;
+                        lru[i][j] = j;
+                        valid[i][j] = false;
+                        dirty[i][j] = false;
+                    }
 
-			for(int i=0; i < assoc; i++)
-				if(valid[set][i] && (tag_array[set][i]/bs == add/bs))
-					return true;
-
-			return false;
-
-		}
-
-
-		// This adds the block to the cache
-		long long int insert_block(long long int add, bool clean)
-		{
-
-			long long int set = (add/bs)%num_sets;
-			long long int evicted = 0;
-
-			for(int i=0; i < assoc; i++)
-				if(lru[set][i]==(assoc-1))
-				{
-					evicted = tag_array[set][i];
-					valid[set][i] = true;
-					tag_array[set][i] = add;
-					dirty[set][i] = !clean;
-					break;
-				}
-
-			return evicted;
-
-		}
-
-	 	bool dirty_eviction(long long int add)
-                {
-
-                        long long int set = (add/bs)%num_sets;
-
-                        for(int i=0; i < assoc; i++)
-                                if(lru[set][i]==(assoc-1))
-                                {
-                                     //   valid[set][i] = true;
-                                      //  tag_array[set][i] = add;
-                                     if(dirty[set][i] && valid[set][i])
-					return true;
-				     else
-					return false;
-                                }
-
-			return false;
 
                 }
 
 
-		void set_dirty(long long int add)
-		{
+            }
+
+            // Check if a hit or miss
+            bool check_hit(long long int add) {
+
+                long long int set = (add / bs) % num_sets;
+
+                for (int i = 0; i < assoc; i++)
+                    if (valid[set][i] && (tag_array[set][i] / bs == add / bs))
+                        return true;
+
+                return false;
+
+            }
 
 
-			long long int set = (add/bs)%num_sets;
-			for(int i=0; i < assoc; i++)
-                        {
+            // This adds the block to the cache
+            long long int insert_block(long long int add, bool clean) {
 
-                                if(tag_array[set][i]/bs==add/bs)
-                                {
-					dirty[set][i] = true;
-                                        //lru_pos = lru[set][i];
-                                        //lru_ind  = i;
-                                        break;
-                                }
-                        }
+                long long int set = (add / bs) % num_sets;
+                long long int evicted = 0;
 
+                for (int i = 0; i < assoc; i++)
+                    if (lru[set][i] == (assoc - 1)) {
+                        evicted = tag_array[set][i];
+                        valid[set][i] = true;
+                        tag_array[set][i] = add;
+                        dirty[set][i] = !clean;
+                        break;
+                    }
 
-		}
+                return evicted;
 
+            }
 
-		// This function updates the LRU position of the block
-		void update_lru(long long int add)
-		{
+            bool dirty_eviction(long long int add) {
 
-			long long int set = (add/bs)%num_sets;
+                long long int set = (add / bs) % num_sets;
 
-			int lru_pos = -1;
-			int lru_ind = -1;
+                for (int i = 0; i < assoc; i++)
+                    if (lru[set][i] == (assoc - 1)) {
+                        //   valid[set][i] = true;
+                        //  tag_array[set][i] = add;
+                        if (dirty[set][i] && valid[set][i])
+                            return true;
+                        else
+                            return false;
+                    }
 
-			for(int i=0; i < assoc; i++)
-			{
+                return false;
 
-				if(tag_array[set][i]/bs==add/bs)
-				{
-					lru_pos = lru[set][i];
-					lru_ind  = i;
-					break;
-				}
-			}
-
-			if(lru_pos == -1)
-				return;
+            }
 
 
-			for(int i=0; i < assoc; i++)
-				if(lru[set][i] < lru_pos)
-					lru[set][i]++;
-
-			lru[set][lru_ind] = 0;
+            void set_dirty(long long int add) {
 
 
-		}
+                long long int set = (add / bs) % num_sets;
+                for (int i = 0; i < assoc; i++) {
 
-		// This function invalidates a cache block
-		void invalidate(long long int add)
-		{
-
-			long long int set = (add/bs)%num_sets;
-
-			for(int i=0; i < assoc; i++)
-			{
-
-				if(tag_array[set][i]/bs==add/bs)
-				{
-					valid[set][i] = false;
-					break;
-				}
-			}
-
-		}
-	};
+                    if (tag_array[set][i] / bs == add / bs) {
+                        dirty[set][i] = true;
+                        //lru_pos = lru[set][i];
+                        //lru_ind  = i;
+                        break;
+                    }
+                }
 
 
-}}
+            }
+
+
+            // This function updates the LRU position of the block
+            void update_lru(long long int add) {
+
+                long long int set = (add / bs) % num_sets;
+
+                int lru_pos = -1;
+                int lru_ind = -1;
+
+                for (int i = 0; i < assoc; i++) {
+
+                    if (tag_array[set][i] / bs == add / bs) {
+                        lru_pos = lru[set][i];
+                        lru_ind = i;
+                        break;
+                    }
+                }
+
+                if (lru_pos == -1)
+                    return;
+
+
+                for (int i = 0; i < assoc; i++)
+                    if (lru[set][i] < lru_pos)
+                        lru[set][i]++;
+
+                lru[set][lru_ind] = 0;
+
+
+            }
+
+            // This function invalidates a cache block
+            void invalidate(long long int add) {
+
+                long long int set = (add / bs) % num_sets;
+
+                for (int i = 0; i < assoc; i++) {
+
+                    if (tag_array[set][i] / bs == add / bs) {
+                        valid[set][i] = false;
+                        break;
+                    }
+                }
+
+            }
+        };
+
+
+    }
+}
 #endif

@@ -27,52 +27,62 @@
 namespace SST {
     namespace Scheduler {
         class AllocInfo;
+
         class Job;
+
         class TaskMapInfo;
 
-        class Machine{
-            public:
-                Machine(int numNodes, int numCoresPerNode, double** D_matrix, int numLinks);
-                virtual ~Machine();
-                
-                void reset();
-                void allocate(TaskMapInfo* taskMapInfo);
-                void deallocate(TaskMapInfo* taskMapInfo);
+        class Machine {
+        public:
+            Machine(int numNodes, int numCoresPerNode, double **D_matrix, int numLinks);
 
-                inline int getNumFreeNodes() const { return numAvail; }
-                inline bool isFree(int nodeNum) const { return freeNodes[nodeNum]; }
-                std::vector<bool>* freeNodeList() const { return new std::vector<bool>(freeNodes); }
-                std::vector<int>* getFreeNodes() const;
-                std::vector<int>* getUsedNodes() const;
-                double getCoolingPower() const;
-                 
-                virtual std::string getSetupInfo(bool comment) = 0;
-                
-                //returns baseline allocation used for running time estimation
-                virtual AllocInfo* getBaselineAllocation(Job* job) const = 0;
+            virtual ~Machine();
 
-                //returns the network distance between two nodes
-                virtual int getNodeDistance(int node0, int node1) const = 0;
-                
-                //max number of nodes at a given distance - NearestAllocMapper uses this
-                virtual int nodesAtDistance(int dist) const = 0;
-                
-                //returns the free nodes at given network distance
-                virtual std::list<int>* getFreeAtDistance(int center, int distance) const = 0;
+            void reset();
 
-                //finds the communication route between node0 and node1 for the given weight of commWeight
-                //@return The link indices used in the route
-                virtual std::list<int>* getRoute(int node0, int node1, double commWeight) const = 0;
-                
-                double** D_matrix;
-                
-                const int numNodes;          //total number of nodes
-                const int coresPerNode;
+            void allocate(TaskMapInfo *taskMapInfo);
 
-            private:
-                int numAvail;                //number of available nodes
-                std::vector<bool> freeNodes;  //whether each node is free
-                std::vector<double> traffic;  //traffic on network links
+            void deallocate(TaskMapInfo *taskMapInfo);
+
+            inline int getNumFreeNodes() const { return numAvail; }
+
+            inline bool isFree(int nodeNum) const { return freeNodes[nodeNum]; }
+
+            std::vector<bool> *freeNodeList() const { return new std::vector<bool>(freeNodes); }
+
+            std::vector<int> *getFreeNodes() const;
+
+            std::vector<int> *getUsedNodes() const;
+
+            double getCoolingPower() const;
+
+            virtual std::string getSetupInfo(bool comment) = 0;
+
+            //returns baseline allocation used for running time estimation
+            virtual AllocInfo *getBaselineAllocation(Job *job) const = 0;
+
+            //returns the network distance between two nodes
+            virtual int getNodeDistance(int node0, int node1) const = 0;
+
+            //max number of nodes at a given distance - NearestAllocMapper uses this
+            virtual int nodesAtDistance(int dist) const = 0;
+
+            //returns the free nodes at given network distance
+            virtual std::list<int> *getFreeAtDistance(int center, int distance) const = 0;
+
+            //finds the communication route between node0 and node1 for the given weight of commWeight
+            //@return The link indices used in the route
+            virtual std::list<int> *getRoute(int node0, int node1, double commWeight) const = 0;
+
+            double **D_matrix;
+
+            const int numNodes;          //total number of nodes
+            const int coresPerNode;
+
+        private:
+            int numAvail;                //number of available nodes
+            std::vector<bool> freeNodes;  //whether each node is free
+            std::vector<double> traffic;  //traffic on network links
         };
     }
 }

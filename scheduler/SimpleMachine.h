@@ -32,28 +32,30 @@ namespace SST {
 
         class SimpleMachine : public Machine {
 
-            public:
-                SimpleMachine(int numNodes, bool insimulationmachine, int numCoresPerNode, double** D_matrix);
-                virtual ~SimpleMachine() {}
+        public:
+            SimpleMachine(int numNodes, bool insimulationmachine, int numCoresPerNode,
+                          double **D_matrix);
 
-                std::string getSetupInfo(bool comment);
+            virtual ~SimpleMachine() {}
 
-                void reset();  //return to beginning-of-simulation state
-                
-                AllocInfo* getBaselineAllocation(Job* job) const { return NULL; }
-                
-                int getNodeDistance(int node0, int node1) const;
-                
-                int nodesAtDistance(int dist) const;
-                
-                //returns the free nodes at given L1 distance
-                std::list<int>* getFreeAtDistance(int center, int distance) const;
+            std::string getSetupInfo(bool comment);
 
-                //SimpleMachine assumes a single network link in the machine
-                std::list<int>* getRoute(int node0, int node1, double commWeight) const;
+            void reset();  //return to beginning-of-simulation state
 
-            private:
-                bool simulationmachine;
+            AllocInfo *getBaselineAllocation(Job *job) const { return nullptr; }
+
+            int getNodeDistance(int node0, int node1) const;
+
+            int nodesAtDistance(int dist) const;
+
+            //returns the free nodes at given L1 distance
+            std::list<int> *getFreeAtDistance(int center, int distance) const;
+
+            //SimpleMachine assumes a single network link in the machine
+            std::list<int> *getRoute(int node0, int node1, double commWeight) const;
+
+        private:
+            bool simulationmachine;
         };
 
     }

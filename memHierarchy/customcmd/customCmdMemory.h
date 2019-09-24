@@ -24,141 +24,164 @@
 #include "memEventBase.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
 /* Class defining the information sent to the MemBackendConvertor */
-class CustomCmdInfo {
-public:
+        class CustomCmdInfo {
+        public:
 
-    /* Constructors */
-    CustomCmdInfo() { }
-    
-    CustomCmdInfo(SST::Event::id_type id, std::string rqstr, uint32_t flags = 0 ) :
-      id_(id), flags_(flags), rqstr_(rqstr) { }
+            /* Constructors */
+            CustomCmdInfo() {}
 
-    virtual ~CustomCmdInfo() = default;
-    
-    /* String-ify info for debug */
-    virtual std::string getString() { 
-        std::ostringstream idstring;
-        idstring << "ID: <" << id_.first << "," << id_.second << ">";
-        std::ostringstream flagstring;
-        flagstring << " Flags: 0x" << std::hex << flags_;
-        return idstring.str() + flagstring.str();
-    }
+            CustomCmdInfo(SST::Event::id_type id, std::string rqstr, uint32_t flags = 0) :
+                id_(id), flags_(flags), rqstr_(rqstr) {}
 
-    SST::Event::id_type getID() { return id_; }
-    void setID(SST::Event::id_type id) { id_ = id; }
+            virtual ~CustomCmdInfo() = default;
 
-    /* Flag getters/setters - same as MemEventBase */
-    // Whole flag field operations
-    uint32_t getFlags(void) const { return flags_; }
-    void clearFlags(void) { flags_ = 0; }
-    void setFlags(uint32_t flags) { flags_ = flags; }
-    // Single flag operations
-    void setFlag(uint32_t flag) { flags_ = flags_ | flag; }
-    void clearFlag(uint32_t flag) { flags_ = flags_ & (~flag); }
-    bool queryFlag(uint32_t flag) const { return flags_ & flag; }
+            /* String-ify info for debug */
+            virtual std::string getString() {
+                std::ostringstream idstring;
+                idstring << "ID: <" << id_.first << "," << id_.second << ">";
+                std::ostringstream flagstring;
+                flagstring << " Flags: 0x" << std::hex << flags_;
+                return idstring.str() + flagstring.str();
+            }
 
-    /* Requestor getters/setters */
-    std::string getRqstr() { return rqstr_; }
-    void setRqstr(std::string rq) { rqstr_ = rq; }
+            SST::Event::id_type getID() { return id_; }
 
-protected:
-    SST::Event::id_type id_;    /* ID of matching MemEventBase */
-    uint32_t flags_;            /* Flags to be sent */
-    std::string rqstr_;         /* Requestor */
-};
+            void setID(SST::Event::id_type id) { id_ = id; }
+
+            /* Flag getters/setters - same as MemEventBase */
+            // Whole flag field operations
+            uint32_t getFlags(void) const { return flags_; }
+
+            void clearFlags(void) { flags_ = 0; }
+
+            void setFlags(uint32_t flags) { flags_ = flags; }
+
+            // Single flag operations
+            void setFlag(uint32_t flag) { flags_ = flags_ | flag; }
+
+            void clearFlag(uint32_t flag) { flags_ = flags_ & (~flag); }
+
+            bool queryFlag(uint32_t flag) const { return flags_ & flag; }
+
+            /* Requestor getters/setters */
+            std::string getRqstr() { return rqstr_; }
+
+            void setRqstr(std::string rq) { rqstr_ = rq; }
+
+        protected:
+            SST::Event::id_type id_;    /* ID of matching MemEventBase */
+            uint32_t flags_;            /* Flags to be sent */
+            std::string rqstr_;         /* Requestor */
+        };
 
 /*
  * Base class handler for custom commands
  * at the memory controller
  */
-class CustomCmdMemHandler : public SST::SubComponent {
+        class CustomCmdMemHandler : public SST::SubComponent {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::CustomCmdMemHandler, std::function<void(Addr,size_t,std::vector<uint8_t>&)>, std::function<void(Addr,std::vector<uint8_t>*)>)
+            SST_ELI_REGISTER_SUBCOMPONENT_API(SST::MemHierarchy::CustomCmdMemHandler, std::function<void(
+                Addr, size_t, std::vector < uint8_t > &)>, std::function<void(Addr, std::vector <
+                                                                                    uint8_t > *)>
+            )
 
-    class MemEventInfo {
-    public:
-        std::set<Addr> addrs;   /* Cache line address(es) accessed by this instruction */
-        bool shootdown;         /* Whether this event should be coherent w.r.t. caches (shootdown needed) */
+            class MemEventInfo {
+            public:
+                std::set <Addr> addrs;   /* Cache line address(es) accessed by this instruction */
+                bool shootdown;         /* Whether this event should be coherent w.r.t. caches (shootdown needed) */
 
-        /* Constructors */
-        MemEventInfo(std::set<Addr> addrs, bool shootdown = false) : addrs(addrs), shootdown(shootdown) { }
-        MemEventInfo(Addr addr, bool sdown = false) { addrs.insert(addr); shootdown = sdown; }
-        /* Destructor */
-        ~MemEventInfo() {};
-    };
+                /* Constructors */
+                MemEventInfo(std::set <Addr> addrs, bool shootdown = false) : addrs(addrs),
+                                                                              shootdown(
+                                                                                  shootdown) {}
+
+                MemEventInfo(Addr addr, bool sdown = false) {
+                    addrs.insert(addr);
+                    shootdown = sdown;
+                }
+
+                /* Destructor */
+                ~MemEventInfo() {};
+            };
 
 
-    /* Constructor */
-    CustomCmdMemHandler(Component * comp, Params &params) : SubComponent(comp) { 
-        dbg.init("", 1, 0, Output::STDOUT);
-        dbg.fatal(CALL_INFO, -1, "%s, Error: CustomCmdMemHandlers do not support loading via legacy loadSubComponent API - use loadUserSubComponent(...) or loadAnonymousSubComponent(...) instead", getName().c_str());
-    }
-    
-    CustomCmdMemHandler(ComponentId_t id, Params &params, std::function<void(Addr,size_t,std::vector<uint8_t>&)> read, std::function<void(Addr,std::vector<uint8_t>*)> write) : SubComponent(id) {
-        /* Create debug output */
-        int debugLevel = params.find<int>("debug_level", 0);
-        int debugLoc = params.find<int>("debug", 0);
-        dbg.init("", debugLevel, 0, (Output::output_location_t)debugLoc);
+            /* Constructor */
+            CustomCmdMemHandler(Component *comp, Params &params) : SubComponent(comp) {
+                dbg.init("", 1, 0, Output::STDOUT);
+                dbg.fatal(CALL_INFO, -1,
+                          "%s, Error: CustomCmdMemHandlers do not support loading via legacy loadSubComponent API - use loadUserSubComponent(...) or loadAnonymousSubComponent(...) instead",
+                          getName().c_str());
+            }
 
-        // Filter by debug address - this is the standard memH debug code
-        std::vector<uint64_t> addrArray;
-        params.find_array<uint64_t>("debug_addr", addrArray);
-        for (std::vector<uint64_t>::iterator it = addrArray.begin(); it != addrArray.end(); it++) {
-            DEBUG_ADDR.insert(*it);
-        }
+            CustomCmdMemHandler(ComponentId_t id, Params &params,
+                                std::function<void(Addr, size_t, std::vector < uint8_t > &)> read,
+                                std::function<void(Addr, std::vector < uint8_t > *)> write)
+                : SubComponent(id) {
+                /* Create debug output */
+                int debugLevel = params.find<int>("debug_level", 0);
+                int debugLoc = params.find<int>("debug", 0);
+                dbg.init("", debugLevel, 0, (Output::output_location_t) debugLoc);
 
-        // Calls to read & write data
-        readData = read;
-        writeData = write;
-    }
+                // Filter by debug address - this is the standard memH debug code
+                std::vector <uint64_t> addrArray;
+                params.find_array<uint64_t>("debug_addr", addrArray);
+                for (std::vector<uint64_t>::iterator it = addrArray.begin();
+                     it != addrArray.end(); it++) {
+                    DEBUG_ADDR.insert(*it);
+                }
 
-    /* Destructor */
-    ~CustomCmdMemHandler() { }
+                // Calls to read & write data
+                readData = read;
+                writeData = write;
+            }
 
-    /*
-     * Interface between handler and memController
-     */
+            /* Destructor */
+            ~CustomCmdMemHandler() {}
 
-    /* Receive should decode a custom event and return an OutstandingEvent struct
-     * to the memory controller so that it knows how to process the event 
-     */
-    virtual MemEventInfo receive(MemEventBase* ev) =0;
+            /*
+             * Interface between handler and memController
+             */
 
-    /* The memController will call ready when the event is ready to issue.
-     * Events are ready immediately (back-to-back receive() and ready()) unless
-     * the event needs to stall for some coherence action.
-     * The handler should return a CustomCmdInfo* which will be sent to the memBackendConvertor. 
-     * The memBackendConvertor will then issue the unmodified CustomCmdReq* to the backend.
-     * CustomCmdReq is intended as a base class for custom commands to define as needed.
-     */
-    virtual CustomCmdInfo* ready(MemEventBase* ev) =0;
+            /* Receive should decode a custom event and return an OutstandingEvent struct
+             * to the memory controller so that it knows how to process the event
+             */
+            virtual MemEventInfo receive(MemEventBase *ev) = 0;
 
-    /* When the memBackendConvertor returns a response, the memController will call this function, including
-     * the return flags. This function should return a response event or null if none needed. 
-     * It should also call the following as needed:
-     *  writeData(): Update the backing store if this custom command wrote data
-     *  readData(): Read the backing store if the response needs data
-     *  translateLocalT
-     */
-    virtual MemEventBase* finish(MemEventBase *ev, uint32_t flags) =0;
+            /* The memController will call ready when the event is ready to issue.
+             * Events are ready immediately (back-to-back receive() and ready()) unless
+             * the event needs to stall for some coherence action.
+             * The handler should return a CustomCmdInfo* which will be sent to the memBackendConvertor.
+             * The memBackendConvertor will then issue the unmodified CustomCmdReq* to the backend.
+             * CustomCmdReq is intended as a base class for custom commands to define as needed.
+             */
+            virtual CustomCmdInfo *ready(MemEventBase *ev) = 0;
 
-protected:
+            /* When the memBackendConvertor returns a response, the memController will call this function, including
+             * the return flags. This function should return a response event or null if none needed.
+             * It should also call the following as needed:
+             *  writeData(): Update the backing store if this custom command wrote data
+             *  readData(): Read the backing store if the response needs data
+             *  translateLocalT
+             */
+            virtual MemEventBase *finish(MemEventBase *ev, uint32_t flags) = 0;
 
-    // Debug
-    Output dbg;
-    std::set<Addr> DEBUG_ADDR;
+        protected:
 
-    std::function<void(Addr,size_t,std::vector<uint8_t>&)> readData;
-    std::function<void(Addr,std::vector<uint8_t>*)> writeData;
+            // Debug
+            Output dbg;
+            std::set <Addr> DEBUG_ADDR;
 
-};
+            std::function<void(Addr, size_t, std::vector < uint8_t > &)> readData;
+            std::function<void(Addr, std::vector < uint8_t > *)> writeData;
 
-} //namespace memHierarchy
+        };
+
+    } //namespace memHierarchy
 } //namespace SST
 
 #endif

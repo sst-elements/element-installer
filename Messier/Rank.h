@@ -30,24 +30,29 @@
 // Defines the state of the bank
 
 // This class structure represents NVM memory Bank 
-class RANK
-{ 
+class RANK {
 
-	// This determines the rank busy until time, this is used to enforce timing parameters, such as maximum number of bank activation per unit of time
-	// It also covers the time when the shared circutary between banks is used (e.g., data output circuits of NVM chips)
-	long long int BusyUntil;
+    // This determines the rank busy until time, this is used to enforce timing parameters, such as maximum number of bank activation per unit of time
+    // It also covers the time when the shared circutary between banks is used (e.g., data output circuits of NVM chips)
+    long long int BusyUntil;
 
-	int num_banks;
+    int num_banks;
 
-	BANK * banks;
-	public: 
+    BANK *banks;
+public:
 
-	RANK(int numBanks) {BusyUntil = 0; num_banks = numBanks; banks = new BANK[numBanks];}
+    RANK(int numBanks) {
+        BusyUntil = 0;
+        num_banks = numBanks;
+        banks = new BANK[numBanks];
+    }
 
-	// Get a specific bank inside this rank
-	BANK * getBank(int ind) { return &banks[ind];} 
-	void setBusyUntil(long long int x) {BusyUntil = x;}
-	long long int getBusyUntil() { return BusyUntil; }
+    // Get a specific bank inside this rank
+    BANK *getBank(int ind) { return &banks[ind]; }
+
+    void setBusyUntil(long long int x) { BusyUntil = x; }
+
+    long long int getBusyUntil() { return BusyUntil; }
 
 };
 

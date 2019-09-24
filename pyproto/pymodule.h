@@ -19,7 +19,7 @@
 
 extern "C" {
 
-void* genPyProtoPyModule(void);
+void *genPyProtoPyModule(void);
 
 
 struct PyEvent_t {
@@ -43,11 +43,11 @@ struct PyProto_t {
     PyObject *tcomponent;
     void *component;
 
-    typedef std::vector<std::pair<PyObject*, std::string> > clockArray_t;
-    typedef std::vector<std::pair<std::string, PyObject*> > linkArray_t;
+    typedef std::vector <std::pair<PyObject *, std::string>> clockArray_t;
+    typedef std::vector <std::pair<std::string, PyObject *>> linkArray_t;
 
     clockArray_t *clocks;
-    linkArray_t  *links;
+    linkArray_t *links;
     bool constructed;
 
 };
@@ -56,13 +56,16 @@ struct PyProto_t {
 }
 
 namespace SST {
-class Event;
-namespace PyProtoNS {
+    class Event;
+    namespace PyProtoNS {
         PyEvent_t *convertEventToPython(SST::Event *event);
-        PyTypeObject* getEventObject();
-        PyTypeObject* getPyProtoObject();
-        PyTypeObject* getPyLinkObject();
-}
+
+        PyTypeObject *getEventObject();
+
+        PyTypeObject *getPyProtoObject();
+
+        PyTypeObject *getPyLinkObject();
+    }
 }
 
 #endif // COMPONENTS_PYPROTO_PYMODULE_H

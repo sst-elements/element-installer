@@ -24,29 +24,28 @@ using namespace Hermes;
 using namespace Hermes::MP;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-typedef Statistic<uint32_t> EmberEventTimeStatistic;
-    
-class EmberMPIEvent : public EmberEvent {
+        typedef Statistic <uint32_t> EmberEventTimeStatistic;
 
-  public:
+        class EmberMPIEvent : public EmberEvent {
 
-    EmberMPIEvent( MP::Interface& api, Output* output,
-                  EmberEventTimeStatistic* stat = NULL):
-        EmberEvent( output, stat ), m_api( api )
-    {
-        m_state = IssueFunctor;
+        public:
+
+            EmberMPIEvent(MP::Interface &api, Output *output,
+                          EmberEventTimeStatistic *stat = nullptr) :
+                EmberEvent(output, stat), m_api(api) {
+                m_state = IssueFunctor;
+            }
+
+        protected:
+
+            MP::Interface &m_api;
+
+        private:
+        };
+
     }
-
-  protected:
-
-    MP::Interface&   m_api;
-
-  private:
-};
-
-}
 }
 
 #endif

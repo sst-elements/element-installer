@@ -24,22 +24,23 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class TaskMapInfo;
 
         class TaskMapper {
 
-            public:
-		        TaskMapper(const Machine & machine) : mach(machine) { }
+        public:
+            TaskMapper(const Machine &machine) : mach(machine) {}
 
-		        virtual ~TaskMapper() {};
+            virtual ~TaskMapper() {};
 
-		        virtual std::string getSetupInfo(bool comment) const = 0;
+            virtual std::string getSetupInfo(bool comment) const = 0;
 
-		        //returns task mapping info of a single job; does not map the tasks
-		        virtual TaskMapInfo* mapTasks(AllocInfo* allocInfo) = 0;
+            //returns task mapping info of a single job; does not map the tasks
+            virtual TaskMapInfo *mapTasks(AllocInfo *allocInfo) = 0;
 
-	        protected:
-		        const Machine & mach;
+        protected:
+            const Machine &mach;
         };
     }
 }

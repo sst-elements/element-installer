@@ -35,14 +35,12 @@
 
 using namespace SST::Scheduler;
 
-DflyHybridAllocator::DflyHybridAllocator(const DragonflyMachine & mach)
-  : DragonflyAllocator(mach)
-{
+DflyHybridAllocator::DflyHybridAllocator(const DragonflyMachine &mach)
+    : DragonflyAllocator(mach) {
 
 }
 
-std::string DflyHybridAllocator::getSetupInfo(bool comment) const
-{
+std::string DflyHybridAllocator::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
         com = "# ";
@@ -53,12 +51,12 @@ std::string DflyHybridAllocator::getSetupInfo(bool comment) const
 }
 
 #include <iostream>
+
 using namespace std;
 
-AllocInfo* DflyHybridAllocator::allocate(Job* j)
-{
+AllocInfo *DflyHybridAllocator::allocate(Job *j) {
     if (canAllocate(*j)) {
-        AllocInfo* ai = new AllocInfo(j, dMach);
+        AllocInfo *ai = new AllocInfo(j, dMach);
         //This set keeps track of allocated nodes in the current allocation.
         std::set<int> occupiedNodes;
         const int jobSize = ai->getNodesNeeded();
@@ -71,7 +69,7 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
                 int thisRouterFreeNode = 0;
                 for (int localNodeID = 0; localNodeID < dMach.nodesPerRouter; localNodeID++) {
                     int nodeID = routerID * dMach.nodesPerRouter + localNodeID;
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         //caution: isFree() will update only after one job is fully allocated.
                         ++thisRouterFreeNode;
                     }
@@ -87,14 +85,13 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
                 int nodeID = BestRouter * dMach.nodesPerRouter;
                 int i = 0;
                 while (i < jobSize) {
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         ai->nodeIndices[i] = nodeID;
                         occupiedNodes.insert(nodeID);
                         //std::cout << nodeID << " ";
                         ++i;
                         ++nodeID;
-                    }
-                    else {
+                    } else {
                         ++nodeID;
                     }
                 }
@@ -112,7 +109,7 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
                 int thisGroupFreeNode = 0;
                 for (int localNodeID = 0; localNodeID < nodesPerGroup; localNodeID++) {
                     int nodeID = GroupID * nodesPerGroup + localNodeID;
-                    if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                    if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                         ++thisGroupFreeNode;
                     }
                 }
@@ -129,31 +126,28 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
                     int localNodeID = 0;
                     while (true) {
                         int nodeID = routerID * dMach.nodesPerRouter + localNodeID;
-                        if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                        if (dMach.isFree(nodeID) &&
+                            occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                             ai->nodeIndices[i] = nodeID;
                             occupiedNodes.insert(nodeID);
                             //std::cout << nodeID << " ";
                             //change router.
                             if (routerID < (BestGroup + 1) * dMach.routersPerGroup - 1) {
                                 ++routerID;
-                            }
-                            else {
+                            } else {
                                 routerID = BestGroup * dMach.routersPerGroup;
                             }
                             break;
-                        }
-                        else {
+                        } else {
                             //move to next node.
                             if (localNodeID < dMach.nodesPerRouter - 1) {
                                 ++localNodeID;
                                 continue;
-                            }
-                            else {
+                            } else {
                                 //change router.
                                 if (routerID < (BestGroup + 1) * dMach.routersPerGroup - 1) {
                                     ++routerID;
-                                }
-                                else {
+                                } else {
                                     routerID = BestGroup * dMach.routersPerGroup;
                                 }
                                 localNodeID = 0;
@@ -174,30 +168,26 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
             int localNodeID = 0;
             while (true) {
                 int nodeID = groupID * nodesPerGroup + localNodeID;
-                if ( dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end() ) {
+                if (dMach.isFree(nodeID) && occupiedNodes.find(nodeID) == occupiedNodes.end()) {
                     ai->nodeIndices[i] = nodeID;
                     occupiedNodes.insert(nodeID);
                     //std::cout << nodeID << " ";
                     //change group.
                     if (groupID < dMach.numGroups - 1) {
                         ++groupID;
-                    }
-                    else {
+                    } else {
                         groupID = 0;
                     }
                     break;
-                }
-                else {
+                } else {
                     if (localNodeID < nodesPerGroup - 1) {
                         ++localNodeID;
                         continue;
-                    }
-                    else {
+                    } else {
                         //change group.
                         if (groupID < dMach.numGroups - 1) {
                             ++groupID;
-                        }
-                        else {
+                        } else {
                             groupID = 0;
                         }
                         localNodeID = 0;
@@ -210,6 +200,6 @@ AllocInfo* DflyHybridAllocator::allocate(Job* j)
         //std::cout << endl;
         return ai;
     }
-    return NULL;
+    return nullptr;
 }
 

@@ -26,7 +26,7 @@ namespace SST {
         class InputFormatException : public std::exception {
             //thrown when the input (trace) is mis-formatted
 
-            virtual const char* what() const throw() {
+            virtual const char *what() const throw() {
                 return "Invalidly formatted input: ";
             }
         };
@@ -34,7 +34,7 @@ namespace SST {
         class InternalErrorException : public std::exception {
             //called whenever the simulator detects an invalid state
 
-            virtual const char* what() const throw() {
+            virtual const char *what() const throw() {
                 return "Internal error";
             }
         };

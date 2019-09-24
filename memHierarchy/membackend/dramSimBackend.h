@@ -32,41 +32,45 @@
 #endif
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class DRAMSimMemory : public SimpleMemBackend {
-public:
+        class DRAMSimMemory : public SimpleMemBackend {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(DRAMSimMemory, "memHierarchy", "dramsim", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(DRAMSimMemory,
+            "memHierarchy", "dramsim", SST_ELI_ELEMENT_VERSION(1,0,0),
             "DRAMSim-driven memory timings", SST::MemHierarchy::SimpleMemBackend)
-    
+
 #define DRAMSIM_ELI_PARAMS MEMBACKEND_ELI_PARAMS,\
             /* Own parameters */\
             {"verbose",     "Sets the verbosity of the backend output", "0"},\
-            {"device_ini",  "Name of the DRAMSim Device config file",   NULL},\
-            {"system_ini",  "Name of the DRAMSim Device system file",   NULL}
+            {"device_ini",  "Name of the DRAMSim Device config file",   nullptr},\
+            {"system_ini",  "Name of the DRAMSim Device system file",   nullptr}
 
-    SST_ELI_DOCUMENT_PARAMS( DRAMSIM_ELI_PARAMS )
+            SST_ELI_DOCUMENT_PARAMS( DRAMSIM_ELI_PARAMS )
 
 /* Begin class definition */
-    DRAMSimMemory(Component *comp, Params &params);
-    DRAMSimMemory(ComponentId_t id, Params &params);
-    
-    virtual bool issueRequest(ReqId, Addr, bool, unsigned );
-    virtual bool clock(Cycle_t cycle);
-    virtual void finish();
+            DRAMSimMemory(Component *comp, Params &params);
 
-protected:
-    void dramSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle);
+            DRAMSimMemory(ComponentId_t id, Params &params);
 
-    DRAMSim::MultiChannelMemorySystem *memSystem;
-    std::map<uint64_t, std::deque<ReqId> > dramReqs;
+            virtual bool issueRequest(ReqId, Addr, bool, unsigned);
 
-private:
-    void build(Params& params);
-};
+            virtual bool clock(Cycle_t cycle);
 
-}
+            virtual void finish();
+
+        protected:
+            void dramSimDone(unsigned int id, uint64_t addr, uint64_t clockcycle);
+
+            DRAMSim::MultiChannelMemorySystem *memSystem;
+            std::map <uint64_t, std::deque<ReqId>> dramReqs;
+
+        private:
+            void build(Params &params);
+        };
+
+    }
 }
 
 #endif

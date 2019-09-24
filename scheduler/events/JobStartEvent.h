@@ -24,29 +24,29 @@ namespace SST {
     namespace Scheduler {
 
         class JobStartEvent : public SST::Event {
-            public:
+        public:
 
-                JobStartEvent(unsigned long time, int jobNum) : SST::Event() {
-                    this -> time = time;
-                    this -> jobNum = jobNum;
-                }
+            JobStartEvent(unsigned long time, int jobNum) : SST::Event() {
+                this->time = time;
+                this->jobNum = jobNum;
+            }
 
-                unsigned long time;   //the length of the started job
+            unsigned long time;   //the length of the started job
 
-                int jobNum;
-                bool emberFinished; //NetworkSim: variable that specifies if that job has run and finished on ember
+            int jobNum;
+            bool emberFinished; //NetworkSim: variable that specifies if that job has run and finished on ember
 
-            private:
-                JobStartEvent() { }  // for serialization only
+        private:
+            JobStartEvent() {}  // for serialization only
 
-            public:	
-                void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-                    Event::serialize_order(ser);
-                    ser & time;
-                    ser & jobNum;
-                }
-                
-                ImplementSerializable(SST::Scheduler::JobStartEvent);     
+        public:
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & time;
+                ser & jobNum;
+            }
+
+            ImplementSerializable(SST::Scheduler::JobStartEvent);
         };
 
     }

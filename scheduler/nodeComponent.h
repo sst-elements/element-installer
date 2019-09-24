@@ -35,138 +35,167 @@ namespace SST {
         class nodeComponent : public SST::Component, public virtual linkChanger {
             friend class linkBuilder;
 
-            public:
+        public:
 
             SST_ELI_REGISTER_COMPONENT(
                 nodeComponent,
-                "scheduler",
-                "nodeComponent",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Implements nodes for use with schedComponent",
-                COMPONENT_CATEGORY_UNCATEGORIZED
+            "scheduler",
+            "nodeComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Implements nodes for use with schedComponent",
+            COMPONENT_CATEGORY_UNCATEGORIZED
             )
 
             SST_ELI_DOCUMENT_PARAMS(
-                { "nodeNum",
-                  "The number of the node",
-                  NULL
-                },
-                { "id",
-                  "The id of the node",
-                  NULL
-                },
-                { "type",
-                  "The type of the node",
-                  "None"
-                },
-                { "faultLogFileName",
-                  "File to store the fault log",
-                  "None"
-                },
-                { "errorLogFileName",
-                  "File to store the error log",
-                  "None"
-                },
-                { "faultActivationRate",
+            {
+                "nodeNum",
+                    "The number of the node",
+                    nullptr
+            },
+            {
+                "id",
+                    "The id of the node",
+                    nullptr
+            },
+            {
+                "type",
+                    "The type of the node",
+                    "None"
+            },
+            {
+                "faultLogFileName",
+                    "File to store the fault log",
+                    "None"
+            },
+            {
+                "errorLogFileName",
+                    "File to store the error log",
+                    "None"
+            },
+            {
+                "faultActivationRate",
                     "CSV specifying the fault type and corresponding rates",
                     "None"
-                },
-                { "errorMessageProbability",
+            },
+            {
+                "errorMessageProbability",
                     "error log is written according to this probability",
                     "None"
-                },
-                { "errorCorrectionProbability",
+            },
+            {
+                "errorCorrectionProbability",
                     "Probability that a node corrects an error",
                     "None"
-                },
-                { "jobFailureProbability",
+            },
+            {
+                "jobFailureProbability",
                     "Probability that a node ends a job when a failure propogates",
                     "None"
-                } ,
-                { "errorPropagationDelay",
+            } ,
+            {
+                "errorPropagationDelay",
                     "Time taken for a fault to travel",
                     "None"
-                }
+            }
             )
 
             SST_ELI_DOCUMENT_PORTS(
-                {"Scheduler",
-                  "Used to communicate with the scheduler",
-                  {"ArrivalEvent","CompletionEvent","FaultEvent","FinalTimeEvent", "JobKillEvent", "JobStartEvent"}
-                },
-                {"nodeLink%(number of node)d",
-                 "Each node has an associated port to send events",
-                 {"FaultEvent","JobKillEvent","JobStartEvent"}
-                },
-                {"faultInjector",
-                 "Causes nodes to fail",
-                 {"faultActivationEvents"}
-                },
-                {"Builder",
-                 "Link to communicate with parent",
-                 {"ObjectRetrievalEvent"},
-                },
-                {"Parent%(numparent)d",
-                 "Link to communicate with parent",
-                 {}
-                },
-                {"Child%(numchild)d",
-                 "Link to communicate with children",
-                 {}
-                }
+            {
+                "Scheduler",
+                    "Used to communicate with the scheduler",
+                    {"ArrivalEvent", "CompletionEvent", "FaultEvent", "FinalTimeEvent",
+                     "JobKillEvent", "JobStartEvent"}
+            },
+            {
+                "nodeLink%(number of node)d",
+                    "Each node has an associated port to send events",
+                    {"FaultEvent", "JobKillEvent", "JobStartEvent"}
+            },
+            {
+                "faultInjector",
+                    "Causes nodes to fail",
+                    {"faultActivationEvents"}
+            },
+            {
+                "Builder",
+                    "Link to communicate with parent",
+                    {"ObjectRetrievalEvent"},
+            },
+            {
+                "Parent%(numparent)d",
+                    "Link to communicate with parent",
+                    {}
+            },
+            {
+                "Child%(numchild)d",
+                    "Link to communicate with children",
+                    {}
+            }
             )
 
-            nodeComponent(SST::ComponentId_t id, SST::Params& params);
+            nodeComponent(SST::ComponentId_t id, SST::Params &params);
+
             void setup();
+
             void finish() {}
 
-            virtual void addLink(SST::Link * link, enum linkTypes type);
-            virtual void rmLink(SST::Link * link, enum linkTypes type);
+            virtual void addLink(SST::Link *link, enum linkTypes type);
+
+            virtual void rmLink(SST::Link *link, enum linkTypes type);
+
             virtual void disconnectYourself();
+
             virtual std::string getType();
+
             virtual std::string getID();
 
             bool doDetailedNetworkSim; //NetworkSim: variable that protects the original functionality without detailed network sim 
 
-            private:
-		unsigned short int * yumyumFaultRand48State;
-		unsigned short int * yumyumErrorLogRand48State;
-		unsigned short int * yumyumErrorLatencyRand48State;
-		unsigned short int * yumyumErrorCorrectionRand48State;
-		unsigned short int * yumyumJobKillRand48State;
+        private:
+            unsigned short int *yumyumFaultRand48State;
+            unsigned short int *yumyumErrorLogRand48State;
+            unsigned short int *yumyumErrorLatencyRand48State;
+            unsigned short int *yumyumErrorCorrectionRand48State;
+            unsigned short int *yumyumJobKillRand48State;
 
-		bool faultsActivated;
+            bool faultsActivated;
 
             nodeComponent();  // for serialization only
-            nodeComponent(const nodeComponent&); // do not implement
-            void operator=(const nodeComponent&); // do not implement
+            nodeComponent(const nodeComponent &); // do not implement
+            void operator=(const nodeComponent &); // do not implement
 
-            void handleEvent(SST::Event* ev);
-            void handleSelfEvent(SST::Event* ev);
-            void handleFaultEvent(SST::Event* ev);
-            bool canCorrectError(FaultEvent* error);
-            unsigned int genFaultLatency( std::string faultName );
+            void handleEvent(SST::Event *ev);
 
-            void handleJobKillEvent(JobKillEvent * killEvent);
+            void handleSelfEvent(SST::Event *ev);
+
+            void handleFaultEvent(SST::Event *ev);
+
+            bool canCorrectError(FaultEvent *error);
+
+            unsigned int genFaultLatency(std::string faultName);
+
+            void handleJobKillEvent(JobKillEvent *killEvent);
 
             void sendNextFault(std::string faultType);
-            void logError(FaultEvent* faultEvent);
-            void logFault(FaultEvent* faultEvent);
+
+            void logError(FaultEvent *faultEvent);
+
+            void logFault(FaultEvent *faultEvent);
 
             int jobNum;
             int nodeNum;
 
-            SST::Link * Scheduler;
-            SST::Link * failureInjector;
-            SST::Link * SelfLink;
-            SST::Link * FaultLink;
+            SST::Link *Scheduler;
+            SST::Link *failureInjector;
+            SST::Link *SelfLink;
+            SST::Link *FaultLink;
 
-            std::vector<SST::Link*> ParentFaultLinks;
-            std::vector<SST::Link*> ChildFaultLinks;
-            SST::Link* Builder;
+            std::vector<SST::Link *> ParentFaultLinks;
+            std::vector<SST::Link *> ChildFaultLinks;
+            SST::Link *Builder;
 
             std::map<std::string, float> Faults;
-            std::map<std::string, std::pair<unsigned int, unsigned int> > FaultLatencyBounds;
+            std::map <std::string, std::pair<unsigned int, unsigned int>> FaultLatencyBounds;
             std::map<std::string, float> errorCorrectionProbability;
             std::map<std::string, float> errorLogProbability;
             std::map<std::string, float> jobKillProbability;

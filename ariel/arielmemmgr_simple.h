@@ -29,41 +29,45 @@
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielMemoryManagerSimple : public ArielMemoryManagerCache {
+        class ArielMemoryManagerSimple : public ArielMemoryManagerCache {
 
-    public:
-        /* SST ELI */
-        SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(ArielMemoryManagerSimple, "ariel", "MemoryManagerSimple", SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Simple allocate-on-first touch memory manager", SST::ArielComponent::ArielMemoryManager)
+        public:
+            /* SST ELI */
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(ArielMemoryManagerSimple,
+            "ariel", "MemoryManagerSimple", SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Simple allocate-on-first touch memory manager", SST::ArielComponent::ArielMemoryManager)
 
 #define MEMMGR_SIMPLE_ELI_PARAMS ARIEL_ELI_MEMMGR_CACHE_PARAMS,\
             {"pagesize0", "Page size", "4096"},\
             {"pagecount0", "Page count", "131072"},\
             {"page_populate_0", "Pre-populate/partially pre-populate the page table, this is the file to read in.", ""}
 
-        SST_ELI_DOCUMENT_PARAMS( MEMMGR_SIMPLE_ELI_PARAMS )
-        SST_ELI_DOCUMENT_STATISTICS( ARIEL_ELI_MEMMGR_CACHE_STATS )
+            SST_ELI_DOCUMENT_PARAMS( MEMMGR_SIMPLE_ELI_PARAMS )
+            SST_ELI_DOCUMENT_STATISTICS( ARIEL_ELI_MEMMGR_CACHE_STATS )
 
-        /* ArielMemoryManagerSimple */
-        ArielMemoryManagerSimple(ComponentId_t id, Params& params); 
-        ArielMemoryManagerSimple(Component* comp, Params& params) : ArielMemoryManagerCache(comp, params) { }  // Legacy
-        ~ArielMemoryManagerSimple();
+            /* ArielMemoryManagerSimple */
+            ArielMemoryManagerSimple(ComponentId_t id, Params &params);
 
-        uint64_t translateAddress(uint64_t virtAddr);
-        void printStats();
+            ArielMemoryManagerSimple(Component *comp, Params &params) : ArielMemoryManagerCache(
+                comp, params) {}  // Legacy
+            ~ArielMemoryManagerSimple();
 
-    private:
-        void allocate(const uint64_t size, const uint32_t level, const uint64_t virtualAddress);
+            uint64_t translateAddress(uint64_t virtAddr);
 
-        uint64_t pageSize;
-        std::deque<uint64_t> freePages;
+            void printStats();
 
-        std::unordered_map<uint64_t, uint64_t> pageTable;
-};
+        private:
+            void allocate(const uint64_t size, const uint32_t level, const uint64_t virtualAddress);
 
-}
+            uint64_t pageSize;
+            std::deque <uint64_t> freePages;
+
+            std::unordered_map <uint64_t, uint64_t> pageTable;
+        };
+
+    }
 }
 
 #endif

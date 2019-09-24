@@ -20,28 +20,30 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFreeShmemEvent : public EmberShmemEvent {
+        class EmberFreeShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberFreeShmemEvent( Shmem::Interface& api, Output* output, Hermes::MemAddr val,
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), m_val(val) {}
-	~EmberFreeShmemEvent() {}
+        public:
+            EmberFreeShmemEvent(Shmem::Interface &api, Output *output, Hermes::MemAddr val,
+                                EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat), m_val(val) {}
 
-    std::string getName() { return "Free"; }
+            ~EmberFreeShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Free"; }
 
-        EmberEvent::issue( time );
-        m_api.free( m_val, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.free(m_val, callback);
+            }
+
+        private:
+            Hermes::MemAddr m_val;
+        };
+
     }
-private:
-    Hermes::MemAddr m_val;
-};
-
-}
 }
 
 #endif

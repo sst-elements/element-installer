@@ -28,4 +28,4 @@ int sirius_npes;
 struct timespec load_lib_time;
 double load_library;
 
-FILE* trace_dump;
+FILE *trace_dump;

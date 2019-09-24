@@ -19,44 +19,44 @@
 #include "funcSM/barrier.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class CommDestroyFuncSM :  public BarrierFuncSM
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        CommDestroyFuncSM,
-        "firefly",
-        "CommDestroy",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-  public:
-    CommDestroyFuncSM( SST::Params& params )
-        : BarrierFuncSM( params ) {}
+        class CommDestroyFuncSM : public BarrierFuncSM {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                CommDestroyFuncSM,
+            "firefly",
+            "CommDestroy",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
+        public:
+            CommDestroyFuncSM(SST::Params &params)
+                : BarrierFuncSM(params) {}
 
-    virtual void handleStartEvent( SST::Event* e, Retval& retval ){
-        CommDestroyStartEvent* event = static_cast<CommDestroyStartEvent*>( e );
-    
-        m_comm = event->comm;
-        BarrierStartEvent* tmp = new BarrierStartEvent( event->comm  );
-        delete event;
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
+                CommDestroyStartEvent *event = static_cast<CommDestroyStartEvent *>( e );
 
-        BarrierFuncSM::handleStartEvent(static_cast<SST::Event*>(tmp), retval );
+                m_comm = event->comm;
+                BarrierStartEvent *tmp = new BarrierStartEvent(event->comm);
+                delete event;
+
+                BarrierFuncSM::handleStartEvent(static_cast<SST::Event *>(tmp), retval);
+            }
+
+            virtual void handleEnterEvent(Retval &retval) {
+                BarrierFuncSM::handleEnterEvent(retval);
+                if (retval.isExit()) {
+                    m_info->delGroup(m_comm);
+                }
+            }
+
+        private:
+            MP::Communicator m_comm;
+        };
+
     }
-
-    virtual void handleEnterEvent( Retval& retval ) {
-        BarrierFuncSM::handleEnterEvent( retval );
-        if ( retval.isExit() ) {
-            m_info->delGroup( m_comm );
-        }
-    }
-  private:
-    MP::Communicator m_comm;
-};
-
-}
 }
 
 #endif

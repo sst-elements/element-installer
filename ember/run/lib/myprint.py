@@ -13,6 +13,6 @@
 # information, see the LICENSE file in the top level directory of the
 # distribution.
 
-def printParams( prefix, params ):
-	for key,value in params.iteritems():
-		print '{0} \'{1}\' : \'{2}\''.format(prefix, key, value)
+def printParams(prefix, params):
+    for key, value in params.iteritems():
+        print '{0} \'{1}\' : \'{2}\''.format(prefix, key, value)

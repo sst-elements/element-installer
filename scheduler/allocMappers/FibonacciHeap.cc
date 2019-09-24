@@ -19,79 +19,74 @@
 
 using namespace SST::Scheduler;
 
-FibonacciHeap::FibonacciHeap(unsigned int size)
-{
-    nodesByID.resize(size, NULL);
-    minRoot = NULL;
+FibonacciHeap::FibonacciHeap(unsigned int size) {
+    nodesByID.resize(size, nullptr);
+    minRoot = nullptr;
 }
 
-FibonacciHeap::~FibonacciHeap()
-{
+FibonacciHeap::~FibonacciHeap() {
 
 }
 
-int FibonacciHeap::findMin() const
-{
-    if(minRoot == NULL){
+int FibonacciHeap::findMin() const {
+    if (minRoot == nullptr) {
         schedout.fatal(CALL_INFO, 1, "Tried to find minimum in an empty Fibonacci heap");
     }
     return minRoot->ID;
 }
 
-void FibonacciHeap::insert(unsigned int nodeID, double key)
-{
-    Node* node = new Node();
+void FibonacciHeap::insert(unsigned int nodeID, double key) {
+    Node *node = new Node();
     node->ID = nodeID;
     node->key = key;
     nodesByID[nodeID] = node;
     makeRoot(node);
 }
 
-int FibonacciHeap::deleteMin()
-{
-    if(minRoot == NULL){
+int FibonacciHeap::deleteMin() {
+    if (minRoot == nullptr) {
         schedout.fatal(CALL_INFO, 1, "Tried to delete minimum in an empty Fibonacci heap");
     }
 
     int retVal;
 
     //make children roots
-    for(unsigned int i = 0; i < minRoot->child.size(); i++){
-        if(minRoot->child[i] != NULL){
+    for (unsigned int i = 0; i < minRoot->child.size(); i++) {
+        if (minRoot->child[i] != nullptr) {
             makeRoot(minRoot->child[i]);
         }
     }
     minRoot->child.clear();
 
     //consolidate same-degree roots
-    Node* newMin;
-    Node* curRoot = minRoot->right;
-    Node* nextRoot;
+    Node *newMin;
+    Node *curRoot = minRoot->right;
+    Node *nextRoot;
     //check if minRoot is the only node
-    if(curRoot == minRoot){
-        newMin = NULL;
+    if (curRoot == minRoot) {
+        newMin = nullptr;
     } else {
         //traverse linked list starting from minRoot
-        Node* dummy = new Node;
-        std::vector<Node*> rootListByDegree(0);
+        Node *dummy = new Node;
+        std::vector < Node * > rootListByDegree(0);
         rootListByDegree.push_back(dummy);
         newMin = curRoot;
-        while(curRoot != minRoot){
+        while (curRoot != minRoot) {
             nextRoot = curRoot->right;
             //make sure that rootListByDegree is large enough
-            while(rootListByDegree.back() != dummy ||
-              rootListByDegree.size() < curRoot->child.size() + 1){
+            while (rootListByDegree.back() != dummy ||
+                   rootListByDegree.size() < curRoot->child.size() + 1) {
                 rootListByDegree.push_back(dummy);
             }
             //merge curRoot if necessary
-            while(rootListByDegree[curRoot->child.size()] != dummy){
-                Node* toMerge = rootListByDegree[curRoot->child.size()];
+            while (rootListByDegree[curRoot->child.size()] != dummy) {
+                Node *toMerge = rootListByDegree[curRoot->child.size()];
                 rootListByDegree[curRoot->child.size()] = dummy;
                 curRoot = mergeRoots(curRoot, toMerge);
             }
             rootListByDegree[curRoot->child.size()] = curRoot;
             //update new min
-            if(curRoot->key <= newMin->key){
+            if (curRoot->key <= newMin->key) {
                 newMin = curRoot;
             }
             //iterate
@@ -103,21 +98,20 @@ int FibonacciHeap::deleteMin()
         delete dummy;
     }
     retVal = minRoot->ID;
-    nodesByID[minRoot->ID] = NULL;
+    nodesByID[minRoot->ID] = nullptr;
     delete minRoot;
     minRoot = newMin;
 
     return retVal;
 }
 
-void FibonacciHeap::makeRoot(Node *node)
-{
-    if(node->parent != NULL){
-        node->parent->child[node->childNo] = NULL;
-        node->parent = NULL;
+void FibonacciHeap::makeRoot(Node *node) {
+    if (node->parent != nullptr) {
+        node->parent->child[node->childNo] = nullptr;
+        node->parent = nullptr;
     }
     node->marked = false;
-    if(minRoot == NULL){
+    if (minRoot == nullptr) {
         minRoot = node;
         minRoot->left = node;
         minRoot->right = node;
@@ -126,20 +120,19 @@ void FibonacciHeap::makeRoot(Node *node)
         node->right = minRoot->right;
         minRoot->right->left = node;
         minRoot->right = node;
-        if(node->key < minRoot->key){
+        if (node->key < minRoot->key) {
             minRoot = node;
         }
     }
 }
 
-FibonacciHeap::Node* FibonacciHeap::mergeRoots(Node *node0, Node *node1)
-{
-    if(node0 == node1){
+FibonacciHeap::Node *FibonacciHeap::mergeRoots(Node *node0, Node *node1) {
+    if (node0 == node1) {
         return node0;
     }
     //find smaller
-    Node* nodes[2]; //0: smaller, 1: larger
-    if(node0->key <= node1->key){
+    Node *nodes[2]; //0: smaller, 1: larger
+    if (node0->key <= node1->key) {
         nodes[0] = node0;
         nodes[1] = node1;
     } else {
@@ -161,64 +154,60 @@ FibonacciHeap::Node* FibonacciHeap::mergeRoots(Node *node0, Node *node1)
     return nodes[0];
 }
 
-void FibonacciHeap::printNode(Node* node, int shift) const
-{
-    if(node == NULL)
+void FibonacciHeap::printNode(Node *node, int shift) const {
+    if (node == nullptr)
         return;
-    for(int i = 0; i < shift; i++)
+    for (int i = 0; i < shift; i++)
         std::cout << "\t";
     std::cout << node->ID << "(" << node->key << ")";
-    if(node->marked)
+    if (node->marked)
         std::cout << "*";
     std::cout << "\n";
-    for(int i = 0; i < node->child.size(); i++)
+    for (int i = 0; i < node->child.size(); i++)
         printNode(node->child[i], shift + 1);
 }
 
-void FibonacciHeap::print() const
-{
+void FibonacciHeap::print() const {
     std::cout << "---------------\n";
-    if(isEmpty()){
+    if (isEmpty()) {
         std::cout << "Empty heap\n";
         return;
     }
-    Node* node = minRoot;
-    do{
+    Node *node = minRoot;
+    do {
         printNode(node, 0);
         node = node->right;
-    } while(node != minRoot);
+    } while (node != minRoot);
     std::cout << "---------------\n";
 }
 
-void FibonacciHeap::decreaseKey(unsigned int nodeID, double newKey)
-{
-    Node* node = nodesByID[nodeID];
+void FibonacciHeap::decreaseKey(unsigned int nodeID, double newKey) {
+    Node *node = nodesByID[nodeID];
     node->key = newKey;
-    Node* parent = node->parent;
-    Node* child = node;
-    if(parent != NULL && parent->key > node->key){
+    Node *parent = node->parent;
+    Node *child = node;
+    if (parent != nullptr && parent->key > node->key) {
         makeRoot(child);
-        while(parent != NULL && parent->marked){
-            Node* grandParent = parent->parent;
-            if(grandParent == NULL){
+        while (parent != nullptr && parent->marked) {
+            Node *grandParent = parent->parent;
+            if (grandParent == nullptr) {
                 parent->marked = false;
             } else {
                 makeRoot(parent);
             }
             parent = grandParent;
         }
-        if(parent != NULL){
+        if (parent != nullptr) {
             parent->marked = true;
         }
     }
-    if(newKey < minRoot->key){
+    if (newKey < minRoot->key) {
         minRoot = node;
     }
 }
 
-double FibonacciHeap::getKey(unsigned int nodeID)
-{
-    if(nodesByID[nodeID] == NULL){
+double FibonacciHeap::getKey(unsigned int nodeID) {
+    if (nodesByID[nodeID] == nullptr) {
         schedout.fatal(CALL_INFO, 1, "Tried to get key of non-existing node.");
     }
     return nodesByID[nodeID]->key;

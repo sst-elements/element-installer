@@ -101,24 +101,26 @@
 using namespace Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberShmemGenerator : public EmberGenerator {
+        class EmberShmemGenerator : public EmberGenerator {
 
-public:
+        public:
 
-	EmberShmemGenerator( Component* owner, Params& params, std::string name );
-	~EmberShmemGenerator() {}
-    virtual void completed( const SST::Output*, uint64_t time ) {}
+            EmberShmemGenerator(Component *owner, Params &params, std::string name);
 
-protected:
-	EmberShmemLib& shmem() { return *m_shmem; };
+            ~EmberShmemGenerator() {}
 
-private:
-	EmberShmemLib* m_shmem;
-};
+            virtual void completed(const SST::Output *, uint64_t time) {}
 
-}
+        protected:
+            EmberShmemLib &shmem() { return *m_shmem; };
+
+        private:
+            EmberShmemLib *m_shmem;
+        };
+
+    }
 }
 
 #endif

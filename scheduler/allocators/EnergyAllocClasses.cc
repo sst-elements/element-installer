@@ -24,9 +24,9 @@
 
 #ifdef HAVE_GLPK
 #include <glpk.h>
-#endif 
+#endif
 
-#include "Job.h" 
+#include "Job.h"
 #include "Machine.h"
 #include "output.h"
 
@@ -34,8 +34,7 @@ namespace SST {
     namespace Scheduler {
         namespace EnergyHelpers {
 
-            void roundallocarray(double * x, int processors, int numneeded, int* newx)
-            {
+            void roundallocarray(double *x, int processors, int numneeded, int *newx) {
                 //rounds off the solution stored in x with the given number of processors
                 //find the (numneeded) largest values in x, set these processors to value 1
                 int count;
@@ -44,7 +43,7 @@ namespace SST {
 
                 for (count = 0; count < numneeded; count++) {
                     int xcount = 0;
-                    while(newx[xcount] != 0)
+                    while (newx[xcount] != 0)
                         xcount++;
                     double max = x[xcount];
                     int maxpos = xcount;
@@ -53,13 +52,13 @@ namespace SST {
                             maxpos = xcount;
                             max = x[xcount];
                         }
-                    } 
+                    }
                     newx[maxpos] = 1;
                 }
             }
 
-            void hybridalloc(int* oldx, int* roundedalloc, int processors, int requiredprocessors, const Machine & machine)
-            {     
+            void hybridalloc(int *oldx, int *roundedalloc, int processors, int requiredprocessors,
+                             const Machine &machine) {
 
 #ifdef HAVE_GLPK
                 int numNodes = machine.numNodes;
@@ -70,7 +69,7 @@ namespace SST {
                 
                 double* D = new double[numNodes*numNodes];
                 int d_counter = 0;
-                if(machine.D_matrix == NULL){
+                if(machine.D_matrix == nullptr){
                     schedout.fatal(CALL_INFO, 1, "heat recirculation matrix D is required for energy and hybrid allocators\n");
                 }
                 for(int i=0;i<numNodes;i++){
@@ -195,30 +194,30 @@ namespace SST {
                 delete [] ar;
 #else
                 schedout.init("", 10, 0, Output::STDOUT);
-                schedout.fatal(CALL_INFO,1,"GLPK is required for energy-aware scheduler\n");
+                schedout.fatal(CALL_INFO, 1, "GLPK is required for energy-aware scheduler\n");
 #endif
             }
 
-            std::vector<int>* getEnergyNodes(std::vector<int>* available, int numProcs, const Machine & machine)
-            { 
+            std::vector<int> *getEnergyNodes(std::vector<int> *available, int numProcs,
+                                             const Machine &machine) {
                 std::cout << "Getting energy nodes\n";
-                std::vector<int>* ret = new std::vector<int>();
+                std::vector<int> *ret = new std::vector<int>();
 
                 int numNodes = machine.numNodes;
-                int* oldx = new int[numNodes];
-                int* newx = new int[numNodes];
-                for (int x= 0; x < numNodes; x++) {
+                int *oldx = new int[numNodes];
+                int *newx = new int[numNodes];
+                for (int x = 0; x < numNodes; x++) {
                     oldx[x] = 1;
                     newx[x] = 0;
                 }
-                for (unsigned int x = 0; x < available -> size(); x++) { 
+                for (unsigned int x = 0; x < available->size(); x++) {
                     oldx[available->at(x)] = 0;
                 }
-                
+
                 hybridalloc(oldx, newx, numNodes, numProcs, machine);
                 for (int x = 0; x < numNodes; x++) {
                     if (newx[x] == 1 && oldx[x] == 0) {
-                        ret -> push_back(x);
+                        ret->push_back(x);
                     }
                 }
                 std::cout << "Got energy nodes\n";

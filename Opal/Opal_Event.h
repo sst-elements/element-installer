@@ -32,14 +32,21 @@
 #include<string>
 
 
-using namespace SST; 
+using namespace SST;
 
 
-namespace SST{ namespace OpalComponent{
+namespace SST {
+    namespace OpalComponent {
 
-	enum EventType { HINT, MMAP, REQUEST, RESPONSE, UNMAP, UMAPACK, SHOOTDOWN, INVALIDADDR, SDACK};
-	enum MemType { LOCAL, SHARED };
-	enum MemTech { DRAM, NVM, HBM, HMC, SCRATCHPAD, BURSTBUFFER};
+        enum EventType {
+            HINT, MMAP, REQUEST, RESPONSE, UNMAP, UMAPACK, SHOOTDOWN, INVALIDADDR, SDACK
+        };
+        enum MemType {
+            LOCAL, SHARED
+        };
+        enum MemTech {
+            DRAM, NVM, HBM, HMC, SCRATCHPAD, BURSTBUFFER
+        };
 //	enum HintType { DRAM, NVM, HBM, HMC, SCRATCHPAD, BURSTBUFFER, };
 
 // **************** Important *****************
@@ -50,84 +57,99 @@ namespace SST{ namespace OpalComponent{
 //	4: SCRATCHPAD
 //	5: BURSTBUFFER
 
-	// Thie defines a class for events of Opal
-	class OpalEvent : public SST::Event
-	{
+        // Thie defines a class for events of Opal
+        class OpalEvent : public SST::Event {
 
-		private:
-		OpalEvent() {} // For serialization
+        private:
+            OpalEvent() {} // For serialization
 
-			EventType ev;
-			uint64_t address;
-			uint64_t paddress;
-			int faultLevel;
-			int size;
-			int nodeId;
-			int coreId;
-			MemType memType;
-			int shootdownId;
-			int hint;
-			int fileId;
+            EventType ev;
+            uint64_t address;
+            uint64_t paddress;
+            int faultLevel;
+            int size;
+            int nodeId;
+            int coreId;
+            MemType memType;
+            int shootdownId;
+            int hint;
+            int fileId;
 
-		public:
+        public:
 
-			OpalEvent(EventType y) : SST::Event()
-		{ ev = y; memType = SST::OpalComponent::MemType::LOCAL;}
+            OpalEvent(EventType y) : SST::Event() {
+                ev = y;
+                memType = SST::OpalComponent::MemType::LOCAL;
+            }
 
-			void setType(int ev1) { ev = static_cast<EventType>(ev1);}
-			int getType() { return ev; }
-			
-			void setMemType(int mtype) { memType = static_cast<MemType>(mtype);}
-			MemType getMemType() { return memType; }
+            void setType(int ev1) { ev = static_cast<EventType>(ev1); }
 
-			void setNodeId(int id) { nodeId = id; }
-			int getNodeId() { return nodeId; }
+            int getType() { return ev; }
 
-			void setCoreId(int id) { coreId = id; }
-			int getCoreId() { return coreId; }
-			
-			void setResp(uint64_t add, uint64_t padd, int sz) { address = add; paddress = padd; size = sz;}
+            void setMemType(int mtype) { memType = static_cast<MemType>(mtype); }
 
-			void setAddress(uint64_t add) { address = add; }
-			uint64_t getAddress() { return address; }
+            MemType getMemType() { return memType; }
 
-			uint64_t getPaddress() { return paddress; }
+            void setNodeId(int id) { nodeId = id; }
 
-			int getSize() { return size; }
+            int getNodeId() { return nodeId; }
 
-			void setFaultLevel(int level) { faultLevel = level; }
-			int getFaultLevel() { return faultLevel; }
+            void setCoreId(int id) { coreId = id; }
 
-			void setShootdownId(int id) { shootdownId = id; }
-			int getShootdownId() { return shootdownId; }
+            int getCoreId() { return coreId; }
 
-			void setFileId(int id) { fileId = id; }
-			int getFileId() { return fileId; }
+            void setResp(uint64_t add, uint64_t padd, int sz) {
+                address = add;
+                paddress = padd;
+                size = sz;
+            }
 
-			void setHint(int x) { hint = x; }
-			int getHint() { return hint; }
+            void setAddress(uint64_t add) { address = add; }
 
-			void serialize_order(SST::Core::Serialization::serializer &ser) override{
-				Event::serialize_order(ser);
-				ser & ev;
-				ser & address;
-				ser & paddress;
-				ser & size;
-				ser & nodeId;
-				ser & coreId;
-				ser & memType;
-				ser & shootdownId;
-				ser & hint;
-				ser & fileId;
-			}
+            uint64_t getAddress() { return address; }
+
+            uint64_t getPaddress() { return paddress; }
+
+            int getSize() { return size; }
+
+            void setFaultLevel(int level) { faultLevel = level; }
+
+            int getFaultLevel() { return faultLevel; }
+
+            void setShootdownId(int id) { shootdownId = id; }
+
+            int getShootdownId() { return shootdownId; }
+
+            void setFileId(int id) { fileId = id; }
+
+            int getFileId() { return fileId; }
+
+            void setHint(int x) { hint = x; }
+
+            int getHint() { return hint; }
+
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & ev;
+                ser & address;
+                ser & paddress;
+                ser & size;
+                ser & nodeId;
+                ser & coreId;
+                ser & memType;
+                ser & shootdownId;
+                ser & hint;
+                ser & fileId;
+            }
 
 
-		ImplementSerializable(OpalEvent);
+            ImplementSerializable(OpalEvent);
 
-	};
+        };
 
 
-}}
+    }
+}
 
 #endif
 

@@ -20,6 +20,7 @@
 #ifdef HAVE_METIS
 #include "metis.h"
 #endif
+
 #include "Rcm.h"
 
 #include <cassert>
@@ -39,38 +40,34 @@
 using namespace SST::Scheduler;
 using namespace std;
 
-TopoMapper::TopoMapper(const Machine & mach, AlgorithmType mode) : TaskMapper(mach)
-{
+TopoMapper::TopoMapper(const Machine &mach, AlgorithmType mode) : TaskMapper(mach) {
     algorithmType = mode;
 }
 
-TopoMapper::~TopoMapper()
-{
+TopoMapper::~TopoMapper() {
 
 }
 
-std::string TopoMapper::getSetupInfo(bool comment) const
-{
+std::string TopoMapper::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
-        com="# ";
-    } else  {
-        com="";
+        com = "# ";
+    } else {
+        com = "";
     }
-    if(algorithmType == RECURSIVE){
+    if (algorithmType == RECURSIVE) {
         return com + "TopoMapper";
     } else {
         return com + "RCM (Reverse Cuthill Mckee) Mapper";
     }
 }
 
-TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
-{
+TaskMapInfo *TopoMapper::mapTasks(AllocInfo *allocInfo) {
     numTasks = allocInfo->job->getProcsNeeded();
     numNodes = allocInfo->getNodesNeeded();
 
     //Optimization: SimpleTaskMapper if <= 2 tasks are provided
-    if(numTasks <= 2 || numNodes == 1){
+    if (numTasks <= 2 || numNodes == 1) {
         SimpleTaskMapper simpleMapper = SimpleTaskMapper(mach);
         return simpleMapper.mapTasks(allocInfo);
     }
@@ -81,7 +78,7 @@ TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
     vector<int> part(numTasks); //partition vector: part[task] = partition #
     //Partition task if nodes have homogeneous multiple processors
     //Current code does not support heterogeneous case
-    if( mach.coresPerNode > 1){
+    if (mach.coresPerNode > 1) {
 #ifdef HAVE_METIS
         idx_t objval; //objective function result
         vector<idx_t> METIS_part(numTasks); //partition vector: part[task] = partition #
@@ -103,8 +100,8 @@ TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
         xadj.push_back(adjncy.size());
 
         //partition
-        METIS_PartGraphKway(&nvtxs, &ncon, &xadj[0], &adjncy[0], NULL, NULL,
-                            &adjwgt[0], &nparts, NULL, NULL, NULL, &objval, &METIS_part[0]);
+        METIS_PartGraphKway(&nvtxs, &ncon, &xadj[0], &adjncy[0], nullptr, nullptr,
+                            &adjwgt[0], &nparts, nullptr, nullptr, nullptr, &objval, &METIS_part[0]);
 
         //check if partitioning is balanced or not, correct if necessary
         //count number of tasks at each vertex
@@ -136,31 +133,31 @@ TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
         schedout.fatal(CALL_INFO, 1, "Topo Mapper requires METIS library for multi-core nodes");
 #endif
     } else {
-        for(unsigned int i = 0; i < part.size(); i++){
+        for (unsigned int i = 0; i < part.size(); i++) {
             part[i] = i;
         }
     }
 
     //build node topology graph for new task distribution
-    vector<vector<int> > nodeTopGraph(ceil((double) numTasks / mach.coresPerNode));
-    vector<vector<int> > nodeTopGraphWeights(nodeTopGraph.size()); // edge weights
-    for(unsigned int source = 0; source < commGraph.size(); ++source) {
-        for(unsigned int j = 0; j < commGraph[source].size(); ++j) {
+    vector < vector < int > > nodeTopGraph(ceil((double) numTasks / mach.coresPerNode));
+    vector <vector<int>> nodeTopGraphWeights(nodeTopGraph.size()); // edge weights
+    for (unsigned int source = 0; source < commGraph.size(); ++source) {
+        for (unsigned int j = 0; j < commGraph[source].size(); ++j) {
             //for each communicating task pair
             int target = commGraph[source][j];
             int sourceNode = part[source];
             int targetNode = part[target];
             //add edge to node topology graph if necessary
-            if(sourceNode != targetNode) {
+            if (sourceNode != targetNode) {
                 int found = 0;
                 int pos = 0;
-                for(unsigned int k = 0; k < nodeTopGraph[sourceNode].size(); ++k, ++pos){
-                    if(nodeTopGraph[sourceNode][pos] == targetNode){
+                for (unsigned int k = 0; k < nodeTopGraph[sourceNode].size(); ++k, ++pos) {
+                    if (nodeTopGraph[sourceNode][pos] == targetNode) {
                         found = 1;
                         break;
                     }
                 }
-                if(found) { //edge already existent - add to weight
+                if (found) { //edge already existent - add to weight
                     nodeTopGraphWeights[sourceNode][pos] += commWeights[source][j];
                 } else { //create edge
                     nodeTopGraph[sourceNode].push_back(targetNode);
@@ -170,42 +167,43 @@ TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
         }
     }
 
-    for(unsigned int i = 0; i < numCores.size(); ++i){
-        if(numCores[i] > 0){
+    for (unsigned int i = 0; i < numCores.size(); ++i) {
+        if (numCores[i] > 0) {
             numCores[i] = 1;
         }
     }
 
     vector<int> nodeTopGraphMap(nodeTopGraph.size()); // mapping from nodeTopGraph to nodeGraph
 
-    if(algorithmType == R_C_M){
+    if (algorithmType == R_C_M) {
 
         mapRCM(&nodeTopGraph, &nodeTopGraphMap);
 
-    } else if (algorithmType == RECURSIVE){
+    } else if (algorithmType == RECURSIVE) {
         // copy nodeGraph and networkWeights graphs
-        vector<vector<int> > pyhTopGraph = vector<vector<int> >(phyGraph);
-        vector<vector<int> > phyTopGraphWeights = vector<vector<int> >(networkWeights);
+        vector <vector<int>> pyhTopGraph = vector < vector < int > > (phyGraph);
+        vector <vector<int>> phyTopGraphWeights = vector < vector < int > > (networkWeights);
         vector<int> pmap; //physical mapping
-        for(unsigned int i = 0; i < phyGraph.size(); ++i){
+        for (unsigned int i = 0; i < phyGraph.size(); ++i) {
             pmap.push_back(i);
         }
         vector<int> lmap; //logical mapping
-        for(unsigned int i = 0; i < nodeTopGraph.size(); ++i){
+        for (unsigned int i = 0; i < nodeTopGraph.size(); ++i) {
             lmap.push_back(i);
         }
-        mapRecursive(&pyhTopGraph, &phyTopGraphWeights, &numCores, &nodeTopGraph, &nodeTopGraphWeights, &nodeTopGraphMap, lmap, &pmap);
+        mapRecursive(&pyhTopGraph, &phyTopGraphWeights, &numCores, &nodeTopGraph,
+                     &nodeTopGraphWeights, &nodeTopGraphMap, lmap, &pmap);
     }
 
     // inflate mapping back to logical topology size
-    for(unsigned int i = 0; i < commGraph.size(); ++i) {
-      int pos_in_nodeTopGraph = part[i];
-      mapping[i] = nodeTopGraphMap[pos_in_nodeTopGraph];
+    for (unsigned int i = 0; i < commGraph.size(); ++i) {
+        int pos_in_nodeTopGraph = part[i];
+        mapping[i] = nodeTopGraphMap[pos_in_nodeTopGraph];
     }
 
     // convert to SST's task map info
-    TaskMapInfo* tmi = new TaskMapInfo(allocInfo, mach);
-    for(unsigned int i = 0; i < mapping.size(); i++){
+    TaskMapInfo *tmi = new TaskMapInfo(allocInfo, mach);
+    for (unsigned int i = 0; i < mapping.size(); i++) {
         tmi->insert(i, allocInfo->nodeIndices[mapping[i]]);
     }
 
@@ -220,23 +218,22 @@ TaskMapInfo* TopoMapper::mapTasks(AllocInfo* allocInfo)
     return tmi;
 }
 
-void TopoMapper::setup(AllocInfo* allocInfo)
-{
+void TopoMapper::setup(AllocInfo *allocInfo) {
     //create communication graph
-    for(int i = 0; i < numTasks; i++){
+    for (int i = 0; i < numTasks; i++) {
         commGraph.push_back(vector<int>());
         commWeights.push_back(vector<int>());
     }
-    TaskCommInfo* tci = allocInfo->job->taskCommInfo;
+    TaskCommInfo *tci = allocInfo->job->taskCommInfo;
     //ensure symmetry
-    for(int i = 0; i < numTasks; i++){
-        for(int j = i + 1; j < numTasks; j++){
+    for (int i = 0; i < numTasks; i++) {
+        for (int j = i + 1; j < numTasks; j++) {
             int i_to_j = tci->getCommWeight(i, j);
             int j_to_i = tci->getCommWeight(j, i);
-            if( i_to_j != 0 || j_to_i != 0){
+            if (i_to_j != 0 || j_to_i != 0) {
                 commGraph[i].push_back(j);
                 commGraph[j].push_back(i);
-                if(i_to_j != 0){
+                if (i_to_j != 0) {
                     commWeights[i].push_back(i_to_j);
                     commWeights[j].push_back(i_to_j);
                 } else {
@@ -253,14 +250,14 @@ void TopoMapper::setup(AllocInfo* allocInfo)
     std::fill(numCores.begin(), numCores.end(), mach.coresPerNode);
 
     //create node graph
-    for(int i = 0; i < numNodes; i++){
+    for (int i = 0; i < numNodes; i++) {
         phyGraph.push_back(vector<int>());
         networkWeights.push_back(vector<int>());
     }
-    for(int i = 0; i < numNodes; i++){
-        for(int j = 0; j < numNodes; j++){ //make the graph symmetric
+    for (int i = 0; i < numNodes; i++) {
+        for (int j = 0; j < numNodes; j++) { //make the graph symmetric
             //assuming neighbors have distance of 1
-            if(mach.getNodeDistance(allocInfo->nodeIndices[i], allocInfo->nodeIndices[j]) == 1){
+            if (mach.getNodeDistance(allocInfo->nodeIndices[i], allocInfo->nodeIndices[j]) == 1) {
                 phyGraph[i].push_back(j);
                 networkWeights[i].push_back(1);
             }
@@ -268,79 +265,82 @@ void TopoMapper::setup(AllocInfo* allocInfo)
     }
 }
 
-int TopoMapper::mapRCM(std::vector<std::vector<int> > *commGraph_ref,
-                          std::vector<int> *mapping_ref)
-{
-    vector<vector<int> >& commGraph = *commGraph_ref;
-    vector<int>& mapping = *mapping_ref;
+int TopoMapper::mapRCM(std::vector <std::vector<int>> *commGraph_ref,
+                       std::vector<int> *mapping_ref) {
+    vector <vector<int>> &commGraph = *commGraph_ref;
+    vector<int> &mapping = *mapping_ref;
 
-    vector<vector<int> > rtg;
+    vector <vector<int>> rtg;
     vector<int> rtg2ptgmap(phyGraph.size()); // map to translate rtg vertices to nodeGraph vertices
     vector<int> rcm_nodeGraph_map(phyGraph.size());
     RCM rcm;
 
     int ptgn = 0;
-    for(unsigned int i = 0; i < phyGraph.size(); ++i){
+    for (unsigned int i = 0; i < phyGraph.size(); ++i) {
         ptgn += phyGraph[i].size();
     }
-    vector<int> xadj(phyGraph.size()+1); // CSR index
+    vector<int> xadj(phyGraph.size() + 1); // CSR index
     vector<int> adjncy(ptgn); // CSR list
-    for(unsigned int i=0; i < (phyGraph.size()+1); i++){
-        if(i==0){
-            xadj[i]=0;
+    for (unsigned int i = 0; i < (phyGraph.size() + 1); i++) {
+        if (i == 0) {
+            xadj[i] = 0;
         } else {
-            xadj[i] = xadj[i-1]+phyGraph[i-1].size();
+            xadj[i] = xadj[i - 1] + phyGraph[i - 1].size();
         }
     }
-    int pos=0;
-    for(unsigned int i=0; i<phyGraph.size(); i++){
-        for(unsigned int j=0; j<phyGraph[i].size(); ++j){
+    int pos = 0;
+    for (unsigned int i = 0; i < phyGraph.size(); i++) {
+        for (unsigned int j = 0; j < phyGraph[i].size(); ++j) {
             adjncy[pos++] = phyGraph[i][j];
         }
     }
     vector<signed char> mask(phyGraph.size(), 1);
     vector<int> degs(phyGraph.size());
-    rcm.genrcm((int)phyGraph.size(), &xadj[0], &adjncy[0], &rcm_nodeGraph_map[0], &mask[0], &degs[0]);
+    rcm.genrcm((int) phyGraph.size(), &xadj[0], &adjncy[0], &rcm_nodeGraph_map[0], &mask[0],
+               &degs[0]);
 
     vector<int> rcm_commGraph_map(commGraph.size());
     {
-        int ltgn=0;
-        for(unsigned int i=0; i<commGraph.size(); ++i){
-            ltgn+=commGraph[i].size();
+        int ltgn = 0;
+        for (unsigned int i = 0; i < commGraph.size(); ++i) {
+            ltgn += commGraph[i].size();
         }
-        vector<int> xadj(commGraph.size()+1); // CSR index
+        vector<int> xadj(commGraph.size() + 1); // CSR index
         vector<int> adjncy(ltgn); // CSR list
-        for(unsigned int i=0; i<(commGraph.size()+1); i++){
-            if(i==0){
-                xadj[i]=0;
+        for (unsigned int i = 0; i < (commGraph.size() + 1); i++) {
+            if (i == 0) {
+                xadj[i] = 0;
             } else {
-                xadj[i]=xadj[i-1]+commGraph[i-1].size();
+                xadj[i] = xadj[i - 1] + commGraph[i - 1].size();
             }
         }
-        int pos=0;
-        for(unsigned int i=0; i<commGraph.size(); i++) {
-            for(unsigned int j=0; j<commGraph[i].size(); ++j) {
+        int pos = 0;
+        for (unsigned int i = 0; i < commGraph.size(); i++) {
+            for (unsigned int j = 0; j < commGraph[i].size(); ++j) {
                 adjncy[pos++] = commGraph[i][j];
             }
         }
 
         vector<signed char> mask(commGraph.size(), 1);
         vector<int> degs(commGraph.size());
-        rcm.genrcm((int)commGraph.size(), &xadj[0], &adjncy[0], &rcm_commGraph_map[0], &mask[0], &degs[0]);
+        rcm.genrcm((int) commGraph.size(), &xadj[0], &adjncy[0], &rcm_commGraph_map[0], &mask[0],
+                   &degs[0]);
     }
 
     // translate mappings
-    for(unsigned int i=0; i<commGraph.size(); ++i) {
+    for (unsigned int i = 0; i < commGraph.size(); ++i) {
         mapping[rcm_commGraph_map[i]] = rcm_nodeGraph_map[i];
     }
 
     return 0;
 }
 
-int TopoMapper::mapRecursive(vector<vector<int> > *nodeGraph_ref, vector<vector<int> > *networkWeights_ref,
-        vector<int> *numCores_ref, vector<vector<int> > *commGraph_ref, vector<vector<int> > *weights_ref,
-        vector<int> *mapping_ref, vector<int> commGraph_map, vector<int> *nodeGraph_map_ref)
-{
+int TopoMapper::mapRecursive(vector <vector<int>> *nodeGraph_ref,
+                             vector <vector<int>> *networkWeights_ref,
+                             vector<int> *numCores_ref, vector <vector<int>> *commGraph_ref,
+                             vector <vector<int>> *weights_ref,
+                             vector<int> *mapping_ref, vector<int> commGraph_map,
+                             vector<int> *nodeGraph_map_ref) {
 #ifdef HAVE_METIS
     // turn refs into normal objects
     vector<vector<int> >& phyTopGraph = *nodeGraph_ref;
@@ -373,8 +373,8 @@ int TopoMapper::mapRecursive(vector<vector<int> > *nodeGraph_ref, vector<vector<
         idx_t edgecut; //objective function result
         vector<idx_t> part(phyTopGraph.size()); //partition vector: part[task] = partition #
 
-        METIS_PartGraphRecursive(&nvtxs, &ncon, &xadj[0], &adjncy[0], &vwgt[0], NULL, &adjwgt[0],
-                                         &nparts, NULL, NULL, NULL, &edgecut, &part[0]);
+        METIS_PartGraphRecursive(&nvtxs, &ncon, &xadj[0], &adjncy[0], &vwgt[0], nullptr, &adjwgt[0],
+                                         &nparts, nullptr, nullptr, nullptr, &edgecut, &part[0]);
 
         int group1 = 0, group0 = 0, diff = 2;
         while(diff > 1) {
@@ -510,7 +510,7 @@ int TopoMapper::mapRecursive(vector<vector<int> > *nodeGraph_ref, vector<vector<
         }
         xadj[nvtxs] = offset;
 
-        METIS_PartGraphRecursive(&nvtxs, &ncon, &xadj[0], &adjncy[0], NULL, NULL, &adjwgt[0], &nparts, NULL, NULL, NULL, &edgecut, &part[0]);
+        METIS_PartGraphRecursive(&nvtxs, &ncon, &xadj[0], &adjncy[0], nullptr, nullptr, &adjwgt[0], &nparts, nullptr, nullptr, nullptr, &edgecut, &part[0]);
 
         // check if it's balanced or not -- correct if necessary
         diff = 2; // enter at least once

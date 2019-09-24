@@ -27,51 +27,55 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Machine;
+
         class TaskMapInfo;
 
         class TopoMapper : public TaskMapper {
-            public:
+        public:
 
-                enum AlgorithmType{
-                    R_C_M = 0, //reverse Cuthill Mckee algorithm
-                    RECURSIVE = 1,
-                    //GREEDY = 2, //not implemented
-                };
+            enum AlgorithmType {
+                R_C_M = 0, //reverse Cuthill Mckee algorithm
+                RECURSIVE = 1,
+                //GREEDY = 2, //not implemented
+            };
 
-                TopoMapper(const Machine & mach, AlgorithmType mode);
-                ~TopoMapper();
+            TopoMapper(const Machine &mach, AlgorithmType mode);
 
-                std::string getSetupInfo(bool comment) const;
+            ~TopoMapper();
 
-                TaskMapInfo* mapTasks(AllocInfo* allocInfo);
+            std::string getSetupInfo(bool comment) const;
 
-            private:
+            TaskMapInfo *mapTasks(AllocInfo *allocInfo);
 
-                AlgorithmType algorithmType;
-                int numNodes;
-                int numTasks;
-                std::vector<std::vector<int> > commGraph; //adjacency list
-                std::vector<std::vector<int> > commWeights; //commInfo edge weights
-                std::vector<int> numCores; //number of cores in the nodes
-                std::vector<std::vector<int> > phyGraph; //adjacency list of the allocated nodes
-                std::vector<std::vector<int> > networkWeights; //network edge weights
-                std::vector<int> mapping;
+        private:
 
-                void setup(AllocInfo* allocInfo);
-                int mapRCM(std::vector<std::vector<int> > *commGraph_ref,
-                           std::vector<int> *mapping_ref
-                           );
+            AlgorithmType algorithmType;
+            int numNodes;
+            int numTasks;
+            std::vector <std::vector<int>> commGraph; //adjacency list
+            std::vector <std::vector<int>> commWeights; //commInfo edge weights
+            std::vector<int> numCores; //number of cores in the nodes
+            std::vector <std::vector<int>> phyGraph; //adjacency list of the allocated nodes
+            std::vector <std::vector<int>> networkWeights; //network edge weights
+            std::vector<int> mapping;
 
-                int mapRecursive(std::vector<std::vector<int> > *nodeGraph_ref,
-                                 std::vector<std::vector<int> > *networkWeights_ref,
-                                 std::vector<int> *numCores_ref,
-                                 std::vector<std::vector<int> > *commGraph_ref,
-                                 std::vector<std::vector<int> > *weights_ref,
-                                 std::vector<int> *mapping_ref,
-                                 std::vector<int> commGraph_map,
-                                 std::vector<int> *nodeGraph_map_ref
-                                 );
+            void setup(AllocInfo *allocInfo);
+
+            int mapRCM(std::vector <std::vector<int>> *commGraph_ref,
+                       std::vector<int> *mapping_ref
+            );
+
+            int mapRecursive(std::vector <std::vector<int>> *nodeGraph_ref,
+                             std::vector <std::vector<int>> *networkWeights_ref,
+                             std::vector<int> *numCores_ref,
+                             std::vector <std::vector<int>> *commGraph_ref,
+                             std::vector <std::vector<int>> *weights_ref,
+                             std::vector<int> *mapping_ref,
+                             std::vector<int> commGraph_map,
+                             std::vector<int> *nodeGraph_map_ref
+            );
 
         };
     }

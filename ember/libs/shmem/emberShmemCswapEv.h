@@ -20,36 +20,38 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCswapShmemEvent : public EmberShmemEvent {
+        class EmberCswapShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberCswapShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::Value result, Hermes::Vaddr dest, Hermes::Value cond, Hermes::Value value, int pe, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), 
-            m_result(result), m_dest(dest), m_cond(cond), m_value(value), m_pe(pe) {}
-	~EmberCswapShmemEvent() {}
+        public:
+            EmberCswapShmemEvent(Shmem::Interface &api, Output *output,
+                                 Hermes::Value result, Hermes::Vaddr dest, Hermes::Value cond,
+                                 Hermes::Value value, int pe,
+                                 EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_result(result), m_dest(dest), m_cond(cond), m_value(value), m_pe(pe) {}
 
-    std::string getName() { return "Cswap"; }
+            ~EmberCswapShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Cswap"; }
 
-        EmberEvent::issue( time );
-        m_api.cswap( m_result, m_dest, m_cond, m_value, m_pe, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.cswap(m_result, m_dest, m_cond, m_value, m_pe, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+
+            Hermes::Value m_result;
+            Hermes::Value m_value;
+            Hermes::Value m_cond;
+            int m_pe;
+        };
+
     }
-
-private:
-    Hermes::Vaddr m_dest;
-
-    Hermes::Value m_result;
-    Hermes::Value m_value;
-    Hermes::Value m_cond;
-    int m_pe;
-};
-
-}
 }
 
 #endif

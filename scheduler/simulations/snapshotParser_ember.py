@@ -5,30 +5,28 @@ Created by  : Fulya Kaplan
 Description : This sub-python script parses the ember output file. It then creates input files & run script for scheduler simulation and runs it. Created specifically for detailed simulation of network congestion together with scheduling & application task mapping algorithms.
 '''
 
-import os, sys
-from xml.dom.minidom import parse
+import os
+import sys
 import xml.dom.minidom
-
 from optparse import OptionParser
-import math
-import numpy as np
 
 
 class Time:
     def __init__(self):
-        self.snapshotTime     = -1
-        self.nextArrivalTime  = -1
+        self.snapshotTime = -1
+        self.nextArrivalTime = -1
 
     def set(self, snapshotTime, nextArrivalTime):
-        self.snapshotTime     = snapshotTime
-        self.nextArrivalTime  = nextArrivalTime
+        self.snapshotTime = snapshotTime
+        self.nextArrivalTime = nextArrivalTime
+
 
 class Job:
     def __init__(self):
-        self.jobNum     = -1
-        self.nodeList   = []
-        self.numNodes   = -1
-        self.motifFile  = ''
+        self.jobNum = -1
+        self.nodeList = []
+        self.numNodes = -1
+        self.motifFile = ''
         self.startingMotif = -1
         self.soFarRunningTime = -1
 
@@ -40,14 +38,15 @@ class Job:
         self.startingMotif = startingMotif
         self.soFarRunningTime = soFarRunningTime
 
+
 # Function to run linux commands
 def run(cmd):
-    #print(cmd)
+    # print(cmd)
     os.system(cmd)
 
-# Parser for the ember output file and the motifLogs
-def parse_emberOut (options):
 
+# Parser for the ember output file and the motifLogs
+def parse_emberOut(options):
     fileName = options.emberOutFile
     fo = open(fileName, "r")
 
@@ -59,18 +58,18 @@ def parse_emberOut (options):
             break
         elif line.startswith('Job Finished'):
             InfoPair.append(grep_timeInfo(line, 'JobFinished'))
-    
+
     fo.close()
 
     return (InfoPair)
 
+
 # Extracts the necessary time, jobNum info from the given string
 def grep_timeInfo(string, mode):
-
     if mode == 'SimComplete':
         string = string.split(' ')
         number = float(string[5])
-        unit   = string[6].split('\n')[0]
+        unit = string[6].split('\n')[0]
         jobNum = -1
 
         time = convertToMicro(number, unit)
@@ -80,33 +79,33 @@ def grep_timeInfo(string, mode):
         string = string.split(' ')
         jobNum = int(string[2].split(':')[1])
         number = float(string[3].split(':')[1])
-        unit   = string[4].split('\n')[0]
+        unit = string[4].split('\n')[0]
 
         time = convertToMicro(number, unit)
         return (time, jobNum)
 
+
 # Converts the units for the time info to microseconds
 def convertToMicro(number, unit):
-
     if (unit == 'Ks'):
-        convertedNum = number*1000000000
+        convertedNum = number * 1000000000
     elif (unit == 's'):
-        convertedNum = number*1000000
+        convertedNum = number * 1000000
     elif (unit == 'ms'):
-        convertedNum = number*1000
+        convertedNum = number * 1000
     elif (unit == 'us'):
         convertedNum = number
     elif (unit == 'ns'):
-        convertedNum = float(number/1000)
+        convertedNum = float(number / 1000)
     else:
         print "ERROR: Valid time units: [Ks | s | ms | us | ns]"
         sys.exit(0)
 
     return (convertedNum)
 
-# Parser for the xml file that holds the snapshot from the scheduler
-def parse_xml (options):
 
+# Parser for the xml file that holds the snapshot from the scheduler
+def parse_xml(options):
     fileName = options.xmlFile
     # Open XML document using minidom parser
     DOMTree = xml.dom.minidom.parse(fileName)
@@ -114,17 +113,17 @@ def parse_xml (options):
 
     # Get all times and jobs in the snapshot
     time = snapshot.getElementsByTagName("time")
-    jobs  = snapshot.getElementsByTagName("job")
+    jobs = snapshot.getElementsByTagName("job")
 
     # Create a Time object and populate
     TimeObject = Time()
 
     snapshotTime_ = time[0].getElementsByTagName('snapshotTime')[0]
-    snapshotTime  = int(snapshotTime_.childNodes[0].data)
+    snapshotTime = int(snapshotTime_.childNodes[0].data)
     print
     print "snapshotTime: %d" % snapshotTime
     nextArrivalTime_ = time[0].getElementsByTagName('nextArrivalTime')[0]
-    nextArrivalTime  = int(nextArrivalTime_.childNodes[0].data)
+    nextArrivalTime = int(nextArrivalTime_.childNodes[0].data)
     print "nextArrivalTime: %d" % nextArrivalTime
 
     TimeObject.set(snapshotTime, nextArrivalTime)
@@ -140,30 +139,30 @@ def parse_xml (options):
             print "Job Number: %d" % jobNum
 
         motifFile_ = job.getElementsByTagName('motifFile')[0]
-        motifFile  = str(motifFile_.childNodes[0].data)
-        #print "motifFile: %s" % motifFile
+        motifFile = str(motifFile_.childNodes[0].data)
+        # print "motifFile: %s" % motifFile
 
         startingMotif_ = job.getElementsByTagName('startingMotif')[0]
-        startingMotif  = int(startingMotif_.childNodes[0].data)
-        #print "startingMotif: %d" % startingMotif
+        startingMotif = int(startingMotif_.childNodes[0].data)
+        # print "startingMotif: %d" % startingMotif
 
         soFarRunningTime_ = job.getElementsByTagName('soFarRunningTime')[0]
-        soFarRunningTime  = int(soFarRunningTime_.childNodes[0].data)
-        #print "startingMotif: %d" % startingMotif
+        soFarRunningTime = int(soFarRunningTime_.childNodes[0].data)
+        # print "startingMotif: %d" % startingMotif
 
         tempJobObject = Job()
         tempJobObject.set(jobNum, [], motifFile, startingMotif, soFarRunningTime)
         JobObjects.append(tempJobObject)
-    #end
-    
+    # end
+
     return (TimeObject, JobObjects)
 
-# Generates/updates ember related input files for the next scheduler run
-def generate_scheduler_inputs (InfoPair, TimeObject, JobObjects, options):
 
+# Generates/updates ember related input files for the next scheduler run
+def generate_scheduler_inputs(InfoPair, TimeObject, JobObjects, options):
     emberCompletedFile = options.emberCompletedFile
-    emberRunningFile   = options.emberRunningFile
-    motifLogprefix     = "motif-"
+    emberRunningFile = options.emberRunningFile
+    motifLogprefix = "motif-"
 
     ecFile = open(emberCompletedFile, 'a')
     erFile = open(emberRunningFile, 'w')
@@ -192,8 +191,8 @@ def generate_scheduler_inputs (InfoPair, TimeObject, JobObjects, options):
 
             # Read motifLogs to get the current motif number from ember
             motifLog = motifLogprefix + str(Job.jobNum) + ".log"
-            #print motifLog
-            mFile    = open(motifLog, 'r')
+            # print motifLog
+            mFile = open(motifLog, 'r')
             emberMotifNum = -1
 
             for l in mFile:
@@ -211,37 +210,42 @@ def generate_scheduler_inputs (InfoPair, TimeObject, JobObjects, options):
             else:
                 emberMotifNum -= 1
 
-
-            #print emberMotifNum
+            # print emberMotifNum
             mFile.close()
 
             # Write the updated time and motif counts
-            line = "job\t%d\t%d\t%d\n" % (Job.jobNum, (Job.soFarRunningTime + emberTime), (Job.startingMotif + emberMotifNum) )
+            line = "job\t%d\t%d\t%d\n" % (
+            Job.jobNum, (Job.soFarRunningTime + emberTime), (Job.startingMotif + emberMotifNum))
             erFile.writelines(line)
 
     ecFile.close()
     erFile.close()
 
-# Runs scheduler simulation with the given python script
-def run_scheduler (options):
 
-    execcommand = "sst %s" %(options.schedPythonFile)
+# Runs scheduler simulation with the given python script
+def run_scheduler(options):
+    execcommand = "sst %s" % (options.schedPythonFile)
     run(execcommand)
 
-def main():
 
+def main():
     parser = OptionParser(usage="usage: %prog [options]")
-    parser.add_option("--xml",  action='store', dest="xmlFile", help="Name of the xml file that holds the current scheduler snapshot.") 
-    parser.add_option("--emberOut",  action='store', dest="emberOutFile", help="Name of the ember output file.")
-    parser.add_option("--schedPy",  action='store', dest="schedPythonFile", help="Name of the python file that holds the scheduler parameters.")
-    parser.add_option("--ember_completed",  action='store', dest="emberCompletedFile", help="Name of the file that lists the jobs that have been completed in ember.")
-    parser.add_option("--ember_running",  action='store', dest="emberRunningFile", help="Name of the file that lists the jobs that are currently running in ember.") 
+    parser.add_option("--xml", action='store', dest="xmlFile",
+                      help="Name of the xml file that holds the current scheduler snapshot.")
+    parser.add_option("--emberOut", action='store', dest="emberOutFile", help="Name of the ember output file.")
+    parser.add_option("--schedPy", action='store', dest="schedPythonFile",
+                      help="Name of the python file that holds the scheduler parameters.")
+    parser.add_option("--ember_completed", action='store', dest="emberCompletedFile",
+                      help="Name of the file that lists the jobs that have been completed in ember.")
+    parser.add_option("--ember_running", action='store', dest="emberRunningFile",
+                      help="Name of the file that lists the jobs that are currently running in ember.")
     (options, args) = parser.parse_args()
 
     InfoPair = parse_emberOut(options)
-    TimeObject, JobObjects = parse_xml (options)
-    generate_scheduler_inputs (InfoPair, TimeObject, JobObjects, options)
-    run_scheduler (options)
+    TimeObject, JobObjects = parse_xml(options)
+    generate_scheduler_inputs(InfoPair, TimeObject, JobObjects, options)
+    run_scheduler(options)
+
 
 if __name__ == '__main__':
     main()

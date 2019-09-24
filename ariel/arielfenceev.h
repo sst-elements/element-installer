@@ -22,16 +22,16 @@
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielFenceEvent : public ArielEvent {
+        class ArielFenceEvent : public ArielEvent {
 
-    public:
-        ArielEventType getEventType() const { return FENCE; }
+        public:
+            ArielEventType getEventType() const { return FENCE; }
 
-};
+        };
 
-}
+    }
 }
 
 #endif

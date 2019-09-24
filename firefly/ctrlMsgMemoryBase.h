@@ -17,26 +17,33 @@
 #define COMPONENTS_FIREFLY_CTRL_MSG_MEMORY_BASE_H
 
 namespace SST {
-namespace Firefly {
-namespace CtrlMsg {
+    namespace Firefly {
+        namespace CtrlMsg {
 
-class MemoryBase : public SubComponent {
-  public:
-    typedef std::function<void()> Callback;
-    typedef uint64_t MemAddr;
+            class MemoryBase : public SubComponent {
+            public:
+                typedef std::function<void()> Callback;
+                typedef uint64_t MemAddr;
 
-    MemoryBase( Component* comp ) : SubComponent( comp ) {}
-    virtual ~MemoryBase() {}
-    virtual void copy( Callback, MemAddr to, MemAddr from, size_t ) = 0;
-    virtual void write( Callback, MemAddr to, size_t ) = 0;
-    virtual void read( Callback, MemAddr to, size_t ) = 0;
-    virtual void pin( Callback, MemAddr, size_t ) = 0;
-    virtual void unpin( Callback, MemAddr, size_t ) = 0;
-    virtual void walk( Callback, int count ) = 0;
-};
+                MemoryBase(Component *comp) : SubComponent(comp) {}
 
-}
-}
+                virtual ~MemoryBase() {}
+
+                virtual void copy(Callback, MemAddr to, MemAddr from, size_t) = 0;
+
+                virtual void write(Callback, MemAddr to, size_t) = 0;
+
+                virtual void read(Callback, MemAddr to, size_t) = 0;
+
+                virtual void pin(Callback, MemAddr, size_t) = 0;
+
+                virtual void unpin(Callback, MemAddr, size_t) = 0;
+
+                virtual void walk(Callback, int count) = 0;
+            };
+
+        }
+    }
 }
 
 #endif

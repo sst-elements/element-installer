@@ -17,10 +17,10 @@
 
 using namespace SST::SimpleModule;
 
-SimpleModuleExample::SimpleModuleExample(SST::Params& params) {
-	modName = params.find<std::string>("modulename", "");
+SimpleModuleExample::SimpleModuleExample(SST::Params &params) {
+    modName = params.find<std::string>("modulename", "");
 }
 
 void SimpleModuleExample::printName() {
-	printf("Name: %s\n", modName.c_str());
+    printf("Name: %s\n", modName.c_str());
 }

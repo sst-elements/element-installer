@@ -27,37 +27,41 @@
 #include "customCmdMemory.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
 /*
  * Atomic Memory Operation (AMO)
  * Custom Command Handler
  */
-class AMOCustomCmdMemHandler : public CustomCmdMemHandler {
-public:
+        class AMOCustomCmdMemHandler : public CustomCmdMemHandler {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(AMOCustomCmdMemHandler, "memHierarchy", "amoCustomCmdHandler", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(AMOCustomCmdMemHandler,
+            "memHierarchy", "amoCustomCmdHandler", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Custom command handler for atomics (AMO)", SST::MemHierarchy::CustomCmdMemHandler)
 
 /* Begin class defintion */
-  AMOCustomCmdMemHandler(Component * comp, Params &params)
-    : CustomCmdMemHandler(comp,params) {}
-  
-  AMOCustomCmdMemHandler(ComponentId_t id, Params &params, std::function<void(Addr,size_t,std::vector<uint8_t>&)> read, std::function<void(Addr,std::vector<uint8_t>*)> write)
-    : CustomCmdMemHandler(id, params, read, write) {}
+            AMOCustomCmdMemHandler(Component *comp, Params &params)
+                : CustomCmdMemHandler(comp, params) {}
 
-  ~AMOCustomCmdMemHandler() {}
+            AMOCustomCmdMemHandler(ComponentId_t id, Params &params,
+                                   std::function<void(Addr, size_t,
+                                                      std::vector < uint8_t > &)> read,
+                                   std::function<void(Addr, std::vector < uint8_t > *)> write)
+                : CustomCmdMemHandler(id, params, read, write) {}
 
-  CustomCmdMemHandler::MemEventInfo receive(MemEventBase* ev) override;
+            ~AMOCustomCmdMemHandler() {}
 
-  CustomCmdInfo* ready(MemEventBase* ev) override;
+            CustomCmdMemHandler::MemEventInfo receive(MemEventBase *ev) override;
 
-  MemEventBase* finish(MemEventBase *ev, uint32_t flags) override;
+            CustomCmdInfo *ready(MemEventBase *ev) override;
 
-protected:
-private:
-};    // class AMOCustomCmdMemHandler
-}     // namespace MemHierarchy
+            MemEventBase *finish(MemEventBase *ev, uint32_t flags) override;
+
+        protected:
+        private:
+        };    // class AMOCustomCmdMemHandler
+    }     // namespace MemHierarchy
 }     // namespace SST
 
 #endif

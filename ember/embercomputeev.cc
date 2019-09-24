@@ -20,7 +20,7 @@ using namespace SST::Ember;
 
 #if 0
 EmberComputeEvent::EmberComputeEvent(uint32_t nsDelay) {
-	nanoSecDelay = nsDelay;
+    nanoSecDelay = nsDelay;
 }
 
 EmberComputeEvent::~EmberComputeEvent() {
@@ -28,18 +28,18 @@ EmberComputeEvent::~EmberComputeEvent() {
 }
 
 EmberEventType EmberComputeEvent::getEventType() {
-	return COMPUTE;
+    return COMPUTE;
 }
 
 uint32_t EmberComputeEvent::getNanoSecondDelay() {
-	return nanoSecDelay;
+    return nanoSecDelay;
 }
 
 std::string EmberComputeEvent::getPrintableString() {
-	char buffer[64];
-	sprintf(buffer, "Compute Event (Delay=%" PRIu32 "ns)", nanoSecDelay);
-	std::string bufferStr = buffer;
+    char buffer[64];
+    sprintf(buffer, "Compute Event (Delay=%" PRIu32 "ns)", nanoSecDelay);
+    std::string bufferStr = buffer;
 
-	return bufferStr;
+    return bufferStr;
 }
 #endif

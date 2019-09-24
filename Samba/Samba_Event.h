@@ -28,47 +28,57 @@
 #include<list>
 
 
-using namespace SST; 
+using namespace SST;
 
 
-namespace SST{ namespace SambaComponent{
+namespace SST {
+    namespace SambaComponent {
 
-	enum EventType { PAGE_FAULT, OPAL_RESPONSE, SHOOTDOWN};
+        enum EventType {
+            PAGE_FAULT, OPAL_RESPONSE, SHOOTDOWN
+        };
 
-	// Thie defines a class for events of Samba
-	class SambaEvent : public SST::Event
-	{
+        // Thie defines a class for events of Samba
+        class SambaEvent : public SST::Event {
 
-		private:
-		SambaEvent() { } // For serialization
+        private:
+            SambaEvent() {} // For serialization
 
-			int ev;
-			uint64_t address;
-			uint64_t paddress;
-			uint64_t size;
-		public:
+            int ev;
+            uint64_t address;
+            uint64_t paddress;
+            uint64_t size;
+        public:
 
-			SambaEvent(EventType y) : SST::Event()
-		{ ev = y;}
+            SambaEvent(EventType y) : SST::Event() { ev = y; }
 
-			void setType(int ev1) { ev = static_cast<EventType>(ev1);}
-			int getType() { return ev; }
-			
-			void setResp(uint64_t add, uint64_t padd, uint64_t sz) { address = add; paddress = padd; size = sz;}
-			uint64_t getAddress() { return address; }
-			uint64_t getPaddress() { return paddress; }
-			uint64_t getSize() { return size; }
+            void setType(int ev1) { ev = static_cast<EventType>(ev1); }
 
-			void serialize_order(SST::Core::Serialization::serializer &ser) override {
-				Event::serialize_order(ser);
-			}
+            int getType() { return ev; }
+
+            void setResp(uint64_t add, uint64_t padd, uint64_t sz) {
+                address = add;
+                paddress = padd;
+                size = sz;
+            }
+
+            uint64_t getAddress() { return address; }
+
+            uint64_t getPaddress() { return paddress; }
+
+            uint64_t getSize() { return size; }
+
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+            }
 
 
-		ImplementSerializable(SambaEvent);
+            ImplementSerializable(SambaEvent);
 
-	};
+        };
 
 
-}}
+    }
+}
 
 #endif

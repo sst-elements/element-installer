@@ -20,37 +20,36 @@
 #include "event.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class SizeFuncSM :  public FunctionSMInterface
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        SizeFuncSM,
-        "firefly",
-        "Size",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-  public:
-    SizeFuncSM( SST::Params& params ) : FunctionSMInterface( params ) {}
+        class SizeFuncSM : public FunctionSMInterface {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                SizeFuncSM,
+            "firefly",
+            "Size",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
+        public:
+            SizeFuncSM(SST::Params &params) : FunctionSMInterface(params) {}
 
-    virtual void handleStartEvent( SST::Event *e, Retval& retval ) {
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
 
-        SizeStartEvent* event = static_cast< SizeStartEvent* >(e);
+                SizeStartEvent *event = static_cast< SizeStartEvent * >(e);
 
-        m_dbg.debug(CALL_INFO,1,0,"group=%d\n",event->group);
+                m_dbg.debug(CALL_INFO, 1, 0, "group=%d\n", event->group);
 
-        assert( m_info->getGroup(event->group) );
-        *event->size = m_info->getGroup(event->group)->getSize();
+                assert(m_info->getGroup(event->group));
+                *event->size = m_info->getGroup(event->group)->getSize();
 
-        retval.setExit(0);
-        delete event;
+                retval.setExit(0);
+                delete event;
+            }
+        };
+
     }
-};
-
-}
 }
 
 #endif

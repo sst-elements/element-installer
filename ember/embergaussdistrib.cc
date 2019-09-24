@@ -24,19 +24,19 @@
 using namespace SST::Ember;
 using namespace SST::RNG;
 
-EmberGaussianDistribution::EmberGaussianDistribution(Component* owner, Params& params) :
-	EmberComputeDistribution(owner, params) {
+EmberGaussianDistribution::EmberGaussianDistribution(Component *owner, Params &params) :
+    EmberComputeDistribution(owner, params) {
 
-	const double mean = (double) params.find("mean", 1.0);
-	const double stddev = (double) params.find("stddev", 0.25);
+    const double mean = (double) params.find("mean", 1.0);
+    const double stddev = (double) params.find("stddev", 0.25);
 
-	distrib = new SSTGaussianDistribution(mean, stddev);
+    distrib = new SSTGaussianDistribution(mean, stddev);
 }
 
 EmberGaussianDistribution::~EmberGaussianDistribution() {
-	delete distrib;
+    delete distrib;
 }
 
 double EmberGaussianDistribution::sample(const uint64_t now) {
-	return distrib->getNextDouble();
+    return distrib->getNextDouble();
 }

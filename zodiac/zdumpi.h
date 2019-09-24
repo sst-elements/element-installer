@@ -34,37 +34,41 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacDUMPITraceReader : public SST::Component {
-public:
+        class ZodiacDUMPITraceReader : public SST::Component {
+        public:
 
-  ZodiacDUMPITraceReader(SST::ComponentId_t id, SST::Params& params);
-  void setup() { }
-  void finish() { 
-	trace->close();
-  }
+            ZodiacDUMPITraceReader(SST::ComponentId_t id, SST::Params &params);
 
-private:
-  ~ZodiacDUMPITraceReader();
-  ZodiacDUMPITraceReader();  // for serialization only
-  ZodiacDUMPITraceReader(const ZodiacDUMPITraceReader&); // do not implement
-  void operator=(const ZodiacDUMPITraceReader&); // do not implement
+            void setup() {}
 
-  void handleEvent( SST::Event *ev );
-  virtual bool clockTic( SST::Cycle_t );
+            void finish() {
+                trace->close();
+            }
 
-  ////////////////////////////////////////////////////////
+        private:
+            ~ZodiacDUMPITraceReader();
 
-  SST::Hermes::MP::Interface* msgapi;
-  DUMPIReader* trace;
-  std::queue<ZodiacEvent*>* eventQ;
+            ZodiacDUMPITraceReader();  // for serialization only
+            ZodiacDUMPITraceReader(const ZodiacDUMPITraceReader &); // do not implement
+            void operator=(const ZodiacDUMPITraceReader &); // do not implement
 
-  ////////////////////////////////////////////////////////
+            void handleEvent(SST::Event *ev);
 
-};
+            virtual bool clockTic(SST::Cycle_t);
 
-}
+            ////////////////////////////////////////////////////////
+
+            SST::Hermes::MP::Interface *msgapi;
+            DUMPIReader *trace;
+            std::queue<ZodiacEvent *> *eventQ;
+
+            ////////////////////////////////////////////////////////
+
+        };
+
+    }
 }
 
 #endif /* _ZODIAC_TRACE_READER_H */

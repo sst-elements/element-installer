@@ -20,36 +20,41 @@
 #include "emberFamEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFamScatterv_Event : public EmberFamEvent {
+        class EmberFamScatterv_Event : public EmberFamEvent {
 
-public:
-	EmberFamScatterv_Event( Shmem::Interface& api, Output* output,
-			Hermes::Vaddr src, Shmem::Fam_Descriptor fd, uint64_t nblocks, std::vector<uint64_t> indexes,
-			uint64_t blockSize, bool blocking, EmberEventTimeStatistic* stat = NULL ) :
-			EmberFamEvent( api, output, stat ), m_src(src), m_fd(fd), m_nblocks(nblocks), m_indexes(indexes),
-			m_blockSize(blockSize), m_blocking(blocking) {}
+        public:
+            EmberFamScatterv_Event(Shmem::Interface &api, Output *output,
+                                   Hermes::Vaddr src, Shmem::Fam_Descriptor fd, uint64_t nblocks,
+                                   std::vector <uint64_t> indexes,
+                                   uint64_t blockSize, bool blocking,
+                                   EmberEventTimeStatistic *stat = nullptr) :
+                EmberFamEvent(api, output, stat), m_src(src), m_fd(fd), m_nblocks(nblocks),
+                m_indexes(indexes),
+                m_blockSize(blockSize), m_blocking(blocking) {}
 
-	~EmberFamScatterv_Event() {}
+            ~EmberFamScatterv_Event() {}
 
-    std::string getName() { return "FamScatterv"; }
+            std::string getName() { return "FamScatterv"; }
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            void issue(uint64_t time, Shmem::Callback callback) {
 
-        EmberEvent::issue( time );
-        m_api.fam_scatterv( m_src, m_fd, m_nblocks, m_indexes, m_blockSize, m_blocking, callback );
+                EmberEvent::issue(time);
+                m_api.fam_scatterv(m_src, m_fd, m_nblocks, m_indexes, m_blockSize, m_blocking,
+                                   callback);
+            }
+
+        private:
+            Hermes::Vaddr m_src;
+            Shmem::Fam_Descriptor m_fd;
+            uint64_t m_nblocks;
+            std::vector <uint64_t> m_indexes;
+            uint64_t m_blockSize;
+            bool m_blocking;
+        };
+
     }
-private:
-    Hermes::Vaddr m_src;
-	Shmem::Fam_Descriptor m_fd;
-	uint64_t m_nblocks;
-	std::vector<uint64_t> m_indexes;
-	uint64_t m_blockSize;
-	bool m_blocking;
-};
-
-}
 }
 
 #endif

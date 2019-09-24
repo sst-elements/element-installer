@@ -30,7 +30,7 @@ void STS::assign(int neuronNum) {
         // AFR: should throttle
         using namespace Interfaces;
         using namespace White_Matter_Types;
-        SimpleMem::Request *req = 
+        SimpleMem::Request *req =
             new SimpleMem::Request(SimpleMem::Request::Read, listAddr, sizeof(T_Wme));
         myGNA->readMem(req, this);
         listAddr += sizeof(T_Wme);
@@ -51,11 +51,11 @@ void STS::advance(uint now) {
 
         // deliver the spike
         auto &data = req->data;
-        uint16_t strength = (req->data[0]<<8) + req->data[1];
-        uint16_t tempOffset = (data[2]<<8) + data[3];
-        uint16_t target = (data[4]<<8) + data[5];
+        uint16_t strength = (req->data[0] << 8) + req->data[1];
+        uint16_t tempOffset = (data[2] << 8) + data[3];
+        uint16_t target = (data[4] << 8) + data[5];
         //printf("  gna deliver str%u to %u @ %u\n", strength, target, tempOffset+now);
-        myGNA->deliver(strength, target, tempOffset+now);
+        myGNA->deliver(strength, target, tempOffset + now);
         numSpikes--;
 
         incomingReqs.pop();

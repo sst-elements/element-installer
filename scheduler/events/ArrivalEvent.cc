@@ -25,21 +25,18 @@
 
 using namespace SST::Scheduler;
 
-unsigned long ArrivalEvent::getTime() const 
-{
+unsigned long ArrivalEvent::getTime() const {
     return time;
 }
 
-int ArrivalEvent::getJobIndex() const 
-{
+int ArrivalEvent::getJobIndex() const {
     return jobIndex;
 }
 
-void ArrivalEvent::happen(const Machine & mach, Allocator* alloc, Scheduler* sched,
-                          Statistics* stats, Job* arrivingJob) 
-{
-    sched -> jobArrives(arrivingJob, time, mach);
-    stats -> jobArrives(time);
+void ArrivalEvent::happen(const Machine &mach, Allocator *alloc, Scheduler *sched,
+                          Statistics *stats, Job *arrivingJob) {
+    sched->jobArrives(arrivingJob, time, mach);
+    stats->jobArrives(time);
 
     /* no longer tries to start job as we only try to start once all events that
        happen at the same time have been received and handled successfully.
@@ -49,6 +46,6 @@ void ArrivalEvent::happen(const Machine & mach, Allocator* alloc, Scheduler* sch
        AllocInfo* allocInfo;
        do {
        allocInfo = sched -> tryToStart(alloc, time, mach, stats);
-       } while(allocInfo != NULL);
+       } while(allocInfo != nullptr);
        */
 }

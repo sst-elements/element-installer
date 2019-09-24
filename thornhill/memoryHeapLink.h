@@ -23,75 +23,76 @@
 #include "memoryHeapEvent.h"
 
 namespace SST {
-namespace Thornhill {
+    namespace Thornhill {
 
-class MemoryHeapLink : public SubComponent {
+        class MemoryHeapLink : public SubComponent {
 
-  public:
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        MemoryHeapLink,
-        "thornhill",
-        "MemoryHeapLink",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        public:
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                MemoryHeapLink,
+            "thornhill",
+            "MemoryHeapLink",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-	struct Entry {
-		Entry( std::function<void(uint64_t)> _fini ) : fini( _fini ) {}
-		std::function<void(uint64_t)> fini; 
-	};
+            struct Entry {
+                Entry(std::function<void(uint64_t)> _fini) : fini(_fini) {}
 
-  public:
-    MemoryHeapLink( Component* owner, Params& params, 
-                                            std::string name ="" ) :
-		SubComponent(owner )
-	{
-		m_link = configureLink( "memoryHeap", "0ps",
-            new Event::Handler<MemoryHeapLink>(
-                    this,&MemoryHeapLink::eventHandler ) );	
-	}
+                std::function<void(uint64_t)> fini;
+            };
 
-    bool isConnected() {
-        return (m_link);
+        public:
+            MemoryHeapLink(Component *owner, Params &params,
+                           std::string name = "") :
+                SubComponent(owner) {
+                m_link = configureLink("memoryHeap", "0ps",
+                                       new Event::Handler<MemoryHeapLink>(
+                                           this, &MemoryHeapLink::eventHandler));
+            }
+
+            bool isConnected() {
+                return (m_link);
+            }
+
+            void alloc(size_t length, std::function<void(uint64_t)> fini) {
+                Entry *entry = new Entry(fini);
+
+                MemoryHeapEvent *event = new MemoryHeapEvent;
+                event->key = (MemoryHeapEvent::Key) entry;
+                event->type = MemoryHeapEvent::Alloc;
+                event->length = length;
+
+                m_link->send(0, event);
+            }
+
+            void free(SimVAddr addr, std::function<void(uint64_t)> fini) {
+                Entry *entry = new Entry(fini);
+
+                MemoryHeapEvent *event = new MemoryHeapEvent;
+                event->key = (MemoryHeapEvent::Key) entry;
+                event->type = MemoryHeapEvent::Free;
+                event->addr = addr;
+
+                m_link->send(0, event);
+            }
+
+            ~MemoryHeapLink() {};
+
+        private:
+            void eventHandler(SST::Event *ev) {
+                MemoryHeapEvent *event = static_cast<MemoryHeapEvent *>(ev);
+                Entry *entry = (Entry *) event->key;
+                entry->fini(event->addr);
+                delete entry;
+                delete ev;
+            }
+
+            Link *m_link;
+        };
+
+
     }
-
-	void alloc( size_t length, std::function<void(uint64_t)> fini ) {
-		Entry* entry = new Entry( fini );
-
-		MemoryHeapEvent* event = new MemoryHeapEvent;
-		event->key = (MemoryHeapEvent::Key) entry;
-		event->type = MemoryHeapEvent::Alloc;
-		event->length = length;
-
-		m_link->send(0, event );	
-	}
-
-	void free( SimVAddr addr, std::function<void(uint64_t)> fini ) {
-		Entry* entry = new Entry( fini );
-
-		MemoryHeapEvent* event = new MemoryHeapEvent;
-		event->key = (MemoryHeapEvent::Key) entry;
-		event->type = MemoryHeapEvent::Free;
-		event->addr = addr;
-
-		m_link->send(0, event );	
-	}
-
-    ~MemoryHeapLink(){};
-
-  private:
-	void eventHandler( SST::Event* ev ) {
-		MemoryHeapEvent* event = static_cast<MemoryHeapEvent*>(ev);
-		Entry* entry = (Entry*) event->key;
-		entry->fini(event->addr);
-		delete entry;
-		delete ev;
-	}
-    Link*  m_link;
-};
-
-
-}
 }
 #endif

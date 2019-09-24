@@ -38,14 +38,15 @@ using namespace SST::MemHierarchy;
 #else
 #define is_debug_addr(addr) false
 #define is_debug_event(ev) false
-#define Debug(level, fmt, ... )
+#define Debug(level, fmt, ...)
 #endif
 
 /* Construct CoherentMemController
  *  Initialize directory_ variable to indicate whether a directory is in the system
  *      For a directory, a replacement is not synonymous with eviction
  */
-CoherentMemController::CoherentMemController(ComponentId_t id, Params &params) : MemController(id, params) {
+CoherentMemController::CoherentMemController(ComponentId_t id, Params &params) : MemController(id,
+                                                                                               params) {
     directory_ = false; /* Updated during init */
     timestamp_ = 0;
 }
@@ -55,13 +56,15 @@ CoherentMemController::CoherentMemController(ComponentId_t id, Params &params) :
  */
 void CoherentMemController::init(unsigned int phase) {
     link_->init(phase);
-    
+
     region_ = link_->getRegion(); // This can change during init, but should stabilize before we start receiving init data
-    
+
     /* Inherit region from our source(s) */
     if (!phase) {
         /* Announce our presence on link */
-        link_->sendInitData(new MemEventInitCoherence(getName(), Endpoint::Memory, true, false, memBackendConvertor_->getRequestWidth(), true));
+        link_->sendInitData(new MemEventInitCoherence(getName(), Endpoint::Memory, true, false,
+                                                      memBackendConvertor_->getRequestWidth(),
+                                                      true));
     }
 
     while (MemEventInit *ev = link_->recvInitData()) {
@@ -75,7 +78,8 @@ void CoherentMemController::init(unsigned int phase) {
 void CoherentMemController::setup(void) {
     MemController::setup();
 
-    cacheStatus_.resize(memSize_/lineSize_, false); /* Initialize all cache status to false (uncached) */
+    cacheStatus_.resize(memSize_ / lineSize_,
+                        false); /* Initialize all cache status to false (uncached) */
 }
 
 
@@ -83,10 +87,10 @@ void CoherentMemController::setup(void) {
  * Overrides MemController function
  * Intercept InitCoherence message to set directory_ and lineSize_ 
  */
-void CoherentMemController::processInitEvent(MemEventInit* me) {
-    if (Command::NULLCMD == me->getCmd()) {
+void CoherentMemController::processInitEvent(MemEventInit *me) {
+    if (Command::nullptrCMD == me->getCmd()) {
         if (me->getInitCmd() == MemEventInit::InitCommand::Coherence) {
-            MemEventInitCoherence * eventC = static_cast<MemEventInitCoherence*>(me);
+            MemEventInitCoherence *eventC = static_cast<MemEventInitCoherence *>(me);
             if (eventC->getType() == Endpoint::Directory)
                 directory_ = true;
             lineSize_ = eventC->getLineSize();
@@ -108,12 +112,14 @@ bool CoherentMemController::clock(Cycle_t cycle) {
 
     bool debug = false;
     while (!msgQueue_.empty() && msgQueue_.begin()->first < timestamp_) {
-        MemEventBase * sendEv = msgQueue_.begin()->second;
+        MemEventBase *sendEv = msgQueue_.begin()->second;
 
         if (is_debug_event(sendEv)) {
             if (!debug) dbg.debug(_L4_, "\n");
             debug = true;
-            dbg.debug(_L4_, "%" PRIu64 " (%s) Sending event to processor: %s\n", timestamp_, getName().c_str(), sendEv->getBriefString().c_str());
+            dbg.debug(_L4_, "%"
+            PRIu64
+            " (%s) Sending event to processor: %s\n", timestamp_, getName().c_str(), sendEv->getBriefString().c_str());
         }
 
         link_->send(sendEv);
@@ -139,49 +145,55 @@ bool CoherentMemController::clock(Cycle_t cycle) {
 /* 
  * Link handler, overrides MemController's 
  */
-void CoherentMemController::handleEvent(SST::Event* event) {
+void CoherentMemController::handleEvent(SST::Event *event) {
     if (!clockOn_) {
         Cycle_t cycle = turnClockOn();
         memBackendConvertor_->turnClockOn(cycle);
     }
-    
-    MemEventBase * ev = static_cast<MemEventBase*>(event);
+
+    MemEventBase *ev = static_cast<MemEventBase *>(event);
 
     if (is_debug_event(ev)) {
-        Debug(_L3_, "\n%" PRIu64 " (%s) Received: %s\n", getCurrentSimTimeNano(), getName().c_str(), ev->getVerboseString().c_str());
+        Debug(_L3_, "\n%"
+            PRIu64
+            " (%s) Received: %s\n", getCurrentSimTimeNano(), getName().c_str(),
+              ev->getVerboseString().c_str());
     }
 
     Command cmd = ev->getCmd();
-    
+
     switch (cmd) {
         case Command::GetS:
         case Command::GetX:
         case Command::GetSX:
-            handleRequest(static_cast<MemEvent*>(ev));
+            handleRequest(static_cast<MemEvent *>(ev));
             break;
         case Command::FlushLine:
         case Command::FlushLineInv:
-            handleFlush(static_cast<MemEvent*>(ev));
+            handleFlush(static_cast<MemEvent *>(ev));
             break;
         case Command::PutM:
         case Command::PutS:
         case Command::PutE:
-            handleReplacement(static_cast<MemEvent*>(ev));
+            handleReplacement(static_cast<MemEvent *>(ev));
             break;
         case Command::CustomReq:
             handleCustomCmd(ev);
             break;
         case Command::AckInv:
-            handleAckInv(static_cast<MemEvent*>(ev));
+            handleAckInv(static_cast<MemEvent *>(ev));
             break;
         case Command::FetchResp:
-            handleFetchResp(static_cast<MemEvent*>(ev));
+            handleFetchResp(static_cast<MemEvent *>(ev));
             break;
         case Command::NACK:
-            handleNack(static_cast<MemEvent*>(ev));
+            handleNack(static_cast<MemEvent *>(ev));
             break;
         default:
-            dbg.fatal(CALL_INFO, -1, "Memory controller (%s) received unrecgonized command: %s. Time = %" PRIu64 "ns\n", getName().c_str(), ev->getVerboseString().c_str(), getCurrentSimTimeNano());
+            dbg.fatal(CALL_INFO, -1,
+                      "Memory controller (%s) received unrecgonized command: %s. Time = %"
+            PRIu64
+            "ns\n", getName().c_str(), ev->getVerboseString().c_str(), getCurrentSimTimeNano());
     }
 }
 
@@ -189,19 +201,21 @@ void CoherentMemController::handleEvent(SST::Event* event) {
 /* 
  * Handle request events
  */
-void CoherentMemController::handleRequest(MemEvent * ev) {
+void CoherentMemController::handleRequest(MemEvent *ev) {
     if (ev->isAddrGlobal()) {
         ev->setBaseAddr(translateToLocal(ev->getBaseAddr()));
         ev->setAddr(translateToLocal(ev->getAddr()));
     }
 
-    outstandingEventList_.insert(std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
+    outstandingEventList_.insert(
+        std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
     notifyListeners(ev);
 
     if (mshr_.find(ev->getBaseAddr()) == mshr_.end()) {
-        mshr_.insert(std::make_pair(ev->getBaseAddr(), std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
+        mshr_.insert(std::make_pair(ev->getBaseAddr(),
+                                    std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
         if (!ev->queryFlag(MemEventBase::F_NONCACHEABLE)) {
-            cacheStatus_.at(ev->getBaseAddr()/lineSize_) = true;
+            cacheStatus_.at(ev->getBaseAddr() / lineSize_) = true;
         }
         memBackendConvertor_->handleMemEvent(ev);
     } else {
@@ -216,7 +230,7 @@ void CoherentMemController::handleRequest(MemEvent * ev) {
  * we may not receive an Ack for the shootdown or may not receive 
  * data with the Ack
  */
-void CoherentMemController::handleReplacement(MemEvent * ev) {
+void CoherentMemController::handleReplacement(MemEvent *ev) {
     if (ev->isAddrGlobal()) {
         ev->setBaseAddr(translateToLocal(ev->getBaseAddr()));
         ev->setAddr(translateToLocal(ev->getAddr()));
@@ -224,7 +238,7 @@ void CoherentMemController::handleReplacement(MemEvent * ev) {
 
     /* Handle shootdown race where no further Ack is expected */
     if (!directory_ && mshr_.find(ev->getBaseAddr()) != mshr_.end()) {
-        MSHREntry * entry = &(mshr_.find(ev->getBaseAddr())->second.front());
+        MSHREntry *entry = &(mshr_.find(ev->getBaseAddr())->second.front());
         if (entry->cmd == Command::CustomReq && entry->shootdown) {
             ev->getPayload().empty() ? handleAckInv(ev) : handleFetchResp(ev);
             return;
@@ -233,30 +247,35 @@ void CoherentMemController::handleReplacement(MemEvent * ev) {
 
     /* Drop clean writebacks after updating the cache */
     if (!ev->getDirty()) {
-        cacheStatus_.at(ev->getBaseAddr()/lineSize_) = directory_; // If directory, writeback does not imply eviction
+        cacheStatus_.at(ev->getBaseAddr() /
+                        lineSize_) = directory_; // If directory, writeback does not imply eviction
         delete ev;
         return;
     }
 
     ev->setFlag(MemEventBase::F_NORESPONSE);
 
-    outstandingEventList_.insert(std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
+    outstandingEventList_.insert(
+        std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
     notifyListeners(ev);
 
     if (mshr_.find(ev->getBaseAddr()) == mshr_.end()) {
-        mshr_.insert(std::make_pair(ev->getBaseAddr(), std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
-        cacheStatus_.at(ev->getBaseAddr()/lineSize_) = directory_;
+        mshr_.insert(std::make_pair(ev->getBaseAddr(),
+                                    std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
+        cacheStatus_.at(ev->getBaseAddr() / lineSize_) = directory_;
         memBackendConvertor_->handleMemEvent(ev);
     } else {
         /* Search for race with a shootdown where we might receive an Ack but not data */
-        std::list<MSHREntry>* entryList = &(mshr_.find(ev->getBaseAddr())->second);
+        std::list <MSHREntry> *entryList = &(mshr_.find(ev->getBaseAddr())->second);
         for (std::list<MSHREntry>::iterator it = entryList->begin(); it != entryList->end(); it++) {
             if (it->cmd == Command::CustomReq && it->shootdown) {
-                if (it == entryList->begin()) { /* Shootdown in progress, we will receive an Ack but possibly no data with it */
+                if (it ==
+                    entryList->begin()) { /* Shootdown in progress, we will receive an Ack but possibly no data with it */
                     it->writebacks.insert(ev->getID());
                     memBackendConvertor_->handleMemEvent(ev);
                 } else {
-                    it = entryList->insert(it, MSHREntry(ev->getID(), ev->getCmd())); /* Process replacement before next shootdown */
+                    it = entryList->insert(it, MSHREntry(ev->getID(),
+                                                         ev->getCmd())); /* Process replacement before next shootdown */
                 }
                 return;
             }
@@ -273,32 +292,38 @@ void CoherentMemController::handleReplacement(MemEvent * ev) {
  * Flush is just a writeback of dirty data
  *
  */
-void CoherentMemController::handleFlush(MemEvent * ev) {
+void CoherentMemController::handleFlush(MemEvent *ev) {
     if (ev->isAddrGlobal()) {
         ev->setBaseAddr(translateToLocal(ev->getBaseAddr()));
         ev->setAddr(translateToLocal(ev->getAddr()));
     }
 
-    MemEvent* put = NULL;
+    MemEvent *put = nullptr;
     if (ev->getPayloadSize() != 0) {
-        put = new MemEvent(getName(), ev->getBaseAddr(), ev->getBaseAddr(), Command::PutM, ev->getPayload(), getCurrentSimTimeNano());
+        put = new MemEvent(getName(), ev->getBaseAddr(), ev->getBaseAddr(), Command::PutM,
+                           ev->getPayload(), getCurrentSimTimeNano());
         put->setFlag(MemEvent::F_NORESPONSE);
-        outstandingEventList_.insert(std::make_pair(put->getID(), OutstandingEvent(put, put->getBaseAddr())));
+        outstandingEventList_.insert(
+            std::make_pair(put->getID(), OutstandingEvent(put, put->getBaseAddr())));
         notifyListeners(ev);
 
         if (mshr_.find(put->getBaseAddr()) == mshr_.end()) {
-            mshr_.insert(std::make_pair(put->getBaseAddr(), std::list<MSHREntry>(1, MSHREntry(put->getID(), put->getCmd()))));
+            mshr_.insert(std::make_pair(put->getBaseAddr(), std::list<MSHREntry>(1, MSHREntry(
+                put->getID(), put->getCmd()))));
             memBackendConvertor_->handleMemEvent(put);
         } else {
-            mshr_.find(put->getBaseAddr())->second.push_back(MSHREntry(put->getID(), put->getCmd()));
+            mshr_.find(put->getBaseAddr())->second.push_back(
+                MSHREntry(put->getID(), put->getCmd()));
         }
     }
 
-    outstandingEventList_.insert(std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
+    outstandingEventList_.insert(
+        std::make_pair(ev->getID(), OutstandingEvent(ev, ev->getBaseAddr())));
     if (mshr_.find(ev->getBaseAddr()) == mshr_.end()) {
-        mshr_.insert(std::make_pair(ev->getBaseAddr(), std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
+        mshr_.insert(std::make_pair(ev->getBaseAddr(),
+                                    std::list<MSHREntry>(1, MSHREntry(ev->getID(), ev->getCmd()))));
         if (ev->getCmd() == Command::FlushLineInv) {
-            cacheStatus_.at(ev->getBaseAddr()/lineSize_) = false;
+            cacheStatus_.at(ev->getBaseAddr() / lineSize_) = false;
             ev->setCmd(Command::FlushLine);
         }
         memBackendConvertor_->handleMemEvent(ev);
@@ -309,7 +334,7 @@ void CoherentMemController::handleFlush(MemEvent * ev) {
 
 
 /* Response to shootdown indicating block is no longer cached and is clean at memory */
-void CoherentMemController::handleAckInv(MemEvent * ev) {
+void CoherentMemController::handleAckInv(MemEvent *ev) {
     if (ev->isAddrGlobal()) {
         ev->setBaseAddr(translateToLocal(ev->getBaseAddr()));
         ev->setAddr(translateToLocal(ev->getAddr()));
@@ -320,48 +345,50 @@ void CoherentMemController::handleAckInv(MemEvent * ev) {
     delete ev;
 
     /* Update cache status */
-    cacheStatus_.at(baseAddr/lineSize_) = false;
+    cacheStatus_.at(baseAddr / lineSize_) = false;
 
     /* Look up request */
-    MSHREntry * entry = &(mshr_.find(baseAddr)->second.front());
+    MSHREntry *entry = &(mshr_.find(baseAddr)->second.front());
     SST::Event::id_type requestID = entry->id;
-    OutstandingEvent * outEv = &(outstandingEventList_.find(requestID)->second);
+    OutstandingEvent *outEv = &(outstandingEventList_.find(requestID)->second);
 
     entry->shootdown = false; /* Shootdown complete */
 
     if (entry->writebacks.empty()) {
         if (outEv->decrementCount() == 0) { /* All shootdowns for this event are done */
-            CustomCmdInfo * info = customCommandHandler_->ready(outEv->request);
+            CustomCmdInfo *info = customCommandHandler_->ready(outEv->request);
             memBackendConvertor_->handleCustomEvent(info);
         }
     }
 }
 
 
-void CoherentMemController::handleFetchResp(MemEvent * ev) {
+void CoherentMemController::handleFetchResp(MemEvent *ev) {
     if (ev->isAddrGlobal()) {
         ev->setBaseAddr(translateToLocal(ev->getBaseAddr()));
         ev->setAddr(translateToLocal(ev->getAddr()));
     }
 
     Addr baseAddr = ev->getBaseAddr();
-    
+
     /* Update cache status */
-    cacheStatus_.at(baseAddr/lineSize_) = false;
+    cacheStatus_.at(baseAddr / lineSize_) = false;
 
     /* Look up request */
-    MSHREntry * entry = &(mshr_.find(baseAddr)->second.front());
+    MSHREntry *entry = &(mshr_.find(baseAddr)->second.front());
     SST::Event::id_type requestID = entry->id;
-    OutstandingEvent * outEv = &(outstandingEventList_.find(requestID)->second);
+    OutstandingEvent *outEv = &(outstandingEventList_.find(requestID)->second);
 
     // Write dirty data if needed
     if (ev->getDirty()) {
-        MemEvent * write = new MemEvent(getName(), ev->getAddr(), baseAddr, Command::PutM, ev->getPayload(), getCurrentSimTimeNano());
+        MemEvent *write = new MemEvent(getName(), ev->getAddr(), baseAddr, Command::PutM,
+                                       ev->getPayload(), getCurrentSimTimeNano());
         write->setRqstr(ev->getRqstr());
         ev->setFlag(MemEvent::F_NORESPONSE);
 
         entry->writebacks.insert(write->getID());
-        outstandingEventList_.insert(std::make_pair(write->getID(), OutstandingEvent(write, baseAddr)));
+        outstandingEventList_.insert(
+            std::make_pair(write->getID(), OutstandingEvent(write, baseAddr)));
         memBackendConvertor_->handleMemEvent(write);
     }
 
@@ -369,7 +396,7 @@ void CoherentMemController::handleFetchResp(MemEvent * ev) {
 
     entry->shootdown = false; // Complete
     if (entry->writebacks.empty() && outEv->decrementCount() == 0) {
-        CustomCmdInfo * info = customCommandHandler_->ready(outEv->request);
+        CustomCmdInfo *info = customCommandHandler_->ready(outEv->request);
         memBackendConvertor_->handleCustomEvent(info);
     }
 }
@@ -379,9 +406,10 @@ void CoherentMemController::handleFetchResp(MemEvent * ev) {
  * Only invalidations can be nacked since they are they 
  * only request the MemController sends to caches
  */
-void CoherentMemController::handleNack(MemEvent * ev) {
-    MemEvent * nackedEvent = ev->getNACKedEvent();
-    Addr baseAddr = nackedEvent->isAddrGlobal() ? translateToLocal(nackedEvent->getBaseAddr()) : nackedEvent->getBaseAddr();
+void CoherentMemController::handleNack(MemEvent *ev) {
+    MemEvent *nackedEvent = ev->getNACKedEvent();
+    Addr baseAddr = nackedEvent->isAddrGlobal() ? translateToLocal(nackedEvent->getBaseAddr())
+                                                : nackedEvent->getBaseAddr();
 
     /* NACKed event no longer needed due to race between replacement and Inv */
     if (mshr_.find(baseAddr) == mshr_.end()) {
@@ -390,7 +418,7 @@ void CoherentMemController::handleNack(MemEvent * ev) {
         return;
     }
 
-    MSHREntry * entry = &(mshr_.find(baseAddr)->second.front());
+    MSHREntry *entry = &(mshr_.find(baseAddr)->second.front());
     if (entry->shootdown) { // Still need the shootdown
         /* Compute backoff to avoid excessive NACKing */
         int retries = nackedEvent->getRetries();
@@ -407,36 +435,44 @@ void CoherentMemController::handleNack(MemEvent * ev) {
 
 
 /* Handle custom command */
-void CoherentMemController::handleCustomCmd(MemEventBase * evb) {
+void CoherentMemController::handleCustomCmd(MemEventBase *evb) {
     if (!customCommandHandler_) {
-        dbg.fatal(CALL_INFO, -1, "%s, Error: Received custom event but no handler loaded. Ev = %s. Time = %" PRIu64 "ns\n",
-                getName().c_str(), evb->getVerboseString().c_str(), getCurrentSimTimeNano());
+        dbg.fatal(CALL_INFO, -1,
+                  "%s, Error: Received custom event but no handler loaded. Ev = %s. Time = %"
+        PRIu64
+        "ns\n",
+            getName().c_str(), evb->getVerboseString().c_str(), getCurrentSimTimeNano());
     }
 
     CustomCmdMemHandler::MemEventInfo evInfo = customCommandHandler_->receive(evb);
     outstandingEventList_.insert(std::make_pair(evb->getID(), OutstandingEvent(evb, evInfo.addrs)));
-    OutstandingEvent * outEv = &(outstandingEventList_.find(evb->getID())->second);
+    OutstandingEvent *outEv = &(outstandingEventList_.find(evb->getID())->second);
 
     /* Custom commands may touch multiple (base) addresses */
     for (std::set<Addr>::iterator it = outEv->addrs.begin(); it != outEv->addrs.end(); it++) {
         if (mshr_.find(*it) == mshr_.end()) {
             if (!evInfo.shootdown) {
-                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(), evb->getCmd()))));
+                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(),
+                                                                                   evb->getCmd()))));
                 outEv->decrementCount();
             } else if (doShootdown(*it, evb)) {
-                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(), evb->getCmd(), evInfo.shootdown))));
+                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(),
+                                                                                   evb->getCmd(),
+                                                                                   evInfo.shootdown))));
             } else {
-                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(), evb->getCmd()))));
+                mshr_.insert(std::make_pair(*it, std::list<MSHREntry>(1, MSHREntry(evb->getID(),
+                                                                                   evb->getCmd()))));
                 outEv->decrementCount();
             }
         } else {
-            mshr_.find(*it)->second.push_back(MSHREntry(evb->getID(), evb->getCmd(), evInfo.shootdown));
+            mshr_.find(*it)->second.push_back(
+                MSHREntry(evb->getID(), evb->getCmd(), evInfo.shootdown));
         }
     }
 
     /* If ready to issue, issue */
     if (outEv->getCount() == 0) {
-        CustomCmdInfo * info = customCommandHandler_->ready(evb);
+        CustomCmdInfo *info = customCommandHandler_->ready(evb);
         memBackendConvertor_->handleCustomEvent(info);
     }
 }
@@ -446,14 +482,16 @@ void CoherentMemController::handleCustomCmd(MemEventBase * evb) {
  * Do a shootdown for the specified address
  * Return whether shootdown was needed or not
  */
-bool CoherentMemController::doShootdown(Addr addr, MemEventBase * ev) {
-    if (cacheStatus_.at(addr/lineSize_) == true) {
+bool CoherentMemController::doShootdown(Addr addr, MemEventBase *ev) {
+    if (cacheStatus_.at(addr / lineSize_) == true) {
         Addr globalAddr = translateToGlobal(addr);
-        MemEvent * inv = new MemEvent(getName(), globalAddr, globalAddr, Command::FetchInv, lineSize_, getCurrentSimTimeNano());
+        MemEvent *inv = new MemEvent(getName(), globalAddr, globalAddr, Command::FetchInv,
+                                     lineSize_, getCurrentSimTimeNano());
         inv->setRqstr(ev->getRqstr());
         inv->setDst(ev->getSrc());
 
-        msgQueue_.insert(std::make_pair(timestamp_, inv)); /* Send on next clock. TODO timing needed? */
+        msgQueue_.insert(
+            std::make_pair(timestamp_, inv)); /* Send on next clock. TODO timing needed? */
         return true;
     }
     return false;
@@ -462,10 +500,15 @@ bool CoherentMemController::doShootdown(Addr addr, MemEventBase * ev) {
 
 /* Handle MemResponse */
 void CoherentMemController::handleMemResponse(SST::Event::id_type id, uint32_t flags) {
-    std::map<SST::Event::id_type,OutstandingEvent>::iterator it = 
-      outstandingEventList_.find(id);
-    if( it == outstandingEventList_.end() ){
-      dbg.fatal(CALL_INFO, -1, "Coherent Memory controller (%s) received unrecgonized response ID: %" PRIu64 ", %" PRIu32 "", getName().c_str(), id.first, id.second);
+    std::map<SST::Event::id_type, OutstandingEvent>::iterator it =
+        outstandingEventList_.find(id);
+    if (it == outstandingEventList_.end()) {
+        dbg.fatal(CALL_INFO, -1,
+                  "Coherent Memory controller (%s) received unrecgonized response ID: %"
+        PRIu64
+        ", %"
+        PRIu32
+        "", getName().c_str(), id.first, id.second);
     }
 
     if (outstandingEventList_.find(id)->second.request->getCmd() == Command::CustomReq) {
@@ -478,25 +521,31 @@ void CoherentMemController::handleMemResponse(SST::Event::id_type id, uint32_t f
 /* Finish a MemEvent */
 void CoherentMemController::finishMemReq(SST::Event::id_type id, uint32_t flags) {
     /* Find the event that returned */
-    std::map<SST::Event::id_type,OutstandingEvent>::iterator it = outstandingEventList_.find(id);
+    std::map<SST::Event::id_type, OutstandingEvent>::iterator it = outstandingEventList_.find(id);
     if (it == outstandingEventList_.end())
-        dbg.fatal(CALL_INFO, -1, "Memory controller (%s) received unrecgonized response ID: %" PRIu64 ", %" PRIu32 "", getName().c_str(), id.first, id.second);
+        dbg.fatal(CALL_INFO, -1, "Memory controller (%s) received unrecgonized response ID: %"
+    PRIu64
+    ", %"
+    PRIu32
+    "", getName().c_str(), id.first, id.second);
 
-    OutstandingEvent * outEv = &(it->second);
+    OutstandingEvent *outEv = &(it->second);
 
-    MemEvent * ev = static_cast<MemEvent*>(outEv->request);
+    MemEvent *ev = static_cast<MemEvent *>(outEv->request);
     Addr baseAddr = *(outEv->addrs.begin()); /* Only one address */
-    MSHREntry * entry = &(mshr_.find(baseAddr)->second.front());
+    MSHREntry *entry = &(mshr_.find(baseAddr)->second.front());
 
     outstandingEventList_.erase(id);
 
     if (is_debug_event(ev)) {
-        Debug(_L3_, "Memory Controller: %s - Response received to (%s)\n", getName().c_str(), ev->getVerboseString().c_str());
+        Debug(_L3_, "Memory Controller: %s - Response received to (%s)\n", getName().c_str(),
+              ev->getVerboseString().c_str());
     }
 
     /* Update backing store */
     bool noncacheable = ev->queryFlag(MemEventBase::F_NONCACHEABLE);
-    if (backing_ && (ev->getCmd() == Command::PutM || (ev->getCmd() == Command::GetX && noncacheable)) )
+    if (backing_ &&
+        (ev->getCmd() == Command::PutM || (ev->getCmd() == Command::GetX && noncacheable)))
         MemController::writeData(ev);
 
     /* Special case - response was for a writeback needed for a shootdown */
@@ -505,7 +554,8 @@ void CoherentMemController::finishMemReq(SST::Event::id_type id, uint32_t flags)
         delete ev;
         if (entry->writebacks.empty() && !entry->shootdown) { /* Request now ready to issue */
             if (outstandingEventList_.find(entry->id)->second.decrementCount() == 0) {
-                CustomCmdInfo * info = customCommandHandler_->ready(outstandingEventList_.find(entry->id)->second.request);
+                CustomCmdInfo *info = customCommandHandler_->ready(
+                    outstandingEventList_.find(entry->id)->second.request);
                 memBackendConvertor_->handleCustomEvent(info);
             }
         }
@@ -520,9 +570,10 @@ void CoherentMemController::finishMemReq(SST::Event::id_type id, uint32_t flags)
         return;
     }
 
-    MemEvent * resp = ev->makeResponse();
+    MemEvent *resp = ev->makeResponse();
 
-    if (resp->getCmd() == Command::GetSResp || (resp->getCmd() == Command::GetXResp && !noncacheable)) {
+    if (resp->getCmd() == Command::GetSResp ||
+        (resp->getCmd() == Command::GetXResp && !noncacheable)) {
         MemController::readData(resp);
         if (!noncacheable) resp->setCmd(Command::GetXResp);
     }
@@ -549,10 +600,10 @@ void CoherentMemController::finishMemReq(SST::Event::id_type id, uint32_t flags)
  *  3. Creating and returning response message if needed
  */
 void CoherentMemController::finishCustomReq(SST::Event::id_type id, uint32_t flags) {
-    OutstandingEvent * outEv = &(outstandingEventList_.find(id)->second);
-    MemEventBase * ev = outEv->request;
+    OutstandingEvent *outEv = &(outstandingEventList_.find(id)->second);
+    MemEventBase *ev = outEv->request;
 
-    MemEventBase * resp = customCommandHandler_->finish(ev, flags);
+    MemEventBase *resp = customCommandHandler_->finish(ev, flags);
     if (resp != nullptr)
         link_->send(resp);
 
@@ -578,53 +629,57 @@ void CoherentMemController::updateMSHR(Addr baseAddr) {
     /* Delete address if no more events */
     if (mshr_.find(baseAddr)->second.empty()) {
         mshr_.erase(baseAddr);
-    
-    /* Start next event */
-    } else { 
-        MSHREntry * entry = &(mshr_.find(baseAddr)->second.front());
-        OutstandingEvent * outEv = &(outstandingEventList_.find(entry->id)->second);
+
+        /* Start next event */
+    } else {
+        MSHREntry *entry = &(mshr_.find(baseAddr)->second.front());
+        OutstandingEvent *outEv = &(outstandingEventList_.find(entry->id)->second);
 
         /* If custom request check whether it's ready to replay */
         if (outEv->request->getCmd() == Command::CustomReq) {
             if (entry->shootdown && doShootdown(baseAddr, outEv->request)) { /* Start shootdown */
                 return;
             } else {
-                entry->shootdown = false; 
-                if (entry->writebacks.empty() && outEv->decrementCount() == 0) { /* Command ready to issue */
-                    CustomCmdInfo * info = customCommandHandler_->ready(outEv->request);
+                entry->shootdown = false;
+                if (entry->writebacks.empty() &&
+                    outEv->decrementCount() == 0) { /* Command ready to issue */
+                    CustomCmdInfo *info = customCommandHandler_->ready(outEv->request);
                     memBackendConvertor_->handleCustomEvent(info);
                 }
             }
         } else { /* MemEvent */
-            replayMemEvent(static_cast<MemEvent*>((outstandingEventList_.find(entry->id)->second).request));
+            replayMemEvent(
+                static_cast<MemEvent *>((outstandingEventList_.find(entry->id)->second).request));
         }
     }
 }
 
 
-void CoherentMemController::replayMemEvent(MemEvent * ev) {
+void CoherentMemController::replayMemEvent(MemEvent *ev) {
     switch (ev->getCmd()) {
         case Command::GetS:
         case Command::GetX:
         case Command::GetSX:
             if (!ev->queryFlag(MemEvent::F_NONCACHEABLE)) {
-                cacheStatus_.at(ev->getBaseAddr()/lineSize_) = true;
+                cacheStatus_.at(ev->getBaseAddr() / lineSize_) = true;
             }
             memBackendConvertor_->handleMemEvent(ev);
             break;
         case Command::PutM:
-            cacheStatus_.at(ev->getBaseAddr()/lineSize_) = directory_;
+            cacheStatus_.at(ev->getBaseAddr() / lineSize_) = directory_;
             memBackendConvertor_->handleMemEvent(ev);
             break;
         case Command::FlushLineInv:
-            cacheStatus_.at(ev->getBaseAddr()/lineSize_) = false;
+            cacheStatus_.at(ev->getBaseAddr() / lineSize_) = false;
             ev->setCmd(Command::FlushLine);
         case Command::FlushLine:
             memBackendConvertor_->handleMemEvent(ev);
             break;
         default:
-            dbg.fatal(CALL_INFO, -1, "%s, Error: Attempt to replay unknown event: %s. Time = %" PRIu64 "ns.\n", 
-                    getName().c_str(), ev->getVerboseString().c_str(), getCurrentSimTimeNano());
+            dbg.fatal(CALL_INFO, -1, "%s, Error: Attempt to replay unknown event: %s. Time = %"
+            PRIu64
+            "ns.\n",
+                getName().c_str(), ev->getVerboseString().c_str(), getCurrentSimTimeNano());
             break;
     }
 }

@@ -22,35 +22,38 @@
 using namespace SST::Prospero;
 
 namespace SST {
-namespace Prospero {
+    namespace Prospero {
 
-class ProsperoTextTraceReader : public ProsperoTraceReader {
+        class ProsperoTextTraceReader : public ProsperoTraceReader {
 
-public:
-        ProsperoTextTraceReader( Component* owner, Params& params );
-        ProsperoTextTraceReader( ComponentId_t id, Params& params, Output* out );
-        ~ProsperoTextTraceReader();
-        ProsperoTraceEntry* readNextEntry();
+        public:
+            ProsperoTextTraceReader(Component *owner, Params &params);
 
-	SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
-               	ProsperoTextTraceReader,
-               	"prospero",
-               	"ProsperoTextTraceReader",
-               	SST_ELI_ELEMENT_VERSION(1,0,0),
-               	"Text Trace Reader",
-	       	SST::Prospero::ProsperoTraceReader
-	)
+            ProsperoTextTraceReader(ComponentId_t id, Params &params, Output *out);
 
-       	SST_ELI_DOCUMENT_PARAMS(
-               	{ "file", "Sets the file for the trace reader to use", "" }
-       	)
+            ~ProsperoTextTraceReader();
 
-private:
-	FILE* traceInput;
+            ProsperoTraceEntry *readNextEntry();
 
-};
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
+                ProsperoTextTraceReader,
+            "prospero",
+            "ProsperoTextTraceReader",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Text Trace Reader",
+            SST::Prospero::ProsperoTraceReader
+            )
 
-}
+            SST_ELI_DOCUMENT_PARAMS(
+            { "file", "Sets the file for the trace reader to use", "" }
+            )
+
+        private:
+            FILE *traceInput;
+
+        };
+
+    }
 }
 
 #endif

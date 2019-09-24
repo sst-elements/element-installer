@@ -24,31 +24,27 @@
 
 using namespace SST::Scheduler;
 
-AllocInfo::AllocInfo(Job* job, const Machine & mach)
-{
-    this -> job = job;
+AllocInfo::AllocInfo(Job *job, const Machine &mach) {
+    this->job = job;
     nodesNeeded = ceil((float) job->getProcsNeeded() / mach.coresPerNode);
     nodeIndices = new int[nodesNeeded];
     nodeIndices[0] = -1; // ConstraintAllocator puts allocation here
 }
 
-AllocInfo::AllocInfo(const AllocInfo & ai)
-{
+AllocInfo::AllocInfo(const AllocInfo &ai) {
     job = ai.job;
     nodesNeeded = ai.nodesNeeded;
     nodeIndices = new int[nodesNeeded];
-    for(int i = 0; i < nodesNeeded; i++){
+    for (int i = 0; i < nodesNeeded; i++) {
         nodeIndices[i] = ai.nodeIndices[i];
     }
 }
 
-AllocInfo::~AllocInfo() 
-{
-    delete [] nodeIndices;
+AllocInfo::~AllocInfo() {
+    delete[] nodeIndices;
 }
 
-std::string AllocInfo::getProcList() 
-{
+std::string AllocInfo::getProcList() {
     return "";
 }
 

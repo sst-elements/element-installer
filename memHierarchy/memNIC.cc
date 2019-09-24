@@ -36,7 +36,7 @@ using namespace SST::Interfaces;
 /*** MemNICBase implementation ************************************/
 /******************************************************************/
 
-MemNICBase::MemNICBase(Component * parent, Params &params) : MemLinkBase(parent, params) {
+MemNICBase::MemNICBase(Component *parent, Params &params) : MemLinkBase(parent, params) {
     build(params);
 }
 
@@ -44,19 +44,21 @@ MemNICBase::MemNICBase(ComponentId_t id, Params &params) : MemLinkBase(id, param
     build(params);
 }
 
-void MemNICBase::build(Params& params) {
+void MemNICBase::build(Params &params) {
     // Get source/destination parameters
     // Each NIC has a group ID and talks to those with IDs in sources and destinations
     // If no source/destination provided, source = group ID - 1, destination = group ID + 1
     bool found;
     info.id = params.find<uint32_t>("group", 0, found);
     if (!found) {
-        dbg.fatal(CALL_INFO, -1, "Param not specified(%s): group - group ID (or hierarchy level) for this NIC's component.\n", getName().c_str());
+        dbg.fatal(CALL_INFO, -1,
+                  "Param not specified(%s): group - group ID (or hierarchy level) for this NIC's component.\n",
+                  getName().c_str());
     }
     std::stringstream sources, destinations;
     sources.str(params.find<std::string>("sources", ""));
     destinations.str(params.find<std::string>("destinations", ""));
-    
+
     uint32_t id;
     while (sources >> id) {
         sourceIDs.insert(id);
@@ -77,13 +79,15 @@ void MemNICBase::build(Params& params) {
 
     initMsgSent = false;
 
-    dbg.debug(_L10_, "%s memNICBase info is: Name: %s, group: %" PRIu32 "\n",
-            getName().c_str(), info.name.c_str(), info.id);
+    dbg.debug(_L10_, "%s memNICBase info is: Name: %s, group: %"
+    PRIu32
+    "\n",
+        getName().c_str(), info.name.c_str(), info.id);
 }
 
-void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned int phase) {
+void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork *linkcontrol, unsigned int phase) {
     bool networkReady = linkcontrol->isNetworkInitialized();
-    
+
     // After we've set up network and exchanged params, drain the send queue
     if (networkReady && initMsgSent) {
         while (!initSendQueue.empty()) {
@@ -96,7 +100,7 @@ void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned 
     if (networkReady && !initMsgSent) {
         info.addr = linkcontrol->getEndpointID();
         InitMemRtrEvent *ev = new InitMemRtrEvent(info);
-        SimpleNetwork::Request * req = new SimpleNetwork::Request();
+        SimpleNetwork::Request *req = new SimpleNetwork::Request();
         req->dest = SimpleNetwork::INIT_BROADCAST_ADDR;
         req->src = info.addr;
         req->givePayload(ev);
@@ -109,31 +113,46 @@ void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned 
     // 2. MemEventBase - only notify parent if sender is a src or dst for us
     // We should know since network is in order and NIC does its init before the 
     // parents do
-    while (SimpleNetwork::Request *req = linkcontrol->recvInitData()) {
-        Event * payload = req->takePayload();
-        InitMemRtrEvent * imre = dynamic_cast<InitMemRtrEvent*>(payload);
+    while (SimpleNetwork::Request * req = linkcontrol->recvInitData()) {
+        Event *payload = req->takePayload();
+        InitMemRtrEvent *imre = dynamic_cast<InitMemRtrEvent *>(payload);
         if (imre) {
             // Record name->address map for all other endpoints
             networkAddressMap.insert(std::make_pair(imre->info.name, imre->info.addr));
-            
-            dbg.debug(_L10_, "%s (memNICBase) received imre. Name: %s, Addr: %" PRIu64 ", ID: %" PRIu32 ", start: %" PRIu64 ", end: %" PRIu64 ", size: %" PRIu64 ", step: %" PRIu64 "\n",
-                    getName().c_str(), imre->info.name.c_str(), imre->info.addr, imre->info.id, imre->info.region.start, imre->info.region.end, imre->info.region.interleaveSize, imre->info.region.interleaveStep);
+
+            dbg.debug(_L10_, "%s (memNICBase) received imre. Name: %s, Addr: %"
+            PRIu64
+            ", ID: %"
+            PRIu32
+            ", start: %"
+            PRIu64
+            ", end: %"
+            PRIu64
+            ", size: %"
+            PRIu64
+            ", step: %"
+            PRIu64
+            "\n",
+                getName().c_str(), imre->info.name.c_str(), imre->info.addr, imre->info.id, imre->info.region.start, imre->info.region.end, imre->info.region.interleaveSize, imre->info.region.interleaveStep);
 
             if (sourceIDs.find(imre->info.id) != sourceIDs.end()) {
                 //sourceEndpointInfo.insert(imre->info);
-            	addSource(imre->info);
-                dbg.debug(_L10_, "\tAdding to sourceEndpointInfo. %zu sources found\n", sourceEndpointInfo.size());
+                addSource(imre->info);
+                dbg.debug(_L10_, "\tAdding to sourceEndpointInfo. %zu sources found\n",
+                          sourceEndpointInfo.size());
             } else if (destIDs.find(imre->info.id) != destIDs.end()) {
                 //destEndpointInfo.insert(imre->info);
-            	addDest(imre->info);
-                dbg.debug(_L10_, "\tAdding to destEndpointInfo. %zu destinations found\n", destEndpointInfo.size());
+                addDest(imre->info);
+                dbg.debug(_L10_, "\tAdding to destEndpointInfo. %zu destinations found\n",
+                          destEndpointInfo.size());
             }
             delete imre;
         } else {
-            MemRtrEvent * mre = static_cast<MemRtrEvent*>(payload);
-            MemEventInit *ev = static_cast<MemEventInit*>(mre->event);
-            dbg.debug(_L10_, "%s (memNICBase) received mre during init. %s\n", getName().c_str(), mre->event->getVerboseString().c_str());
-            
+            MemRtrEvent *mre = static_cast<MemRtrEvent *>(payload);
+            MemEventInit *ev = static_cast<MemEventInit *>(mre->event);
+            dbg.debug(_L10_, "%s (memNICBase) received mre during init. %s\n", getName().c_str(),
+                      mre->event->getVerboseString().c_str());
+
             /* 
              * Event is for us if:
              *  1. We are the dst
@@ -143,7 +162,7 @@ void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned 
              */
             if (ev->getInitCmd() == MemEventInit::InitCommand::Region) {
                 if (ev->getDst() == getName()) {
-                    MemEventInitRegion * rEv = static_cast<MemEventInitRegion*>(ev);
+                    MemEventInitRegion *rEv = static_cast<MemEventInitRegion *>(ev);
                     if (rEv->getSetRegion() && acceptRegion) {
                         info.region = rEv->getRegion();
                         dbg.debug(_L10_, "\tUpdating local region\n");
@@ -152,8 +171,9 @@ void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned 
                 delete ev;
                 delete mre;
             } else if (
-                    (ev->getCmd() == Command::NULLCMD && (isSource(mre->event->getSrc()) || isDest(mre->event->getSrc()))) 
-                    || ev->getDst() == getName()) {
+                (ev->getCmd() == Command::nullptrCMD &&
+                 (isSource(mre->event->getSrc()) || isDest(mre->event->getSrc())))
+                || ev->getDst() == getName()) {
                 dbg.debug(_L10_, "\tInserting in initQueue\n");
                 initQueue.push(mre);
             }
@@ -162,19 +182,19 @@ void MemNICBase::nicInit(SST::Interfaces::SimpleNetwork * linkcontrol, unsigned 
     }
 }
 
-void MemNICBase::sendInitData(MemEventInit * event) {
-    MemRtrEvent * mre = new MemRtrEvent(event);
-    SimpleNetwork::Request* req = new SimpleNetwork::Request();
+void MemNICBase::sendInitData(MemEventInit *event) {
+    MemRtrEvent *mre = new MemRtrEvent(event);
+    SimpleNetwork::Request *req = new SimpleNetwork::Request();
     req->dest = SimpleNetwork::INIT_BROADCAST_ADDR;
     req->givePayload(mre);
     initSendQueue.push(req);
 }
 
-MemEventInit * MemNICBase::recvInitData() {
+MemEventInit *MemNICBase::recvInitData() {
     if (initQueue.size()) {
-        MemRtrEvent * mre = initQueue.front();
+        MemRtrEvent *mre = initQueue.front();
         initQueue.pop();
-        MemEventInit * ev = static_cast<MemEventInit*>(mre->event);
+        MemEventInit *ev = static_cast<MemEventInit *>(mre->event);
         delete mre;
         return ev;
     }
@@ -182,10 +202,12 @@ MemEventInit * MemNICBase::recvInitData() {
 }
 
 /* Translate destination string to network address */
-uint64_t MemNICBase::lookupNetworkAddress(const std::string & dst) const {
-    std::unordered_map<std::string,uint64_t>::const_iterator it = networkAddressMap.find(dst);
+uint64_t MemNICBase::lookupNetworkAddress(const std::string &dst) const {
+    std::unordered_map<std::string, uint64_t>::const_iterator it = networkAddressMap.find(dst);
     if (it == networkAddressMap.end()) {
-        dbg.fatal(CALL_INFO, -1, "%s (MemNICBase), Network address for destination '%s' not found in networkAddressMap.\n", getName().c_str(), dst.c_str());
+        dbg.fatal(CALL_INFO, -1,
+                  "%s (MemNICBase), Network address for destination '%s' not found in networkAddressMap.\n",
+                  getName().c_str(), dst.c_str());
     }
     return it->second;
 }
@@ -198,7 +220,7 @@ uint64_t MemNICBase::lookupNetworkAddress(const std::string & dst) const {
 /******************************************************************/
 
 /* Constructor */
-MemNIC::MemNIC(Component * parent, Params &params) : MemNICBase(parent, params) {
+MemNIC::MemNIC(Component *parent, Params &params) : MemNICBase(parent, params) {
     build(params);
 }
 
@@ -206,13 +228,14 @@ MemNIC::MemNIC(ComponentId_t id, Params &params) : MemNICBase(id, params) {
     build(params);
 }
 
-void MemNIC::build(Params& params) {
+void MemNIC::build(Params &params) {
 
     // Get network parameters and create link control
     std::string linkName = params.find<std::string>("port", "");
-    if (linkName == "") 
-        dbg.fatal(CALL_INFO, -1, "Param not specified(%s): port - the name of the port that the MemNIC is attached to. This should be set internally by components creating the memNIC.\n",
-                getName().c_str());
+    if (linkName == "")
+        dbg.fatal(CALL_INFO, -1,
+                  "Param not specified(%s): port - the name of the port that the MemNIC is attached to. This should be set internally by components creating the memNIC.\n",
+                  getName().c_str());
 
     // Error checking for much of this is done by the link control
     bool found;
@@ -221,16 +244,20 @@ void MemNIC::build(Params& params) {
     std::string linkInbufSize = params.find<std::string>("network_input_buffer_size", "1KiB");
     std::string linkOutbufSize = params.find<std::string>("network_output_buffer_size", "1KiB");
 
-    std::string link_control_class = params.find<std::string>("network_link_control", "merlin.linkcontrol");
+    std::string link_control_class = params.find<std::string>("network_link_control",
+                                                              "merlin.linkcontrol");
 
-    link_control = (SimpleNetwork*)loadSubComponent(link_control_class, params); // But link control doesn't use params so manually initialize
-    link_control->initialize(linkName, UnitAlgebra(linkBandwidth), num_vcs, UnitAlgebra(linkInbufSize), UnitAlgebra(linkOutbufSize));
+    link_control = (SimpleNetwork *) loadSubComponent(link_control_class,
+                                                      params); // But link control doesn't use params so manually initialize
+    link_control->initialize(linkName, UnitAlgebra(linkBandwidth), num_vcs,
+                             UnitAlgebra(linkInbufSize), UnitAlgebra(linkOutbufSize));
 
     // Packet size
     UnitAlgebra packetSize = UnitAlgebra(params.find<std::string>("min_packet_size", "8B"));
     if (!packetSize.hasUnits("B"))
-        dbg.fatal(CALL_INFO, -1, "Invalid param(%s): min_packet_size - must have units of bytes (B). SI units OK. You specified '%s'\n.",
-                getName().c_str(), packetSize.toString().c_str());
+        dbg.fatal(CALL_INFO, -1,
+                  "Invalid param(%s): min_packet_size - must have units of bytes (B). SI units OK. You specified '%s'\n.",
+                  getName().c_str(), packetSize.toString().c_str());
 
     packetHeaderBytes = packetSize.getRoundedValue();
 
@@ -282,11 +309,11 @@ bool MemNIC::clock() {
  * Return whether event can be received
  */
 bool MemNIC::recvNotify(int) {
-    MemEventBase * me = recv();
+    MemEventBase *me = recv();
     if (me) {
         if (is_debug_event(me)) {
-            dbg.debug(_L9_, "%s, memNIC recv: src: %s. cmd: %s\n", 
-                    getName().c_str(), me->getSrc().c_str(), CommandString[(int)me->getCmd()]);
+            dbg.debug(_L9_, "%s, memNIC recv: src: %s. cmd: %s\n",
+                      getName().c_str(), me->getSrc().c_str(), CommandString[(int) me->getCmd()]);
         }
 
         // Call parent's handler
@@ -299,15 +326,16 @@ bool MemNIC::recvNotify(int) {
 /* Send event to memNIC */
 void MemNIC::send(MemEventBase *ev) {
     SimpleNetwork::Request *req = new SimpleNetwork::Request();
-    MemRtrEvent * mre = new MemRtrEvent(ev);
+    MemRtrEvent *mre = new MemRtrEvent(ev);
     req->src = info.addr;
     req->dest = lookupNetworkAddress(ev->getDst());
     req->size_in_bits = getSizeInBits(ev);
     req->vn = 0;
-    
+
     if (is_debug_event(ev)) {
         dbg.debug(_L9_, "%s, memNIC adding to send queue: dst: %s, bits: %zu, cmd: %s\n",
-                getName().c_str(), ev->getDst().c_str(), req->size_in_bits, CommandString[(int)ev->getCmd()]);
+                  getName().c_str(), ev->getDst().c_str(), req->size_in_bits,
+                  CommandString[(int) ev->getCmd()]);
     }
 
     req->givePayload(mre);
@@ -326,29 +354,30 @@ size_t MemNIC::getSizeInBits(MemEventBase *ev) {
 /* 
  * Polling-based receive function
  */
-MemEventBase* MemNIC::recv() {
+MemEventBase *MemNIC::recv() {
     SimpleNetwork::Request *req = link_control->recv(0);
     if (req != nullptr) {
-        MemRtrEvent *mre = static_cast<MemRtrEvent*>(req->takePayload());
+        MemRtrEvent *mre = static_cast<MemRtrEvent *>(req->takePayload());
         delete req;
-        
+
         if (mre->hasClientData()) {
-            MemEventBase * ev = mre->event;
-            ev->setDeliveryLink(mre->getLinkId(), NULL);
+            MemEventBase *ev = mre->event;
+            ev->setDeliveryLink(mre->getLinkId(), nullptr);
             delete mre;
             return ev;
         } else { /* InitMemRtrEvent - someone updated their info */
-            InitMemRtrEvent *imre = static_cast<InitMemRtrEvent*>(mre);
+            InitMemRtrEvent *imre = static_cast<InitMemRtrEvent *>(mre);
             if (networkAddressMap.find(imre->info.name) == networkAddressMap.end()) {
-                dbg.fatal(CALL_INFO, -1, "%s (MemNIC), received information about previously unknown endpoint. This case is not handled. Endpoint name: %s\n",
-                        getName().c_str(), imre->info.name.c_str());
+                dbg.fatal(CALL_INFO, -1,
+                          "%s (MemNIC), received information about previously unknown endpoint. This case is not handled. Endpoint name: %s\n",
+                          getName().c_str(), imre->info.name.c_str());
             }
             if (sourceIDs.find(imre->info.id) != sourceIDs.end()) {
                 //sourceEndpointInfo.insert(imre->info);
-            	addSource(imre->info);
+                addSource(imre->info);
             } else if (destIDs.find(imre->info.id) != destIDs.end()) {
                 //destEndpointInfo.insert(imre->info);
-            	addDest(imre->info);
+                addDest(imre->info);
             }
             delete imre;
         }
@@ -360,11 +389,11 @@ MemEventBase* MemNIC::recv() {
 void MemNIC::printStatus(Output &out) {
     out.output("  MemHierarchy::MemNIC\n");
     out.output("    Send queue (%zu entries):\n", sendQueue.size());
-    
+
     // Since this is just debug/fatal we're just going to read out the queue & re-populate it
-    std::queue<SST::Interfaces::SimpleNetwork::Request*> tmpQ;
+    std::queue < SST::Interfaces::SimpleNetwork::Request * > tmpQ;
     while (!sendQueue.empty()) {
-        MemEventBase * ev = static_cast<MemRtrEvent*>(sendQueue.front()->inspectPayload())->event;
+        MemEventBase *ev = static_cast<MemRtrEvent *>(sendQueue.front()->inspectPayload())->event;
         out.output("      %s\n", ev->getVerboseString().c_str());
         tmpQ.push(sendQueue.front());
         sendQueue.pop();
@@ -377,7 +406,7 @@ void MemNIC::printStatus(Output &out) {
 
 void MemNIC::emergencyShutdownDebug(Output &out) {
     out.output(" Draining link control...\n");
-    MemEventBase * me = recv();
+    MemEventBase *me = recv();
     while (me != nullptr) {
         out.output("      Undelivered message: %s\n", me->getVerboseString().c_str());
         me = recv();

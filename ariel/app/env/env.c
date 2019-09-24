@@ -19,19 +19,19 @@
 
 extern char **environ;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-	printf("SST Environment Printer\n");
+    printf("SST Environment Printer\n");
 
-	int next_env_index = 0;
+    int next_env_index = 0;
 
-	while( NULL != environ[next_env_index] ) {
-		char* key   = strtok(environ[next_env_index], "=");
-		char* value = strtok(NULL, "=");
+    while (nullptr != environ[next_env_index]) {
+        char *key = strtok(environ[next_env_index], "=");
+        char *value = strtok(nullptr, "=");
 
-		printf("%5d %30s = \"%s\"\n", next_env_index, key, value);
-		next_env_index++;
-	}
+        printf("%5d %30s = \"%s\"\n", next_env_index, key, value);
+        next_env_index++;
+    }
 
-	return 0;
+    return 0;
 }

@@ -26,16 +26,17 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 
 BroadcastShim::BroadcastShim(ComponentId_t id, Params &params) : Component(id) {
-    
+
     output_ = new SST::Output("BroadcastShim ", 1, 0, SST::Output::STDOUT);
-    
-    SST::Link* link;
+
+    SST::Link *link;
     int linkCPU = 0;
     int linkSieve = 0;
-    
+
     while (true) {
         std::string linkName = "cpu_alloc_link_" + std::to_string(linkCPU);
-        link = configureLink(linkName, "100 ps", new Event::Handler<BroadcastShim>(this, &BroadcastShim::processCoreEvent));
+        link = configureLink(linkName, "100 ps", new Event::Handler<BroadcastShim>(this,
+                                                                                   &BroadcastShim::processCoreEvent));
         if (link) {
             cpuAllocLinks_.push_back(link);
             output_->output(CALL_INFO, "Port %d = Link %d\n", link->getId(), linkCPU);
@@ -44,10 +45,11 @@ BroadcastShim::BroadcastShim(ComponentId_t id, Params &params) : Component(id) {
             break;
         }
     }
-    
+
     while (true) {
         std::string linkName = "sieve_alloc_link_" + std::to_string(linkSieve);
-        link = configureLink(linkName, "100 ps", new Event::Handler<BroadcastShim>(this, &BroadcastShim::processSieveEvent));
+        link = configureLink(linkName, "100 ps", new Event::Handler<BroadcastShim>(this,
+                                                                                   &BroadcastShim::processSieveEvent));
         if (link) {
             sieveAllocLinks_.push_back(link);
             output_->output(CALL_INFO, "Port %d = Link %d\n", link->getId(), linkSieve);
@@ -57,24 +59,29 @@ BroadcastShim::BroadcastShim(ComponentId_t id, Params &params) : Component(id) {
         }
     }
 
-    if (linkCPU < 1) output_->fatal(CALL_INFO, -1,"Did not find any connected links on ports cpu_alloc_link_n\n");
-    if (linkSieve < 1) output_->fatal(CALL_INFO, -1,"Did not find any connected links on ports sive_alloc_link_n\n");
-    
+    if (linkCPU < 1)
+        output_->fatal(CALL_INFO, -1,
+                       "Did not find any connected links on ports cpu_alloc_link_n\n");
+    if (linkSieve < 1)
+        output_->fatal(CALL_INFO, -1,
+                       "Did not find any connected links on ports sive_alloc_link_n\n");
+
 }
 
 
-void BroadcastShim::processCoreEvent(SST::Event* ev) {
-    AllocTrackEvent* event = dynamic_cast<AllocTrackEvent*>(ev);
-    
-    for (std::vector<Link*>::iterator it = sieveAllocLinks_.begin(); it != sieveAllocLinks_.end(); it++) {
+void BroadcastShim::processCoreEvent(SST::Event *ev) {
+    AllocTrackEvent *event = dynamic_cast<AllocTrackEvent *>(ev);
+
+    for (std::vector<Link *>::iterator it = sieveAllocLinks_.begin();
+         it != sieveAllocLinks_.end(); it++) {
         (*it)->send(new AllocTrackEvent(*event));
     }
-    
+
     delete event;
 }
 
 
 /* Unused in practice since alloc links are currently one way */
-void BroadcastShim::processSieveEvent(SST::Event* ev) {
+void BroadcastShim::processSieveEvent(SST::Event *ev) {
     delete ev;
 }

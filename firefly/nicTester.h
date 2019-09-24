@@ -24,7 +24,7 @@
 class DmaEntry;
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
 #define FOREACH_STATE(NAME) \
     NAME(PostRecv)\
@@ -36,40 +36,51 @@ namespace Firefly {
 #define GENERATE_STRING(STRING) #STRING,
 
 
-class VirtNic;
+        class VirtNic;
 
-class NicTester : public SST::Component {
+        class NicTester : public SST::Component {
 
-  public:
-    NicTester( SST::ComponentId_t id, SST::Params &params );
-    ~NicTester() {};
-    void setup( void );
-    void init( unsigned int phase );
-    void printStatus( Output& ) {};
-    void handleSelfEvent( SST::Event* );
+        public:
+            NicTester(SST::ComponentId_t id, SST::Params &params);
 
-  private:
-    enum {
-        FOREACH_STATE(GENERATE_ENUM)
-    } m_state;
+            ~NicTester() {};
 
-    static const char* m_stateName[];
-    bool notifySendPioDone( void* );
-    bool notifySendDmaDone( void* );
-    bool notifyRecvDmaDone( int, int, size_t, void* );
-    bool notifyNeedRecv( int, int, size_t );
+            void setup(void);
 
-    void postRecv();
-    void postSend();
-    void waitSend();
+            void init(unsigned int phase);
 
-    SST::Link*  m_selfLink;
-    SST::Link*  m_hostLink;
-    VirtNic*    m_vNic;
-    Output      m_dbg;
-};
+            void printStatus(Output &) {};
+
+            void handleSelfEvent(SST::Event *);
+
+        private:
+            enum {
+                FOREACH_STATE(GENERATE_ENUM)
+            } m_state;
+
+            static const char *m_stateName[];
+
+            bool notifySendPioDone(void *);
+
+            bool notifySendDmaDone(void *);
+
+            bool notifyRecvDmaDone(int, int, size_t, void *);
+
+            bool notifyNeedRecv(int, int, size_t);
+
+            void postRecv();
+
+            void postSend();
+
+            void waitSend();
+
+            SST::Link *m_selfLink;
+            SST::Link *m_hostLink;
+            VirtNic *m_vNic;
+            Output m_dbg;
+        };
 
 
-}
+    }
 }
 #endif

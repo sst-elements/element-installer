@@ -19,26 +19,23 @@
 
 using namespace SST::Firefly;
 
-TestFuncSM::TestFuncSM( SST::Params& params ) :
-    FunctionSMInterface( params ),
-    m_event( NULL )
-{
+TestFuncSM::TestFuncSM(SST::Params &params) :
+    FunctionSMInterface(params),
+    m_event(nullptr) {
 }
 
-void TestFuncSM::handleStartEvent( SST::Event *e, Retval& retval ) 
-{
-    assert( NULL == m_event );
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void TestFuncSM::handleStartEvent(SST::Event *e, Retval &retval) {
+    assert(nullptr == m_event);
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
 
-    m_event = static_cast< TestStartEvent* >(e);
+    m_event = static_cast< TestStartEvent * >(e);
 
-    proto()->test( m_event->req, m_event->flag, m_event->resp );
+    proto()->test(m_event->req, m_event->flag, m_event->resp);
 }
 
-void TestFuncSM::handleEnterEvent( Retval& retval )
-{
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void TestFuncSM::handleEnterEvent(Retval &retval) {
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
     retval.setExit(0);
     delete m_event;
-    m_event = NULL;
+    m_event = nullptr;
 }

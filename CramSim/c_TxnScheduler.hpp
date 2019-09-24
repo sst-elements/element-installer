@@ -39,27 +39,31 @@
 namespace SST {
     namespace n_Bank {
         class c_AddressHasher;
+
         class c_TxnConverter;
+
         class c_Controller;
 
-        enum class e_txnSchedulingPolicy {FCFS, FRFCFS};
-        typedef std::list<c_Transaction*> TxnQueue;
+        enum class e_txnSchedulingPolicy {
+            FCFS, FRFCFS
+        };
+        typedef std::list<c_Transaction *> TxnQueue;
 
-        class c_TxnScheduler: public SubComponent{
+        class c_TxnScheduler : public SubComponent {
         public:
 
             SST_ELI_REGISTER_SUBCOMPONENT(
                 c_TxnScheduler,
-                "CramSim",
-                "c_TxnScheduler",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-                "Transaction Scheduler",
-                "SST::CramSim::Controller::TxnScheduler"
+            "CramSim",
+            "c_TxnScheduler",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Transaction Scheduler",
+            "SST::CramSim::Controller::TxnScheduler"
             )
 
             SST_ELI_DOCUMENT_PARAMS(
-                {"txnSchedulingPolicy", "Transaction scheduling policy", NULL},
-                {"numTxnQEntries", "The number of transaction queue entries", NULL},
+            { "txnSchedulingPolicy", "Transaction scheduling policy", nullptr },
+            { "numTxnQEntries", "The number of transaction queue entries", nullptr },
             )
 
             SST_ELI_DOCUMENT_PORTS(
@@ -69,30 +73,35 @@ namespace SST {
             )
 
             c_TxnScheduler(SST::Component *comp, SST::Params &x_params);
+
             ~c_TxnScheduler();
 
             virtual void run();
-            virtual bool push(c_Transaction* newTxn);
-            virtual bool isHit(c_Transaction* newTxn);
+
+            virtual bool push(c_Transaction *newTxn);
+
+            virtual bool isHit(c_Transaction *newTxn);
 
 
         private:
-            virtual c_Transaction* getNextTxn(TxnQueue& x_queue, int x_ch);
-            virtual bool hasDependancy(c_Transaction* x_txn, int x_ch);
-            virtual void popTxn(TxnQueue& x_queue, c_Transaction* x_txn);
+            virtual c_Transaction *getNextTxn(TxnQueue &x_queue, int x_ch);
+
+            virtual bool hasDependancy(c_Transaction *x_txn, int x_ch);
+
+            virtual void popTxn(TxnQueue &x_queue, c_Transaction *x_txn);
 
             //**Controller
-            c_Controller * m_controller;
+            c_Controller *m_controller;
             //**transaction converter
-            c_TxnConverter* m_txnConverter;
+            c_TxnConverter *m_txnConverter;
             //**command Scheduler
-            c_CmdScheduler* m_cmdScheduler;
+            c_CmdScheduler *m_cmdScheduler;
 
             //**per-channel transaction queue
-            std::vector<TxnQueue> m_txnQ;      // unified queue
+            std::vector <TxnQueue> m_txnQ;      // unified queue
             //**per-channel tranaction queues for read-first scheduling
-            std::vector<TxnQueue> m_txnReadQ;  // read queue for read-first scheduling
-            std::vector<TxnQueue> m_txnWriteQ; // write queue for read-first scheduling
+            std::vector <TxnQueue> m_txnReadQ;  // read queue for read-first scheduling
+            std::vector <TxnQueue> m_txnWriteQ; // write queue for read-first scheduling
             unsigned m_maxNumPendingWrite;
             unsigned m_minNumPendingWrite;
 

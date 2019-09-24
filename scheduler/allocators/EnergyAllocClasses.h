@@ -26,11 +26,13 @@ namespace SST {
         class Machine;
 
         namespace EnergyHelpers {
-            void roundallocarray(double * x, int processors, int numneeded, int* newx);
+            void roundallocarray(double *x, int processors, int numneeded, int *newx);
 
-            void hybridalloc(int* oldx, int* roundedalloc, int processors, int requiredprocessors, const Machine & machine);
+            void hybridalloc(int *oldx, int *roundedalloc, int processors, int requiredprocessors,
+                             const Machine &machine);
 
-            std::vector<int>* getEnergyNodes(std::vector<int>* available, int numProcs, const Machine & machine);
+            std::vector<int> *getEnergyNodes(std::vector<int> *available, int numProcs,
+                                             const Machine &machine);
         }
     }
 }

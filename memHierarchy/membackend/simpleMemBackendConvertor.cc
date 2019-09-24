@@ -24,25 +24,28 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 
 SimpleMemBackendConvertor::SimpleMemBackendConvertor(Component *comp, Params &params) :
-        MemBackendConvertor(comp,params) 
-{
+    MemBackendConvertor(comp, params) {
     using std::placeholders::_1;
-    static_cast<SimpleMemBackend*>(m_backend)->setResponseHandler( std::bind( &SimpleMemBackendConvertor::handleMemResponse, this, _1 ) );
+    static_cast<SimpleMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&SimpleMemBackendConvertor::handleMemResponse, this, _1));
 }
 
 SimpleMemBackendConvertor::SimpleMemBackendConvertor(ComponentId_t id, Params &params) :
-        MemBackendConvertor(id,params) 
-{
+    MemBackendConvertor(id, params) {
     using std::placeholders::_1;
-    static_cast<SimpleMemBackend*>(m_backend)->setResponseHandler( std::bind( &SimpleMemBackendConvertor::handleMemResponse, this, _1 ) );
+    static_cast<SimpleMemBackend *>(m_backend)->setResponseHandler(
+        std::bind(&SimpleMemBackendConvertor::handleMemResponse, this, _1));
 }
 
-bool SimpleMemBackendConvertor::issue( BaseReq* req ) {
+bool SimpleMemBackendConvertor::issue(BaseReq *req) {
     if (req->isMemEv()) {
-        MemReq * mreq = static_cast<MemReq*>(req);
-        return static_cast<SimpleMemBackend*>(m_backend)->issueRequest( mreq->id(), mreq->addr(), mreq->isWrite(), m_backendRequestWidth );
+        MemReq *mreq = static_cast<MemReq *>(req);
+        return static_cast<SimpleMemBackend *>(m_backend)->issueRequest(mreq->id(), mreq->addr(),
+                                                                        mreq->isWrite(),
+                                                                        m_backendRequestWidth);
     } else {
-        CustomReq * creq = static_cast<CustomReq*>(req);
-        return static_cast<SimpleMemBackend*>(m_backend)->issueCustomRequest( creq->id(), creq->getInfo() );
+        CustomReq *creq = static_cast<CustomReq *>(req);
+        return static_cast<SimpleMemBackend *>(m_backend)->issueCustomRequest(creq->id(),
+                                                                              creq->getInfo());
     }
 }

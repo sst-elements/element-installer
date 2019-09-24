@@ -29,28 +29,31 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacTraceReader : public SST::Component {
-public:
+        class ZodiacTraceReader : public SST::Component {
+        public:
 
-  ZodiacTraceReader(SST::ComponentId_t id, SST::Params& params);
-  void setup() { }
-  void finish() { }
+            ZodiacTraceReader(SST::ComponentId_t id, SST::Params &params);
 
-private:
-  ZodiacTraceReader();  // for serialization only
-  ZodiacTraceReader(const ZodiacTraceReader&); // do not implement
-  void operator=(const ZodiacTraceReader&); // do not implement
+            void setup() {}
 
-  void handleEvent( SST::Event *ev );
-  virtual bool clockTic( SST::Cycle_t );
+            void finish() {}
 
-  MP::Interface* msgapi;
+        private:
+            ZodiacTraceReader();  // for serialization only
+            ZodiacTraceReader(const ZodiacTraceReader &); // do not implement
+            void operator=(const ZodiacTraceReader &); // do not implement
 
-};
+            void handleEvent(SST::Event *ev);
 
-}
+            virtual bool clockTic(SST::Cycle_t);
+
+            MP::Interface *msgapi;
+
+        };
+
+    }
 }
 
 #endif /* _ZODIAC_TRACE_READER_H */

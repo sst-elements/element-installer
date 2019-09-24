@@ -20,38 +20,41 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberCollectShmemEvent : public EmberShmemEvent {
+        class EmberCollectShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberCollectShmemEvent( Shmem::Interface& api, Output* output,
-               Hermes::Vaddr dest, Hermes::Vaddr src, size_t nelems,
-               int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,  
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ),
-            m_dest(dest), m_src(src), m_nelems(nelems),
-            m_pe_start(PE_start), m_stride( logPE_stride), m_size(PE_size), m_pSync(pSync) {}
-	~EmberCollectShmemEvent() {}
+        public:
+            EmberCollectShmemEvent(Shmem::Interface &api, Output *output,
+                                   Hermes::Vaddr dest, Hermes::Vaddr src, size_t nelems,
+                                   int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,
+                                   EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_dest(dest), m_src(src), m_nelems(nelems),
+                m_pe_start(PE_start), m_stride(logPE_stride), m_size(PE_size), m_pSync(pSync) {}
 
-    std::string getName() { return "Collect"; }
+            ~EmberCollectShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Collect"; }
 
-        EmberEvent::issue( time );
-        m_api.collect( m_dest, m_src, m_nelems, m_pe_start, m_stride, m_size, m_pSync, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.collect(m_dest, m_src, m_nelems, m_pe_start, m_stride, m_size, m_pSync,
+                              callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Hermes::Vaddr m_src;
+            size_t m_nelems;
+            int m_pe_start;
+            int m_stride;
+            int m_size;
+            Hermes::Vaddr m_pSync;
+        };
+
     }
-private:
-    Hermes::Vaddr m_dest;
-    Hermes::Vaddr m_src;
-    size_t m_nelems;
-    int m_pe_start;
-    int m_stride;
-    int m_size;
-    Hermes::Vaddr m_pSync;
-};
-
-}
 }
 
 #endif

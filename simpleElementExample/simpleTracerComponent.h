@@ -22,83 +22,88 @@ using namespace std;
 using namespace SST;
 using namespace SST::MemHierarchy;
 
-namespace SST{
-namespace SimpleTracerComponent {
+namespace SST {
+    namespace SimpleTracerComponent {
 
-class simpleTracerComponent : public SST::Component {
-public:
+        class simpleTracerComponent : public SST::Component {
+        public:
 
-    // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_COMPONENT(
-        simpleRNGComponent,
-        "simpleElementExample",
-        "simpleRNGComponent",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Random number generation component",
-        COMPONENT_CATEGORY_UNCATEGORIZED)
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        { "seed_w", "The seed to use for the random number generator", "7" },
-        { "seed_z", "The seed to use for the random number generator", "5" },
-        { "seed", "The seed to use for the random number generator.", "11" },
-        { "rng", "The random number generator to use (Marsaglia or Mersenne), default is Mersenne", "Mersenne"},
-        { "count", "The number of random numbers to generate, default is 1000", "1000" },
-        { "verbose", "Sets the output verbosity of the component", "0" },
-    )
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(
+                simpleRNGComponent,
+            "simpleElementExample",
+            "simpleRNGComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Random number generation component",
+            COMPONENT_CATEGORY_UNCATEGORIZED)
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_STATISTICS(
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "seed_w", "The seed to use for the random number generator", "7" },
+            { "seed_z", "The seed to use for the random number generator", "5" },
+            { "seed", "The seed to use for the random number generator.", "11" },
+            { "rng", "The random number generator to use (Marsaglia or Mersenne), default is Mersenne", "Mersenne" },
+            { "count", "The number of random numbers to generate, default is 1000", "1000" },
+            { "verbose", "Sets the output verbosity of the component", "0" },
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_PORTS(
-    )
-    
-    simpleTracerComponent(SST::ComponentId_t id, Params& params);
-    ~simpleTracerComponent();
-    void finish();
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_STATISTICS(
+            )
 
-private:
-    // Functions
-    bool clock(SST::Cycle_t);
-    void FinalStats(FILE*, unsigned int);
-    void PrintAddrHistogram(FILE*, vector<SST::MemHierarchy::Addr>);
-    void PrintAccessLatencyDistribution(FILE*, unsigned int);
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_PORTS(
+            )
 
-    Output* out;
-    FILE* traceFile;
-    FILE* statsFile;
+            simpleTracerComponent(SST::ComponentId_t id, Params &params);
 
-    // Links
-    SST::Link *northBus;
-    SST::Link *southBus;
+            ~simpleTracerComponent();
 
-    // Input Parameters
-    unsigned int stats;
-    unsigned int pageSize;
-    unsigned int accessLatBins;
+            void finish();
 
-    // Flags
-    bool writeTrace;
-    bool writeStats;
-    bool writeDebug_8;
+        private:
+            // Functions
+            bool clock(SST::Cycle_t);
 
-    unsigned int nbCount;
-    unsigned int sbCount;
-    uint64_t timestamp;
+            void FinalStats(FILE *, unsigned int);
 
-    vector<SST::MemHierarchy::Addr>AddrHist;   // Address Histogram
-    vector<unsigned int> AccessLatencyDist;
+            void PrintAddrHistogram(FILE *, vector <SST::MemHierarchy::Addr>);
 
-    map<MemEvent::id_type,uint64_t>InFlightReqQueue;
+            void PrintAccessLatencyDistribution(FILE *, unsigned int);
 
-    TimeConverter* picoTimeConv;
-    TimeConverter* nanoTimeConv;
+            Output *out;
+            FILE *traceFile;
+            FILE *statsFile;
 
-    // Serialization
-    simpleTracerComponent();                         // for serialization only
-    simpleTracerComponent(const simpleTracerComponent&);      // do not implement
-    void operator=(const simpleTracerComponent&);    // do not implement
+            // Links
+            SST::Link *northBus;
+            SST::Link *southBus;
+
+            // Input Parameters
+            unsigned int stats;
+            unsigned int pageSize;
+            unsigned int accessLatBins;
+
+            // Flags
+            bool writeTrace;
+            bool writeStats;
+            bool writeDebug_8;
+
+            unsigned int nbCount;
+            unsigned int sbCount;
+            uint64_t timestamp;
+
+            vector <SST::MemHierarchy::Addr> AddrHist;   // Address Histogram
+            vector<unsigned int> AccessLatencyDist;
+
+            map <MemEvent::id_type, uint64_t> InFlightReqQueue;
+
+            TimeConverter *picoTimeConv;
+            TimeConverter *nanoTimeConv;
+
+            // Serialization
+            simpleTracerComponent();                         // for serialization only
+            simpleTracerComponent(const simpleTracerComponent &);      // do not implement
+            void operator=(const simpleTracerComponent &);    // do not implement
 
 
 //static const ElementInfoParam simpleRNGComponent_params[] = {
@@ -108,22 +113,22 @@ private:
 //    { "rng", "The random number generator to use (Marsaglia or Mersenne), default is Mersenne", "Mersenne"},
 //    { "count", "The number of random numbers to generate, default is 1000", "1000" },
 //    { "verbose", "Sets the output verbosity of the component", "0" },
-//    { NULL, NULL, NULL }
+//    { nullptr, nullptr, nullptr }
 //};
 
 //static const ElementInfoComponent simpleElementComponents[] = {
 //    { "simpleRNGComponent",                              // Name
 //      "Random number generation component",              // Description
-//      NULL,                                              // PrintHelp
+//      nullptr,                                              // PrintHelp
 //      create_simpleRNGComponent,                         // Allocator
 //      simpleRNGComponent_params,                         // Parameters
-//      NULL,                                              // Ports
+//      nullptr,                                              // Ports
 //      COMPONENT_CATEGORY_UNCATEGORIZED,                  // Category
-//      NULL                                               // Statistics
+//      nullptr                                               // Statistics
 //    },
-}; // class simpleTracerComponent
+        }; // class simpleTracerComponent
 
-} // namespace SimpleTracerComponent
+    } // namespace SimpleTracerComponent
 } // namespace SST
 
 #endif /* _SIMPLETRACERCOMPONENT_H */

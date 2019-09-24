@@ -30,11 +30,11 @@
 #include "memNIC.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class MemNICFour : public MemNICBase {
+        class MemNICFour : public MemNICBase {
 
-public:
+        public:
 /* Element Library Info */
 #define MEMNICFOUR_ELI_PARAMS MEMNICBASE_ELI_PARAMS, \
         { "data.network_bw",                "(string) Data network. Network bandwidth", "80GiB/s" },\
@@ -59,116 +59,136 @@ public:
         { "fwd.port",                       "(string) Fwd network. Set by parent component. Name of port this NIC sits on.", ""},\
         { "clock",                          "(string) Units for latency statistics", "1GHz"}
 
-    
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemNICFour, "memHierarchy", "MemNICFour", SST_ELI_ELEMENT_VERSION(1,0,0),
+
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemNICFour,
+            "memHierarchy", "MemNICFour", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Memory-oriented network interface for split networks", SST::MemHierarchy::MemLinkBase)
 
-    SST_ELI_DOCUMENT_PARAMS( MEMNICFOUR_ELI_PARAMS )
+            SST_ELI_DOCUMENT_PARAMS( MEMNICFOUR_ELI_PARAMS )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-            { "data_events", "Number of events received on data network", "count", 1},
-            { "req_events", "Number of events received on request network", "count", 1},
-            { "ack_events", "Number of events received on acknowledgement network", "count", 1},
-            { "fwd_events", "Number of events received on forward request network", "count", 1},
-            { "outoforder_data_events", "Number of out of order events on data network", "count", 1},
-            { "outoforder_req_events", "Number of out of order events on request network", "count", 1},
-            { "outoforder_ack_events", "Number of out of order events on acknowledgement network", "count", 1},
-            { "outoforder_fwd_events", "Number of out of order events on forward request network", "count", 1},
-            { "outoforder_depth_at_event_receive", "Depth of re-order buffer at an event receive", "count", 1},
-            { "outoforder_depth_at_event_receive_src", "Depth of re-order buffer for the sender of an event at event receive", "count", 1},
-            { "ordering_latency", "For events that arrived out of order, cycles spent in buffer. Cycles in units determined by 'clock' parameter (default 1GHz)", "cycles", 1})
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "data_events", "Number of events received on data network", "count", 1 },
+            { "req_events", "Number of events received on request network", "count", 1 },
+            { "ack_events", "Number of events received on acknowledgement network", "count", 1 },
+            { "fwd_events", "Number of events received on forward request network", "count", 1 },
+            { "outoforder_data_events", "Number of out of order events on data network", "count", 1 },
+            { "outoforder_req_events", "Number of out of order events on request network", "count", 1 },
+            { "outoforder_ack_events", "Number of out of order events on acknowledgement network", "count", 1 },
+            { "outoforder_fwd_events", "Number of out of order events on forward request network", "count", 1 },
+            { "outoforder_depth_at_event_receive", "Depth of re-order buffer at an event receive", "count", 1 },
+            { "outoforder_depth_at_event_receive_src", "Depth of re-order buffer for the sender of an event at event receive", "count", 1 },
+            { "ordering_latency", "For events that arrived out of order, cycles spent in buffer. Cycles in units determined by 'clock' parameter (default 1GHz)", "cycles", 1 })
 
-/* Begin class definition */    
+/* Begin class definition */
 
-    enum NetType { REQ, ACK, FWD, DATA };
-    /* Constructor */
-    MemNICFour(Component * comp, Params &params);
-    MemNICFour(ComponentId_t id, Params &params);
-private:
-    void build(Params& params);
-public:
-    /* Destructor */
-    ~MemNICFour() { }
+            enum NetType {
+                REQ, ACK, FWD, DATA
+            };
 
-    /* Functions called by parent for handling events */
-    bool clock();
-    void send(MemEventBase * ev);
-    bool recvNotifyReq(int);
-    bool recvNotifyAck(int);
-    bool recvNotifyFwd(int);
-    bool recvNotifyData(int);
-    void doRecv(SST::Interfaces::SimpleNetwork::Request* req, NetType net);
+            /* Constructor */
+            MemNICFour(Component *comp, Params &params);
 
-    /* Helper functions */
-    size_t getSizeInBits(MemEventBase * ev, NetType net);
+            MemNICFour(ComponentId_t id, Params &params);
 
-    /* Initialization and finish */
-    void init(unsigned int phase);
-    void finish() { 
-        for (int i = 0; i < 4; i++)
-            link_control[i]->finish();
-    }
-    void setup();
-    
-    // Router events
-    class OrderedMemRtrEvent : public MemNICBase::MemRtrEvent {
+        private:
+            void build(Params &params);
+
         public:
-            unsigned int tag;
+            /* Destructor */
+            ~MemNICFour() {}
 
-            OrderedMemRtrEvent() : MemRtrEvent() { }
-            OrderedMemRtrEvent(MemEventBase * ev, unsigned int t) : MemRtrEvent(ev), tag(t) { }
+            /* Functions called by parent for handling events */
+            bool clock();
 
-            virtual Event* clone(void) override {
-                OrderedMemRtrEvent * omre = new OrderedMemRtrEvent(*this);
-                if (this->event != nullptr) 
-                    omre->event = this->event->clone();
-                else 
-                    omre->event = nullptr;
-                return omre;
+            void send(MemEventBase *ev);
+
+            bool recvNotifyReq(int);
+
+            bool recvNotifyAck(int);
+
+            bool recvNotifyFwd(int);
+
+            bool recvNotifyData(int);
+
+            void doRecv(SST::Interfaces::SimpleNetwork::Request *req, NetType net);
+
+            /* Helper functions */
+            size_t getSizeInBits(MemEventBase *ev, NetType net);
+
+            /* Initialization and finish */
+            void init(unsigned int phase);
+
+            void finish() {
+                for (int i = 0; i < 4; i++)
+                    link_control[i]->finish();
             }
 
-            virtual bool hasClientData() const override { return true; }
+            void setup();
 
-            void serialize_order(SST::Core::Serialization::serializer &ser) override {
-                MemRtrEvent::serialize_order(ser);
-                ser & tag;
-            }
+            // Router events
+            class OrderedMemRtrEvent : public MemNICBase::MemRtrEvent {
+            public:
+                unsigned int tag;
 
-            ImplementSerializable(SST::MemHierarchy::MemNICFour::OrderedMemRtrEvent);
-    };
+                OrderedMemRtrEvent() : MemRtrEvent() {}
 
-    /* Debug support */
-    void printStatus(Output& out);
+                OrderedMemRtrEvent(MemEventBase *ev, unsigned int t) : MemRtrEvent(ev), tag(t) {}
 
-private:
-    
-    void recvNotify(MemNICFour::OrderedMemRtrEvent* mre);
-    MemNICFour::OrderedMemRtrEvent* processRecv(SST::Interfaces::SimpleNetwork::Request* req);
+                virtual Event *clone(void) override {
+                    OrderedMemRtrEvent *omre = new OrderedMemRtrEvent(*this);
+                    if (this->event != nullptr)
+                        omre->event = this->event->clone();
+                    else
+                        omre->event = nullptr;
+                    return omre;
+                }
 
-    // Other parameters
-    size_t packetHeaderBytes[4];
+                virtual bool hasClientData() const override { return true; }
 
-    // Handlers and network
-    SST::Interfaces::SimpleNetwork * link_control[4];
+                void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                    MemRtrEvent::serialize_order(ser);
+                    ser & tag;
+                }
 
-    // Event queues
-    std::queue<SST::Interfaces::SimpleNetwork::Request*> sendQueue[4];
-    std::queue<MemNICFour::OrderedMemRtrEvent*> recvQueue;
+                ImplementSerializable(SST::MemHierarchy::MemNICFour::OrderedMemRtrEvent);
+            };
 
-    // Order tag tracking
-    std::map<uint64_t, unsigned int> sendTags;
-    std::map<uint64_t, unsigned int> recvTags;
-    std::map<uint64_t, std::map<unsigned int, std::pair<OrderedMemRtrEvent*,SimTime_t> > > orderBuffer;
-    
-    // Statistics
-    Statistic<uint64_t>* stat_oooEvent[4];
-    Statistic<uint64_t>* stat_oooDepth; 
-    Statistic<uint64_t>* stat_oooDepthSrc; 
-    Statistic<uint64_t>* stat_orderLatency;
-    uint64_t totalOOO; // Since there's no simple count of orderBuffer size
-};
+            /* Debug support */
+            void printStatus(Output &out);
 
-} //namespace memHierarchy
+        private:
+
+            void recvNotify(MemNICFour::OrderedMemRtrEvent *mre);
+
+            MemNICFour::OrderedMemRtrEvent *processRecv(
+                SST::Interfaces::SimpleNetwork::Request *req);
+
+            // Other parameters
+            size_t packetHeaderBytes[4];
+
+            // Handlers and network
+            SST::Interfaces::SimpleNetwork *link_control[4];
+
+            // Event queues
+            std::queue<SST::Interfaces::SimpleNetwork::Request *> sendQueue[4];
+            std::queue<MemNICFour::OrderedMemRtrEvent *> recvQueue;
+
+            // Order tag tracking
+            std::map<uint64_t, unsigned int> sendTags;
+            std::map<uint64_t, unsigned int> recvTags;
+            std::map <uint64_t, std::map<unsigned int,
+                std::pair < OrderedMemRtrEvent * , SimTime_t>> >
+            orderBuffer;
+
+            // Statistics
+            Statistic <uint64_t> *stat_oooEvent[4];
+            Statistic <uint64_t> *stat_oooDepth;
+            Statistic <uint64_t> *stat_oooDepthSrc;
+            Statistic <uint64_t> *stat_orderLatency;
+            uint64_t totalOOO; // Since there's no simple count of orderBuffer size
+        };
+
+    } //namespace memHierarchy
 } //namespace SST
 
 #endif

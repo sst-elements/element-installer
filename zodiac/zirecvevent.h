@@ -24,23 +24,25 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacIRecvEvent : public ZodiacRecvEvent {
+        class ZodiacIRecvEvent : public ZodiacRecvEvent {
 
-	public:
-		ZodiacIRecvEvent(uint32_t src, uint32_t length, 
-			PayloadDataType dataType,
-			uint32_t tag, Communicator group, uint64_t rqID);
-		ZodiacEventType getEventType();
-		uint64_t getRequestID();
+        public:
+            ZodiacIRecvEvent(uint32_t src, uint32_t length,
+                             PayloadDataType dataType,
+                             uint32_t tag, Communicator group, uint64_t rqID);
 
-	protected:
-		uint64_t reqID;
+            ZodiacEventType getEventType();
 
-};
+            uint64_t getRequestID();
 
-}
+        protected:
+            uint64_t reqID;
+
+        };
+
+    }
 }
 
 #endif

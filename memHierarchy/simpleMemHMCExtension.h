@@ -18,26 +18,31 @@
 
 #include <sst/core/interfaces/simpleMem.h>
 
-namespace SST { namespace MacSim {
+namespace SST {
+    namespace MacSim {
 
-class SimpleMemHMCExtension : public Interfaces::SimpleMem {
-public:
-    class HMCRequest : public Interfaces::SimpleMem::Request {
-    public:
-        uint8_t hmcInstType;
+        class SimpleMemHMCExtension : public Interfaces::SimpleMem {
+        public:
+            class HMCRequest : public Interfaces::SimpleMem::Request {
+            public:
+                uint8_t hmcInstType;
 
-    public:
-        /** Constructor */
-        HMCRequest(Command cmd, Addr addr, size_t size, dataVec &data, flags_t flags = 0, uint8_t _hmcInstType = 0) :
-            Interfaces::SimpleMem::Request(cmd, addr, size, data, flags), hmcInstType(_hmcInstType) { }
+            public:
+                /** Constructor */
+                HMCRequest(Command cmd, Addr addr, size_t size, dataVec &data, flags_t flags = 0,
+                           uint8_t _hmcInstType = 0) :
+                    Interfaces::SimpleMem::Request(cmd, addr, size, data, flags),
+                    hmcInstType(_hmcInstType) {}
 
-        /** Constructor */
-        HMCRequest(Command cmd, Addr addr, size_t size, flags_t flags = 0, uint8_t _hmcInstType = 0) :
-            Interfaces::SimpleMem::Request(cmd, addr, size, flags), hmcInstType(_hmcInstType) { }
-    }; // class HMCRequest
-}; // class SimpleMemHMCExtension
+                /** Constructor */
+                HMCRequest(Command cmd, Addr addr, size_t size, flags_t flags = 0,
+                           uint8_t _hmcInstType = 0) :
+                    Interfaces::SimpleMem::Request(cmd, addr, size, flags),
+                    hmcInstType(_hmcInstType) {}
+            }; // class HMCRequest
+        }; // class SimpleMemHMCExtension
 
-} // namespace MacSim
+    } // namespace MacSim
 } // namespace SST
 
 #endif // SIMPLE_MEM_HMC_EXTENSION_H

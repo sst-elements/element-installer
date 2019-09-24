@@ -22,34 +22,42 @@
 #include <ucontext.h>
 #else
 #define _XOPEN_SOURCE
+
 #include <ucontext.h>
+
 #undef _XOPEN_SOURCE
 #endif
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberContextSwitchingMessagePassingGenerator : public EmberMessagePassingGenerator {
+        class EmberContextSwitchingMessagePassingGenerator : public EmberMessagePassingGenerator {
 
-public:
-	EmberContextSwitchingMessagePassingGenerator( Component* owner, Params& params);
-	bool autoInitialize() { return true; }
+        public:
+            EmberContextSwitchingMessagePassingGenerator(Component *owner, Params &params);
 
-	virtual void configureEnvironment(const SST::Output* output, uint32_t rank, uint32_t worldSize) = 0;
-        virtual void generate(const SST::Output* output, const uint32_t phase,
-                std::queue<EmberEvent*>* evQ) = 0;
-        virtual void finish(const SST::Output* output) = 0;
+            bool autoInitialize() { return true; }
 
-protected:
-	ucontext_t genContext;
+            virtual void configureEnvironment(const SST::Output *output, uint32_t rank,
+                                              uint32_t worldSize) = 0;
 
-	~EmberContextSwitchingMessagePassingGenerator();
-	void suspendGenerator();
-	void resumeGenerator();
+            virtual void generate(const SST::Output *output, const uint32_t phase,
+                                  std::queue<EmberEvent *> *evQ) = 0;
 
-};
+            virtual void finish(const SST::Output *output) = 0;
 
-}
+        protected:
+            ucontext_t genContext;
+
+            ~EmberContextSwitchingMessagePassingGenerator();
+
+            void suspendGenerator();
+
+            void resumeGenerator();
+
+        };
+
+    }
 }
 
 #endif

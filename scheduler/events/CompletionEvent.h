@@ -24,20 +24,20 @@ namespace SST {
     namespace Scheduler {
 
         class CompletionEvent : public SST::Event {
-            public:
+        public:
 
-                CompletionEvent(int jobNum) : SST::Event() {
-                    this -> jobNum = jobNum;
-                }
+            CompletionEvent(int jobNum) : SST::Event() {
+                this->jobNum = jobNum;
+            }
 
-                CompletionEvent* copy(){
-                    CompletionEvent* tmp = new CompletionEvent(this -> jobNum);
-                    return tmp;
-                }
+            CompletionEvent *copy() {
+                CompletionEvent *tmp = new CompletionEvent(this->jobNum);
+                return tmp;
+            }
 
-                int jobNum;
+            int jobNum;
 
-                NotSerializable(CompletionEvent)
+            NotSerializable(CompletionEvent)
         };
     }
 }

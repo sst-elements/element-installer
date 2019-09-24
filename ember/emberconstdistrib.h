@@ -20,34 +20,36 @@
 #include "emberdistrib.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberConstDistribution : public EmberComputeDistribution {
-public:
-   SST_ELI_REGISTER_MODULE(
-        EmberConstDistribution,
-        "ember",
-        "ConstDistrib",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Constant compute distribution model",
-        "SST::Ember::EmberComputeDistribution"
-    )
+        class EmberConstDistribution : public EmberComputeDistribution {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                EmberConstDistribution,
+            "ember",
+            "ConstDistrib",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Constant compute distribution model",
+            "SST::Ember::EmberComputeDistribution"
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {   "constant",     "Sets the constant value to return in the distribution.", "1.0" },
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "constant", "Sets the constant value to return in the distribution.", "1.0" },
+            )
 
-public:
-	EmberConstDistribution(Component* owner, Params& params);
-	~EmberConstDistribution();
-	double sample(uint64_t now);
+        public:
+            EmberConstDistribution(Component *owner, Params &params);
 
-private:
-	double the_value;
+            ~EmberConstDistribution();
 
-};
+            double sample(uint64_t now);
 
-}
+        private:
+            double the_value;
+
+        };
+
+    }
 }
 
 #endif

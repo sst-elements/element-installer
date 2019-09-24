@@ -20,44 +20,53 @@
 #include "shmem/common.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class HadesSHMEM;
+        class HadesSHMEM;
 
-class ShmemFcollect : public ShmemCollective {
-  public:
-    ShmemFcollect( HadesSHMEM& api, ShmemCommon& common ) : 
-       ShmemCollective(api, common )
-    { }
-    void start( Hermes::Vaddr dest, Hermes::Vaddr source, size_t nelems, int PE_start, 
-        int logPE_stride, int PE_size, Hermes::Vaddr pSync,
-        Hermes::Shmem::Callback );
-  private:
+        class ShmemFcollect : public ShmemCollective {
+        public:
+            ShmemFcollect(HadesSHMEM &api, ShmemCommon &common) :
+                ShmemCollective(api, common) {}
 
-    int stride() { return 1 << m_logPE_stride; }
-    int my_id() { return (m_common.my_pe() - m_PE_start) / stride(); }
-    int next_proc() { return m_PE_start + ((my_id() + 1) % m_PE_size) * stride(); }
-    void state_0(int);
-    void state_1(int);
-    void state_2(int);
-    void state_3(int);
-    void state_4(int);
-    void state_5(int);
+            void start(Hermes::Vaddr dest, Hermes::Vaddr source, size_t nelems, int PE_start,
+                       int logPE_stride, int PE_size, Hermes::Vaddr pSync,
+                       Hermes::Shmem::Callback);
 
-    int m_iteration;
-    Hermes::Vaddr m_dest;
-    Hermes::Vaddr m_src;
+        private:
 
-    size_t  m_my_offset;
-    size_t  m_nelems;
-    int     m_logPE_stride;
-    int     m_PE_size;
-    int     m_PE_start;
-    int     m_start_pe;
-    int     m_peer;
-};
+            int stride() { return 1 << m_logPE_stride; }
 
-}
+            int my_id() { return (m_common.my_pe() - m_PE_start) / stride(); }
+
+            int next_proc() { return m_PE_start + ((my_id() + 1) % m_PE_size) * stride(); }
+
+            void state_0(int);
+
+            void state_1(int);
+
+            void state_2(int);
+
+            void state_3(int);
+
+            void state_4(int);
+
+            void state_5(int);
+
+            int m_iteration;
+            Hermes::Vaddr m_dest;
+            Hermes::Vaddr m_src;
+
+            size_t m_my_offset;
+            size_t m_nelems;
+            int m_logPE_stride;
+            int m_PE_size;
+            int m_PE_start;
+            int m_start_pe;
+            int m_peer;
+        };
+
+    }
 }
 
 #endif

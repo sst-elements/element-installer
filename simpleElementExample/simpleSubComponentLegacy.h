@@ -23,7 +23,7 @@
 #include <sst/core/link.h>
 
 namespace SST {
-namespace SimpleSubComponentLegacy {
+    namespace SimpleSubComponentLegacy {
 
 /*
   SimpleSubComponent will test the various ways to use SubComponents.
@@ -38,205 +38,213 @@ namespace SimpleSubComponentLegacy {
 */
 
 
-class SubCompInterface : public SST::SubComponent
-{
-public:
-    SubCompInterface(Component *owningComponent) :
-        SubComponent(owningComponent)
-    { }
-    virtual ~SubCompInterface() {}
-    virtual void clock(SST::Cycle_t) {}
+        class SubCompInterface : public SST::SubComponent {
+        public:
+            SubCompInterface(Component *owningComponent) :
+                SubComponent(owningComponent) {}
 
-};
+            virtual ~SubCompInterface() {}
+
+            virtual void clock(SST::Cycle_t) {}
+
+        };
 
 /* Our trivial component */
-class SubComponentLoader : public Component
-{
-public:
-    // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_COMPONENT(SubComponentLoader,
-                               "simpleElementExample",
-                               "SubComponentLoaderLegacy",
-                               SST_ELI_ELEMENT_VERSION(1,0,0),
-                               "Demonstrates subcomponents",
-                               COMPONENT_CATEGORY_UNCATEGORIZED
-    )
+        class SubComponentLoader : public Component {
+        public:
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(SubComponentLoader,
+            "simpleElementExample",
+            "SubComponentLoaderLegacy",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Demonstrates subcomponents",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {"clock", "Clock Rate", "1GHz"},
-        {"unnamed_subcomponent", "Unnamed SubComponent to load.  If empty, then a named subcomponent is loaded", ""},
-        {"num_subcomps","Number of anonymous SubComponents to load.  Ignored if using name SubComponents.","1"},
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "clock", "Clock Rate", "1GHz" },
+            { "unnamed_subcomponent", "Unnamed SubComponent to load.  If empty, then a named subcomponent is loaded", "" },
+            { "num_subcomps", "Number of anonymous SubComponents to load.  Ignored if using name SubComponents.", "1" },
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-        {"totalSent", "# of total messages sent", "", 1},
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "totalSent", "# of total messages sent", "", 1 },
+            )
 
-    // This ports will be used only by unnamed SubComponents
-    SST_ELI_DOCUMENT_PORTS(
-        {"port%(num_subcomps)d", "Sending or Receiving Port(s)", { "simpleMessageGeneratorComponent.simpleMessage", "" } },
-    )
+            // This ports will be used only by unnamed SubComponents
+            SST_ELI_DOCUMENT_PORTS(
+            {
+                "port%(num_subcomps)d", "Sending or Receiving Port(s)", {
+                    "simpleMessageGeneratorComponent.simpleMessage", ""}
+            },
+            )
 
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-        {"mySubComp", "Test slot", "SST::SimpleSubComponentLegacy::SubCompInterface" }
-    )
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            { "mySubComp", "Test slot", "SST::SimpleSubComponentLegacy::SubCompInterface" }
+            )
 
-    SubComponentLoader(ComponentId_t id, SST::Params& params);
+            SubComponentLoader(ComponentId_t id, SST::Params &params);
 
-private:
+        private:
 
-    bool tick(SST::Cycle_t);
-    std::vector<SubCompInterface*> subComps;
-    bool use_legacy;
-    std::string use_direct;
-};
+            bool tick(SST::Cycle_t);
+
+            std::vector<SubCompInterface *> subComps;
+            bool use_legacy;
+            std::string use_direct;
+        };
 
 
 /* Our example subcomponents */
 
 
-class SubCompSlot : public SubCompInterface
-{
-public:
+        class SubCompSlot : public SubCompInterface {
+        public:
 
-    // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        SubCompSlot,
-        "simpleElementExample",
-        "SubCompSlotLegacy",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Subcomponent which is just a wrapper for the actual SubComponent to be used",
-        "SST::SimpleSubComponent::SubCompInterface"
-    )
+            // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                SubCompSlot,
+            "simpleElementExample",
+            "SubCompSlotLegacy",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Subcomponent which is just a wrapper for the actual SubComponent to be used",
+            "SST::SimpleSubComponent::SubCompInterface"
+            )
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {"sendCount", "Number of Messages to Send", "10"},
-        {"unnamed_subcomponent", "Unnamed SubComponent to load.  If empty, then a named subcomponent is loaded", ""},
-        {"num_subcomps","Number of anonymous SubComponents to load.  Ignored if using name SubComponents.","1"},
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "sendCount", "Number of Messages to Send", "10" },
+            { "unnamed_subcomponent", "Unnamed SubComponent to load.  If empty, then a named subcomponent is loaded", "" },
+            { "num_subcomps", "Number of anonymous SubComponents to load.  Ignored if using name SubComponents.", "1" },
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            )
 
-    // Only used when loading unnamed SubComponents
-    SST_ELI_DOCUMENT_PORTS(
-        {"slot_port%(num_subcomps)d", "Port(s) to send or receive on", { "simpleMessageGeneratorComponent.simpleMessage", "" } },
-    )
-    
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-        {"mySubCompSlot", "Test slot", "SST::SimpleSubComponentLegacy::SubCompInterface" }
-    )
+            // Only used when loading unnamed SubComponents
+            SST_ELI_DOCUMENT_PORTS(
+            {
+                "slot_port%(num_subcomps)d", "Port(s) to send or receive on", {
+                    "simpleMessageGeneratorComponent.simpleMessage", ""}
+            },
+            )
 
-    
-private:    
-    std::vector<SubCompInterface*> subComps;
-    bool use_legacy;
-    
-public:
-    // Legacy API
-    SubCompSlot(Component *owningComponent, Params &params);
-
-    ~SubCompSlot() {}
-    void clock(Cycle_t);
-
-};
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            { "mySubCompSlot", "Test slot", "SST::SimpleSubComponentLegacy::SubCompInterface" }
+            )
 
 
+        private:
+            std::vector<SubCompInterface *> subComps;
+            bool use_legacy;
+
+        public:
+            // Legacy API
+            SubCompSlot(Component *owningComponent, Params &params);
+
+            ~SubCompSlot() {}
+
+            void clock(Cycle_t);
+
+        };
 
 
-class SubCompSender : public SubCompInterface
-{
-public:
+        class SubCompSender : public SubCompInterface {
+        public:
 
-    // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        SubCompSender,
-        "simpleElementExample",
-        "SubCompSenderLegacy",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Sending Subcomponent",
-        "SST::SimpleSubComponent::SubCompInterface"
-    )
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        {"port_name", "Name of port to connect to", ""},
-        {"sendCount", "Number of Messages to Send", "10"},
-    )
+            // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                SubCompSender,
+            "simpleElementExample",
+            "SubCompSenderLegacy",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Sending Subcomponent",
+            "SST::SimpleSubComponent::SubCompInterface"
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-        {"numSent", "# of msgs sent", "", 1},
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "port_name", "Name of port to connect to", "" },
+            { "sendCount", "Number of Messages to Send", "10" },
+            )
 
-    SST_ELI_DOCUMENT_PORTS(
-        {"sendPort", "Sending Port", { "simpleMessageGeneratorComponent.simpleMessage", "" } },
-    )
-    
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "numSent", "# of msgs sent", "", 1 },
+            )
 
-private:    
-    Statistic<uint32_t> *nMsgSent;
-    Statistic<uint32_t> *totalMsgSent;
-    uint32_t nToSend;
-    SST::Link *link;
-public:
-    // Legacy API
-    SubCompSender(Component *owningComponent, Params &params);
-    ~SubCompSender() {}
-    void clock(Cycle_t);
+            SST_ELI_DOCUMENT_PORTS(
+            { "sendPort", "Sending Port", {"simpleMessageGeneratorComponent.simpleMessage", ""}},
+            )
 
-};
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            )
+
+        private:
+            Statistic <uint32_t> *nMsgSent;
+            Statistic <uint32_t> *totalMsgSent;
+            uint32_t nToSend;
+            SST::Link *link;
+        public:
+            // Legacy API
+            SubCompSender(Component *owningComponent, Params &params);
+
+            ~SubCompSender() {}
+
+            void clock(Cycle_t);
+
+        };
 
 
-class SubCompReceiver : public SubCompInterface
-{
+        class SubCompReceiver : public SubCompInterface {
 
-public:
+        public:
 
-    // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        SubCompReceiver,
-        "simpleElementExample",
-        "SubCompReceiverLegacy",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Receiving Subcomponent",
-        "SST::SimpleSubComponent::SubCompInterface"
-    )
+            // REGISTER THIS SUB-COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                SubCompReceiver,
+            "simpleElementExample",
+            "SubCompReceiverLegacy",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Receiving Subcomponent",
+            "SST::SimpleSubComponent::SubCompInterface"
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_PARAMS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_PARAMS(
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-        {"numRecv", "# of msgs recv", "", 1},
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "numRecv", "# of msgs recv", "", 1 },
+            )
 
-    SST_ELI_DOCUMENT_PORTS(
-        {"recvPort", "Receiving Port", { "simpleMessageGeneratorComponent.simpleMessage", "" } },
-    )
+            SST_ELI_DOCUMENT_PORTS(
+            { "recvPort", "Receiving Port", {"simpleMessageGeneratorComponent.simpleMessage", ""}},
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            )
 
-private:
+        private:
 
-    Statistic<uint32_t> *nMsgReceived;
-    SST::Link *link;
+            Statistic <uint32_t> *nMsgReceived;
+            SST::Link *link;
 
-    void handleEvent(SST::Event *ev);
+            void handleEvent(SST::Event *ev);
 
-public:
-    SubCompReceiver(Component *owningComponent, Params &params);
-    SubCompReceiver(ComponentId_t id, Params &params);
-    SubCompReceiver(ComponentId_t id, std::string port) ;
-    ~SubCompReceiver() {}
-    void clock(Cycle_t);
+        public:
+            SubCompReceiver(Component *owningComponent, Params &params);
 
-};
+            SubCompReceiver(ComponentId_t id, Params &params);
 
-} // namespace SimpleSubComponentLegacy
+            SubCompReceiver(ComponentId_t id, std::string port);
+
+            ~SubCompReceiver() {}
+
+            void clock(Cycle_t);
+
+        };
+
+    } // namespace SimpleSubComponentLegacy
 } // namespace SST
 
 

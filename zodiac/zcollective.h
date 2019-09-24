@@ -21,17 +21,18 @@
 #include "zevent.h"
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacCollectiveEvent : public ZodiacEvent {
+        class ZodiacCollectiveEvent : public ZodiacEvent {
 
-	public:
-		ZodiacCollectiveEvent();
-		virtual ZodiacEventType getEventType() = 0;
+        public:
+            ZodiacCollectiveEvent();
 
-};
+            virtual ZodiacEventType getEventType() = 0;
 
-}
+        };
+
+    }
 }
 
 #endif

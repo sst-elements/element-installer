@@ -21,21 +21,22 @@
 #include "sst/elements/hermes/hermes.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberLib : public SST::Module {
-  public:
-	EmberLib() : m_output(NULL), m_api(NULL) {}
+        class EmberLib : public SST::Module {
+        public:
+            EmberLib() : m_output(nullptr), m_api(nullptr) {}
 
-	void initApi( Hermes::Interface* api ) { m_api = api; }	
-	void initOutput( SST::Output* output ) { m_output = output; }	
+            void initApi(Hermes::Interface *api) { m_api = api; }
 
-  protected:
-	Output* m_output;
-	Hermes::Interface* m_api;
-};
+            void initOutput(SST::Output *output) { m_output = output; }
 
-}
+        protected:
+            Output *m_output;
+            Hermes::Interface *m_api;
+        };
+
+    }
 }
 
 #endif

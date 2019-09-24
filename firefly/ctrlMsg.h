@@ -25,135 +25,168 @@
 using namespace Hermes;
 
 namespace SST {
-namespace Firefly {
-namespace CtrlMsg {
+    namespace Firefly {
+        namespace CtrlMsg {
 
-typedef int  nid_t;
+            typedef int nid_t;
 
-static const uint64_t AllgatherTag  = 0x10000000;
-static const uint64_t AlltoallvTag  = 0x20000000;
-static const uint64_t CollectiveTag = 0x30000000;
-static const uint64_t GathervTag    = 0x40000000;
-static const uint64_t LongProtoTag  = 0x50000000;
-static const uint64_t TagMask       = 0xf0000000;
+            static const uint64_t AllgatherTag = 0x10000000;
+            static const uint64_t AlltoallvTag = 0x20000000;
+            static const uint64_t CollectiveTag = 0x30000000;
+            static const uint64_t GathervTag = 0x40000000;
+            static const uint64_t LongProtoTag = 0x50000000;
+            static const uint64_t TagMask = 0xf0000000;
 
-class MemoryBase;
-class ProcessQueuesState;
-class _CommReq;
+            class MemoryBase;
 
-struct CommReq {
-    _CommReq* req;
-};
+            class ProcessQueuesState;
 
-static const uint64_t  AnyTag = -1; 
+            class _CommReq;
 
-class API : public ProtocolAPI {
+            struct CommReq {
+                _CommReq *req;
+            };
 
-    typedef std::function<void()> Callback;
-    typedef std::function<void(nid_t, uint32_t, size_t)> Callback2;
+            static const uint64_t AnyTag = -1;
 
-  public:
-   SST_ELI_REGISTER_SUBCOMPONENT(
-        API,
-        "firefly",
-        "CtrlMsgProto",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+            class API : public ProtocolAPI {
 
-    SST_ELI_DOCUMENT_PARAMS(
-    )
-    API( Component* owner, Params& );
-    ~API();
+                typedef std::function<void()> Callback;
+                typedef std::function<void(nid_t, uint32_t, size_t)> Callback2;
 
-    virtual void setup();
-    virtual void finish();
-    virtual std::string name() { return "CtrlMsgProtocol"; }
+            public:
+                SST_ELI_REGISTER_SUBCOMPONENT(
+                    API,
+                "firefly",
+                "CtrlMsgProto",
+                SST_ELI_ELEMENT_VERSION(1,0,0),
+                "",
+                ""
+                )
 
-    virtual void setVars( Info* info, VirtNic*, Thornhill::MemoryHeapLink*, Link* );
+                SST_ELI_DOCUMENT_PARAMS(
+                )
 
-    void initMsgPassing();
-    void makeProgress();
-    void send( const Hermes::MemAddr&, size_t len, nid_t dest, uint64_t tag ); 
-    void send( const Hermes::MemAddr&, size_t len, MP::RankID dest, uint64_t tag, 
-                            MP::Communicator grp );
-    void isend( const Hermes::MemAddr&, size_t len, nid_t dest, uint64_t tag, CommReq* );
-    void isend( const Hermes::MemAddr&, size_t len, nid_t dest, uint64_t tag,
-							MP::Communicator, CommReq* );
-    void sendv( std::vector<IoVec>&, nid_t dest, uint64_t tag );
-    void recv( const Hermes::MemAddr&, size_t len, nid_t src, uint64_t tag );
-    void recv( const Hermes::MemAddr&, size_t len, nid_t src, uint64_t tag, MP::Communicator grp );
-    void irecv( const Hermes::MemAddr&, size_t len, nid_t src, uint64_t tag, CommReq* );
-    void irecv( const Hermes::MemAddr&, size_t len, MP::RankID src, uint64_t tag, 
-                MP::Communicator grp, CommReq* );
-    void irecvv( std::vector<IoVec>&, nid_t src, uint64_t tag, CommReq* );
-    void wait( CommReq* );
-    void waitAll( std::vector<CommReq*>& );
+                API(Component *owner, Params &);
 
-	void send( const Hermes::MemAddr& buf, uint32_t count, 
-		MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
-        MP::Communicator group );
+                ~API();
 
-	void isend( const Hermes::MemAddr& buf, uint32_t count,
-        MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
-        MP::Communicator group, MP::MessageRequest* req );
+                virtual void setup();
 
-    void recv( const Hermes::MemAddr& buf, uint32_t count,
-        MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
-        MP::Communicator group, MP::MessageResponse* resp );
+                virtual void finish();
 
-    void irecv( const Hermes::MemAddr& _buf, uint32_t _count,
-        MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
-        MP::Communicator group, MP::MessageRequest* req );
+                virtual std::string name() { return "CtrlMsgProtocol"; }
 
-	void cancel( MP::MessageRequest );
-	void test( MP::MessageRequest, int* flag, MP::MessageResponse* resp );
-	void testany( int count, MP::MessageRequest req[], int *index, int* flag,
-		MP::MessageResponse* resp );
-	void wait( MP::MessageRequest, MP::MessageResponse* resp );
-   	void waitAny( int count, MP::MessageRequest req[], int *index,
-              	MP::MessageResponse* resp );
-    void waitAll( int count, MP::MessageRequest req[],
-                MP::MessageResponse* resp[] );
+                virtual void setVars(Info *info, VirtNic *, Thornhill::MemoryHeapLink *, Link *);
 
-  private:
-    void sendv_common( std::vector<IoVec>& ioVec,
-            MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
-            MP::Communicator group, CommReq* commReq );
-    void recvv_common( std::vector<IoVec>& ioVec,
-    MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
-    MP::Communicator group, CommReq* commReq );
+                void initMsgPassing();
 
-    bool notifyGetDone( void* );
-    bool notifySendPioDone( void* );
-    bool notifyRecvDmaDone( int, int, size_t, void* );
-    bool notifyNeedRecv( int, size_t );
+                void makeProgress();
 
-    uint64_t sendStateDelay() { return m_sendStateDelay; }
-    uint64_t recvStateDelay() { return m_recvStateDelay; }
-    uint64_t waitallStateDelay() { return m_waitallStateDelay; }
-    uint64_t waitanyStateDelay() { return m_waitanyStateDelay; }
+                void send(const Hermes::MemAddr &, size_t len, nid_t dest, uint64_t tag);
 
-    Output          m_dbg;
-    int             m_dbg_level;
-    int             m_dbg_mask;
+                void send(const Hermes::MemAddr &, size_t len, MP::RankID dest, uint64_t tag,
+                          MP::Communicator grp);
 
-    ProcessQueuesState*     m_processQueuesState;
+                void isend(const Hermes::MemAddr &, size_t len, nid_t dest, uint64_t tag,
+                           CommReq *);
 
-    Thornhill::MemoryHeapLink* m_memHeapLink;
+                void isend(const Hermes::MemAddr &, size_t len, nid_t dest, uint64_t tag,
+                           MP::Communicator, CommReq *);
 
-    Info*       m_info;
-    MemoryBase* m_mem;
+                void sendv(std::vector <IoVec> &, nid_t dest, uint64_t tag);
 
-    uint64_t m_sendStateDelay;
-    uint64_t m_recvStateDelay;
-    uint64_t m_waitallStateDelay;
-    uint64_t m_waitanyStateDelay;
-};
+                void recv(const Hermes::MemAddr &, size_t len, nid_t src, uint64_t tag);
 
-}
-}
+                void recv(const Hermes::MemAddr &, size_t len, nid_t src, uint64_t tag,
+                          MP::Communicator grp);
+
+                void irecv(const Hermes::MemAddr &, size_t len, nid_t src, uint64_t tag, CommReq *);
+
+                void irecv(const Hermes::MemAddr &, size_t len, MP::RankID src, uint64_t tag,
+                           MP::Communicator grp, CommReq *);
+
+                void irecvv(std::vector <IoVec> &, nid_t src, uint64_t tag, CommReq *);
+
+                void wait(CommReq *);
+
+                void waitAll(std::vector<CommReq *> &);
+
+                void send(const Hermes::MemAddr &buf, uint32_t count,
+                          MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
+                          MP::Communicator group);
+
+                void isend(const Hermes::MemAddr &buf, uint32_t count,
+                           MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
+                           MP::Communicator group, MP::MessageRequest *req);
+
+                void recv(const Hermes::MemAddr &buf, uint32_t count,
+                          MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
+                          MP::Communicator group, MP::MessageResponse *resp);
+
+                void irecv(const Hermes::MemAddr &_buf, uint32_t _count,
+                           MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
+                           MP::Communicator group, MP::MessageRequest *req);
+
+                void cancel(MP::MessageRequest);
+
+                void test(MP::MessageRequest, int *flag, MP::MessageResponse *resp);
+
+                void testany(int count, MP::MessageRequest req[], int *index, int *flag,
+                             MP::MessageResponse *resp);
+
+                void wait(MP::MessageRequest, MP::MessageResponse *resp);
+
+                void waitAny(int count, MP::MessageRequest req[], int *index,
+                             MP::MessageResponse *resp);
+
+                void waitAll(int count, MP::MessageRequest req[],
+                             MP::MessageResponse *resp[]);
+
+            private:
+                void sendv_common(std::vector <IoVec> &ioVec,
+                                  MP::PayloadDataType dtype, MP::RankID dest, uint32_t tag,
+                                  MP::Communicator group, CommReq *commReq);
+
+                void recvv_common(std::vector <IoVec> &ioVec,
+                                  MP::PayloadDataType dtype, MP::RankID src, uint32_t tag,
+                                  MP::Communicator group, CommReq *commReq);
+
+                bool notifyGetDone(void *);
+
+                bool notifySendPioDone(void *);
+
+                bool notifyRecvDmaDone(int, int, size_t, void *);
+
+                bool notifyNeedRecv(int, size_t);
+
+                uint64_t sendStateDelay() { return m_sendStateDelay; }
+
+                uint64_t recvStateDelay() { return m_recvStateDelay; }
+
+                uint64_t waitallStateDelay() { return m_waitallStateDelay; }
+
+                uint64_t waitanyStateDelay() { return m_waitanyStateDelay; }
+
+                Output m_dbg;
+                int m_dbg_level;
+                int m_dbg_mask;
+
+                ProcessQueuesState *m_processQueuesState;
+
+                Thornhill::MemoryHeapLink *m_memHeapLink;
+
+                Info *m_info;
+                MemoryBase *m_mem;
+
+                uint64_t m_sendStateDelay;
+                uint64_t m_recvStateDelay;
+                uint64_t m_waitallStateDelay;
+                uint64_t m_waitanyStateDelay;
+            };
+
+        }
+    }
 }
 
 #endif

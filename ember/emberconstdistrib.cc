@@ -23,10 +23,10 @@
 
 using namespace SST::Ember;
 
-EmberConstDistribution::EmberConstDistribution(Component* owner, Params& params) :
-	EmberComputeDistribution(owner, params) {
+EmberConstDistribution::EmberConstDistribution(Component *owner, Params &params) :
+    EmberComputeDistribution(owner, params) {
 
-	the_value = params.find("constant", 1.0);
+    the_value = params.find("constant", 1.0);
 }
 
 EmberConstDistribution::~EmberConstDistribution() {
@@ -34,5 +34,5 @@ EmberConstDistribution::~EmberConstDistribution() {
 }
 
 double EmberConstDistribution::sample(const uint64_t now) {
-	return the_value;
+    return the_value;
 }

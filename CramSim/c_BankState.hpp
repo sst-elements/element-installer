@@ -41,49 +41,52 @@
 //#include "c_BankInfo.hpp"
 
 namespace SST {
-namespace n_Bank {
+    namespace n_Bank {
 
-class c_BankInfo;
-class c_BankCommand;
-enum class e_BankCommandType;
-  
+        class c_BankInfo;
+
+        class c_BankCommand;
+
+        enum class e_BankCommandType;
+
 // Bankstates
-enum class e_BankState {
-	NONE, IDLE, ACTNG, ACTIVE, READ, READA, WRITE, WRITEA, PRE, REF
-};
+        enum class e_BankState {
+            NONE, IDLE, ACTNG, ACTIVE, READ, READA, WRITE, WRITEA, PRE, REF
+        };
 // NONE state is for the startup situation when IDLE state is entered.
 
 
 
-class c_BankState {
-public:
-	virtual ~c_BankState() {
-	}
+        class c_BankState {
+        public:
+            virtual ~c_BankState() {
+            }
 
-	virtual void handleCommand(c_BankInfo* x_bank, c_BankCommand* x_bankCommandPtr, SimTime_t x_cycle) = 0;
+            virtual void handleCommand(c_BankInfo *x_bank, c_BankCommand *x_bankCommandPtr,
+                                       SimTime_t x_cycle) = 0;
 
-	virtual void clockTic(c_BankInfo* x_bank, SimTime_t x_cycle) = 0;
+            virtual void clockTic(c_BankInfo *x_bank, SimTime_t x_cycle) = 0;
 
-	virtual void enter(c_BankInfo* x_bank, c_BankState* x_prevState,
-			c_BankCommand* x_cmdPtr, SimTime_t x_cycle) = 0;
+            virtual void enter(c_BankInfo *x_bank, c_BankState *x_prevState,
+                               c_BankCommand *x_cmdPtr, SimTime_t x_cycle) = 0;
 
-	virtual std::list<e_BankCommandType> getAllowedCommands() = 0;
+            virtual std::list <e_BankCommandType> getAllowedCommands() = 0;
 
-	virtual bool isCommandAllowed(c_BankCommand* x_cmdPtr,
-			c_BankInfo* x_bankPtr) = 0;
+            virtual bool isCommandAllowed(c_BankCommand *x_cmdPtr,
+                                          c_BankInfo *x_bankPtr) = 0;
 
-	e_BankState getCurrentState() {
-		return m_currentState;
-	}
+            e_BankState getCurrentState() {
+                return m_currentState;
+            }
 
 //private:
-protected:
-	std::map<std::string, unsigned>* m_bankParams;
-        
-	e_BankState m_currentState;
+        protected:
+            std::map<std::string, unsigned> *m_bankParams;
 
-};
-}
+            e_BankState m_currentState;
+
+        };
+    }
 }
 
 #endif // C_BANKSTATE_HPP

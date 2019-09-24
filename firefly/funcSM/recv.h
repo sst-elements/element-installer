@@ -21,36 +21,36 @@
 #include "ctrlMsg.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class RecvFuncSM :  public FunctionSMInterface
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        RecvFuncSM,
-        "firefly",
-        "Recv",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class RecvFuncSM : public FunctionSMInterface {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                RecvFuncSM,
+            "firefly",
+            "Recv",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
-    RecvFuncSM( SST::Params& params );
+        public:
+            RecvFuncSM(SST::Params &params);
 
-    virtual void handleStartEvent( SST::Event*, Retval& );
-    virtual void handleEnterEvent( Retval& );
+            virtual void handleStartEvent(SST::Event *, Retval &);
 
-    virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+            virtual void handleEnterEvent(Retval &);
 
-  private:
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
 
-    RecvStartEvent*		m_event;
+        private:
 
-    CtrlMsg::API* proto() { return static_cast<CtrlMsg::API*>(m_proto); }
-};
+            RecvStartEvent *m_event;
 
-}
+            CtrlMsg::API *proto() { return static_cast<CtrlMsg::API *>(m_proto); }
+        };
+
+    }
 }
 
 #endif

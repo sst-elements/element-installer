@@ -20,31 +20,33 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberMallocShmemEvent : public EmberShmemEvent {
+        class EmberMallocShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberMallocShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::MemAddr* ptr, size_t val, bool backed, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), m_ptr(ptr), m_val(val), m_backed(backed) {}
-	~EmberMallocShmemEvent() {}
+        public:
+            EmberMallocShmemEvent(Shmem::Interface &api, Output *output,
+                                  Hermes::MemAddr *ptr, size_t val, bool backed,
+                                  EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat), m_ptr(ptr), m_val(val), m_backed(backed) {}
 
-    std::string getName() { return "Malloc"; }
+            ~EmberMallocShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Malloc"; }
 
-        EmberEvent::issue( time );
-        m_api.malloc( m_ptr, m_val, m_backed, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.malloc(m_ptr, m_val, m_backed, callback);
+            }
+
+        private:
+            bool m_backed;
+            Hermes::MemAddr *m_ptr;
+            size_t m_val;
+        };
+
     }
-private:
-	bool m_backed;
-    Hermes::MemAddr* m_ptr;
-    size_t m_val;
-};
-
-}
 }
 
 #endif

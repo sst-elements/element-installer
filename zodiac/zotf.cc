@@ -24,33 +24,33 @@ using namespace std;
 using namespace SST;
 using namespace SST::Zodiac;
 
-ZodiacOTFTraceReader::ZodiacOTFTraceReader(ComponentId_t id, Params& params) :
-  Component(id) {
+ZodiacOTFTraceReader::ZodiacOTFTraceReader(ComponentId_t id, Params &params) :
+    Component(id) {
 
     std::cout << "Creating a new ZOTFTrace Reader..." << std::endl;
     string msgiface = params.find<std::string>("msgapi");
 
-    if ( msgiface == "" ) {
+    if (msgiface == "") {
         msgapi = new MessageInterface();
     } else {
-	msgapi = dynamic_cast<MessageInterface*>(loadSubComponent(msgiface, this, params));
+        msgapi = dynamic_cast<MessageInterface *>(loadSubComponent(msgiface, this, params));
 
-        if(NULL == msgapi) {
-		std::cerr << "Message API: " << msgiface << " could not be loaded." << std::endl;
-		exit(-1);
+        if (nullptr == msgapi) {
+            std::cerr << "Message API: " << msgiface << " could not be loaded." << std::endl;
+            exit(-1);
         }
     }
 
     string trace_file = params.find<std::string>("trace");
-    if("" == trace_file) {
-	std::cerr << "Error: could not find a file contain a trace to simulate!" << std::endl;
-	exit(-1);
+    if ("" == trace_file) {
+        std::cerr << "Error: could not find a file contain a trace to simulate!" << std::endl;
+        exit(-1);
     }
 
     uint32_t rank = params.find<uint32_t>("rank", 0);
 
     std::cout << "Creating a new event queue..." << std::endl;
-    eventQ = new std::queue<ZodiacEvent*>();
+    eventQ = new std::queue<ZodiacEvent *>();
 
     // Create a new reader and set it so that we only process one record per call
     std::cout << "Creating a new OTF Reader..." << std::endl;
@@ -59,9 +59,9 @@ ZodiacOTFTraceReader::ZodiacOTFTraceReader(ComponentId_t id, Params& params) :
     registerAsPrimaryComponent();
     primaryComponentDoNotEndSim();
 
-    registerClock( "1GHz",
-                 new Clock::Handler<ZodiacOTFTraceReader>(this,
-                                                     &ZodiacOTFTraceReader::clockTic ) );
+    registerClock("1GHz",
+                  new Clock::Handler<ZodiacOTFTraceReader>(this,
+                                                           &ZodiacOTFTraceReader::clockTic));
 }
 
 ZodiacOTFTraceReader::~ZodiacOTFTraceReader() {
@@ -70,8 +70,7 @@ ZodiacOTFTraceReader::~ZodiacOTFTraceReader() {
 }
 
 ZodiacOTFTraceReader::ZodiacOTFTraceReader() :
-    Component(-1)
-{
+    Component(-1) {
     // for serialization only
 }
 
@@ -79,14 +78,14 @@ void ZodiacOTFTraceReader::handleEvent(Event *ev) {
 
 }
 
-bool ZodiacOTFTraceReader::clockTic( Cycle_t ) {
-  uint64_t eventCount = 0;
-  if(0 != (eventCount = reader->generateNextEvents())) {
-	std::cout << "generated: " << eventCount << " events." << std::endl;
-  	return false;
-  } else {
-	std::cout << "Generating next event caused a stop." << std::endl;
-	return true;
-  }
+bool ZodiacOTFTraceReader::clockTic(Cycle_t) {
+    uint64_t eventCount = 0;
+    if (0 != (eventCount = reader->generateNextEvents())) {
+        std::cout << "generated: " << eventCount << " events." << std::endl;
+        return false;
+    } else {
+        std::cout << "Generating next event caused a stop." << std::endl;
+        return true;
+    }
 }
 

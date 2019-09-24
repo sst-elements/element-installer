@@ -30,39 +30,37 @@ namespace SST {
          * Any and All attributes of this class should be added to FaultEvent.copy()
          * unless there is a Really Good Reason not to do so.
          */
-        class FaultEvent : public SST::Event{
-            public:
-                FaultEvent(std::string faultType) : SST::Event()
-                {
-                    this -> faultType = faultType;
+        class FaultEvent : public SST::Event {
+        public:
+            FaultEvent(std::string faultType) : SST::Event() {
+                this->faultType = faultType;
 
-                    shouldKillJob = FAULT_EVENT_UNDECIDED;
-                    jobNum = -1;
-                    nodeNumber = -1;
-                    /* jobNumber and nodeNumber are assigned by the leaf node */
-                }
+                shouldKillJob = FAULT_EVENT_UNDECIDED;
+                jobNum = -1;
+                nodeNumber = -1;
+                /* jobNumber and nodeNumber are assigned by the leaf node */
+            }
 
 
-                /* Creates and returns an identical copy of this object. */
-                FaultEvent * copy()
-                {
-                    FaultEvent* newFault = new FaultEvent(faultType);
-                    newFault -> shouldKillJob = shouldKillJob;
-                    newFault -> jobNum = jobNum;
-                    newFault -> nodeNumber = nodeNumber;
+            /* Creates and returns an identical copy of this object. */
+            FaultEvent *copy() {
+                FaultEvent *newFault = new FaultEvent(faultType);
+                newFault->shouldKillJob = shouldKillJob;
+                newFault->jobNum = jobNum;
+                newFault->nodeNumber = nodeNumber;
 
-                    return newFault;
-                }
+                return newFault;
+            }
 
-                int shouldKillJob;  // dictates if this event should cause jobs to die
-                int jobNum;         // the job number of the scheduled node that recieves the fault
-                int nodeNumber;     // the node number of the scheduled node that recieves the fault
-                std::string faultType;
+            int shouldKillJob;  // dictates if this event should cause jobs to die
+            int jobNum;         // the job number of the scheduled node that recieves the fault
+            int nodeNumber;     // the node number of the scheduled node that recieves the fault
+            std::string faultType;
 
-            private:
-                FaultEvent();
+        private:
+            FaultEvent();
 
-                NotSerializable(FaultEvent)
+            NotSerializable(FaultEvent)
         };
 
     }

@@ -35,20 +35,20 @@
 
 char pymerlin[] = {
 #include "pymerlin.inc"
+
     0x00};
 
 class MerlinPyModule : public SSTElementPythonModule {
 public:
     MerlinPyModule(std::string library) :
-        SSTElementPythonModule(library)
-    {
+        SSTElementPythonModule(library) {
         addPrimaryModule(pymerlin);
     }
 
     SST_ELI_REGISTER_PYTHON_MODULE(
         MerlinPyModule,
-        "merlin",
-        SST_ELI_ELEMENT_VERSION(1,0,0)
+    "merlin",
+    SST_ELI_ELEMENT_VERSION(1,0,0)
     )
 };
 
@@ -61,14 +61,14 @@ public:
 //     ElementLibraryInfo merlin_eli = {
 //         "merlin",
 //         "Flexible network components",
-//         NULL,
-//         NULL,   // Events
-//         NULL,   // Introspectors
-//         NULL,
-//         NULL,
-//         NULL, // partitioners,
-//         NULL,  // Python Module Generator
-//         NULL // generators,
+//         nullptr,
+//         nullptr,   // Events
+//         nullptr,   // Introspectors
+//         nullptr,
+//         nullptr,
+//         nullptr, // partitioners,
+//         nullptr,  // Python Module Generator
+//         nullptr // generators,
 //     };
 // }
 

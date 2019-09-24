@@ -33,104 +33,125 @@
 #include "membackend/backing.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class CoherentMemController : public MemController {
-public:
+        class CoherentMemController : public MemController {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_COMPONENT(CoherentMemController, "memHierarchy", "CoherentMemController", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_COMPONENT(CoherentMemController,
+            "memHierarchy", "CoherentMemController", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Coherent memory controller, supports cache shootdowns and interfaces to a main memory model for timing", COMPONENT_CATEGORY_MEMORY)
 
-    SST_ELI_DOCUMENT_PARAMS( MEMCONTROLLER_ELI_PARAMS )
+            SST_ELI_DOCUMENT_PARAMS( MEMCONTROLLER_ELI_PARAMS )
 
-    SST_ELI_DOCUMENT_PORTS( MEMCONTROLLER_ELI_PORTS )
+            SST_ELI_DOCUMENT_PORTS( MEMCONTROLLER_ELI_PORTS )
 
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( MEMCONTROLLER_ELI_SUBCOMPONENTSLOTS )
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( MEMCONTROLLER_ELI_SUBCOMPONENTSLOTS )
 
 /* Begin class definition */
-    typedef uint64_t ReqId;
+            typedef uint64_t ReqId;
 
-    CoherentMemController(ComponentId_t id, Params &params);
+            CoherentMemController(ComponentId_t id, Params &params);
 
-    /* Event handling */
-    void handleMemResponse(SST::Event::id_type id, uint32_t flags);
-    
-    /* Component API */
-    virtual void init(unsigned int phase);
-    virtual void setup();
+            /* Event handling */
+            void handleMemResponse(SST::Event::id_type id, uint32_t flags);
 
-protected:
-    virtual void processInitEvent(MemEventInit* ev);
-    
-    virtual void handleEvent(SST::Event * event);
+            /* Component API */
+            virtual void init(unsigned int phase);
 
-    virtual bool clock(Cycle_t cycle);
+            virtual void setup();
 
-private:
+        protected:
+            virtual void processInitEvent(MemEventInit *ev);
 
-    CoherentMemController();
-    ~CoherentMemController() {}
+            virtual void handleEvent(SST::Event *event);
 
-    void handleRequest(MemEvent * ev);
-    void handleReplacement(MemEvent * ev);
-    void handleFlush(MemEvent * ev);
-    void handleAckInv(MemEvent * ev);
-    void handleFetchResp(MemEvent * ev);
-    void handleNack(MemEvent * ev);
-    void handleCustomCmd(MemEventBase * ev);
+            virtual bool clock(Cycle_t cycle);
 
-    bool doShootdown(Addr addr, MemEventBase * ev);
+        private:
 
-    void finishMemReq(SST::Event::id_type id, uint32_t flags);
-    void finishCustomReq(SST::Event::id_type id, uint32_t flags);
+            CoherentMemController();
 
-    void updateMSHR(Addr baseAddr);
-    void replayMemEvent(MemEvent * ev);
+            ~CoherentMemController() {}
 
-    // Custom command handler 
-    // TODO ability to specify multiple handlers
-    //CustomCmdMemHandler * customCommandHandler_;
+            void handleRequest(MemEvent *ev);
 
-    // Outgoing event handling
-    Cycle_t timestamp_;
-    std::multimap<uint64_t, MemEventBase*> msgQueue_;
+            void handleReplacement(MemEvent *ev);
 
-    // Caching information
-    bool directory_; /* Whether directory is above us, i.e., whether a PutM indicates block is no longer cached or not */
-    std::vector<bool> cacheStatus_;
-    Addr lineSize_;
+            void handleFlush(MemEvent *ev);
 
-    // MSHR
-    class MSHREntry {
-        public:
-            SST::Event::id_type id;                     // Event id, use to find event in OutstandEventList_
-            Command cmd;                                // Event command, mostly for quick lookup 
-            bool shootdown;                             // Whether event requires a shootdown before being processed
-            std::set<SST::Event::id_type> writebacks;   // Writebacks this event is waiting for, due to shootdown
-            
-            MSHREntry(SST::Event::id_type id, Command cmd, bool sdown = false) : id(id), cmd(cmd), shootdown(sdown) { }
-    };
-    
-    std::map<Addr, std::list<MSHREntry> > mshr_;    // Keeps outstanding events coherent
+            void handleAckInv(MemEvent *ev);
 
-    // Event tracking
-    class OutstandingEvent {
-        public:
-            MemEventBase * request;     // Event
-            std::set<Addr> addrs;       // Set of (base) addresses this event touches, should be one MSHR entry for each
-            uint32_t count;             // If customcmd, number of MSHR entries that are not yet ready to issue
+            void handleFetchResp(MemEvent *ev);
 
-            OutstandingEvent(MemEventBase * request, Addr addr) : request(request), count(0) { addrs.insert(addr); }
-            OutstandingEvent(MemEventBase * request, std::set<Addr> addrs) : request(request), addrs(addrs) { count = addrs.size(); }
+            void handleNack(MemEvent *ev);
 
-            uint32_t decrementCount() { return --count; }
-            uint32_t getCount() { return count; }
-    };
+            void handleCustomCmd(MemEventBase *ev);
 
-    std::map<SST::Event::id_type,OutstandingEvent> outstandingEventList_; // List of all outstanding events
-};
+            bool doShootdown(Addr addr, MemEventBase *ev);
+
+            void finishMemReq(SST::Event::id_type id, uint32_t flags);
+
+            void finishCustomReq(SST::Event::id_type id, uint32_t flags);
+
+            void updateMSHR(Addr baseAddr);
+
+            void replayMemEvent(MemEvent *ev);
+
+            // Custom command handler 
+            // TODO ability to specify multiple handlers
+            //CustomCmdMemHandler * customCommandHandler_;
+
+            // Outgoing event handling
+            Cycle_t timestamp_;
+            std::multimap<uint64_t, MemEventBase *> msgQueue_;
+
+            // Caching information
+            bool directory_; /* Whether directory is above us, i.e., whether a PutM indicates block is no longer cached or not */
+            std::vector<bool> cacheStatus_;
+            Addr lineSize_;
+
+            // MSHR
+            class MSHREntry {
+            public:
+                SST::Event::id_type id;                     // Event id, use to find event in OutstandEventList_
+                Command cmd;                                // Event command, mostly for quick lookup 
+                bool shootdown;                             // Whether event requires a shootdown before being processed
+                std::set <SST::Event::id_type> writebacks;   // Writebacks this event is waiting for, due to shootdown
+
+                MSHREntry(SST::Event::id_type id, Command cmd, bool sdown = false) : id(id),
+                                                                                     cmd(cmd),
+                                                                                     shootdown(
+                                                                                         sdown) {}
+            };
+
+            std::map <Addr, std::list<MSHREntry>> mshr_;    // Keeps outstanding events coherent
+
+            // Event tracking
+            class OutstandingEvent {
+            public:
+                MemEventBase *request;     // Event
+                std::set <Addr> addrs;       // Set of (base) addresses this event touches, should be one MSHR entry for each
+                uint32_t count;             // If customcmd, number of MSHR entries that are not yet ready to issue
+
+                OutstandingEvent(MemEventBase *request, Addr addr) : request(request), count(0) {
+                    addrs.insert(addr);
+                }
+
+                OutstandingEvent(MemEventBase *request, std::set <Addr> addrs) : request(request),
+                                                                                 addrs(
+                                                                                     addrs) { count = addrs.size(); }
+
+                uint32_t decrementCount() { return --count; }
+
+                uint32_t getCount() { return count; }
+            };
+
+            std::map <SST::Event::id_type, OutstandingEvent> outstandingEventList_; // List of all outstanding events
+        };
 
 
-}}
+    }
+}
 
 #endif /* _COHERENTMEMORYCONTROLLER_H */

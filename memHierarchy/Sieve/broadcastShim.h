@@ -31,43 +31,54 @@
 #include "alloctrackev.h"
 
 
-namespace SST { namespace MemHierarchy {
+namespace SST {
+    namespace MemHierarchy {
 
-using namespace std;
+        using namespace std;
 
 
-class BroadcastShim : public SST::Component {
-public:
+        class BroadcastShim : public SST::Component {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_COMPONENT(BroadcastShim, "memHierarchy", "BroadcastShim", SST_ELI_ELEMENT_VERSION(1,0,0), 
+            SST_ELI_REGISTER_COMPONENT(BroadcastShim,
+            "memHierarchy", "BroadcastShim", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Used to connect a processor to multiple sieves (e.g., for private/semi-private last-level cache modeling)", COMPONENT_CATEGORY_MEMORY)
 
-    SST_ELI_DOCUMENT_PORTS(
-            {"cpu_alloc_link_%(port)d", "Link to CPU's allocation port", {"memHierarchy.AllocTrackEvent"}},
-            {"sieve_alloc_link_%(port)d", "Link to sieve's allocation port", {"memHierarchy.AllocTrackEvent"}} )
+            SST_ELI_DOCUMENT_PORTS(
+            {
+                "cpu_alloc_link_%(port)d", "Link to CPU's allocation port", {
+                    "memHierarchy.AllocTrackEvent"}
+            },
+            {
+                "sieve_alloc_link_%(port)d", "Link to sieve's allocation port", {
+                    "memHierarchy.AllocTrackEvent"}
+            } )
 
 /* Begin class definiton */
-    /** Constructor */
-    BroadcastShim(ComponentId_t id, Params &params);
-    
-    /** Destructor for Sieve Component */
-    ~BroadcastShim() {}
-    
-    virtual void init(unsigned int) {}
-    virtual void finish(void) {}
-    
-    
-private:
+            /** Constructor */
+            BroadcastShim(ComponentId_t id, Params &params);
 
-    /** Handler for incoming allocation events.  */
-    void processCoreEvent(SST::Event* event);
-    void processSieveEvent(SST::Event* event);
+            /** Destructor for Sieve Component */
+            ~BroadcastShim() {}
 
-    SST::Output* output_;
-    vector<SST::Link*>  cpuAllocLinks_;
-    vector<SST::Link*>  sieveAllocLinks_;
-};
+            virtual void init(unsigned int) {}
 
-}}
+            virtual void finish(void) {}
+
+
+        private:
+
+            /** Handler for incoming allocation events.  */
+            void processCoreEvent(SST::Event *event);
+
+            void processSieveEvent(SST::Event *event);
+
+            SST::Output *output_;
+            vector<SST::Link *> cpuAllocLinks_;
+            vector<SST::Link *> sieveAllocLinks_;
+        };
+
+    }
+}
 
 #endif

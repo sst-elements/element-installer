@@ -27,67 +27,78 @@ namespace SST {
         class Job;
 
         class PQScheduler : public Scheduler {
-            private:
+        private:
 
-                enum ComparatorType{  //to represent type of JobComparator
-                    FIFO = 0,
-                    LARGEFIRST = 1,
-                    SMALLFIRST = 2,
-                    LONGFIRST = 3,
-                    SHORTFIRST = 4,
-                    BETTERFIT = 5
-                };
+            enum ComparatorType {  //to represent type of JobComparator
+                FIFO = 0,
+                LARGEFIRST = 1,
+                SMALLFIRST = 2,
+                LONGFIRST = 3,
+                SHORTFIRST = 4,
+                BETTERFIT = 5
+            };
 
-                struct compTableEntry{
-                    ComparatorType val;
-                    std::string name;
-                };
+            struct compTableEntry {
+                ComparatorType val;
+                std::string name;
+            };
 
-                static const compTableEntry compTable[6];
-
-
-                static const int numCompTableEntries;
-
-                std::string compSetupInfo;
+            static const compTableEntry compTable[6];
 
 
+            static const int numCompTableEntries;
+
+            std::string compSetupInfo;
+
+
+        public:
+            virtual ~PQScheduler() {
+                delete toRun;
+            }
+
+            PQScheduler *copy(std::vector<Job *> *running, std::vector<Job *> *toRun);
+
+            class JobComparator : public std::binary_function<Job *, Job *, bool> {
             public:
-                virtual ~PQScheduler() 
-                {
-                    delete toRun;
-                }
-                PQScheduler* copy(std::vector<Job*>* running, std::vector<Job*>* toRun);
+                static JobComparator *Make(std::string typeName);  //return nullptr if name is invalid
+                static void printComparatorList(
+                    std::ostream &out);  //print list of possible comparators
+                bool operator()(Job *&j1, Job *&j2);
 
-                class JobComparator : public std::binary_function<Job*,Job*,bool> {
-                public:
-                    static JobComparator* Make(std::string typeName);  //return NULL if name is invalid
-                    static void printComparatorList(std::ostream& out);  //print list of possible comparators
-                    bool operator()(Job*& j1, Job*& j2);
-                    bool operator()(Job* const& j1, Job* const& j2);
-                    std::string toString();
+                bool operator()(Job *const &j1, Job *const &j2);
 
-                private:
-                    JobComparator(ComparatorType type);
-                    ComparatorType type;
-                };
-                JobComparator* origcomp;
+                std::string toString();
 
-                PQScheduler(JobComparator* comp);
-                PQScheduler(PQScheduler* insched, std::priority_queue<Job*,std::vector<Job*>,JobComparator>* intoRun);
+            private:
+                JobComparator(ComparatorType type);
 
-                std::string getSetupInfo(bool comment);
+                ComparatorType type;
+            };
 
-                void jobArrives(Job* j, unsigned long time, const Machine & mach);
+            JobComparator *origcomp;
 
-                void jobFinishes(Job* j, unsigned long time, const Machine & mach){ }
+            PQScheduler(JobComparator *comp);
 
-                Job* tryToStart(unsigned long time, const Machine & mach);
-                void startNext(unsigned long time, const Machine & mach);
+            PQScheduler(PQScheduler *insched, std::priority_queue<Job *, std::vector < Job * >,
+                        JobComparator
 
-                void reset();
+            >* intoRun);
 
-            protected:
-                std::priority_queue<Job*,std::vector<Job*>,JobComparator>* toRun;  //jobs waiting to run
+            std::string getSetupInfo(bool comment);
+
+            void jobArrives(Job *j, unsigned long time, const Machine &mach);
+
+            void jobFinishes(Job *j, unsigned long time, const Machine &mach) {}
+
+            Job *tryToStart(unsigned long time, const Machine &mach);
+
+            void startNext(unsigned long time, const Machine &mach);
+
+            void reset();
+
+        protected:
+            std::priority_queue<Job *, std::vector < Job * >,JobComparator>*
+            toRun;  //jobs waiting to run
         };
 
     }

@@ -29,22 +29,24 @@
 namespace SST {
     namespace Scheduler {
         class Machine;
+
         class AllocInfo;
+
         class Job;
 
         class FirstFitAllocator : public LinearAllocator {
 
-            public:
+        public:
 
-                FirstFitAllocator(std::vector<std::string>* params, Machine* mach);
+            FirstFitAllocator(std::vector <std::string> *params, Machine *mach);
 
-                std::string getParamHelp(){
-                    return "[<file>]\n\tfile: Path to file giving the curve";
-                }
+            std::string getParamHelp() {
+                return "[<file>]\n\tfile: Path to file giving the curve";
+            }
 
-                std::string getSetupInfo(bool comment) const;
+            std::string getSetupInfo(bool comment) const;
 
-                AllocInfo* allocate(Job* job) ;
+            AllocInfo *allocate(Job *job);
         };
 
     }

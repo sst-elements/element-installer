@@ -21,56 +21,59 @@
 #include <sst/core/sharedRegion.h>
 
 namespace SST {
-namespace SimpleElementExample {
+    namespace SimpleElementExample {
 
-class simpleLookupTableComponent : public SST::Component
-{
-public:
+        class simpleLookupTableComponent : public SST::Component {
+        public:
 
-    // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
-    SST_ELI_REGISTER_COMPONENT(
-        simpleLookupTableComponent,
-        "simpleElementExample",
-        "simpleLookupTableComponent",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Demonstrates using a Shared Lookup Table",
-        COMPONENT_CATEGORY_UNCATEGORIZED
-    )
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        { "filename", "Filename to load as the table", ""},
-        {"num_entities", "Number of entities in the sim", "1"},
-        {"myid", "ID Number (0 <= myid < num_entities)", "0"}
-    )
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(
+                simpleLookupTableComponent,
+            "simpleElementExample",
+            "simpleLookupTableComponent",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Demonstrates using a Shared Lookup Table",
+            COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_STATISTICS(
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "filename", "Filename to load as the table", "" },
+            { "num_entities", "Number of entities in the sim", "1" },
+            { "myid", "ID Number (0 <= myid < num_entities)", "0" }
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_PORTS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_STATISTICS(
+            )
 
-    // Optional since there is nothing to document
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-    )
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_PORTS(
+            )
 
-    simpleLookupTableComponent(SST::ComponentId_t id, SST::Params& params);
-    ~simpleLookupTableComponent();
+            // Optional since there is nothing to document
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            )
 
-    virtual void init(unsigned int phase);
-    virtual void setup();
-    virtual void finish();
+            simpleLookupTableComponent(SST::ComponentId_t id, SST::Params &params);
 
-    bool tick(SST::Cycle_t);
-private:
-    Output out;
-    const uint8_t * table;
-    size_t tableSize;
-    SharedRegion *sregion;
-};
+            ~simpleLookupTableComponent();
 
-}
+            virtual void init(unsigned int phase);
+
+            virtual void setup();
+
+            virtual void finish();
+
+            bool tick(SST::Cycle_t);
+
+        private:
+            Output out;
+            const uint8_t *table;
+            size_t tableSize;
+            SharedRegion *sregion;
+        };
+
+    }
 }
 
 #endif

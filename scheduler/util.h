@@ -20,13 +20,14 @@
 #include <sys/types.h>
 
 namespace SST {
-namespace Scheduler {
-namespace Utils {
+    namespace Scheduler {
+        namespace Utils {
 
-bool file_exists(const std::string &path);
-time_t file_time_last_written(const std::string &path);
+            bool file_exists(const std::string &path);
 
-}
-}
+            time_t file_time_last_written(const std::string &path);
+
+        }
+    }
 }
 #endif

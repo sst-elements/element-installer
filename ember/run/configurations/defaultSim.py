@@ -16,56 +16,61 @@
 # distribution.
 
 # numNodes = 0 implies use all nodes on network
-numNodes = 2 
-ranksPerNode = 1 
+numNodes = 2
+ranksPerNode = 1
 
-#platform = 'chamaPSM'
-#platform = 'chamaOpenIB'
-#platform = 'bgq'
+# platform = 'chamaPSM'
+# platform = 'chamaOpenIB'
+# platform = 'bgq'
 platform = 'defaultParams'
 
-#topo = ''
-#shape = ''
+# topo = ''
+# shape = ''
 topo = 'torus'
 shape = '4'
 
 detailedNodes = []
 
-detailedModel = "" 
-detailedModelParams = "" 
-xxx = "Sweep3D nx=30 ny=30 nz=30 computetime=140 pex=4 pey=16 pez=0 kba=10"     
+detailedModel = ""
+detailedModelParams = ""
+xxx = "Sweep3D nx=30 ny=30 nz=30 computetime=140 pex=4 pey=16 pez=0 kba=10"
 xxx = "Ring n=100"
 
-def genWorkFlow( defaults, nodeNum = None ):
 
-	#print 'genWorkFlow()'
+def genWorkFlow(defaults, nodeNum=None):
+    # print 'genWorkFlow()'
 
-	workFlow = []
-	motif = dict.copy( defaults )
-	motif['cmd'] = "Init"
-	workFlow.append( motif )
+    workFlow = []
+    motif = dict.copy(defaults)
+    motif['cmd'] = "Init"
+    workFlow.append(motif)
 
-	motif = dict.copy( defaults )
-	motif['cmd'] = xxx
-	workFlow.append( motif )
+    motif = dict.copy(defaults)
+    motif['cmd'] = xxx
+    workFlow.append(motif)
 
-	motif = dict.copy( defaults )
-	motif['cmd'] = "Fini"
-	workFlow.append( motif )
+    motif = dict.copy(defaults)
+    motif['cmd'] = "Fini"
+    workFlow.append(motif)
 
-	return workFlow
+    return workFlow
+
 
 def getNumNodes():
-	return numNodes
+    return numNodes
+
 
 def getRanksPerNode():
-	return ranksPerNode 
+    return ranksPerNode
+
 
 def getTopo():
-	return topo, shape 
+    return topo, shape
+
 
 def getPlatform():
-	return platform 
+    return platform
+
 
 def getDetailedModel():
-    return detailedModel,detailedModelParams,detailedNodes
+    return detailedModel, detailedModelParams, detailedNodes

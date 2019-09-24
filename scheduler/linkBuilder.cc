@@ -26,32 +26,27 @@
 using namespace SST::Scheduler;
 
 
-linkBuilder::linkBuilder(SST::ComponentId_t id, SST::Params & params) : Component( id )
-{
+linkBuilder::linkBuilder(SST::ComponentId_t id, SST::Params &params) : Component(id) {
 
 }
 
 
-void linkBuilder::connectGraph(Job* job)
-{
+void linkBuilder::connectGraph(Job *job) {
 
 }
 
 
-void linkBuilder::disconnectGraph(Job* job)
-{
+void linkBuilder::disconnectGraph(Job *job) {
 
 }
 
 
-void linkBuilder::initNodePtrRequests(SST::Event* event)
-{
+void linkBuilder::initNodePtrRequests(SST::Event *event) {
 
 }
 
 
-void linkBuilder::handleNewNodePtr(SST::Event* event)
-{
+void linkBuilder::handleNewNodePtr(SST::Event *event) {
 
 }
 

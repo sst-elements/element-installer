@@ -17,25 +17,26 @@
 #define _SIMPLECOMPONENTEVENT_H
 
 namespace SST {
-namespace SimpleComponent {
+    namespace SimpleComponent {
 
-class simpleComponentEvent : public SST::Event 
-{
-public:
-    typedef std::vector<char> dataVec;
-    simpleComponentEvent() : SST::Event() { }
-    dataVec payload;
+        class simpleComponentEvent : public SST::Event {
+        public:
+            typedef std::vector<char> dataVec;
 
-public:	
-    void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-        Event::serialize_order(ser);
-        ser & payload;
-    }
-    
-    ImplementSerializable(SST::SimpleComponent::simpleComponentEvent);     
-};
+            simpleComponentEvent() : SST::Event() {}
 
-} // namespace SimpleComponent
+            dataVec payload;
+
+        public:
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+                ser & payload;
+            }
+
+            ImplementSerializable(SST::SimpleComponent::simpleComponentEvent);
+        };
+
+    } // namespace SimpleComponent
 } // namespace SST
 
 #endif /* _SIMPLECOMPONENTEVENT_H */

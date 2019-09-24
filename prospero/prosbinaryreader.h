@@ -20,39 +20,43 @@
 #include "prosreader.h"
 
 namespace SST {
-namespace Prospero {
+    namespace Prospero {
 
-class ProsperoBinaryTraceReader : public ProsperoTraceReader {
+        class ProsperoBinaryTraceReader : public ProsperoTraceReader {
 
-public:
-        ProsperoBinaryTraceReader( Component* owner, Params& params );
-        ProsperoBinaryTraceReader( ComponentId_t id, Params& params, Output* out );
-        ~ProsperoBinaryTraceReader();
-        ProsperoTraceEntry* readNextEntry();
+        public:
+            ProsperoBinaryTraceReader(Component *owner, Params &params);
 
- 	SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
-        	ProsperoBinaryTraceReader,
-        	"prospero",
-        	"ProsperoBinaryTraceReader",
-        	SST_ELI_ELEMENT_VERSION(1,0,0),
-        	"Binary Trace Reader",
-        	SST::Prospero::ProsperoTraceReader
-    	)
+            ProsperoBinaryTraceReader(ComponentId_t id, Params &params, Output *out);
 
-	SST_ELI_DOCUMENT_PARAMS(
-		{ "file", "Sets the file for the trace reader to use", "" }
-	)
+            ~ProsperoBinaryTraceReader();
 
-private:
-	void copy(char* target, const char* source,
-		const size_t offset, const size_t len);
-	FILE* traceInput;
-	char* buffer;
-	uint32_t recordLength;
+            ProsperoTraceEntry *readNextEntry();
 
-};
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
+                ProsperoBinaryTraceReader,
+            "prospero",
+            "ProsperoBinaryTraceReader",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Binary Trace Reader",
+            SST::Prospero::ProsperoTraceReader
+            )
 
-}
+            SST_ELI_DOCUMENT_PARAMS(
+            { "file", "Sets the file for the trace reader to use", "" }
+            )
+
+        private:
+            void copy(char *target, const char *source,
+                      const size_t offset, const size_t len);
+
+            FILE *traceInput;
+            char *buffer;
+            uint32_t recordLength;
+
+        };
+
+    }
 }
 
 #endif

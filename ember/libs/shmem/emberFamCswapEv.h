@@ -20,34 +20,37 @@
 #include "emberFamEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberFamCswapEvent : public EmberFamEvent {
+        class EmberFamCswapEvent : public EmberFamEvent {
 
-public:
-	EmberFamCswapEvent( Shmem::Interface& api, Output* output,
-			Hermes::Value result, Shmem::Fam_Descriptor fd, uint64_t dest, Hermes::Value oldValue, Hermes::Value newValue, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberFamEvent( api, output, stat ), 
-            m_result(result), m_fd(fd), m_dest(dest), m_oldValue(oldValue), m_newValue(newValue) {}
-	~EmberFamCswapEvent() {}
+        public:
+            EmberFamCswapEvent(Shmem::Interface &api, Output *output,
+                               Hermes::Value result, Shmem::Fam_Descriptor fd, uint64_t dest,
+                               Hermes::Value oldValue, Hermes::Value newValue,
+                               EmberEventTimeStatistic *stat = nullptr) :
+                EmberFamEvent(api, output, stat),
+                m_result(result), m_fd(fd), m_dest(dest), m_oldValue(oldValue),
+                m_newValue(newValue) {}
 
-    std::string getName() { return "Fam_Add"; }
+            ~EmberFamCswapEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
-        EmberEvent::issue( time );
-        m_api.fam_cswap( m_result, m_fd, m_dest, m_oldValue, m_newValue, callback );
+            std::string getName() { return "Fam_Add"; }
+
+            void issue(uint64_t time, Shmem::Callback callback) {
+                EmberEvent::issue(time);
+                m_api.fam_cswap(m_result, m_fd, m_dest, m_oldValue, m_newValue, callback);
+            }
+
+        private:
+            Shmem::Fam_Descriptor m_fd;
+            uint64_t m_dest;
+            Hermes::Value m_result;
+            Hermes::Value m_oldValue;
+            Hermes::Value m_newValue;
+        };
+
     }
-
-private:
-	Shmem::Fam_Descriptor m_fd;
-    uint64_t m_dest;
-    Hermes::Value m_result;
-    Hermes::Value m_oldValue;
-    Hermes::Value m_newValue;
-};
-
-}
 }
 
 #endif

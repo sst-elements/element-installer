@@ -20,37 +20,36 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberSizeEvent : public EmberMPIEvent {
+        class EmberSizeEvent : public EmberMPIEvent {
 
-public:
-	EmberSizeEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-            Communicator comm, int* sizePtr ) :
-        EmberMPIEvent( api, output, stat ),
-        m_comm( comm ),
-        m_sizePtr( sizePtr )
-    {}
+        public:
+            EmberSizeEvent(MP::Interface &api, Output *output,
+                           EmberEventTimeStatistic *stat,
+                           Communicator comm, int *sizePtr) :
+                EmberMPIEvent(api, output, stat),
+                m_comm(comm),
+                m_sizePtr(sizePtr) {}
 
-	~EmberSizeEvent() {}
+            ~EmberSizeEvent() {}
 
-    std::string getName() { return "Size"; }
+            std::string getName() { return "Size"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.size( m_comm, m_sizePtr, functor );
+                m_api.size(m_comm, m_sizePtr, functor);
+            }
+
+        private:
+            Communicator m_comm;
+            int *m_sizePtr;
+
+        };
+
     }
-
-private:
-    Communicator m_comm;
-    int*         m_sizePtr;
-    
-};
-
-}
 }
 
 #endif

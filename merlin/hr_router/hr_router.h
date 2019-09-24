@@ -33,126 +33,141 @@
 using namespace SST;
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-class PortControl;
+        class PortControl;
 
-class hr_router : public Router {
+        class hr_router : public Router {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_COMPONENT(
-        hr_router,
-        "merlin",
-        "hr_router",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "High radix router",
-        COMPONENT_CATEGORY_NETWORK)
+            SST_ELI_REGISTER_COMPONENT(
+                hr_router,
+            "merlin",
+            "hr_router",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "High radix router",
+            COMPONENT_CATEGORY_NETWORK)
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {"id",                 "ID of the router."},
-        {"num_ports",          "Number of ports that the router has"},
-        {"num_vcs",            "DEPRECATED", ""},
-        {"topology",           "Name of the topology subcomponent that should be loaded to control routing."},
-        {"xbar_arb",           "Arbitration unit to be used for crossbar.","merlin.xbar_arb_lru"},
-        {"link_bw",            "Bandwidth of the links specified in either b/s or B/s (can include SI prefix)."},
-        {"flit_size",          "Flit size specified in either b or B (can include SI prefix)."},
-        {"xbar_bw",            "Bandwidth of the crossbar specified in either b/s or B/s (can include SI prefix)."},
-        {"input_latency",      "Latency of packets entering switch into input buffers.  Specified in s (can include SI prefix)."},
-        {"output_latency",     "Latency of packets exiting switch from output buffers.  Specified in s (can include SI prefix)."},
-        {"input_buf_size",     "Size of input buffers specified in b or B (can include SI prefix)."},
-        {"output_buf_size",    "Size of output buffers specified in b or B (can include SI prefix)."},
-        {"network_inspectors", "Comma separated list of network inspectors to put on output ports.", ""},
-        {"oql_track_port",     "Set to true to track output queue length for an entire port.  False tracks per VC.", "false"},
-        {"oql_track_remote",   "Set to true to track output queue length including remote input queue.  False tracks only local queue.", "false"},
-        {"debug",              "Turn on debugging for router. Set to 1 for on, 0 for off.", "0"}
-    )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "id", "ID of the router." },
+            { "num_ports", "Number of ports that the router has" },
+            { "num_vcs", "DEPRECATED", "" },
+            { "topology", "Name of the topology subcomponent that should be loaded to control routing." },
+            { "xbar_arb", "Arbitration unit to be used for crossbar.", "merlin.xbar_arb_lru" },
+            { "link_bw", "Bandwidth of the links specified in either b/s or B/s (can include SI prefix)." },
+            { "flit_size", "Flit size specified in either b or B (can include SI prefix)." },
+            { "xbar_bw", "Bandwidth of the crossbar specified in either b/s or B/s (can include SI prefix)." },
+            { "input_latency", "Latency of packets entering switch into input buffers.  Specified in s (can include SI prefix)." },
+            { "output_latency", "Latency of packets exiting switch from output buffers.  Specified in s (can include SI prefix)." },
+            { "input_buf_size", "Size of input buffers specified in b or B (can include SI prefix)." },
+            { "output_buf_size", "Size of output buffers specified in b or B (can include SI prefix)." },
+            { "network_inspectors", "Comma separated list of network inspectors to put on output ports.", "" },
+            { "oql_track_port", "Set to true to track output queue length for an entire port.  False tracks per VC.", "false" },
+            { "oql_track_remote", "Set to true to track output queue length including remote input queue.  False tracks only local queue.", "false" },
+            { "debug", "Turn on debugging for router. Set to 1 for on, 0 for off.", "0" }
+            )
 
-    SST_ELI_DOCUMENT_STATISTICS(
-        { "send_bit_count",     "Count number of bits sent on link", "bits", 1},
-        { "send_packet_count",  "Count number of packets sent on link", "packets", 1},
-        { "output_port_stalls", "Time output port is stalled (in units of core timebase)", "time in stalls", 1},
-        { "xbar_stalls",        "Count number of cycles the xbar is stalled", "cycles", 1},
-        { "idle_time",          "Amount of time spent idle for a given port", "units of core timebase", 1},
-        { "width_adj_count",    "Number of times that link width was increased or decreased", "width adjustment count", 1}
-    )
+            SST_ELI_DOCUMENT_STATISTICS(
+            { "send_bit_count", "Count number of bits sent on link", "bits", 1 },
+            { "send_packet_count", "Count number of packets sent on link", "packets", 1 },
+            { "output_port_stalls", "Time output port is stalled (in units of core timebase)", "time in stalls", 1 },
+            { "xbar_stalls", "Count number of cycles the xbar is stalled", "cycles", 1 },
+            { "idle_time", "Amount of time spent idle for a given port", "units of core timebase", 1 },
+            { "width_adj_count", "Number of times that link width was increased or decreased", "width adjustment count", 1 }
+            )
 
-    SST_ELI_DOCUMENT_PORTS(
-        {"port%(num_ports)d",  "Ports which connect to endpoints or other routers.", { "merlin.RtrEvent", "merlin.internal_router_event", "merlin.topologyevent", "merlin.credit_event" } }
-    )
+            SST_ELI_DOCUMENT_PORTS(
+            {
+                "port%(num_ports)d", "Ports which connect to endpoints or other routers.", {
+                    "merlin.RtrEvent", "merlin.internal_router_event", "merlin.topologyevent",
+                    "merlin.credit_event"}
+            }
+            )
 
-private:
-    static int num_routers;
-    static int print_debug;
-    int id;
-    int num_ports;
+        private:
+            static int num_routers;
+            static int print_debug;
+            int id;
+            int num_ports;
 //    int requested_vns;
-    int num_vcs;
-    bool vcs_initialized;
-        
-    Topology* topo;
-    XbarArbitration* arb;
-    
-    PortControl** ports;
-    internal_router_event** vc_heads;
-    int* xbar_in_credits;
-    int* output_queue_lengths;
+            int num_vcs;
+            bool vcs_initialized;
+
+            Topology *topo;
+            XbarArbitration *arb;
+
+            PortControl **ports;
+            internal_router_event **vc_heads;
+            int *xbar_in_credits;
+            int *output_queue_lengths;
 
 #if VERIFY_DECLOCKING
-    bool clocking;
+            bool clocking;
 #endif
 
-    int* in_port_busy;
-    int* out_port_busy;
-    int* progress_vcs;
+            int *in_port_busy;
+            int *out_port_busy;
+            int *progress_vcs;
 
-    /* int input_buf_size; */
-    /* int output_buf_size; */
-    UnitAlgebra input_buf_size;
-    UnitAlgebra output_buf_size;
-    
-    Cycle_t unclocked_cycle;
-    std::string xbar_bw;
-    TimeConverter* xbar_tc;
-    Clock::Handler<hr_router>* my_clock_handler;
+            /* int input_buf_size; */
+            /* int output_buf_size; */
+            UnitAlgebra input_buf_size;
+            UnitAlgebra output_buf_size;
 
-    std::vector<std::string> inspector_names;
-    
-    bool clock_handler(Cycle_t cycle);
-    // bool debug_clock_handler(Cycle_t cycle);
-    static void sigHandler(int signal);
+            Cycle_t unclocked_cycle;
+            std::string xbar_bw;
+            TimeConverter *xbar_tc;
+            Clock::Handler <hr_router> *my_clock_handler;
 
-    void init_vcs();
-    Statistic<uint64_t>** xbar_stalls;
+            std::vector <std::string> inspector_names;
 
-    Output& output;
-    
-public:
-    hr_router(ComponentId_t cid, Params& params);
-    ~hr_router();
-    
-    void init(unsigned int phase);
-    void complete(unsigned int phase);
-    void setup();
-    void finish();
+            bool clock_handler(Cycle_t cycle);
 
-    void notifyEvent();
-    int const* getOutputBufferCredits() {return xbar_in_credits;}
-    int const* getOutputQueueLengths() {return output_queue_lengths;}
+            // bool debug_clock_handler(Cycle_t cycle);
+            static void sigHandler(int signal);
 
-    void sendTopologyEvent(int port, TopologyEvent* ev);
-    void recvTopologyEvent(int port, TopologyEvent* ev);
-    
-    void reportRequestedVNs(int port, int vns);
-    void reportSetVCs(int port, int vcs);
-    
-    void dumpState(std::ostream& stream);
-    void printStatus(Output& out);
+            void init_vcs();
+
+            Statistic <uint64_t> **xbar_stalls;
+
+            Output &output;
+
+        public:
+            hr_router(ComponentId_t cid, Params &params);
+
+            ~hr_router();
+
+            void init(unsigned int phase);
+
+            void complete(unsigned int phase);
+
+            void setup();
+
+            void finish();
+
+            void notifyEvent();
+
+            int const *getOutputBufferCredits() { return xbar_in_credits; }
+
+            int const *getOutputQueueLengths() { return output_queue_lengths; }
+
+            void sendTopologyEvent(int port, TopologyEvent *ev);
+
+            void recvTopologyEvent(int port, TopologyEvent *ev);
+
+            void reportRequestedVNs(int port, int vns);
+
+            void reportSetVCs(int port, int vcs);
+
+            void dumpState(std::ostream &stream);
+
+            void printStatus(Output &out);
 
 
-};
+        };
 
-}
+    }
 }
 
 #endif // COMPONENTS_HR_ROUTER_HR_ROUTER_H

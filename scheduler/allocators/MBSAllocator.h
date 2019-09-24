@@ -25,93 +25,103 @@
 
 #include <vector>
 #include <string>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wuser-defined-warnings"
+
 #include <map>
+
 #pragma clang diagnostic pop
 
-#include "Allocator.h" 
+#include "Allocator.h"
 #include "MBSAllocInfo.h" //necessary due to virtual class
 
 namespace SST {
     namespace Scheduler {
         class Block;
+
         class MBSMeshAllocInfo;
+
         class MeshLocation;
+
         class Job;
+
         class Machine;
+
         class StencilMachine;
 
         class MBSAllocator : public Allocator {
 
-            protected:
-                std::vector<std::set<Block*, Block>*>* FBR;
-                std::vector<int>* ordering;
+        protected:
+            std::vector<std::set < Block * , Block>*>*
+            FBR;
+            std::vector<int> *ordering;
 
-                //We know it must be a mesh, so make it one so we can access the goods.
-                StencilMachine *mMachine;
+            //We know it must be a mesh, so make it one so we can access the goods.
+            StencilMachine *mMachine;
 
-            public:
-                MBSAllocator(Machine * mach);
-                MBSAllocator(StencilMachine* m, int x, int y, int z);
+        public:
+            MBSAllocator(Machine *mach);
 
-                MBSAllocator(std::vector<std::string>* params, Machine *mach);
+            MBSAllocator(StencilMachine *m, int x, int y, int z);
 
-                std::string getSetupInfo(bool comment) const;
+            MBSAllocator(std::vector <std::string> *params, Machine *mach);
 
-                std::string getParamHelp();
+            std::string getSetupInfo(bool comment) const;
 
-                /**
-                 * Initialize will fill in the FBR with z number of blocks (1 for
-                 * each layer) that fit into the given x,y dimensions.  It is
-                 * assumed that those dimensions are non-zero.
-                 */
-                void initialize(MeshLocation* dim, MeshLocation* off);
+            std::string getParamHelp();
 
-                /**
-                 * Creates a rank in both the FBR, and in the ordering.
-                 * If a rank already exists, it does not create a new rank,
-                 * it just returns the one already there
-                 */
-                int createRank(int size);
+            /**
+             * Initialize will fill in the FBR with z number of blocks (1 for
+             * each layer) that fit into the given x,y dimensions.  It is
+             * assumed that those dimensions are non-zero.
+             */
+            void initialize(MeshLocation *dim, MeshLocation *off);
 
-                /**
-                 *  Essentially this will reinitialize a block, except add the
-                 *  children to the b.children, then recurse
-                 */
-                void createChildren(Block* b);
+            /**
+             * Creates a rank in both the FBR, and in the ordering.
+             * If a rank already exists, it does not create a new rank,
+             * it just returns the one already there
+             */
+            int createRank(int size);
 
-                std::set<Block*, Block>* splitBlock (Block* b) ;
+            /**
+             *  Essentially this will reinitialize a block, except add the
+             *  children to the b.children, then recurse
+             */
+            void createChildren(Block *b);
 
-                MBSMeshAllocInfo* allocate(Job* job);
+            std::set<Block *, Block> *splitBlock(Block *b);
 
-                /**
-                 * Calculates the RBR, which is a map of ranks to number of blocks at that rank
-                 */
-                std::map<int,int>* factorRequest(Job* j);
+            MBSMeshAllocInfo *allocate(Job *job);
 
-                /**
-                 * Breaks up a request for a block with a given rank into smaller request if able.
-                 */
-                void splitRequest(std::map<int,int>* RBR, int rank);
+            /**
+             * Calculates the RBR, which is a map of ranks to number of blocks at that rank
+             */
+            std::map<int, int> *factorRequest(Job *j);
 
-                /**
-                 * Determines whether a split up of a possible larger block was
-                 * successful.  It begins looking at one larger than rank.
-                 */
-                bool splitLarger(int rank);
+            /**
+             * Breaks up a request for a block with a given rank into smaller request if able.
+             */
+            void splitRequest(std::map<int, int> *RBR, int rank);
 
-                void deallocate(AllocInfo* alloc);
+            /**
+             * Determines whether a split up of a possible larger block was
+             * successful.  It begins looking at one larger than rank.
+             */
+            bool splitLarger(int rank);
 
-                void unallocate(MBSMeshAllocInfo* info);
+            void deallocate(AllocInfo *alloc);
 
-                void mergeBlock(Block* p);
+            void unallocate(MBSMeshAllocInfo *info);
 
-                void printRBR(std::map<int,int>* RBR);
+            void mergeBlock(Block *p);
 
-                void printFBR(std::string msg);
+            void printRBR(std::map<int, int> *RBR);
 
-                std::string stringFBR();
+            void printFBR(std::string msg);
+
+            std::string stringFBR();
 
         };
 

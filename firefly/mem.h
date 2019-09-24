@@ -20,157 +20,156 @@
 #include <sst/core/link.h>
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-typedef std::function<void()> Callback;
+        typedef std::function<void()> Callback;
 
-class MemCpyReqEvent : public Event {
+        class MemCpyReqEvent : public Event {
 
-  public:
-    typedef uint64_t Addr;
-    MemCpyReqEvent( Callback _callback, int _core, Addr _to, 
-                            Addr _from, size_t _length )  : 
-        Event(), 
-        callback( _callback ),
-        core(_core),
-        to(_to),
-        from(_from),
-        length(_length)
-    {}
+        public:
+            typedef uint64_t Addr;
 
-    Callback callback;
-    int core;
-    Addr to;
-    Addr from;
-    size_t length;
+            MemCpyReqEvent(Callback _callback, int _core, Addr _to,
+                           Addr _from, size_t _length) :
+                Event(),
+                callback(_callback),
+                core(_core),
+                to(_to),
+                from(_from),
+                length(_length) {}
 
-    NotSerializable(MemCpyReqEvent)
-};
+            Callback callback;
+            int core;
+            Addr to;
+            Addr from;
+            size_t length;
 
-class MemReadReqEvent : public Event {
+            NotSerializable(MemCpyReqEvent)
+        };
 
-  public:
-    typedef uint64_t Addr;
-    MemReadReqEvent( Callback _callback, int _core, Addr _addr, 
-                            size_t _length )  : 
-        Event(), 
-        callback( _callback ),
-        core(_core),
-        addr(_addr),
-        length(_length)
-    {}
+        class MemReadReqEvent : public Event {
 
-    Callback callback;
-    int core;
-    Addr addr;
-    size_t length;
+        public:
+            typedef uint64_t Addr;
 
-    NotSerializable(MemReadReqEvent)
-};
+            MemReadReqEvent(Callback _callback, int _core, Addr _addr,
+                            size_t _length) :
+                Event(),
+                callback(_callback),
+                core(_core),
+                addr(_addr),
+                length(_length) {}
 
-class MemWriteReqEvent : public Event {
+            Callback callback;
+            int core;
+            Addr addr;
+            size_t length;
 
-  public:
-    typedef uint64_t Addr;
-    MemWriteReqEvent( Callback _callback, int _core, Addr _addr, 
-                            size_t _length )  : 
-        Event(), 
-        callback( _callback ),
-        core(_core),
-        addr(_addr),
-        length(_length)
-    {}
+            NotSerializable(MemReadReqEvent)
+        };
 
-    Callback callback;
-    int core;
-    Addr addr;
-    size_t length;
+        class MemWriteReqEvent : public Event {
 
-    NotSerializable(MemWriteReqEvent)
-};
+        public:
+            typedef uint64_t Addr;
 
-class MemRespEvent : public Event {
+            MemWriteReqEvent(Callback _callback, int _core, Addr _addr,
+                             size_t _length) :
+                Event(),
+                callback(_callback),
+                core(_core),
+                addr(_addr),
+                length(_length) {}
 
-  public:
-    MemRespEvent( Callback _callback )  : 
-        Event(),
-        callback( _callback )
-    {}
+            Callback callback;
+            int core;
+            Addr addr;
+            size_t length;
 
-    Callback callback;
+            NotSerializable(MemWriteReqEvent)
+        };
 
-    NotSerializable(MemRespEvent)
-};
+        class MemRespEvent : public Event {
 
-class Mem : public SST::Component  {
-  public:
-    Mem(ComponentId_t id, Params& params );
-		
-    ~Mem() {}
-    void handleMemEvent( Event* ev, int );
+        public:
+            MemRespEvent(Callback _callback) :
+                Event(),
+                callback(_callback) {}
 
-  private:
-    std::vector<Link*>          m_links;   
-};
+            Callback callback;
+
+            NotSerializable(MemRespEvent)
+        };
+
+        class Mem : public SST::Component {
+        public:
+            Mem(ComponentId_t id, Params &params);
+
+            ~Mem() {}
+
+            void handleMemEvent(Event *ev, int);
+
+        private:
+            std::vector<Link *> m_links;
+        };
 
 
-inline Mem::Mem(ComponentId_t id, Params& params ) :
-        Component( id ) 
-{
-    int numCores = params.find<int>("numCores", 1 );
+        inline Mem::Mem(ComponentId_t id, Params &params) :
+            Component(id) {
+            int numCores = params.find<int>("numCores", 1);
 
-    for ( int i = 0; i < numCores; i++ ) {
-        std::ostringstream tmp;
-        tmp <<  i;
+            for (int i = 0; i < numCores; i++) {
+                std::ostringstream tmp;
+                tmp << i;
 
-        Event::Handler<Mem,int>* handler =
-                new Event::Handler<Mem,int>(
-                                this, &Mem::handleMemEvent, i );
+                Event::Handler<Mem, int> *handler =
+                    new Event::Handler<Mem, int>(
+                        this, &Mem::handleMemEvent, i);
 
-        Link* link = configureLink("core" + tmp.str(), "1 ns", handler );
-        assert(link);
-        m_links.push_back( link );
-    }
-}
-
-inline void Mem::handleMemEvent( Event* ev, int src ) {
-    {
-        MemCpyReqEvent* event = dynamic_cast<MemCpyReqEvent*>(ev);
-
-        if ( event ) {
-            uint64_t delay = 0;
-            if ( event->length) delay = 11;
-            m_links[event->core]->send(delay, new MemRespEvent(event->callback) );
-            return;
+                Link *link = configureLink("core" + tmp.str(), "1 ns", handler);
+                assert(link);
+                m_links.push_back(link);
+            }
         }
-    }
 
-    {
-        MemWriteReqEvent* event = dynamic_cast<MemWriteReqEvent*>(ev);
+        inline void Mem::handleMemEvent(Event *ev, int src) {
+            {
+                MemCpyReqEvent *event = dynamic_cast<MemCpyReqEvent *>(ev);
 
-        if ( event ) {
-            uint64_t delay = 0;
-            if ( event->length) delay = 11;
-            m_links[event->core]->send(delay, new MemRespEvent(event->callback) );
-            return;
+                if (event) {
+                    uint64_t delay = 0;
+                    if (event->length) delay = 11;
+                    m_links[event->core]->send(delay, new MemRespEvent(event->callback));
+                    return;
+                }
+            }
+
+            {
+                MemWriteReqEvent *event = dynamic_cast<MemWriteReqEvent *>(ev);
+
+                if (event) {
+                    uint64_t delay = 0;
+                    if (event->length) delay = 11;
+                    m_links[event->core]->send(delay, new MemRespEvent(event->callback));
+                    return;
+                }
+            }
+
+            {
+                MemReadReqEvent *event = dynamic_cast<MemReadReqEvent *>(ev);
+
+                if (event) {
+                    uint64_t delay = 0;
+                    if (event->length) delay = 11;
+                    m_links[event->core]->send(delay, new MemRespEvent(event->callback));
+                    return;
+                }
+            }
+
+            delete ev;
         }
+
     }
-
-    {
-        MemReadReqEvent* event = dynamic_cast<MemReadReqEvent*>(ev);
-
-        if ( event ) {
-            uint64_t delay = 0;
-            if ( event->length) delay = 11;
-            m_links[event->core]->send(delay, new MemRespEvent(event->callback) );
-            return;
-        }
-    }
-    
-    delete ev;
-}
-
-}
 }
 
 #endif

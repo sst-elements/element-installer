@@ -17,16 +17,16 @@
 #ifndef _H_EMBER_FAM_EVENT
 #define _H_EMBER_FAM_EVENT
 
-#include "emberShmemEvent.h" 
+#include "emberShmemEvent.h"
 
 //using namespace Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-typedef EmberShmemEvent EmberFamEvent;
+        typedef EmberShmemEvent EmberFamEvent;
 
-}
+    }
 }
 
 #endif

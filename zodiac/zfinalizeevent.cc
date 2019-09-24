@@ -22,7 +22,7 @@ using namespace SST::Zodiac;
 using namespace SST;
 
 ZodiacEventType ZodiacFinalizeEvent::getEventType() {
-	return Z_FINALIZE;
+    return Z_FINALIZE;
 }
 
 ZodiacFinalizeEvent::ZodiacFinalizeEvent() {

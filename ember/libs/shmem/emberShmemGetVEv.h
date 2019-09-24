@@ -20,32 +20,34 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberGetVShmemEvent : public EmberShmemEvent {
+        class EmberGetVShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberGetVShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::Value value, Hermes::Vaddr src, int pe, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), 
-            m_value(value), m_src(src),  m_pe(pe) {}
-	~EmberGetVShmemEvent() {}
+        public:
+            EmberGetVShmemEvent(Shmem::Interface &api, Output *output,
+                                Hermes::Value value, Hermes::Vaddr src, int pe,
+                                EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_value(value), m_src(src), m_pe(pe) {}
 
-    std::string getName() { return "Malloc"; }
+            ~EmberGetVShmemEvent() {}
 
-    void issue( uint64_t time, Callback callback ) {
+            std::string getName() { return "Malloc"; }
 
-        EmberEvent::issue( time );
-        m_api.getv( m_value, m_src, m_pe, callback );
+            void issue(uint64_t time, Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.getv(m_value, m_src, m_pe, callback);
+            }
+
+        private:
+            Value m_value;
+            Hermes::Vaddr m_src;
+            int m_pe;
+        };
+
     }
-private:
-    Value  m_value;
-    Hermes::Vaddr m_src;
-    int m_pe;
-};
-
-}
 }
 
 #endif

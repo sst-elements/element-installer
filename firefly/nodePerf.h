@@ -19,42 +19,45 @@
 #include "sst/elements/hermes/hermes.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class SimpleNodePerf : public NodePerf {
+        class SimpleNodePerf : public NodePerf {
 
-  public:
-    SST_ELI_REGISTER_MODULE(
-        SimpleNodePerf,
-        "firefly",
-        "SimpleNodePerf",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        "SST::Firefly::SimpleNodePerf"
-    )
-  private:
+        public:
+            SST_ELI_REGISTER_MODULE(
+                SimpleNodePerf,
+            "firefly",
+            "SimpleNodePerf",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            "SST::Firefly::SimpleNodePerf"
+            )
+        private:
 
-  public:
-    SimpleNodePerf( Params& params ) {
-        m_flops = params.find<double>("flops",0);
-        m_bandwidth = params.find<double>("bandwidth",0);
+        public:
+            SimpleNodePerf(Params &params) {
+                m_flops = params.find<double>("flops", 0);
+                m_bandwidth = params.find<double>("bandwidth", 0);
+            }
+
+            virtual double getFlops() { return m_flops; }
+
+            virtual double getBandwidth() { return m_bandwidth; }
+
+            virtual double calcTimeNS_flops(int instructions) {
+                return instructions / m_flops * 1000 * 1000 * 1000;
+            }
+
+            virtual double calcTimeNS_bandwidth(int bytes) {
+                return bytes / m_bandwidth * 1000 * 1000 * 1000;
+            }
+
+        private:
+            double m_flops;
+            double m_bandwidth;
+        };
+
     }
-
-    virtual double getFlops() { return m_flops; }
-    virtual double getBandwidth() { return m_bandwidth; }
-    virtual double calcTimeNS_flops( int instructions ) { 
-        return instructions / m_flops * 1000 * 1000 * 1000; 
-    }
-    virtual double calcTimeNS_bandwidth( int bytes ) { 
-        return bytes / m_bandwidth * 1000 * 1000 * 1000;
-    }
-
-  private:
-    double m_flops;
-    double m_bandwidth;
-};
-
-}
 }
 
 #endif

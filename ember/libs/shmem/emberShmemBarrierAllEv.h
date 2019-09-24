@@ -20,26 +20,27 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberBarrierAllShmemEvent : public EmberShmemEvent {
+        class EmberBarrierAllShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberBarrierAllShmemEvent( Shmem::Interface& api, Output* output,
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ){}
-	~EmberBarrierAllShmemEvent() {}
+        public:
+            EmberBarrierAllShmemEvent(Shmem::Interface &api, Output *output,
+                                      EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat) {}
 
-    std::string getName() { return "BarrierAll"; }
+            ~EmberBarrierAllShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "BarrierAll"; }
 
-        EmberEvent::issue( time );
-        m_api.barrier_all( callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.barrier_all(callback);
+            }
+        };
+
     }
-};
-
-}
 }
 
 #endif

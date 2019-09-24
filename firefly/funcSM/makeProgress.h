@@ -21,50 +21,50 @@
 #include "ctrlMsg.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class MakeProgressFuncSM :  public FunctionSMInterface 
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        MakeProgressFuncSM,
-        "firefly",
-        "MakeProgress",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class MakeProgressFuncSM : public FunctionSMInterface {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                MakeProgressFuncSM,
+            "firefly",
+            "MakeProgress",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
-    MakeProgressFuncSM( SST::Params& params ) : FunctionSMInterface( params ), m_event(NULL) {}
+        public:
+            MakeProgressFuncSM(SST::Params &params) : FunctionSMInterface(params), m_event(nullptr) {}
 
-	virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
 
-    virtual void handleStartEvent( SST::Event *e, Retval& retval ) {
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
 
-		assert( NULL == m_event );
-        m_dbg.debug(CALL_INFO,1,0,"\n");
+                assert(nullptr == m_event);
+                m_dbg.debug(CALL_INFO, 1, 0, "\n");
 
-		m_event = static_cast<MakeProgressStartEvent*>(e);
+                m_event = static_cast<MakeProgressStartEvent *>(e);
 
-        proto()->makeProgress( );
+                proto()->makeProgress();
+            }
+
+            void handleEnterEvent(Retval &retval) {
+                delete m_event;
+                m_event = nullptr;
+                retval.setExit(0);
+
+            }
+
+        private:
+
+            CtrlMsg::API *proto() { return static_cast<CtrlMsg::API *>(m_proto); }
+
+            MakeProgressStartEvent *m_event;
+
+        };
+
     }
-
-    void handleEnterEvent( Retval& retval ) {
-        delete m_event;
-        m_event = NULL;
-        retval.setExit(0);
-
-    }
-  private:
-
-    CtrlMsg::API* proto() { return static_cast<CtrlMsg::API*>(m_proto); }
-
-    MakeProgressStartEvent* m_event;
-		
-};
-
-}
 }
 
 #endif

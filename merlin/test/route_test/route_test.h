@@ -27,64 +27,67 @@
 
 namespace SST {
 
-namespace Interfaces {
-    class SimpleNetwork;
-}
+    namespace Interfaces {
+        class SimpleNetwork;
+    }
 
-namespace Merlin {
-
-
-class route_test : public Component {
-
-public:
-
-    SST_ELI_REGISTER_COMPONENT(
-        route_test,
-        "merlin",
-        "route_test",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Simple NIC to test routing.",
-        COMPONENT_CATEGORY_NETWORK)
-    
-    SST_ELI_DOCUMENT_PARAMS(
-        {"id",        "Network ID of endpoint."},
-        {"num_peers", "Total number of endpoints in network."},
-        {"link_bw",   "Bandwidth of the router link specified in either b/s or B/s (can include SI prefix)."}
-    )
-
-    SST_ELI_DOCUMENT_PORTS(
-        {"rtr",  "Port that hooks up to router.", { "merlin.RtrEvent", "merlin.credit_event" } }
-    )
-
-    
-private:
-
-    int id;
-    int num_peers;
-    bool sending;
+    namespace Merlin {
 
 
-    bool done;
-    bool initialized;
-    
-    SST::Interfaces::SimpleNetwork* link_control;
+        class route_test : public Component {
 
-public:
-    route_test(ComponentId_t cid, Params& params);
-    ~route_test();
+        public:
 
-    void init(unsigned int phase);
-    void setup(); 
-    void finish();
+            SST_ELI_REGISTER_COMPONENT(
+                route_test,
+            "merlin",
+            "route_test",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Simple NIC to test routing.",
+            COMPONENT_CATEGORY_NETWORK)
+
+            SST_ELI_DOCUMENT_PARAMS(
+            { "id", "Network ID of endpoint." },
+            { "num_peers", "Total number of endpoints in network." },
+            { "link_bw", "Bandwidth of the router link specified in either b/s or B/s (can include SI prefix)." }
+            )
+
+            SST_ELI_DOCUMENT_PORTS(
+            { "rtr", "Port that hooks up to router.", {"merlin.RtrEvent", "merlin.credit_event"}}
+            )
 
 
-private:
-    bool clock_handler(Cycle_t cycle);
+        private:
 
-    bool handle_event(int vn);
-};
+            int id;
+            int num_peers;
+            bool sending;
 
-}
+
+            bool done;
+            bool initialized;
+
+            SST::Interfaces::SimpleNetwork *link_control;
+
+        public:
+            route_test(ComponentId_t cid, Params &params);
+
+            ~route_test();
+
+            void init(unsigned int phase);
+
+            void setup();
+
+            void finish();
+
+
+        private:
+            bool clock_handler(Cycle_t cycle);
+
+            bool handle_event(int vn);
+        };
+
+    }
 }
 
 #endif // COMPONENTS_MERLIN_TEST_ROUTE_TEST_H

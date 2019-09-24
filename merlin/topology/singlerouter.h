@@ -26,42 +26,46 @@
 #include "../router.h"
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
 
-class topo_singlerouter: public Topology {
+        class topo_singlerouter : public Topology {
 
-public:
+        public:
 
-    SST_ELI_REGISTER_SUBCOMPONENT(
-        topo_singlerouter,
-        "merlin",
-        "singlerouter",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Simple, single-router topology object",
-        "SST::Merlin::Topology")
-    
-    
-private:
-    int num_ports;
+            SST_ELI_REGISTER_SUBCOMPONENT(
+                topo_singlerouter,
+            "merlin",
+            "singlerouter",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Simple, single-router topology object",
+            "SST::Merlin::Topology")
 
-public:
-    topo_singlerouter(Component* comp, Params& params);
-    ~topo_singlerouter();
 
-    virtual void route(int port, int vc, internal_router_event* ev);
-    virtual internal_router_event* process_input(RtrEvent* ev);
+        private:
+            int num_ports;
 
-    virtual void routeInitData(int port, internal_router_event* ev, std::vector<int> &outPorts);
-    virtual internal_router_event* process_InitData_input(RtrEvent* ev);
+        public:
+            topo_singlerouter(Component *comp, Params &params);
 
-    virtual PortState getPortState(int port) const;
+            ~topo_singlerouter();
 
-    virtual int getEndpointID(int port) { return port; }
+            virtual void route(int port, int vc, internal_router_event *ev);
 
-};
+            virtual internal_router_event *process_input(RtrEvent *ev);
 
-}
+            virtual void routeInitData(int port, internal_router_event *ev,
+                                       std::vector<int> &outPorts);
+
+            virtual internal_router_event *process_InitData_input(RtrEvent *ev);
+
+            virtual PortState getPortState(int port) const;
+
+            virtual int getEndpointID(int port) { return port; }
+
+        };
+
+    }
 }
 
 #endif // COMPONENTS_MERLIN_TOPOLOGY_SINGLEROUTER_H

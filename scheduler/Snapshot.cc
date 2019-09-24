@@ -20,19 +20,17 @@
 using namespace SST::Scheduler;
 
 
-Snapshot::Snapshot() : simFinished(true)
-{
+Snapshot::Snapshot() : simFinished(true) {
 
 }
 
-Snapshot::~Snapshot()
-{
+Snapshot::~Snapshot() {
     runningJobs.clear();
 }
 
 
-void Snapshot::append(SimTime_t snapshotTime, unsigned long nextArrivalTime, std::map<int, ITMI> runningJobs)
-{
+void Snapshot::append(SimTime_t snapshotTime, unsigned long nextArrivalTime,
+                      std::map<int, ITMI> runningJobs) {
     this->runningJobs = runningJobs;
     this->snapshotTime = snapshotTime;
     this->nextArrivalTime = nextArrivalTime;

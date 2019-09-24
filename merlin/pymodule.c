@@ -20,10 +20,10 @@
 
 static char pymerlin[] = {
 #include "pymerlin.inc"
+
     0x00};
 
-void* genMerlinPyModule(void)
-{
+void *genMerlinPyModule(void) {
     // Must return a PyObject
 
     PyObject *code = Py_CompileString(pymerlin, "pymerlin", Py_file_input);

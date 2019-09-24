@@ -44,8 +44,7 @@
 using namespace SST::Scheduler;
 
 void RCM::genrcm(const int n, const int *xadj, const int *adj, int *perm,
-                 signed char *mask, int *deg)
-{
+                 signed char *mask, int *deg) {
     int i, root, ccsize;
     int num = 0;
 
@@ -66,8 +65,8 @@ void RCM::genrcm(const int n, const int *xadj, const int *adj, int *perm,
          * Note that we reuse perm to also store the level
          * structure (perm+num is parameter ls of FNROOT()).
          */
-        fnroot(&root, xadj, adj, deg, &ccsize, mask, perm+num);
-        rcm(root, xadj, adj, deg, mask, perm+num, &ccsize);
+        fnroot(&root, xadj, adj, deg, &ccsize, mask, perm + num);
+        rcm(root, xadj, adj, deg, mask, perm + num, &ccsize);
 
         num += ccsize;
         if (num >= n) {
@@ -76,17 +75,15 @@ void RCM::genrcm(const int n, const int *xadj, const int *adj, int *perm,
     }
 }
 
-void RCM::degree(const int n, const int* xadj, const int* adj,
-                 signed char* mask, int* deg)
-{
+void RCM::degree(const int n, const int *xadj, const int *adj,
+                 signed char *mask, int *deg) {
     for (int i = 0; i < n; ++i) {
-        deg[i] = xadj[i+1] - xadj[i];
+        deg[i] = xadj[i + 1] - xadj[i];
     }
 }
 
-void RCM::fnroot(int* root, const int* xadj, const int* adj,
-                 const int* deg, int* ccsize, signed char* mask, int* ls)
-{
+void RCM::fnroot(int *root, const int *xadj, const int *adj,
+                 const int *deg, int *ccsize, signed char *mask, int *ls) {
     int j, new_nlvl, last_lvl, node, ndeg, mindeg;
     int nlvl = 1;
 
@@ -122,15 +119,14 @@ void RCM::fnroot(int* root, const int* xadj, const int* adj,
     }
 }
 
-void RCM::rootls(const int root, const int* xadj, const int* adj,
-                 signed char* mask, int * ccsize, int * nlvl,
-                 int * last_lvl, int * ls)
-{
+void RCM::rootls(const int root, const int *xadj, const int *adj,
+                 signed char *mask, int *ccsize, int *nlvl,
+                 int *last_lvl, int *ls) {
     int i, j;
     int nbr, node;
 
     int lvl_begin, lvl_end; /* C style indices */
-    
+
     mask[root] = 1; /* mask root */
 
     /* init first level */
@@ -169,21 +165,19 @@ void RCM::rootls(const int root, const int* xadj, const int* adj,
         lvl_begin = lvl_end;
         lvl_end = *ccsize;
         ++(*nlvl);
-    }
-    while (lvl_end - lvl_begin > 0);
+    } while (lvl_end - lvl_begin > 0);
 
     /*
      * Reset mask to zero for the nodes in the level structure,
      * i.e. the nodes are again unmasked.
      */
     for (i = 0; i < *ccsize; ++i) {
-        mask[ ls[i] ] = 0;
+        mask[ls[i]] = 0;
     }
 }
 
-void RCM::rcm(const int root, const int* xadj, const int* adj, const int* deg,
-              signed char* mask, int* perm, int* ccsize)
-{
+void RCM::rcm(const int root, const int *xadj, const int *adj, const int *deg,
+              signed char *mask, int *perm, int *ccsize) {
     int i, j;
     int nbr, node;
 
@@ -199,7 +193,7 @@ void RCM::rcm(const int root, const int* xadj, const int* adj, const int* deg,
      */
 
     perm[0] = root;
-    mask[ root ] = -1;
+    mask[root] = -1;
 
     lvl_begin = 0;
     lvl_end = 1;
@@ -219,16 +213,16 @@ void RCM::rcm(const int root, const int* xadj, const int* adj, const int* deg,
              * copied to in perm.
              */
             fnbr = lnbr;
-            for (j = xadj[node]; j < xadj[node+1]; ++j) {
+            for (j = xadj[node]; j < xadj[node + 1]; ++j) {
                 nbr = adj[j];
-                if ( !mask[nbr] ) {
+                if (!mask[nbr]) {
                     mask[nbr] = -1;
                     perm[lnbr] = nbr;
                     ++lnbr;
                 }
             }
             if (lnbr - fnbr > 1) {
-                heapsort(lnbr-fnbr, perm+fnbr, deg);
+                heapsort(lnbr - fnbr, perm + fnbr, deg);
             }
         }
         lvl_begin = lvl_end;
@@ -248,12 +242,11 @@ void RCM::rcm(const int root, const int* xadj, const int* adj, const int* deg,
     }
 }
 
-void RCM::heapsort(const int sz, int * perm, const int * deg)
-{
+void RCM::heapsort(const int sz, int *perm, const int *deg) {
     int n = sz;
     int i, t;
 
-    for (i = n/2; i > 0;) {
+    for (i = n / 2; i > 0;) {
         --i;
         sift(i, n, perm[i], perm, deg);
     }
@@ -265,21 +258,20 @@ void RCM::heapsort(const int sz, int * perm, const int * deg)
     }
 }
 
-void RCM::sift(const int i, const int n, const int t, int * perm, const int * deg)
-{
+void RCM::sift(const int i, const int n, const int t, int *perm, const int *deg) {
     int j, w;
     j = i;
-    w = i*2 + 1;
+    w = i * 2 + 1;
 
     while (w < n) {
-        if ( (w + 1 < n) && ( deg[perm[w]] < deg[perm[w+1]] ) ) {
+        if ((w + 1 < n) && (deg[perm[w]] < deg[perm[w + 1]])) {
             ++w;
         }
-        if ( deg[t] < deg[perm[w]] ) {
+        if (deg[t] < deg[perm[w]]) {
             /* we have to exchange/rotate and to go further down */
             perm[j] = perm[w];
             j = w;
-            w = j*2 + 1;
+            w = j * 2 + 1;
         } else {
             /* v has heap property */
             break;

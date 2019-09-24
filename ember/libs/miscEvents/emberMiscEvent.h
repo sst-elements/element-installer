@@ -17,35 +17,34 @@
 #ifndef _H_EMBER_MISC_EVENT
 #define _H_EMBER_MISC_EVENT
 
-#include "emberevent.h" 
+#include "emberevent.h"
 #include <sst/elements/hermes/miscapi.h>
 
 using namespace Hermes;
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-typedef Statistic<uint32_t> EmberEventTimeStatistic;
+        typedef Statistic <uint32_t> EmberEventTimeStatistic;
 
-class EmberMiscEvent : public EmberEvent {
+        class EmberMiscEvent : public EmberEvent {
 
-  public:
+        public:
 
-    EmberMiscEvent( Misc::Interface& api, Output* output, 
-            EmberEventTimeStatistic* stat = NULL ):
-        EmberEvent( output, stat ), m_api( api )
-    {
-        m_state = IssueCallbackPtr;
+            EmberMiscEvent(Misc::Interface &api, Output *output,
+                           EmberEventTimeStatistic *stat = nullptr) :
+                EmberEvent(output, stat), m_api(api) {
+                m_state = IssueCallbackPtr;
+            }
+
+        protected:
+
+            Misc::Interface &m_api;
+
+        private:
+        };
+
     }
-
-  protected:
-
-    Misc::Interface&   m_api;
-
-  private:
-};
-
-}
 }
 
 #endif

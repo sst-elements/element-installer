@@ -15,22 +15,24 @@
 
 import sys
 
+
 def getOptions():
-	return ['platParams='] 
+    return ['platParams=']
+
 
 def parseOptions(opts):
     name = 'defaultParams'
-    for o,a in opts:
+    for o, a in opts:
         if o in ('--platParams'):
             name = a
     return name
 
-def getParams( name ):
 
-	platConfig = None
-	try:
-		platConfig = __import__( name, fromlist=[''] )
-	except:
-		sys.exit('FATAL: could not import `{0}`'.format(name) )
+def getParams(name):
+    platConfig = None
+    try:
+        platConfig = __import__(name, fromlist=[''])
+    except:
+        sys.exit('FATAL: could not import `{0}`'.format(name))
 
-	return platConfig
+    return platConfig

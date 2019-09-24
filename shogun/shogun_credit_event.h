@@ -5,40 +5,38 @@
 #include <sst/core/event.h>
 
 namespace SST {
-namespace Shogun {
+    namespace Shogun {
 
-    class ShogunCreditEvent : public SST::Event {
+        class ShogunCreditEvent : public SST::Event {
 
-    public:
-        ShogunCreditEvent()
-            : sourcePort(0)
-        {
-        }
-        ShogunCreditEvent(const int source)
-            : sourcePort(source)
-        {
-        }
-        ~ShogunCreditEvent() {}
+        public:
+            ShogunCreditEvent()
+                : sourcePort(0) {
+            }
 
-        int getSrc() const
-        {
-            return sourcePort;
-        }
+            ShogunCreditEvent(const int source)
+                : sourcePort(source) {
+            }
 
-        void serialize_order(SST::Core::Serialization::serializer& ser) override
-        {
-            Event::serialize_order(ser);
+            ~ShogunCreditEvent() {}
 
-            ser& sourcePort;
-        }
+            int getSrc() const {
+                return sourcePort;
+            }
 
-        ImplementSerializable(SST::Shogun::ShogunCreditEvent);
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
 
-    protected:
-        int sourcePort;
-    };
+                ser & sourcePort;
+            }
 
-}
+            ImplementSerializable(SST::Shogun::ShogunCreditEvent);
+
+        protected:
+            int sourcePort;
+        };
+
+    }
 }
 
 #endif

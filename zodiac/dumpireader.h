@@ -40,33 +40,41 @@ using namespace std;
 using namespace SST::Hermes;
 
 extern "C" {
-int handleDUMPISend(const dumpi_send *prm, uint16_t thread, const dumpi_time *cpu, const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg);
-int handleDUMPINullFunction(const void *prm, uint16_t thread, const dumpi_time *cpu, const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg);
+int handleDUMPISend(const dumpi_send *prm, uint16_t thread, const dumpi_time *cpu,
+                    const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg);
+int handleDUMPINullFunction(const void *prm, uint16_t thread, const dumpi_time *cpu,
+                            const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg);
 
 }
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class DUMPIReader {
-    public:
-	DUMPIReader(string file, uint32_t rank, uint32_t qLimit, std::queue<ZodiacEvent*>* eventQueue);
-        void close();
-	uint32_t generateNextEvents();
-	uint32_t getQueueLimit();
-	uint32_t getCurrentQueueSize();
-	void enqueueEvent(ZodiacEvent* ev);
+        class DUMPIReader {
+        public:
+            DUMPIReader(string file, uint32_t rank, uint32_t qLimit,
+                        std::queue<ZodiacEvent *> *eventQueue);
 
-    private:
-	uint32_t rank;
-	uint32_t qLimit;
-	bool foundFinalize;
-	std::queue<ZodiacEvent*>* eventQ;
-	dumpi_profile* trace;
-	libundumpi_callbacks* callbacks;
-};
+            void close();
 
-}
+            uint32_t generateNextEvents();
+
+            uint32_t getQueueLimit();
+
+            uint32_t getCurrentQueueSize();
+
+            void enqueueEvent(ZodiacEvent *ev);
+
+        private:
+            uint32_t rank;
+            uint32_t qLimit;
+            bool foundFinalize;
+            std::queue<ZodiacEvent *> *eventQ;
+            dumpi_profile *trace;
+            libundumpi_callbacks *callbacks;
+        };
+
+    }
 }
 
 #endif

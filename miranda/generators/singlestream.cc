@@ -20,64 +20,74 @@
 
 using namespace SST::Miranda;
 
-SingleStreamGenerator::SingleStreamGenerator( Component* owner, Params& params ) :
-	RequestGenerator(owner, params) {
-            build(params);
-        }
+SingleStreamGenerator::SingleStreamGenerator(Component *owner, Params &params) :
+    RequestGenerator(owner, params) {
+    build(params);
+}
 
-SingleStreamGenerator::SingleStreamGenerator( ComponentId_t id, Params& params ) :
-	RequestGenerator(id, params) {
-            build(params);
-        }
+SingleStreamGenerator::SingleStreamGenerator(ComponentId_t id, Params &params) :
+    RequestGenerator(id, params) {
+    build(params);
+}
 
-void SingleStreamGenerator::build(Params& params) {
+void SingleStreamGenerator::build(Params &params) {
 
-	const uint32_t verbose = params.find<uint32_t>("verbose", 0);
+    const uint32_t verbose = params.find<uint32_t>("verbose", 0);
 
-	out = new Output("SingleStreamGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
+    out = new Output("SingleStreamGenerator[@p:@l]: ", verbose, 0, Output::STDOUT);
 
-	issueCount = params.find<uint64_t>("count", 1000);
-	reqLength  = params.find<uint64_t>("length", 8);
-	startAddr  = params.find<uint64_t>("startat", 0);
-	maxAddr    = params.find<uint64_t>("max_address", 524288);
+    issueCount = params.find<uint64_t>("count", 1000);
+    reqLength = params.find<uint64_t>("length", 8);
+    startAddr = params.find<uint64_t>("startat", 0);
+    maxAddr = params.find<uint64_t>("max_address", 524288);
 
-	nextAddr   = startAddr;
+    nextAddr = startAddr;
 
-	std::string op = params.find<std::string>( "memOp", "Read" );	
-	if ( ! op.compare( "Read" ) ) {
-		memOp = READ;
-	} else if ( ! op.compare( "Write" ) ) {
-		memOp = WRITE;
-	} else {
-		assert( 0 );
-	}
+    std::string op = params.find<std::string>("memOp", "Read");
+    if (!op.compare("Read")) {
+        memOp = READ;
+    } else if (!op.compare("Write")) {
+        memOp = WRITE;
+    } else {
+        assert(0);
+    }
 
-	out->verbose(CALL_INFO, 1, 0, "Will issue %" PRIu64 " %s operations\n", 
-				issueCount, memOp == READ ? "Read": "Write");
-	out->verbose(CALL_INFO, 1, 0, "Request lengths: %" PRIu64 " bytes\n", reqLength);
-	out->verbose(CALL_INFO, 1, 0, "Maximum address: %" PRIx64 "\n", maxAddr);
-	out->verbose(CALL_INFO, 1, 0, "First address: %" PRIx64 "\n", nextAddr);
+    out->verbose(CALL_INFO, 1, 0, "Will issue %"
+    PRIu64
+    " %s operations\n",
+        issueCount, memOp == READ ? "Read" : "Write");
+    out->verbose(CALL_INFO, 1, 0, "Request lengths: %"
+    PRIu64
+    " bytes\n", reqLength);
+    out->verbose(CALL_INFO, 1, 0, "Maximum address: %"
+    PRIx64
+    "\n", maxAddr);
+    out->verbose(CALL_INFO, 1, 0, "First address: %"
+    PRIx64
+    "\n", nextAddr);
 }
 
 SingleStreamGenerator::~SingleStreamGenerator() {
-	delete out;
+    delete out;
 }
 
-void SingleStreamGenerator::generate(MirandaRequestQueue<GeneratorRequest*>* q) {
-	out->verbose(CALL_INFO, 4, 0, "Generating next request number: %" PRIu64 "\n", issueCount);
+void SingleStreamGenerator::generate(MirandaRequestQueue<GeneratorRequest *> *q) {
+    out->verbose(CALL_INFO, 4, 0, "Generating next request number: %"
+    PRIu64
+    "\n", issueCount);
 
-	q->push_back(new MemoryOpRequest(nextAddr, reqLength, memOp));
+    q->push_back(new MemoryOpRequest(nextAddr, reqLength, memOp));
 
-	// What is the next address?
-	nextAddr = (nextAddr + reqLength) % maxAddr;
-	if( nextAddr == 0 )
-		nextAddr = startAddr;
+    // What is the next address?
+    nextAddr = (nextAddr + reqLength) % maxAddr;
+    if (nextAddr == 0)
+        nextAddr = startAddr;
 
-	issueCount--;
+    issueCount--;
 }
 
 bool SingleStreamGenerator::isFinished() {
-	return (issueCount == 0);
+    return (issueCount == 0);
 }
 
 void SingleStreamGenerator::completed() {

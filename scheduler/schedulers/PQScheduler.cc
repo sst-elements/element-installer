@@ -37,63 +37,69 @@ using namespace SST::Scheduler;
 
 
 const PQScheduler::compTableEntry PQScheduler::compTable[] = {
-    { FIFO, "fifo"},
-    { LARGEFIRST, "largefirst"},
-    { SMALLFIRST, "smallfirst"},
-    { LONGFIRST, "longfirst"},
-    { SHORTFIRST, "shortfirst"},
-    { BETTERFIT, "betterfit"}
+    {FIFO,       "fifo"},
+    {LARGEFIRST, "largefirst"},
+    {SMALLFIRST, "smallfirst"},
+    {LONGFIRST,  "longfirst"},
+    {SHORTFIRST, "shortfirst"},
+    {BETTERFIT,  "betterfit"}
 };
 
 const int PQScheduler::numCompTableEntries = 6;
 
-PQScheduler::PQScheduler(JobComparator* comp) 
-{
+PQScheduler::PQScheduler(JobComparator *comp) {
     schedout.init("", 8, ~0, Output::STDOUT);
-    toRun = new priority_queue<Job*, vector<Job*>, JobComparator>(*comp);
-    compSetupInfo = comp -> toString();
+    toRun = new priority_queue < Job *, vector < Job * >, JobComparator > (*comp);
+    compSetupInfo = comp->toString();
     origcomp = comp;
 }
 
 //constructor only used in copy()
-PQScheduler::PQScheduler(PQScheduler* insched, priority_queue<Job*,std::vector<Job*>,JobComparator>* intoRun) 
+PQScheduler::PQScheduler(PQScheduler *insched, priority_queue<Job *, std::vector < Job * >,
+                         JobComparator
+
+>* intoRun)
 {
-    schedout.init("", 8, ~0, Output::STDOUT);
-    toRun = intoRun;
-    compSetupInfo = insched -> compSetupInfo;
-    origcomp = insched -> origcomp;
+schedout.init("", 8, ~0, Output::STDOUT);
+toRun = intoRun;
+compSetupInfo = insched->compSetupInfo;
+origcomp = insched->origcomp;
 }
 
 //copy for FST
 //there is no running so we ignore it.
 //Have to deep copy toRun to match FST's pointers given in intoRun
-PQScheduler* PQScheduler::copy(std::vector<Job*>* inrunning, std::vector<Job*>* intoRun)
-{
+PQScheduler *PQScheduler::copy(std::vector<Job *> *inrunning, std::vector<Job *> *intoRun) {
     //the toRun with correct pointers for our new scheduler
-    priority_queue<Job*,std::vector<Job*>,JobComparator>* newtoRun = new priority_queue<Job*, vector<Job*>, JobComparator>(*origcomp);
+    priority_queue < Job * , std::vector < Job * >,
+        JobComparator > *newtoRun = new priority_queue < Job *, vector < Job * >, JobComparator >
+                                                                                  (*origcomp);
 
     //to copy toRun, we have to pop each element off individually, then add them to copyToRun. We must add them
     //back to toRun as we pop them off copyToRun
-    priority_queue<Job*,std::vector<Job*>,JobComparator>* copyToRun = new priority_queue<Job*, vector<Job*>, JobComparator>(*origcomp); 
-    while(!toRun -> empty()) {
-        copyToRun -> push(toRun -> top());
-        toRun -> pop();
+    priority_queue < Job * , std::vector < Job * >,
+        JobComparator > *copyToRun = new priority_queue < Job *, vector < Job * >, JobComparator >
+                                                                                   (*origcomp);
+    while (!toRun->empty()) {
+        copyToRun->push(toRun->top());
+        toRun->pop();
     }
 
     int notfound = 0;
-    while (!copyToRun -> empty()) {
+    while (!copyToRun->empty()) {
         bool found = false;
-        Job* it = copyToRun -> top();
-        toRun -> push(it); //add the element back to toRun
-        copyToRun -> pop();
-        for (vector<Job*>::iterator it2 = intoRun -> begin(); !found && it2 != intoRun -> end(); it2++) {
-            if ((*it2) -> getJobNum() == it -> getJobNum()) {
-                newtoRun -> push(*it2);
+        Job *it = copyToRun->top();
+        toRun->push(it); //add the element back to toRun
+        copyToRun->pop();
+        for (vector<Job *>::iterator it2 = intoRun->begin();
+             !found && it2 != intoRun->end(); it2++) {
+            if ((*it2)->getJobNum() == it->getJobNum()) {
+                newtoRun->push(*it2);
                 found = true;
             }
         }
         if (!found) {
-            schedout.debug(CALL_INFO, 7, 0, "Cannot find %s in toRun\n", it -> toString().c_str());
+            schedout.debug(CALL_INFO, 7, 0, "Cannot find %s in toRun\n", it->toString().c_str());
             notfound++;
         }
     }
@@ -103,198 +109,191 @@ PQScheduler* PQScheduler::copy(std::vector<Job*>* inrunning, std::vector<Job*>* 
     //other jobs are started.
     if (notfound > 1) {
         schedout.output("toRun:\n");
-        for (vector<Job*>::iterator it2 = intoRun -> begin(); it2 != intoRun -> end(); it2++) {
-            schedout.output("%s\n", (*it2) -> toString().c_str());
+        for (vector<Job *>::iterator it2 = intoRun->begin(); it2 != intoRun->end(); it2++) {
+            schedout.output("%s\n", (*it2)->toString().c_str());
         }
-        schedout.fatal(CALL_INFO, 1, "Could not find %d jobs when copying toRun for FST\n", notfound);
+        schedout.fatal(CALL_INFO, 1, "Could not find %d jobs when copying toRun for FST\n",
+                       notfound);
     }
     delete copyToRun;
 
     //make the new scheduler
-    return new PQScheduler(this, newtoRun); 
+    return new PQScheduler(this, newtoRun);
 }
 
 
 void usage();
 
-string PQScheduler::getSetupInfo(bool comment) 
-{
+string PQScheduler::getSetupInfo(bool comment) {
     string com;
     if (comment) {
         com = "# ";
     } else {
         com = "";
     }
-    return com + "Priority Queue Scheduler\n" + com + 
-        "Comparator: " + compSetupInfo; 
+    return com + "Priority Queue Scheduler\n" + com +
+           "Comparator: " + compSetupInfo;
 }
 
 //called when j arrives; time is current time
 //tryToStart should be called after each job arrives
-void PQScheduler::jobArrives(Job* j, unsigned long time, const Machine & mach) 
-{
-    toRun -> push(j);
-    schedout.debug(CALL_INFO, 7, 0, "%s arrives\n", j -> toString().c_str());
+void PQScheduler::jobArrives(Job *j, unsigned long time, const Machine &mach) {
+    toRun->push(j);
+    schedout.debug(CALL_INFO, 7, 0, "%s arrives\n", j->toString().c_str());
 }
 
 //allows the scheduler to start a job if desired; time is current time
 //called after calls to jobArrives and jobFinishes
 //(either after each call or after each call occuring at same time)
-//returns first job to start, NULL if none
-//(if not NULL, should call tryToStart again)
-Job* PQScheduler::tryToStart(unsigned long time, const Machine & mach) 
-{
-    if (0 == toRun->size()) return NULL;
-    Job* job = toRun->top();
+//returns first job to start, nullptr if none
+//(if not nullptr, should call tryToStart again)
+Job *PQScheduler::tryToStart(unsigned long time, const Machine &mach) {
+    if (0 == toRun->size()) return nullptr;
+    Job *job = toRun->top();
     int nodesNeeded = ceil(((float) job->getProcsNeeded()) / mach.coresPerNode);
     if (mach.getNumFreeNodes() >= nodesNeeded) {
         nextToStart = job;
         nextToStartTime = time;
     } else {
-        nextToStart = NULL;
+        nextToStart = nullptr;
     }
     return nextToStart;
 }
 
-void PQScheduler::startNext(unsigned long time, const Machine & mach)
-{
-    if(nextToStart == NULL){
-        schedout.fatal(CALL_INFO, 1, "Called startNext() job from scheduler when there is no available Job at time %lu",
-                                      time);
-    } else if(nextToStartTime != time){
-        schedout.fatal(CALL_INFO, 1, "startNext() and tryToStart() are called at different times for Job #%ld",
-                                      nextToStart->getJobNum());
+void PQScheduler::startNext(unsigned long time, const Machine &mach) {
+    if (nextToStart == nullptr) {
+        schedout.fatal(CALL_INFO, 1,
+                       "Called startNext() job from scheduler when there is no available Job at time %lu",
+                       time);
+    } else if (nextToStartTime != time) {
+        schedout.fatal(CALL_INFO, 1,
+                       "startNext() and tryToStart() are called at different times for Job #%ld",
+                       nextToStart->getJobNum());
     }
     toRun->pop(); //remove the job
     return;
 }
 
-void PQScheduler::reset() 
-{
-    while(!toRun -> empty()) {
-        toRun -> pop();
+void PQScheduler::reset() {
+    while (!toRun->empty()) {
+        toRun->pop();
     }
 }
 
 
-PQScheduler::JobComparator::JobComparator(ComparatorType type) 
-{
-    this -> type = type;
+PQScheduler::JobComparator::JobComparator(ComparatorType type) {
+    this->type = type;
 }
 
-void PQScheduler::JobComparator::printComparatorList(ostream& out) 
-{
+void PQScheduler::JobComparator::printComparatorList(ostream &out) {
     for (int i = 0; i < numCompTableEntries; i++) {
         out << "  " << compTable[i].name << endl;
     }
 }
 
-PQScheduler::JobComparator* PQScheduler::JobComparator::Make(string typeName) 
-{
+PQScheduler::JobComparator *PQScheduler::JobComparator::Make(string typeName) {
     for (int i = 0; i < numCompTableEntries; i++) {
         if (typeName == compTable[i].name) {
             return new JobComparator(compTable[i].val);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 //void internal_error(string mesg);
 
-bool PQScheduler::JobComparator::operator()(Job*& j1, Job*& j2) 
-{
-    switch(type) {
-    case FIFO:
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime())
-            return j2 -> getArrivalTime() < j1 -> getArrivalTime();
-        return j2 -> getJobNum() < j1 -> getJobNum();
-    case LARGEFIRST:
-        //largest job goes first if they are different size
-        if(j1 -> getProcsNeeded() != j2 -> getProcsNeeded())
-            return (j2 -> getProcsNeeded() > j1 -> getProcsNeeded());
+bool PQScheduler::JobComparator::operator()(Job *&j1, Job *&j2) {
+    switch (type) {
+        case FIFO:
+            if (j1->getArrivalTime() != j2->getArrivalTime())
+                return j2->getArrivalTime() < j1->getArrivalTime();
+            return j2->getJobNum() < j1->getJobNum();
+        case LARGEFIRST:
+            //largest job goes first if they are different size
+            if (j1->getProcsNeeded() != j2->getProcsNeeded())
+                return (j2->getProcsNeeded() > j1->getProcsNeeded());
 
-        //secondary criteria: earlier arriving job first
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime())
-            return j1 -> getArrivalTime() > j2 -> getArrivalTime();
+            //secondary criteria: earlier arriving job first
+            if (j1->getArrivalTime() != j2->getArrivalTime())
+                return j1->getArrivalTime() > j2->getArrivalTime();
 
-        //break ties so different jobs are never equal:
-        return j2 -> getJobNum() < j1 -> getJobNum();
-    case SMALLFIRST:
-        //smaller job goes first if they are different size
-        if(j1 -> getProcsNeeded() != j2 -> getProcsNeeded())
-            return (j2 -> getProcsNeeded() < j1 -> getProcsNeeded());
+            //break ties so different jobs are never equal:
+            return j2->getJobNum() < j1->getJobNum();
+        case SMALLFIRST:
+            //smaller job goes first if they are different size
+            if (j1->getProcsNeeded() != j2->getProcsNeeded())
+                return (j2->getProcsNeeded() < j1->getProcsNeeded());
 
-        //secondary criteria: earlier arriving job first
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime())
-            return j1 -> getArrivalTime() > j2 -> getArrivalTime();
+            //secondary criteria: earlier arriving job first
+            if (j1->getArrivalTime() != j2->getArrivalTime())
+                return j1->getArrivalTime() > j2->getArrivalTime();
 
-        //break ties so different jobs are never equal:
-        return j2 -> getJobNum() < j1 -> getJobNum();
-    case LONGFIRST:
-        //longest job goes first if different lengths
-        if(j1 -> getEstimatedRunningTime() != j2 -> getEstimatedRunningTime())
-            return j2 -> getEstimatedRunningTime() > j1 -> getEstimatedRunningTime();
+            //break ties so different jobs are never equal:
+            return j2->getJobNum() < j1->getJobNum();
+        case LONGFIRST:
+            //longest job goes first if different lengths
+            if (j1->getEstimatedRunningTime() != j2->getEstimatedRunningTime())
+                return j2->getEstimatedRunningTime() > j1->getEstimatedRunningTime();
 
-        //secondary criteria: earliest arriving job first
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime())
-            return j1 -> getArrivalTime() > j2 -> getArrivalTime();
+            //secondary criteria: earliest arriving job first
+            if (j1->getArrivalTime() != j2->getArrivalTime())
+                return j1->getArrivalTime() > j2->getArrivalTime();
 
-        //break ties so different jobs are never equal:
-        return j2 -> getJobNum() < j1 -> getJobNum();
-    case SHORTFIRST:
-        //longest job goes first if different lengths
-        if(j1 -> getEstimatedRunningTime() != j2 -> getEstimatedRunningTime())
-            return j2 -> getEstimatedRunningTime() < j1 -> getEstimatedRunningTime();
+            //break ties so different jobs are never equal:
+            return j2->getJobNum() < j1->getJobNum();
+        case SHORTFIRST:
+            //longest job goes first if different lengths
+            if (j1->getEstimatedRunningTime() != j2->getEstimatedRunningTime())
+                return j2->getEstimatedRunningTime() < j1->getEstimatedRunningTime();
 
-        //secondary criteria: earliest arriving job first
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime())
-            return j1 -> getArrivalTime() > j2 -> getArrivalTime();
+            //secondary criteria: earliest arriving job first
+            if (j1->getArrivalTime() != j2->getArrivalTime())
+                return j1->getArrivalTime() > j2->getArrivalTime();
 
-        //break ties so different jobs are never equal:
-        return j2 -> getJobNum() < j1 -> getJobNum();
+            //break ties so different jobs are never equal:
+            return j2->getJobNum() < j1->getJobNum();
 
-    case BETTERFIT:
-        //Primary criteria: Most Processors Required
-        if(j1 -> getProcsNeeded() != j2 -> getProcsNeeded())
-            return (j2 -> getProcsNeeded() > j1 -> getProcsNeeded());
+        case BETTERFIT:
+            //Primary criteria: Most Processors Required
+            if (j1->getProcsNeeded() != j2->getProcsNeeded())
+                return (j2->getProcsNeeded() > j1->getProcsNeeded());
 
-        //Secondary criteria: Longest Run Time
-        if(j1 -> getEstimatedRunningTime() != j2 -> getEstimatedRunningTime()) {
-            return (j2 -> getEstimatedRunningTime() > j1->getEstimatedRunningTime());
-        }
+            //Secondary criteria: Longest Run Time
+            if (j1->getEstimatedRunningTime() != j2->getEstimatedRunningTime()) {
+                return (j2->getEstimatedRunningTime() > j1->getEstimatedRunningTime());
+            }
 
-        //Tertiary criteria: Arrival Time
-        if(j1 -> getArrivalTime() != j2 -> getArrivalTime()) {
-            return  (j2 -> getArrivalTime() < j1 -> getArrivalTime());
-        }
+            //Tertiary criteria: Arrival Time
+            if (j1->getArrivalTime() != j2->getArrivalTime()) {
+                return (j2->getArrivalTime() < j1->getArrivalTime());
+            }
 
-        //break ties so different jobs are never equal:
-        return j2 -> getJobNum() < j1 -> getJobNum();
+            //break ties so different jobs are never equal:
+            return j2->getJobNum() < j1->getJobNum();
 
-    default:
-        //internal_error("operator() called on JobComparator w/ invalid type");
-        schedout.fatal(CALL_INFO, 1, "operator() called on JobComparator w/ invalid type");
-        return true;  //never reach here
+        default:
+            //internal_error("operator() called on JobComparator w/ invalid type");
+            schedout.fatal(CALL_INFO, 1, "operator() called on JobComparator w/ invalid type");
+            return true;  //never reach here
     }
 }
 
-string PQScheduler::JobComparator::toString() 
-{
-    switch(type){
-    case FIFO:
-        return "FIFOComparator";
-    case LARGEFIRST:
-        return "LargestFirstComparator";
-    case SMALLFIRST:
-        return "SmallestFirstComparator";
-    case LONGFIRST:
-        return "LongestFirstComparator";
-    case SHORTFIRST:
-        return "ShortestFirstComparator";
-    case BETTERFIT:
-        return "BetterFitComparator";     
-    default:
-        schedout.fatal(CALL_INFO, 1, "toString() called on JobComparator w/ invalid type");
+string PQScheduler::JobComparator::toString() {
+    switch (type) {
+        case FIFO:
+            return "FIFOComparator";
+        case LARGEFIRST:
+            return "LargestFirstComparator";
+        case SMALLFIRST:
+            return "SmallestFirstComparator";
+        case LONGFIRST:
+            return "LongestFirstComparator";
+        case SHORTFIRST:
+            return "ShortestFirstComparator";
+        case BETTERFIT:
+            return "BetterFitComparator";
+        default:
+            schedout.fatal(CALL_INFO, 1, "toString() called on JobComparator w/ invalid type");
     }
     return "";  //never reach here...
 }

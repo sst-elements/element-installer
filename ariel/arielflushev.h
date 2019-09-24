@@ -17,37 +17,41 @@
 #ifndef _H_SST_ARIEL_FLUSH_EVENT
 #define _H_SST_ARIEL_FLUSH_EVENT
 
-#include <sst_config.h> 
+#include <sst_config.h>
 #include "arielevent.h"
 #include "arielcore.h"
 
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielFlushEvent : public ArielEvent {
+        class ArielFlushEvent : public ArielEvent {
 
-    public:
-        ArielFlushEvent(uint64_t vAddr, uint64_t cacheLineSize) :
-                virtualAddress(vAddr){
-                    length = cacheLineSize;
-                }
-        ~ArielFlushEvent() {}
-        
-        ArielEventType getEventType() const { return FLUSH; }
-        uint64_t getVirtualAddress() const { return virtualAddress;}
-        uint64_t getAddress() const { return address; }
-        uint64_t getLength() const { return length; }
+        public:
+            ArielFlushEvent(uint64_t vAddr, uint64_t cacheLineSize) :
+                virtualAddress(vAddr) {
+                length = cacheLineSize;
+            }
 
-    protected:
-        uint64_t virtualAddress;
-        uint64_t address;
-        uint64_t length;
+            ~ArielFlushEvent() {}
 
-};
+            ArielEventType getEventType() const { return FLUSH; }
 
-}
+            uint64_t getVirtualAddress() const { return virtualAddress; }
+
+            uint64_t getAddress() const { return address; }
+
+            uint64_t getLength() const { return length; }
+
+        protected:
+            uint64_t virtualAddress;
+            uint64_t address;
+            uint64_t length;
+
+        };
+
+    }
 }
 
 #endif

@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 void prospero_enable_tracing();
+
 void prospero_disable_tracing();
 
 #ifdef __cplusplus

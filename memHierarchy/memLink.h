@@ -32,89 +32,99 @@
 #include "memLinkBase.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
 /*
  *  MemLink coordinates all traffic through a port
  *  MemNIC is a type of MemLink
  *  A basic MemLink does not implement SimpleNetwork though
  */
-class MemLink : public MemLinkBase {
+        class MemLink : public MemLinkBase {
 
-public:
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemLink, "memHierarchy", "MemLink", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(MemLink,
+            "memHierarchy", "MemLink", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Memory-oriented link interface", SST::MemHierarchy::MemLinkBase)
 
-    /* Define params, inherit from base class */
+            /* Define params, inherit from base class */
 #define MEMLINK_ELI_PARAMS MEMLINKBASE_ELI_PARAMS, \
     { "latency",            "(string) Link latency. Prefix 'cpulink' for up-link towards CPU or 'memlink' for down-link towards memory", "50ps"},\
     { "port",               "(string) Set by parent component. Name of port this memLink sits on.", ""}
 
-    SST_ELI_DOCUMENT_PARAMS( { MEMLINK_ELI_PARAMS }  )
+            SST_ELI_DOCUMENT_PARAMS( {MEMLINK_ELI_PARAMS}  )
 
 /* Begin class definition */
-    class MemEventLinkInit : public MemEventBase {
-        public:
-            MemEventLinkInit(std::string src, MemRegion region) : MemEventBase(src, Command::NULLCMD), region(region) { }
+            class MemEventLinkInit : public MemEventBase {
+            public:
+                MemEventLinkInit(std::string src, MemRegion region) : MemEventBase(src,
+                                                                                   Command::nullptrCMD),
+                                                                      region(region) {}
 
-            MemRegion getRegion() { return region; }
-            void setRegion(MemRegion reg) { region = reg; }
+                MemRegion getRegion() { return region; }
 
-            virtual MemEventLinkInit* clone(void) override {
-                return new MemEventLinkInit(*this);
-            }
+                void setRegion(MemRegion reg) { region = reg; }
 
-            virtual std::string getVerboseString() override {
-                std::ostringstream str;
-                str << "Start: " << region.start << " End: " << region.end;
-                str << " Step: " << region.interleaveStep << " Size: " << region.interleaveSize;
-                return MemEventBase::getVerboseString() + str.str();
-            }
+                virtual MemEventLinkInit *clone(void) override {
+                    return new MemEventLinkInit(*this);
+                }
 
-            virtual std::string getBriefString() override {
-                std::ostringstream str;
-                str << "Start: " << region.start << " End: " << region.end;
-                str << " Step: " << region.interleaveStep << " Size: " << region.interleaveSize;
-                return MemEventBase::getBriefString() + str.str();
-            }
+                virtual std::string getVerboseString() override {
+                    std::ostringstream str;
+                    str << "Start: " << region.start << " End: " << region.end;
+                    str << " Step: " << region.interleaveStep << " Size: " << region.interleaveSize;
+                    return MemEventBase::getVerboseString() + str.str();
+                }
+
+                virtual std::string getBriefString() override {
+                    std::ostringstream str;
+                    str << "Start: " << region.start << " End: " << region.end;
+                    str << " Step: " << region.interleaveStep << " Size: " << region.interleaveSize;
+                    return MemEventBase::getBriefString() + str.str();
+                }
+
+            private:
+                MemRegion region;
+
+            };
+
+            /* Constructor */
+            MemLink(Component *comp, Params &params);
+
+            MemLink(ComponentId_t id, Params &params);
 
         private:
-            MemRegion region;
+            void build(Params &params);
 
-    };
+        public:
 
-    /* Constructor */
-    MemLink(Component * comp, Params &params);
-    MemLink(ComponentId_t id, Params &params);
-private:
-    void build(Params &params);
-public:
+            /* Destructor */
+            ~MemLink() {}
 
-    /* Destructor */
-    ~MemLink() { }
+            /* Initialization functions for parent */
+            virtual void init(unsigned int phase);
 
-    /* Initialization functions for parent */
-    virtual void init(unsigned int phase);
+            /* Send and receive functions for MemLink */
+            virtual void sendInitData(MemEventInit *ev);
 
-    /* Send and receive functions for MemLink */
-    virtual void sendInitData(MemEventInit * ev);
-    virtual MemEventInit* recvInitData();
-    virtual void send(MemEventBase * ev);
-    virtual MemEventBase * recv();
+            virtual MemEventInit *recvInitData();
 
-    /* Debug */
-    virtual void printStatus(Output &out) {
-        out.output("  MemHierarchy::MemLink: No status given\n");
-    }
+            virtual void send(MemEventBase *ev);
 
-protected:
-    
-    // Link
-    SST::Link* link;
-};
+            virtual MemEventBase *recv();
 
-} //namespace memHierarchy
+            /* Debug */
+            virtual void printStatus(Output &out) {
+                out.output("  MemHierarchy::MemLink: No status given\n");
+            }
+
+        protected:
+
+            // Link
+            SST::Link *link;
+        };
+
+    } //namespace memHierarchy
 } //namespace SST
 
 #endif

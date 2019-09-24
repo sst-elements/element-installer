@@ -19,40 +19,39 @@
 #include "funcSM/barrier.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class FiniFuncSM :  public BarrierFuncSM 
-{
- public:
-    SST_ELI_REGISTER_MODULE(
-        FiniFuncSM,
-        "firefly",
-        "Fini",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
-  public:
-    FiniFuncSM( SST::Params& params ) : BarrierFuncSM( params ) {}
+        class FiniFuncSM : public BarrierFuncSM {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                FiniFuncSM,
+            "firefly",
+            "Fini",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
+        public:
+            FiniFuncSM(SST::Params &params) : BarrierFuncSM(params) {}
 
-    virtual void handleStartEvent( SST::Event* e, Retval& retval) {
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
 
-        FiniStartEvent* event = static_cast<FiniStartEvent*>( e );
-        BarrierStartEvent* tmp = new BarrierStartEvent( MP::GroupWorld  );
+                FiniStartEvent *event = static_cast<FiniStartEvent *>( e );
+                BarrierStartEvent *tmp = new BarrierStartEvent(MP::GroupWorld);
 
-        delete event;
+                delete event;
 
-        BarrierFuncSM::handleStartEvent(static_cast<SST::Event*>(tmp), retval );
+                BarrierFuncSM::handleStartEvent(static_cast<SST::Event *>(tmp), retval);
+            }
+
+            virtual void handleEnterEvent(Retval &retval) {
+                BarrierFuncSM::handleEnterEvent(retval);
+            }
+
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+        };
+
     }
-
-    virtual void handleEnterEvent( Retval& retval ) {
-        BarrierFuncSM::handleEnterEvent( retval );
-    }
-
-    virtual std::string protocolName() { return "CtrlMsgProtocol"; }
-};
-
-}
 }
 
 #endif

@@ -17,26 +17,26 @@ sst.setProgramOption("stopAtCycle", "200ns")
 
 # Set the Statistic Load Level; Statistics with Enable Levels (set in 
 # elementInfoStatistic) lower or equal to the load can be enabled (default = 0)
-sst.setStatisticLoadLevel(7)   
+sst.setStatisticLoadLevel(7)
 
 # Set the desired Statistic Output (sst.statOutputConsole is default)
-#sst.setStatisticOutput("sst.statOutputConsole")         
-#sst.setStatisticOutput("sst.statOutputTXT", {"filepath" : "./TestOutput.txt"
+# sst.setStatisticOutput("sst.statOutputConsole")
+# sst.setStatisticOutput("sst.statOutputTXT", {"filepath" : "./TestOutput.txt"
 #                                            })              
-sst.setStatisticOutput("sst.statOutputCSV", {"filepath" : "./TestOutput.csv",    
-			                                 "separator" : ", "
-                                            })              
+sst.setStatisticOutput("sst.statOutputCSV", {"filepath": "./TestOutput.csv",
+                                             "separator": ", "
+                                             })
 
-#sst.setStatisticOutputOptions({"outputtopheader" : "1",
+# sst.setStatisticOutputOptions({"outputtopheader" : "1",
 #                               "outputinlineheader" : "1",
 #                               "outputsimtime": "1",
 #                               "outputrank": "1",
 #                               "help" : "help" })
-#sst.setStatisticOutputOption("outputtopheader", "1")
-#sst.setStatisticOutputOption("outputinlineheader", "1")
-#sst.setStatisticOutputOption("outputsimtime", "1")
-#sst.setStatisticOutputOption("outputrank", "1")
-#sst.setStatisticOutputOption("help", "help")
+# sst.setStatisticOutputOption("outputtopheader", "1")
+# sst.setStatisticOutputOption("outputinlineheader", "1")
+# sst.setStatisticOutputOption("outputsimtime", "1")
+# sst.setStatisticOutputOption("outputrank", "1")
+# sst.setStatisticOutputOption("help", "help")
 
 ########################################################################
 ########################################################################
@@ -50,16 +50,16 @@ StatExample0.setRank(0)
 
 # Set Component Parameters
 StatExample0.addParams({
-      "rng" : """marsaglia""",
-      "count" : """100""",   # Change For number of 1ns clocks
-      "seed_w" : """1447""",
-      "seed_z" : """1053"""
+    "rng": """marsaglia""",
+    "count": """100""",  # Change For number of 1ns clocks
+    "seed_w": """1447""",
+    "seed_z": """1053"""
 })
 
 ## # Enable ALL Statistics for the Component to output at end of sim
 ## # Statistic defaults to Accumulator
 ## StatExample0.enableAllStatistics()
-                                  
+
 ## # Enable ALL Statistics for the Component
 ## StatExample0.enableAllStatistics({ "type":"sst.AccumulatorStatistic",
 ##                                    "rate":"10 ns"
@@ -91,54 +91,54 @@ StatExample0.addParams({
 
 # Enable Individual Statistics for the Component with separate rates
 StatExample0.enableStatistics([
-      "stat1_U32"], {
-      "type":"sst.HistogramStatistic",
-      "minvalue" : "10", 
-      "binwidth" : "10", 
-      "numbins"  : "41", 
-      "IncludeOutOfBounds" : "1", 
-      "rate":"5 ns"})
+    "stat1_U32"], {
+    "type": "sst.HistogramStatistic",
+    "minvalue": "10",
+    "binwidth": "10",
+    "numbins": "41",
+    "IncludeOutOfBounds": "1",
+    "rate": "5 ns"})
 
 StatExample0.enableStatistics([
-      "stat2_U64"], {
-      "type":"sst.HistogramStatistic",
-      "minvalue" : "1000", 
-      "binwidth" : "1000", 
-      "numbins"  : "17", 
-      "IncludeOutOfBounds" : "1", 
-      "rate":"10 ns"})
-            
-StatExample0.enableStatistics([
-      "stat3_I32"], {
-      "type":"sst.HistogramStatistic",
-      "minvalue" : "-200", 
-      "binwidth" : "50", 
-      "numbins"  : "8", 
-      "IncludeOutOfBounds" : "1", 
-      "rate":"25 events"})
+    "stat2_U64"], {
+    "type": "sst.HistogramStatistic",
+    "minvalue": "1000",
+    "binwidth": "1000",
+    "numbins": "17",
+    "IncludeOutOfBounds": "1",
+    "rate": "10 ns"})
 
 StatExample0.enableStatistics([
-      "stat4_I64"], {
-      "type":"sst.HistogramStatistic",
-      "minvalue" : "-9000", 
-      "binwidth" : "1000", 
-      "numbins"  : "18", 
-      "IncludeOutOfBounds" : "1", 
-      "rate":"50 ns"})
+    "stat3_I32"], {
+    "type": "sst.HistogramStatistic",
+    "minvalue": "-200",
+    "binwidth": "50",
+    "numbins": "8",
+    "IncludeOutOfBounds": "1",
+    "rate": "25 events"})
 
 StatExample0.enableStatistics([
-      "stat5_U32"], {
-      "type":"sst.AccumulatorStatistic",
-      "rate":"5 ns"
-      })
+    "stat4_I64"], {
+    "type": "sst.HistogramStatistic",
+    "minvalue": "-9000",
+    "binwidth": "1000",
+    "numbins": "18",
+    "IncludeOutOfBounds": "1",
+    "rate": "50 ns"})
 
 StatExample0.enableStatistics([
-      "stat6_U64"], {
-      "type":"sst.AccumulatorStatistic",
-      "rate":"10 ns",
-      "startat":"35ns",
-      "stopat":"65ns"
-      })
+    "stat5_U32"], {
+    "type": "sst.AccumulatorStatistic",
+    "rate": "5 ns"
+})
+
+StatExample0.enableStatistics([
+    "stat6_U64"], {
+    "type": "sst.AccumulatorStatistic",
+    "rate": "10 ns",
+    "startat": "35ns",
+    "stopat": "65ns"
+})
 
 ########################################################################
 ########################################################################
@@ -339,4 +339,3 @@ StatExample0.enableStatistics([
 #### sst.enableStatisticForComponentType("simpleStatistics.simpleStatistics", "stat6_U64", 
 ####                                    {"type":"sst.AccumulatorStatistic",
 ####                                     "rate":"30 ns"})
-

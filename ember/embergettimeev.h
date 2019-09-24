@@ -20,32 +20,30 @@
 #include "emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberGetTimeEvent : public EmberEvent {
-public:
-	EmberGetTimeEvent( Output* output, uint64_t* ptr ) :
-        EmberEvent(output),
-        m_timePtr(ptr)
-    {}
+        class EmberGetTimeEvent : public EmberEvent {
+        public:
+            EmberGetTimeEvent(Output *output, uint64_t *ptr) :
+                EmberEvent(output),
+                m_timePtr(ptr) {}
 
-	~EmberGetTimeEvent() {} 
+            ~EmberGetTimeEvent() {}
 
-    std::string getName() { return "GetTime"; }
+            std::string getName() { return "GetTime"; }
 
-    virtual void issue( uint64_t time, FOO* functor ) 
-    {
-        m_output->debug(CALL_INFO, 2, EVENT_MASK, "\n");
-        EmberEvent::issue( time );
-        *m_timePtr = time;
+            virtual void issue(uint64_t time, FOO *functor) {
+                m_output->debug(CALL_INFO, 2, EVENT_MASK, "\n");
+                EmberEvent::issue(time);
+                *m_timePtr = time;
+            }
+
+        private:
+            uint64_t *m_timePtr;
+
+        };
+
     }
-
-private:
-	uint64_t* m_timePtr; 
-
-};
-
-}
 }
 
 #endif

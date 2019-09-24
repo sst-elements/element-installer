@@ -19,27 +19,24 @@
 
 using namespace SST::Firefly;
 
-WaitAnyFuncSM::WaitAnyFuncSM( SST::Params& params ) :
-    FunctionSMInterface( params ),
-    m_event( NULL )
-{
+WaitAnyFuncSM::WaitAnyFuncSM(SST::Params &params) :
+    FunctionSMInterface(params),
+    m_event(nullptr) {
 }
 
-void WaitAnyFuncSM::handleStartEvent( SST::Event *e, Retval& retval ) 
-{
-    assert( NULL == m_event );
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void WaitAnyFuncSM::handleStartEvent(SST::Event *e, Retval &retval) {
+    assert(nullptr == m_event);
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
 
-    m_event = static_cast< WaitAnyStartEvent* >(e);
+    m_event = static_cast< WaitAnyStartEvent * >(e);
 
-    proto()->waitAny( m_event->count, m_event->req,
-                                    m_event->index, m_event->resp );
+    proto()->waitAny(m_event->count, m_event->req,
+                     m_event->index, m_event->resp);
 }
 
-void WaitAnyFuncSM::handleEnterEvent( Retval& retval )
-{
-    m_dbg.debug(CALL_INFO,1,0,"\n");
+void WaitAnyFuncSM::handleEnterEvent(Retval &retval) {
+    m_dbg.debug(CALL_INFO, 1, 0, "\n");
     retval.setExit(0);
     delete m_event;
-    m_event = NULL;
+    m_event = nullptr;
 }

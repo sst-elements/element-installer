@@ -22,21 +22,23 @@
 #include <sst/core/subcomponent.h>
 
 namespace SST {
-namespace Merlin {
+    namespace Merlin {
 
-class TargetGenerator : public SubComponent {
-public:
-    TargetGenerator(Component* parent) :
-        SubComponent(parent) {}
+        class TargetGenerator : public SubComponent {
+        public:
+            TargetGenerator(Component *parent) :
+                SubComponent(parent) {}
 
-    ~TargetGenerator() {}
-    
-    virtual void initialize(int id, int num_peers) {}
-    virtual int getNextValue(void) = 0;
-    virtual void seed(uint32_t val) {}
-};
+            ~TargetGenerator() {}
 
-} //namespace Merlin
+            virtual void initialize(int id, int num_peers) {}
+
+            virtual int getNextValue(void) = 0;
+
+            virtual void seed(uint32_t val) {}
+        };
+
+    } //namespace Merlin
 } //namespace SST
 
 #endif

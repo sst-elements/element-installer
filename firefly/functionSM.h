@@ -26,10 +26,11 @@
 #include "info.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class FunctionSMInterface;
-class ProtocolAPI;
+        class FunctionSMInterface;
+
+        class ProtocolAPI;
 
 #define FOREACH_FUNCTION(NAME) \
         NAME(Init)   \
@@ -58,56 +59,65 @@ class ProtocolAPI;
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
 
-class FunctionSM  {
+        class FunctionSM {
 
-    typedef FunctionSMInterface::Retval Retval;
-	typedef CtrlMsg::Functor_0<FunctionSM, bool> Functor;
+            typedef FunctionSMInterface::Retval Retval;
+            typedef CtrlMsg::Functor_0<FunctionSM, bool> Functor;
 
-    static const char *m_functionName[];
+            static const char *m_functionName[];
 
-  public:
-    typedef std::function<void()> Callback;
+        public:
+            typedef std::function<void()> Callback;
 
-    enum FunctionEnum{
-        FOREACH_FUNCTION(GENERATE_ENUM)
-    };
+            enum FunctionEnum {
+                FOREACH_FUNCTION(GENERATE_ENUM)
+            };
 
-    const char *functionName( FunctionEnum x) {return m_functionName[x]; }
+            const char *functionName(FunctionEnum x) { return m_functionName[x]; }
 
-    FunctionSM( SST::Params& params, SST::Component*, ProtocolAPI* );
-    ~FunctionSM();
-    void printStatus( Output& );
+            FunctionSM(SST::Params &params, SST::Component *, ProtocolAPI *);
 
-    Link* getRetLink() { return m_toMeLink; } 
-    void setup( Info* );
-    void start(int type, MP::Functor* retFunc,  SST::Event* );
-    void start(int type, Callback,  SST::Event* );
-    void enter( );
+            ~FunctionSM();
 
-  private:
-    void handleStartEvent( SST::Event* );
-    void handleToDriver(SST::Event*);
-    void handleEnterEvent( SST::Event* );
-    void processRetval( Retval& );
-    
-    void initFunction( SST::Component*, Info*, FunctionEnum,
-                                    std::string, Params&, Params& );
+            void printStatus(Output &);
 
-    std::vector<FunctionSMInterface*>  m_smV; 
-    FunctionSMInterface*    m_sm; 
-    MP::Functor*    m_retFunc;
-    Callback        m_callback;
+            Link *getRetLink() { return m_toMeLink; }
 
-    SST::Link*          m_fromDriverLink;    
-    SST::Link*          m_toDriverLink;    
-    SST::Link*          m_toMeLink;
-    Output              m_dbg;
-    SST::Params         m_params;
-    SST::Component*     m_owner;
-    ProtocolAPI*	m_proto;
-};
+            void setup(Info *);
 
-}
+            void start(int type, MP::Functor *retFunc, SST::Event *);
+
+            void start(int type, Callback, SST::Event *);
+
+            void enter();
+
+        private:
+            void handleStartEvent(SST::Event *);
+
+            void handleToDriver(SST::Event *);
+
+            void handleEnterEvent(SST::Event *);
+
+            void processRetval(Retval &);
+
+            void initFunction(SST::Component *, Info *, FunctionEnum,
+                              std::string, Params &, Params &);
+
+            std::vector<FunctionSMInterface *> m_smV;
+            FunctionSMInterface *m_sm;
+            MP::Functor *m_retFunc;
+            Callback m_callback;
+
+            SST::Link *m_fromDriverLink;
+            SST::Link *m_toDriverLink;
+            SST::Link *m_toMeLink;
+            Output m_dbg;
+            SST::Params m_params;
+            SST::Component *m_owner;
+            ProtocolAPI *m_proto;
+        };
+
+    }
 }
 
 #endif

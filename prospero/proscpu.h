@@ -36,82 +36,87 @@ using namespace SST;
 using namespace SST::Interfaces;
 
 namespace SST {
-namespace Prospero {
+    namespace Prospero {
 
-class ProsperoComponent : public Component {
-public:
+        class ProsperoComponent : public Component {
+        public:
 
-  ProsperoComponent(ComponentId_t id, Params& params);
-  ~ProsperoComponent();
+            ProsperoComponent(ComponentId_t id, Params &params);
 
-  void setup() { }
-  void init(unsigned int phase);
-  void finish();
+            ~ProsperoComponent();
 
-  SST_ELI_REGISTER_COMPONENT(
-        ProsperoComponent,
-        "prospero",
-        "prosperoCPU",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "Prospero CPU Memory Trace Replay Engine",
-        COMPONENT_CATEGORY_PROCESSOR
-   )
+            void setup() {}
 
-   SST_ELI_DOCUMENT_PARAMS(
-	{ "verbose", "Verbosity for debugging. Increased numbers for increased verbosity.", "0" },
-    	{ "cache_line_size", "Sets the length of the cache line in bytes, this should match the L1 cache", "64" },
-    	{ "reader",  "The trace reader module to load", "prospero.ProsperoTextTraceReader" },
-    	{ "pagesize", "Sets the page size for the Prospero simple virtual memory manager", "4096"},
-    	{ "clock", "Sets the clock of the core", "2GHz"} ,
-    	{ "max_outstanding", "Sets the maximum number of outstanding transactions that the memory system will allow", "16"},
-    	{ "max_issue_per_cycle", "Sets the maximum number of new transactions that the system can issue per cycle", "2"},
-   )
+            void init(unsigned int phase);
 
-   SST_ELI_DOCUMENT_PORTS(
-	{ "cache_link", "Link to the memHierarchy cache", { "memHierarchy.memEvent", "" } }
-   )
+            void finish();
 
-   SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
-           {"memory", "Interface to the memory hierarchy (e.g., cache)", "SST::Interfaces::SimpleMem" }
-    )
+            SST_ELI_REGISTER_COMPONENT(
+                ProsperoComponent,
+            "prospero",
+            "prosperoCPU",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Prospero CPU Memory Trace Replay Engine",
+            COMPONENT_CATEGORY_PROCESSOR
+            )
 
-private:
-  ProsperoComponent();                         // Serialization only
-  ProsperoComponent(const ProsperoComponent&); // Do not impl.
-  void operator=(const ProsperoComponent&);    // Do not impl.
+            SST_ELI_DOCUMENT_PARAMS(
+            { "verbose", "Verbosity for debugging. Increased numbers for increased verbosity.", "0" },
+            { "cache_line_size", "Sets the length of the cache line in bytes, this should match the L1 cache", "64" },
+            { "reader", "The trace reader module to load", "prospero.ProsperoTextTraceReader" },
+            { "pagesize", "Sets the page size for the Prospero simple virtual memory manager", "4096" },
+            { "clock", "Sets the clock of the core", "2GHz" } ,
+            { "max_outstanding", "Sets the maximum number of outstanding transactions that the memory system will allow", "16" },
+            { "max_issue_per_cycle", "Sets the maximum number of new transactions that the system can issue per cycle", "2" },
+            )
 
-  void handleResponse( SimpleMem::Request* ev );
-  bool tick( Cycle_t );
-  void issueRequest(const ProsperoTraceEntry* entry);
+            SST_ELI_DOCUMENT_PORTS(
+            { "cache_link", "Link to the memHierarchy cache", {"memHierarchy.memEvent", ""}}
+            )
 
-  Output* output;
-  ProsperoTraceReader* reader;
-  ProsperoTraceEntry* currentEntry;
-  ProsperoMemoryManager* memMgr;
-  SimpleMem* cache_link;
-  FILE* traceFile;
-  bool traceEnded;
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS(
+            { "memory", "Interface to the memory hierarchy (e.g., cache)", "SST::Interfaces::SimpleMem" }
+            )
+
+        private:
+            ProsperoComponent();                         // Serialization only
+            ProsperoComponent(const ProsperoComponent &); // Do not impl.
+            void operator=(const ProsperoComponent &);    // Do not impl.
+
+            void handleResponse(SimpleMem::Request *ev);
+
+            bool tick(Cycle_t);
+
+            void issueRequest(const ProsperoTraceEntry *entry);
+
+            Output *output;
+            ProsperoTraceReader *reader;
+            ProsperoTraceEntry *currentEntry;
+            ProsperoMemoryManager *memMgr;
+            SimpleMem *cache_link;
+            FILE *traceFile;
+            bool traceEnded;
 #ifdef HAVE_LIBZ
-  gzFile traceFileZ;
+            gzFile traceFileZ;
 #endif
-  uint64_t pageSize;
-  uint64_t cacheLineSize;
-  uint32_t maxOutstanding;
-  uint32_t currentOutstanding;
-  uint32_t maxIssuePerCycle;
+            uint64_t pageSize;
+            uint64_t cacheLineSize;
+            uint32_t maxOutstanding;
+            uint32_t currentOutstanding;
+            uint32_t maxIssuePerCycle;
 
-  uint64_t readsIssued;
-  uint64_t writesIssued;
-  uint64_t splitReadsIssued;
-  uint64_t splitWritesIssued;
-  uint64_t totalBytesRead;
-  uint64_t totalBytesWritten;
-  uint64_t cyclesWithIssue;
-  uint64_t cyclesWithNoIssue;
+            uint64_t readsIssued;
+            uint64_t writesIssued;
+            uint64_t splitReadsIssued;
+            uint64_t splitWritesIssued;
+            uint64_t totalBytesRead;
+            uint64_t totalBytesWritten;
+            uint64_t cyclesWithIssue;
+            uint64_t cyclesWithNoIssue;
 
-};
+        };
 
-}
+    }
 }
 
 #endif /* _SST_PROSPERO_H */

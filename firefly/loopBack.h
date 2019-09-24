@@ -19,43 +19,46 @@
 #include <sst/core/component.h>
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class LoopBackEventBase : public Event {
+        class LoopBackEventBase : public Event {
 
-  public:
-    LoopBackEventBase( int _core ) : Event(), core( _core ) {}
-    int core;
+        public:
+            LoopBackEventBase(int _core) : Event(), core(_core) {}
 
-    NotSerializable(LoopBackEventBase)
-};
+            int core;
 
-class LoopBack : public SST::Component  {
-  public:
-    SST_ELI_REGISTER_COMPONENT(
-        LoopBack,
-        "firefly",
-        "loopBack",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        COMPONENT_CATEGORY_SYSTEM
-    )
-    SST_ELI_DOCUMENT_PARAMS(
-        {"numCores","Sets the number cores to create links to", "1"},
-    )
-    SST_ELI_DOCUMENT_PORTS(
-        {"core%(num_vNics)d", "Ports connected to the network driver", {}}
-    )
+            NotSerializable(LoopBackEventBase)
+        };
 
-    LoopBack(ComponentId_t id, Params& params );
-    ~LoopBack() {}
-    void handleCoreEvent( Event* ev, int );
+        class LoopBack : public SST::Component {
+        public:
+            SST_ELI_REGISTER_COMPONENT(
+                LoopBack,
+            "firefly",
+            "loopBack",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            COMPONENT_CATEGORY_SYSTEM
+            )
+            SST_ELI_DOCUMENT_PARAMS(
+            { "numCores", "Sets the number cores to create links to", "1" },
+            )
+            SST_ELI_DOCUMENT_PORTS(
+            { "core%(num_vNics)d", "Ports connected to the network driver", {}}
+            )
 
-  private:
-    std::vector<Link*>          m_links;   
-};
+            LoopBack(ComponentId_t id, Params &params);
 
-}
+            ~LoopBack() {}
+
+            void handleCoreEvent(Event *ev, int);
+
+        private:
+            std::vector<Link *> m_links;
+        };
+
+    }
 }
 
 #endif

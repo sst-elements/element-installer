@@ -22,49 +22,49 @@
 using namespace SST;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class ArielWriteEvent : public ArielEvent {
+        class ArielWriteEvent : public ArielEvent {
 
-    public:
-        ArielWriteEvent(uint64_t wAddr, uint32_t length, const uint8_t* payloadData) :
+        public:
+            ArielWriteEvent(uint64_t wAddr, uint32_t length, const uint8_t *payloadData) :
                 writeAddress(wAddr), writeLength(length) {
-                
+
                 payload = new uint8_t[length];
-                
-                for( int i = 0; i < length; ++i ) {
-                	payload[i] = payloadData[i];
+
+                for (int i = 0; i < length; ++i) {
+                    payload[i] = payloadData[i];
                 }
-        }
+            }
 
-        ~ArielWriteEvent() {
-        	delete[] payload;
-        }
+            ~ArielWriteEvent() {
+                delete[] payload;
+            }
 
-        ArielEventType getEventType() const {
+            ArielEventType getEventType() const {
                 return WRITE_ADDRESS;
-        }
+            }
 
-        uint64_t getAddress() const {
+            uint64_t getAddress() const {
                 return writeAddress;
-        }
+            }
 
-        uint32_t getLength() const {
+            uint32_t getLength() const {
                 return writeLength;
-        }
-        
-        uint8_t* getPayload() const {
-        		return payload;
-        }
+            }
 
-    private:
-        const uint64_t writeAddress;
-        const uint32_t writeLength;
-              uint8_t* payload;
+            uint8_t *getPayload() const {
+                return payload;
+            }
 
-};
+        private:
+            const uint64_t writeAddress;
+            const uint32_t writeLength;
+            uint8_t *payload;
 
-}
+        };
+
+    }
 }
 
 #endif

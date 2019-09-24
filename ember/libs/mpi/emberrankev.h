@@ -20,37 +20,36 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberRankEvent : public EmberMPIEvent {
+        class EmberRankEvent : public EmberMPIEvent {
 
-public:
-	EmberRankEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-            Communicator comm, uint32_t* rankPtr ) :
-        EmberMPIEvent( api, output, stat ),
-        m_comm( comm ),
-        m_rankPtr( rankPtr)
-    {}
+        public:
+            EmberRankEvent(MP::Interface &api, Output *output,
+                           EmberEventTimeStatistic *stat,
+                           Communicator comm, uint32_t *rankPtr) :
+                EmberMPIEvent(api, output, stat),
+                m_comm(comm),
+                m_rankPtr(rankPtr) {}
 
-	~EmberRankEvent() {}
+            ~EmberRankEvent() {}
 
-    std::string getName() { return "Rank"; }
+            std::string getName() { return "Rank"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.rank( m_comm, m_rankPtr, functor );
+                m_api.rank(m_comm, m_rankPtr, functor);
+            }
+
+        private:
+            Communicator m_comm;
+            uint32_t *m_rankPtr;
+
+        };
+
     }
-
-private:
-    Communicator m_comm;
-    uint32_t*    m_rankPtr;
-    
-};
-
-}
 }
 
 #endif

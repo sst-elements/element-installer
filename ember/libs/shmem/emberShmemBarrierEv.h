@@ -20,33 +20,35 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberBarrierShmemEvent : public EmberShmemEvent {
+        class EmberBarrierShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberBarrierShmemEvent( Shmem::Interface& api, Output* output,
-               int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,  
-                    EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ),
-            m_pe_start(PE_start), m_stride( logPE_stride), m_size(PE_size), m_pSync(pSync) {}
-	~EmberBarrierShmemEvent() {}
+        public:
+            EmberBarrierShmemEvent(Shmem::Interface &api, Output *output,
+                                   int PE_start, int logPE_stride, int PE_size, Hermes::Vaddr pSync,
+                                   EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_pe_start(PE_start), m_stride(logPE_stride), m_size(PE_size), m_pSync(pSync) {}
 
-    std::string getName() { return "Barrier"; }
+            ~EmberBarrierShmemEvent() {}
 
-    void issue( uint64_t time, Shmem::Callback callback ) {
+            std::string getName() { return "Barrier"; }
 
-        EmberEvent::issue( time );
-        m_api.barrier( m_pe_start, m_stride, m_size, m_pSync, callback );
+            void issue(uint64_t time, Shmem::Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.barrier(m_pe_start, m_stride, m_size, m_pSync, callback);
+            }
+
+        private:
+            int m_pe_start;
+            int m_stride;
+            int m_size;
+            Hermes::Vaddr m_pSync;
+        };
+
     }
-private:
-    int m_pe_start;
-    int m_stride;
-    int m_size;
-    Hermes::Vaddr m_pSync;
-};
-
-}
 }
 
 #endif

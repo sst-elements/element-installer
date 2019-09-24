@@ -14,7 +14,7 @@ minDict = dict()
 minLineDict = dict()
 
 structList = ["SAME_BANK", "SAME_BGROUP", "SAME_RANK", "SAME_CHAN"]
-cmdList = ["ACT","READ","WRITE","PRE","REF"]
+cmdList = ["ACT", "READ", "WRITE", "PRE", "REF"]
 
 bankId2Chan = []
 bankId2Rank = []
@@ -54,13 +54,13 @@ for ii in range(numBankIds):
     bankId2Bank.append(-1)
 
 seenBankIds = dict();
-        
+
 inFileName = sys.argv[1]
 
 inFile = open(inFileName)
 
 for line in inFile:
-    if line[0] != '@': # very simple format checking
+    if line[0] != '@':  # very simple format checking
         continue
     line = line.rstrip()
     grep = line.split()
@@ -75,27 +75,26 @@ for line in inFile:
             exit(-1)
 
         seenBankIds[bankId] = 1
-        
+
         chan = int(grep[4])
         pchan = int(grep[5])
         rank = int(grep[6])
         bankGroup = int(grep[7])
         bank = int(grep[8])
-        
+
         bankId2Chan[bankId] = chan
         bankId2Rank[bankId] = rank
         bankId2BankGroup[bankId] = bankGroup
         bankId2Bank[bankId] = bank
     else:
         chan = bankId2Chan[bankId]
-        pchan = 0 ## not supported for now
+        pchan = 0  ## not supported for now
         rank = bankId2Rank[bankId]
         bankGroup = bankId2BankGroup[bankId]
         bank = bankId2Bank[bankId]
-            
-            
+
     if bankId >= numBankIds:
-        print "Increase numBankIds!",bankId,"detected, max is",numBankIds-1
+        print "Increase numBankIds!", bankId, "detected, max is", numBankIds - 1
         exit(-1)
 
     for calCmd in cmdList:
@@ -103,17 +102,17 @@ for line in inFile:
             for calRank in range(numRanks):
                 for calGroup in range(numBankGroups):
                     for calBank in range(numBanks):
-                                
+
                         if calChan == chan:
                             if calRank == rank:
                                 if calGroup == bankGroup:
                                     if calBank == bank:
                                         struct = "SAME_BANK"
-                                    else: # bank !=
+                                    else:  # bank !=
                                         struct = "SAME_BGROUP"
-                                else: # bankGroup !=
+                                else:  # bankGroup !=
                                     struct = "SAME_RANK"
-                            else: # rank !=
+                            else:  # rank !=
                                 struct = "SAME_CHAN"
 
                             if lastCmd[calCmd][calChan][calRank][calGroup][calBank] != -1:
@@ -121,16 +120,17 @@ for line in inFile:
                                 if minDict[struct][calCmd][cmd] != -1:
                                     if delta < minDict[struct][calCmd][cmd]:
                                         minDict[struct][calCmd][cmd] = delta
-                                        minLineDict[struct][calCmd][cmd][0] = lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
+                                        minLineDict[struct][calCmd][cmd][0] = \
+                                        lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
                                         minLineDict[struct][calCmd][cmd][1] = line
                                 else:
                                     minDict[struct][calCmd][cmd] = delta
-                                    minLineDict[struct][calCmd][cmd][0] = lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
+                                    minLineDict[struct][calCmd][cmd][0] = \
+                                    lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
                                     minLineDict[struct][calCmd][cmd][1] = line
-                                                        
+
     lastCmd[cmd][chan][rank][bankGroup][bank] = cycle
     lastCmdLine[cmd][chan][rank][bankGroup][bank] = line
-
 
 for struct in structList:
     print(struct)
@@ -152,9 +152,9 @@ for struct in structList:
 
     for cmd1 in cmdList:
         for cmd2 in cmdList:
-            print cmd2,"after",cmd1, minDict[struct][cmd1][cmd2]
+            print cmd2, "after", cmd1, minDict[struct][cmd1][cmd2]
             print minLineDict[struct][cmd1][cmd2][0]
             print minLineDict[struct][cmd1][cmd2][1]
         print
-            
+
     print

@@ -20,15 +20,18 @@ class MemoryModel : public SubComponent {
 
 public:
 
-   typedef std::function<void()> Callback;
+    typedef std::function<void()> Callback;
 
 #include "memOp.h"
 
-    MemoryModel( Component* comp ) : SubComponent(comp) {}
+    MemoryModel(Component *comp) : SubComponent(comp) {}
 
-    virtual void printStatus( Output& out, int id ) { }
-	virtual void schedHostCallback( int core, std::vector< MemOp >* ops, Callback callback ) = 0;
-	virtual void schedNicCallback( int unit, int pid, std::vector< MemOp >* ops, Callback callback ) = 0;
+    virtual void printStatus(Output &out, int id) {}
+
+    virtual void schedHostCallback(int core, std::vector <MemOp> *ops, Callback callback) = 0;
+
+    virtual void schedNicCallback(int unit, int pid, std::vector <MemOp> *ops,
+                                  Callback callback) = 0;
 };
 
 #endif

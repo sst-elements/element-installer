@@ -20,32 +20,34 @@
 #include "emberShmemEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberPutvShmemEvent : public EmberShmemEvent {
+        class EmberPutvShmemEvent : public EmberShmemEvent {
 
-public:
-	EmberPutvShmemEvent( Shmem::Interface& api, Output* output,
-            Hermes::Vaddr dest, Hermes::Value value, int pe, 
-            EmberEventTimeStatistic* stat = NULL ) :
-            EmberShmemEvent( api, output, stat ), 
-            m_dest(dest), m_value(value), m_pe(pe) {}
-	~EmberPutvShmemEvent() {}
+        public:
+            EmberPutvShmemEvent(Shmem::Interface &api, Output *output,
+                                Hermes::Vaddr dest, Hermes::Value value, int pe,
+                                EmberEventTimeStatistic *stat = nullptr) :
+                EmberShmemEvent(api, output, stat),
+                m_dest(dest), m_value(value), m_pe(pe) {}
 
-    std::string getName() { return "PutV"; }
+            ~EmberPutvShmemEvent() {}
 
-    void issue( uint64_t time, Callback callback ) {
+            std::string getName() { return "PutV"; }
 
-        EmberEvent::issue( time );
-        m_api.putv( m_dest, m_value, m_pe, callback );
+            void issue(uint64_t time, Callback callback) {
+
+                EmberEvent::issue(time);
+                m_api.putv(m_dest, m_value, m_pe, callback);
+            }
+
+        private:
+            Hermes::Vaddr m_dest;
+            Value m_value;
+            int m_pe;
+        };
+
     }
-private:
-    Hermes::Vaddr m_dest;
-    Value m_value;
-    int m_pe;
-};
-
-}
 }
 
 #endif

@@ -17,22 +17,21 @@
 #define _SIMPLEMESSAGE_H
 
 namespace SST {
-namespace SimpleMessageGeneratorComponent {
+    namespace SimpleMessageGeneratorComponent {
 
-class simpleMessage : public SST::Event 
-{
-public:
-    simpleMessage() : SST::Event() { }
+        class simpleMessage : public SST::Event {
+        public:
+            simpleMessage() : SST::Event() {}
 
-public:	
-    void serialize_order(SST::Core::Serialization::serializer &ser)  override {
-        Event::serialize_order(ser);
-    }
-    
-    ImplementSerializable(SST::SimpleMessageGeneratorComponent::simpleMessage);     
-};
+        public:
+            void serialize_order(SST::Core::Serialization::serializer &ser) override {
+                Event::serialize_order(ser);
+            }
 
-} // namespace SimpleMessageGeneratorComponent
+            ImplementSerializable(SST::SimpleMessageGeneratorComponent::simpleMessage);
+        };
+
+    } // namespace SimpleMessageGeneratorComponent
 } // namespace SST
 
 #endif /* _SIMPLEMESSAGE_H */

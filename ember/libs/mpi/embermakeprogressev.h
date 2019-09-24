@@ -20,26 +20,27 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberMakeProgressEvent : public EmberMPIEvent {
+        class EmberMakeProgressEvent : public EmberMPIEvent {
 
-public:
-	EmberMakeProgressEvent( MP::Interface& api, Output* output,
-                    EmberEventTimeStatistic* stat ) :
-            EmberMPIEvent( api, output, stat ){}
-	~EmberMakeProgressEvent() {}
+        public:
+            EmberMakeProgressEvent(MP::Interface &api, Output *output,
+                                   EmberEventTimeStatistic *stat) :
+                EmberMPIEvent(api, output, stat) {}
 
-    std::string getName() { return "Probe"; }
+            ~EmberMakeProgressEvent() {}
 
-    void issue( uint64_t time, FOO* functor ) {
+            std::string getName() { return "Probe"; }
 
-        EmberEvent::issue( time );
-        m_api.makeProgress( functor );
+            void issue(uint64_t time, FOO *functor) {
+
+                EmberEvent::issue(time);
+                m_api.makeProgress(functor);
+            }
+        };
+
     }
-};
-
-}
 }
 
 #endif

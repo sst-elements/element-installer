@@ -20,54 +20,57 @@
 using namespace std;
 using namespace SST::Zodiac;
 
-int handleDUMPISend(const dumpi_send *prm, uint16_t thread, const dumpi_time *cpu, const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg) {
+int handleDUMPISend(const dumpi_send *prm, uint16_t thread, const dumpi_time *cpu,
+                    const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg) {
 
 }
 
-int handleDUMPINullFunction(const void *prm, uint16_t thread, const dumpi_time *cpu, const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg) {
-	// Don't do anything
+int handleDUMPINullFunction(const void *prm, uint16_t thread, const dumpi_time *cpu,
+                            const dumpi_time *wall, const dumpi_perfinfo *perf, void *userarg) {
+    // Don't do anything
 }
 
-int handleDUMPIInit(const void* prm, uint16_t thread, const dumpi_time* cpu, const dumpi_time *wall,
-                            const dumpi_perfinfo* perf, void* userarg) {
-	std::cout << "Called: DUMPI Init" << std::endl;
+int handleDUMPIInit(const void *prm, uint16_t thread, const dumpi_time *cpu, const dumpi_time *wall,
+                    const dumpi_perfinfo *perf, void *userarg) {
+    std::cout << "Called: DUMPI Init" << std::endl;
 }
 
-DUMPIReader::DUMPIReader(string file, uint32_t focusOnRank, uint32_t maxQLen, std::queue<ZodiacEvent*>* evQ) {
-	rank = focusOnRank;
-	eventQ = evQ;
-	qLimit = maxQLen;
-	foundFinalize = false;
+DUMPIReader::DUMPIReader(string file, uint32_t focusOnRank, uint32_t maxQLen,
+                         std::queue<ZodiacEvent *> *evQ) {
+    rank = focusOnRank;
+    eventQ = evQ;
+    qLimit = maxQLen;
+    foundFinalize = false;
 
-	trace = undumpi_open(file.c_str());
-	if(NULL == trace) {
-		std::cerr << "Error: unable to open DUMPI trace: " << file << std::endl;
-		exit(-1);
-	}
+    trace = undumpi_open(file.c_str());
+    if (nullptr == trace) {
+        std::cerr << "Error: unable to open DUMPI trace: " << file << std::endl;
+        exit(-1);
+    }
 
-	dumpi_header* trace_header = undumpi_read_header(trace);
-	dumpi_free_header(trace_header);
+    dumpi_header *trace_header = undumpi_read_header(trace);
+    dumpi_free_header(trace_header);
 
-	/*
-	callbacks = (libundumpi_callbacks*) malloc(sizeof(libundumpi_callbacks));
-	libundumpi_clear_callbacks(callbacks);
-	callbacks->on_send = (dumpi_send_call) handleDUMPISend;
-	*/
+    /*
+    callbacks = (libundumpi_callbacks*) malloc(sizeof(libundumpi_callbacks));
+    libundumpi_clear_callbacks(callbacks);
+    callbacks->on_send = (dumpi_send_call) handleDUMPISend;
+    */
 
-	callbacks = new libundumpi_callbacks;
-	libundumpi_clear_callbacks(callbacks);
+    callbacks = new libundumpi_callbacks;
+    libundumpi_clear_callbacks(callbacks);
 
-	callbacks->on_init = (dumpi_init_call) handleDUMPIInit;
-	callbacks->on_send = handleDUMPISend;
+    callbacks->on_init = (dumpi_init_call) handleDUMPIInit;
+    callbacks->on_send = handleDUMPISend;
 
 }
 
 void DUMPIReader::close() {
-	undumpi_close(trace);
+    undumpi_close(trace);
 }
 
 uint32_t DUMPIReader::generateNextEvents() {
-	int finalized_reached = 0;
+    int finalized_reached = 0;
 
 /*	while((finalized_reached == 0) && (eventQ->size() < qLimit)) {
 		int active = undumpi_read_single_call(
@@ -82,20 +85,20 @@ uint32_t DUMPIReader::generateNextEvents() {
 			break;
 		}
 	}*/
-	undumpi_read_stream(trace, callbacks, this);
+    undumpi_read_stream(trace, callbacks, this);
 
-	return (uint32_t) eventQ->size();
+    return (uint32_t) eventQ->size();
 }
 
 uint32_t DUMPIReader::getQueueLimit() {
-	return qLimit;
+    return qLimit;
 }
 
 uint32_t DUMPIReader::getCurrentQueueSize() {
-	return eventQ->size();
+    return eventQ->size();
 }
 
-void DUMPIReader::enqueueEvent(ZodiacEvent* ev) {
-	assert(eventQ->size() < qLimit);
-	eventQ->push(ev);
+void DUMPIReader::enqueueEvent(ZodiacEvent *ev) {
+    assert(eventQ->size() < qLimit);
+    eventQ->push(ev);
 }

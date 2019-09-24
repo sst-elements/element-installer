@@ -12,55 +12,65 @@
 // This file is part of the SST software package. For license
 // information, see the LICENSE file in the top level directory of the
 // distribution.
- 
+
 #if 0
 
-     struct Entry {
-        enum Op { Load, Store };
-        Entry( Op op, Callback callback, Hermes::Vaddr addr, size_t length) : op(op), callback(callback), addr(addr), length(length) {}
-        Op  op;
-        Callback callback;
-        Hermes::Vaddr addr;
-        size_t  length;
-    };  
+struct Entry {
+   enum Op { Load, Store };
+   Entry( Op op, Callback callback, Hermes::Vaddr addr, size_t length) : op(op), callback(callback), addr(addr), length(length) {}
+   Op  op;
+   Callback callback;
+   Hermes::Vaddr addr;
+   size_t  length;
+};
 #endif
 
-	class UnitBase {
-	  public:
+class UnitBase {
+public:
 
-		UnitBase() : m_pendingWrite(0) {}
-		virtual void resume( UnitBase* src = NULL ) { assert(0); }
-		virtual std::string& name() { assert(0); }
-		virtual ~UnitBase() {}
-		void incPendingWrites() {
-			++m_pendingWrite;
-		}
-		void decPendingWrites() {
-			assert( m_pendingWrite>0);
-			--m_pendingWrite;
-		}
-		int numPendingWrites() {
-			return m_pendingWrite;
-		} 
-        virtual void printStatus( Output&, int ) {assert(0);}
-		virtual void init(unsigned int phase) { assert(0);}
+    UnitBase() : m_pendingWrite(0) {}
 
-	  private:
-		int m_pendingWrite;
-	};
+    virtual void resume(UnitBase *src = nullptr) { assert(0); }
 
-    class Unit : public UnitBase {
-      public:
-        Unit( SimpleMemoryModel& model, Output& dbg ) : m_model( model ), m_dbg(dbg) {}
+    virtual std::string &name() { assert(0); }
 
-        virtual bool load( UnitBase* src, MemReq*, Callback* callback ) { assert(0); }
-        virtual bool store( UnitBase* src, MemReq* ) { assert(0); }
-        virtual bool storeCB( UnitBase* src, MemReq*, Callback* callback = NULL ) { assert(0); }
+    virtual ~UnitBase() {}
 
-      protected:
-        const char* prefix() { return m_prefix.c_str(); }
+    void incPendingWrites() {
+        ++m_pendingWrite;
+    }
 
-        Output& m_dbg;
-        SimpleMemoryModel& m_model;
-        std::string m_prefix;
-    };
+    void decPendingWrites() {
+        assert(m_pendingWrite > 0);
+        --m_pendingWrite;
+    }
+
+    int numPendingWrites() {
+        return m_pendingWrite;
+    }
+
+    virtual void printStatus(Output &, int) { assert(0); }
+
+    virtual void init(unsigned int phase) { assert(0); }
+
+private:
+    int m_pendingWrite;
+};
+
+class Unit : public UnitBase {
+public:
+    Unit(SimpleMemoryModel &model, Output &dbg) : m_model(model), m_dbg(dbg) {}
+
+    virtual bool load(UnitBase *src, MemReq *, Callback *callback) { assert(0); }
+
+    virtual bool store(UnitBase *src, MemReq *) { assert(0); }
+
+    virtual bool storeCB(UnitBase *src, MemReq *, Callback *callback = nullptr) { assert(0); }
+
+protected:
+    const char *prefix() { return m_prefix.c_str(); }
+
+    Output &m_dbg;
+    SimpleMemoryModel &m_model;
+    std::string m_prefix;
+};

@@ -23,113 +23,126 @@
 #include <queue>
 
 namespace SST {
-namespace Miranda {
+    namespace Miranda {
 
-class InOrderSTREAMBenchGenerator : public RequestGenerator {
+        class InOrderSTREAMBenchGenerator : public RequestGenerator {
 
-public:
-	InOrderSTREAMBenchGenerator( Component* owner, Params& params ) : RequestGenerator(owner, params) { build(params); }
-        InOrderSTREAMBenchGenerator( ComponentId_t id, Params& params ) : RequestGenerator(id, params) { build(params); }
+        public:
+            InOrderSTREAMBenchGenerator(Component *owner, Params &params) : RequestGenerator(owner,
+                                                                                             params) {
+                build(params);
+            }
 
-	void build(Params& params) {
+            InOrderSTREAMBenchGenerator(ComponentId_t id, Params &params) : RequestGenerator(id,
+                                                                                             params) {
+                build(params);
+            }
 
-	    const uint32_t verbose = params.find<uint32_t>("verbose", 0);
-	    out = new Output("InOrderSTREAMBench[@p:@l]: ", verbose, 0,
-		    Output::STDOUT);
+            void build(Params &params) {
 
-	    n = params.find<uint64_t>("n", 10000);
-	    requestLen = params.find<uint64_t>("operandwidth", 8);
+                const uint32_t verbose = params.find<uint32_t>("verbose", 0);
+                out = new Output("InOrderSTREAMBench[@p:@l]: ", verbose, 0,
+                                 Output::STDOUT);
 
-	    start_a = params.find<uint64_t>("start_a", 0);
-	    start_b = params.find<uint64_t>("start_b", start_a + (n * requestLen));
-	    start_c = params.find<uint64_t>("start_c", start_b + (n * requestLen));
+                n = params.find<uint64_t>("n", 10000);
+                requestLen = params.find<uint64_t>("operandwidth", 8);
 
-	    block_per_call = params.find<uint64_t>("block_per_call", 1);
+                start_a = params.find<uint64_t>("start_a", 0);
+                start_b = params.find<uint64_t>("start_b", start_a + (n * requestLen));
+                start_c = params.find<uint64_t>("start_c", start_b + (n * requestLen));
 
-	    i = 0;
-	}
+                block_per_call = params.find<uint64_t>("block_per_call", 1);
 
-	~InOrderSTREAMBenchGenerator() {
-		delete out;
-	}
+                i = 0;
+            }
 
-	void generate(MirandaRequestQueue<GeneratorRequest*>* q) {
-		if(i == n) {
-			return;
-		}
+            ~InOrderSTREAMBenchGenerator() {
+                delete out;
+            }
 
-		MemoryOpRequest** b_reads  = (MemoryOpRequest**) malloc(sizeof(MemoryOpRequest*) * block_per_call);
-		MemoryOpRequest** c_reads  = (MemoryOpRequest**) malloc(sizeof(MemoryOpRequest*) * block_per_call);
-		MemoryOpRequest** a_writes = (MemoryOpRequest**) malloc(sizeof(MemoryOpRequest*) * block_per_call);
+            void generate(MirandaRequestQueue<GeneratorRequest *> *q) {
+                if (i == n) {
+                    return;
+                }
 
-		for(uint32_t j = 0; j < block_per_call; j++) {
-			b_reads[j]  = new MemoryOpRequest(start_b + ((i + j) * requestLen), requestLen, READ);
-			c_reads[j]  = new MemoryOpRequest(start_c + ((i + j) * requestLen), requestLen, READ);
-			a_writes[j] = new MemoryOpRequest(start_a + ((i + j) * requestLen), requestLen, WRITE);
+                MemoryOpRequest **b_reads = (MemoryOpRequest **) malloc(
+                    sizeof(MemoryOpRequest *) * block_per_call);
+                MemoryOpRequest **c_reads = (MemoryOpRequest **) malloc(
+                    sizeof(MemoryOpRequest *) * block_per_call);
+                MemoryOpRequest **a_writes = (MemoryOpRequest **) malloc(
+                    sizeof(MemoryOpRequest *) * block_per_call);
 
-			a_writes[j]->addDependency(b_reads[j]->getRequestID());
-			a_writes[j]->addDependency(c_reads[j]->getRequestID());
-		}
+                for (uint32_t j = 0; j < block_per_call; j++) {
+                    b_reads[j] = new MemoryOpRequest(start_b + ((i + j) * requestLen), requestLen,
+                                                     READ);
+                    c_reads[j] = new MemoryOpRequest(start_c + ((i + j) * requestLen), requestLen,
+                                                     READ);
+                    a_writes[j] = new MemoryOpRequest(start_a + ((i + j) * requestLen), requestLen,
+                                                      WRITE);
 
-		// Issue all the reads
-		for(uint32_t j = 0; j < block_per_call; j++) {
-			q->push_back(b_reads[j]);
-			q->push_back(c_reads[j]);
-		}
+                    a_writes[j]->addDependency(b_reads[j]->getRequestID());
+                    a_writes[j]->addDependency(c_reads[j]->getRequestID());
+                }
 
-		// Then issue all the writes
-		for(uint32_t j = 0; j < block_per_call; j++) {
-			q->push_back(a_writes[j]);
-		}
+                // Issue all the reads
+                for (uint32_t j = 0; j < block_per_call; j++) {
+                    q->push_back(b_reads[j]);
+                    q->push_back(c_reads[j]);
+                }
 
-		free(b_reads);
-		free(c_reads);
-		free(a_writes);
+                // Then issue all the writes
+                for (uint32_t j = 0; j < block_per_call; j++) {
+                    q->push_back(a_writes[j]);
+                }
 
-		i += block_per_call;
-	}
+                free(b_reads);
+                free(c_reads);
+                free(a_writes);
 
-	bool isFinished() {
-		return i == n;
-	}
+                i += block_per_call;
+            }
 
-	void completed() {}
+            bool isFinished() {
+                return i == n;
+            }
 
-       	SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
-               	InOrderSTREAMBenchGenerator,
-                "miranda",
-                "InOrderSTREAMBenchGenerator",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-		"Creates a representation of the STREAM benchmark for in-order CPUs",
-                SST::Miranda::RequestGenerator
-        )
+            void completed() {}
 
-	SST_ELI_DOCUMENT_PARAMS(
-		{ "verbose",          "Sets the verbosity output of the generator", "0" },
-    		{ "n",                "Sets the number of elements in the STREAM arrays", "10000" },
-    		{ "block_per_call",   "Sets the number of iterations to generate per call to the generation function", "1"},
-    		{ "operandwidth",     "Sets the length of the request, default=8 (i.e. one double)", "8" },
-    		{ "start_a",          "Sets the start address of the array a", "0" },
-    		{ "start_b",          "Sets the start address of the array b", "1024" },
-    		{ "start_c",          "Sets the start address of the array c", "2048" },
-        )
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
+                InOrderSTREAMBenchGenerator,
+            "miranda",
+            "InOrderSTREAMBenchGenerator",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Creates a representation of the STREAM benchmark for in-order CPUs",
+            SST::Miranda::RequestGenerator
+            )
 
-private:
-	uint64_t requestLen;
+            SST_ELI_DOCUMENT_PARAMS(
+            { "verbose", "Sets the verbosity output of the generator", "0" },
+            { "n", "Sets the number of elements in the STREAM arrays", "10000" },
+            { "block_per_call", "Sets the number of iterations to generate per call to the generation function", "1" },
+            { "operandwidth", "Sets the length of the request, default=8 (i.e. one double)", "8" },
+            { "start_a", "Sets the start address of the array a", "0" },
+            { "start_b", "Sets the start address of the array b", "1024" },
+            { "start_c", "Sets the start address of the array c", "2048" },
+            )
 
-	uint64_t start_a;
-	uint64_t start_b;
-	uint64_t start_c;
+        private:
+            uint64_t requestLen;
 
-	uint64_t n;
-	uint64_t block_per_call;
-	uint64_t i;
+            uint64_t start_a;
+            uint64_t start_b;
+            uint64_t start_c;
 
-	Output*  out;
+            uint64_t n;
+            uint64_t block_per_call;
+            uint64_t i;
 
-};
+            Output *out;
 
-}
+        };
+
+    }
 }
 
 #endif

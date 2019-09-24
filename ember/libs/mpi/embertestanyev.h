@@ -20,44 +20,43 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberTestanyEvent : public EmberMPIEvent {
+        class EmberTestanyEvent : public EmberMPIEvent {
 
-public:
-	EmberTestanyEvent( MP::Interface& api, Output* output,
-                   EmberEventTimeStatistic* stat,
-       		int count, MessageRequest* req, int* indx, int* flag,
-			MessageResponse* resp = NULL ) :
+        public:
+            EmberTestanyEvent(MP::Interface &api, Output *output,
+                              EmberEventTimeStatistic *stat,
+                              int count, MessageRequest *req, int *indx, int *flag,
+                              MessageResponse *resp = nullptr) :
 
-       	EmberMPIEvent( api, output, stat ),
-		m_cnt(count),
-       	m_req( req ),
-		m_indx(indx),
-		m_flag( flag ),
-		m_respPtr( resp )
-    { }
+                EmberMPIEvent(api, output, stat),
+                m_cnt(count),
+                m_req(req),
+                m_indx(indx),
+                m_flag(flag),
+                m_respPtr(resp) {}
 
-	~EmberTestanyEvent() {}
+            ~EmberTestanyEvent() {}
 
-    std::string getName() { return "Testany"; }
+            std::string getName() { return "Testany"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-       	m_api.testany( m_cnt, m_req, m_indx, m_flag, m_respPtr, functor );
+                m_api.testany(m_cnt, m_req, m_indx, m_flag, m_respPtr, functor);
+            }
+
+        private:
+            MessageRequest *m_req;
+            MessageResponse *m_respPtr;
+            int m_cnt;
+            int *m_indx;
+            int *m_flag;
+        };
+
     }
-
-private:
-    MessageRequest* 	m_req;
-	MessageResponse*	m_respPtr;	
-	int 				m_cnt;
-	int*				m_indx;
-	int*				m_flag;
-};
-
-}
 }
 
 #endif

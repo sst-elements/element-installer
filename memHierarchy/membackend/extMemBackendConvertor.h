@@ -20,30 +20,33 @@
 #include "memBackendConvertor.h"
 
 namespace SST {
-namespace MemHierarchy {
+    namespace MemHierarchy {
 
-class ExtMemBackendConvertor : public MemBackendConvertor {
-public:
+        class ExtMemBackendConvertor : public MemBackendConvertor {
+        public:
 /* Element Library Info */
-    SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(ExtMemBackendConvertor, "memHierarchy", "extMemBackendConvertor", SST_ELI_ELEMENT_VERSION(1,0,0),
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(ExtMemBackendConvertor,
+            "memHierarchy", "extMemBackendConvertor", SST_ELI_ELEMENT_VERSION(1,0,0),
             "Converts MemEventBase* for an ExtMemBackend - passes additional opcode information", SST::MemHierarchy::MemBackendConvertor)
-    
-    SST_ELI_DOCUMENT_PARAMS( MEMBACKENDCONVERTOR_ELI_PARAMS )
 
-    SST_ELI_DOCUMENT_STATISTICS( MEMBACKENDCONVERTOR_ELI_STATS )
-    
-    SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( MEMBACKENDCONVERTOR_ELI_SLOTS )
+            SST_ELI_DOCUMENT_PARAMS( MEMBACKENDCONVERTOR_ELI_PARAMS )
+
+            SST_ELI_DOCUMENT_STATISTICS( MEMBACKENDCONVERTOR_ELI_STATS )
+
+            SST_ELI_DOCUMENT_SUBCOMPONENT_SLOTS( MEMBACKENDCONVERTOR_ELI_SLOTS )
 
 /* Class definition */
-    ExtMemBackendConvertor(Component *comp, Params &params);
-    ExtMemBackendConvertor(ComponentId_t id, Params &params);
+            ExtMemBackendConvertor(Component *comp, Params &params);
 
-    virtual bool issue( BaseReq* req );
-    virtual void handleMemResponse( ReqId reqId, uint32_t flags  ) {
-        doResponse( reqId, flags );
+            ExtMemBackendConvertor(ComponentId_t id, Params &params);
+
+            virtual bool issue(BaseReq *req);
+
+            virtual void handleMemResponse(ReqId reqId, uint32_t flags) {
+                doResponse(reqId, flags);
+            }
+        };
+
     }
-};
-
-}
 }
 #endif

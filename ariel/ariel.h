@@ -39,37 +39,39 @@
 using namespace std;
 
 namespace SST {
-namespace ArielComponent {
+    namespace ArielComponent {
 
-class Ariel : public SST::Component {
-    public:
-        Ariel(SST::ComponentId_t id, SST::Params& params);
+        class Ariel : public SST::Component {
+        public:
+            Ariel(SST::ComponentId_t id, SST::Params &params);
 
-        void setup()  { }
-        void finish();
+            void setup() {}
 
-        void handleEvent(SST::Event* event);
-        
-    private:
-        Ariel();  // for serialization only
-        Ariel(const Ariel&); // do not implement
-        void operator=(const Ariel&); // do not implement
+            void finish();
 
-        virtual bool tick( SST::Cycle_t );
-        int create_pinchild(char* prog_binary, char** arg_list);
+            void handleEvent(SST::Event *event);
 
-        uint64_t max_inst;
-        char* named_pipe;
-        int* pipe_id;
-        std::string user_binary;
-        Output* output;
+        private:
+            Ariel();  // for serialization only
+            Ariel(const Ariel &); // do not implement
+            void operator=(const Ariel &); // do not implement
 
-        ArielCore** cores;
-        uint32_t core_count;
-        SST::Link** cache_link;
+            virtual bool tick(SST::Cycle_t);
 
-};
+            int create_pinchild(char *prog_binary, char **arg_list);
 
-}
+            uint64_t max_inst;
+            char *named_pipe;
+            int *pipe_id;
+            std::string user_binary;
+            Output *output;
+
+            ArielCore **cores;
+            uint32_t core_count;
+            SST::Link **cache_link;
+
+        };
+
+    }
 }
 #endif /* _ariel_H */

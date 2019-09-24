@@ -20,44 +20,43 @@
 #include "emberevent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberMemAllocEvent : public EmberEvent {
+        class EmberMemAllocEvent : public EmberEvent {
 
-public:
-	EmberMemAllocEvent( Thornhill::MemoryHeapLink& api, 
-			Output* output, Hermes::MemAddr* addr, size_t length) : 
-			EmberEvent(output), m_api(api), m_addr(addr), m_length(length)
-    {
-		m_state = IssueFunctor;
-	}  
+        public:
+            EmberMemAllocEvent(Thornhill::MemoryHeapLink &api,
+                               Output *output, Hermes::MemAddr *addr, size_t length) :
+                EmberEvent(output), m_api(api), m_addr(addr), m_length(length) {
+                m_state = IssueFunctor;
+            }
 
-	~EmberMemAllocEvent() {}
+            ~EmberMemAllocEvent() {}
 
-    std::string getName() { return "MemAlloc"; }
+            std::string getName() { return "MemAlloc"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        m_output->debug(CALL_INFO, 2, 0, "length=%zu\n", m_length );
-        EmberEvent::issue( time );
-    
-        std::function<void(uint64_t)> callback = [=](uint64_t value){
-			m_addr->setSimVAddr( value );
-            (*functor)(0);
-            return 0;
+                m_output->debug(CALL_INFO, 2, 0, "length=%zu\n", m_length);
+                EmberEvent::issue(time);
+
+                std::function<void(uint64_t)> callback = [=](uint64_t value) {
+                    m_addr->setSimVAddr(value);
+                    (*functor)(0);
+                    return 0;
+                };
+
+                m_api.alloc(m_length, callback);
+            }
+
+        protected:
+            Thornhill::MemoryHeapLink &m_api;
+            Hermes::MemAddr *m_addr;
+            size_t m_length;
+
         };
 
-		m_api.alloc( m_length, callback );
     }
-
-protected:
-    Thornhill::MemoryHeapLink&  m_api; 
-    Hermes::MemAddr* 	m_addr;
-	size_t  			m_length;
-
-};
-
-}
 }
 
 #endif

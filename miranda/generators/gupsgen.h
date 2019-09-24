@@ -26,55 +26,61 @@
 using namespace SST::RNG;
 
 namespace SST {
-namespace Miranda {
+    namespace Miranda {
 
-class GUPSGenerator : public RequestGenerator {
+        class GUPSGenerator : public RequestGenerator {
 
-public:
-	GUPSGenerator( ComponentId_t id, Params& params );
-	GUPSGenerator( Component* owner, Params& params );
-        void build(Params &params);
-	~GUPSGenerator();
-	void generate(MirandaRequestQueue<GeneratorRequest*>* q);
-	bool isFinished();
-	void completed();
+        public:
+            GUPSGenerator(ComponentId_t id, Params &params);
 
-	SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
-               	GUPSGenerator,
-               	"miranda",
-                "GUPSGenerator",
-               	SST_ELI_ELEMENT_VERSION(1,0,0),
-		"Creates a random stream of accesses to read-modify-write",
-                SST::Miranda::RequestGenerator
-       	)
+            GUPSGenerator(Component *owner, Params &params);
 
-        SST_ELI_DOCUMENT_PARAMS(
-		{ "verbose",          "Sets the verbosity output of the generator", "0" },
-   	 	{ "seed_a",           "Sets the seed-a for the random generator", "11" },
-    		{ "seed_b",           "Sets the seed-b for the random generator", "31" },
-    		{ "count",            "Count for number of items being requested", "1024" },
-    		{ "length",           "Length of requests", "8" },
-    		{ "iterations",       "Number of iterations to perform", "1" },
-    		{ "max_address",      "Maximum address allowed for generation", "536870912" /* 512MB */ },
-	    	{ "issue_op_fences",  "Issue operation fences, \"yes\" or \"no\", default is yes", "yes" }
-        )
+            void build(Params &params);
 
-private:
-	uint64_t reqLength;
+            ~GUPSGenerator();
 
-	uint64_t memLength;
-	uint64_t memStart;
-	uint64_t issueCount;
-	uint64_t iterations;
-	uint64_t seed_a;
-	uint64_t seed_b;
-	SSTRandom* rng;
-	Output*  out;
-	bool issueOpFences;
+            void generate(MirandaRequestQueue<GeneratorRequest *> *q);
 
-};
+            bool isFinished();
 
-}
+            void completed();
+
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
+                GUPSGenerator,
+            "miranda",
+            "GUPSGenerator",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Creates a random stream of accesses to read-modify-write",
+            SST::Miranda::RequestGenerator
+            )
+
+            SST_ELI_DOCUMENT_PARAMS(
+            { "verbose", "Sets the verbosity output of the generator", "0" },
+            { "seed_a", "Sets the seed-a for the random generator", "11" },
+            { "seed_b", "Sets the seed-b for the random generator", "31" },
+            { "count", "Count for number of items being requested", "1024" },
+            { "length", "Length of requests", "8" },
+            { "iterations", "Number of iterations to perform", "1" },
+            { "max_address", "Maximum address allowed for generation", "536870912" /* 512MB */ },
+            { "issue_op_fences", "Issue operation fences, \"yes\" or \"no\", default is yes", "yes" }
+            )
+
+        private:
+            uint64_t reqLength;
+
+            uint64_t memLength;
+            uint64_t memStart;
+            uint64_t issueCount;
+            uint64_t iterations;
+            uint64_t seed_a;
+            uint64_t seed_b;
+            SSTRandom *rng;
+            Output *out;
+            bool issueOpFences;
+
+        };
+
+    }
 }
 
 #endif

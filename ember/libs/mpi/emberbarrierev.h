@@ -20,31 +20,31 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberBarrierEvent : public EmberMPIEvent {
-  public:
-    EmberBarrierEvent( MP::Interface& api, Output* output,
-                      EmberEventTimeStatistic* stat,
-                                                    Communicator comm ) :
-        EmberMPIEvent( api, output, stat ), m_comm(comm) {}
+        class EmberBarrierEvent : public EmberMPIEvent {
+        public:
+            EmberBarrierEvent(MP::Interface &api, Output *output,
+                              EmberEventTimeStatistic *stat,
+                              Communicator comm) :
+                EmberMPIEvent(api, output, stat), m_comm(comm) {}
 
-    ~EmberBarrierEvent() {}
+            ~EmberBarrierEvent() {}
 
-    std::string getName() { return "Barrier"; }
+            std::string getName() { return "Barrier"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.barrier( m_comm, functor );
+                m_api.barrier(m_comm, functor);
+            }
+
+        private:
+            Communicator m_comm;
+        };
+
     }
-
-  private:
-    Communicator m_comm;
-};
-
-}
 }
 
 #endif

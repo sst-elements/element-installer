@@ -19,28 +19,31 @@
 #include <sst/core/subcomponent.h>
 
 namespace SST {
-namespace Thornhill {
+    namespace Thornhill {
 
-class DetailedCompute : public SubComponent {
+        class DetailedCompute : public SubComponent {
 
-  public:
+        public:
 
-	struct Generator {
-		std::string name;
-		SST::Params params;
-	};
+            struct Generator {
+                std::string name;
+                SST::Params params;
+            };
 
-    DetailedCompute( SST::Component* owner ) : SubComponent( owner ) {}
+            DetailedCompute(SST::Component *owner) : SubComponent(owner) {}
 
-    virtual ~DetailedCompute(){};
-    virtual void start( const std::deque< 
-								std::pair< std::string, SST::Params > >&,
-                 std::function<int()> retFunc, std::function<int()> finiFunc) = 0;
-    virtual bool isConnected() = 0;
-	virtual std::string getModelName() = 0;
-};
+            virtual ~DetailedCompute() {};
 
-}
+            virtual void start(const std::deque <
+            std::pair<std::string, SST::Params>> &,
+                               std::function<int()> retFunc, std::function<int()> finiFunc) = 0;
+
+            virtual bool isConnected() = 0;
+
+            virtual std::string getModelName() = 0;
+        };
+
+    }
 }
 
 #endif

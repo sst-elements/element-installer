@@ -23,30 +23,34 @@ using namespace SST::Hermes;
 using namespace SST::Hermes::MP;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacAllreduceEvent : public ZodiacCollectiveEvent {
+        class ZodiacAllreduceEvent : public ZodiacCollectiveEvent {
 
-	public:
-		ZodiacAllreduceEvent(uint32_t length,
-			PayloadDataType dataType,
-			ReductionOperation op, Communicator group);
-		ZodiacEventType getEventType();
+        public:
+            ZodiacAllreduceEvent(uint32_t length,
+                                 PayloadDataType dataType,
+                                 ReductionOperation op, Communicator group);
 
-		uint32_t getLength();
-		PayloadDataType getDataType();
-		Communicator getCommunicatorGroup();
-		ReductionOperation getOp();
+            ZodiacEventType getEventType();
 
-	private:
-		uint32_t msgLength;
-		PayloadDataType msgType;
-		Communicator msgComm;
-		ReductionOperation mpiOp;
+            uint32_t getLength();
 
-};
+            PayloadDataType getDataType();
 
-}
+            Communicator getCommunicatorGroup();
+
+            ReductionOperation getOp();
+
+        private:
+            uint32_t msgLength;
+            PayloadDataType msgType;
+            Communicator msgComm;
+            ReductionOperation mpiOp;
+
+        };
+
+    }
 }
 
 #endif

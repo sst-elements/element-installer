@@ -26,48 +26,56 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Job;
+
         class Machine;
+
         class TaskMapInfo;
 
         // This class is an interface for the classes that
         // allocate a given job and map its tasks simultaneously
 
         class AllocMapper : public Allocator, public TaskMapper {
-            public:
-                AllocMapper(const Machine & mach, bool inAlloacateAndMap) : Allocator(mach), TaskMapper(mach){ allocateAndMap = inAlloacateAndMap; }
-                ~AllocMapper()
-                {
-                    if(!mappings.empty()){
-                        for(std::map<long int, std::vector<int>*>::const_iterator it = mappings.begin(); it != mappings.end(); it++){
-                            delete it->second;
-                        }
+        public:
+            AllocMapper(const Machine &mach, bool inAlloacateAndMap) : Allocator(mach), TaskMapper(
+                mach) { allocateAndMap = inAlloacateAndMap; }
+
+            ~AllocMapper() {
+                if (!mappings.empty()) {
+                    for (std::map < long int, std::vector < int > * >
+                                              ::const_iterator it = mappings.begin(); it !=
+                                                                                      mappings.end();
+                    it++){
+                        delete it->second;
                     }
                 }
+            }
 
-                virtual std::string getSetupInfo(bool comment) const = 0;
+            virtual std::string getSetupInfo(bool comment) const = 0;
 
-                //returns information on the allocation or NULL if it wasn't possible
-                //(doesn't make allocation; merely returns info on possible allocation)
-                //implementations should store the task mapping information by calling addMapping()
-                AllocInfo* allocate(Job* job);
+            //returns information on the allocation or nullptr if it wasn't possible
+            //(doesn't make allocation; merely returns info on possible allocation)
+            //implementations should store the task mapping information by calling addMapping()
+            AllocInfo *allocate(Job *job);
 
-                //returns task mapping info of a single job; does not map the tasks
-                //deletes the job mapping info after calling the function
-                TaskMapInfo* mapTasks(AllocInfo* allocInfo);
+            //returns task mapping info of a single job; does not map the tasks
+            //deletes the job mapping info after calling the function
+            TaskMapInfo *mapTasks(AllocInfo *allocInfo);
 
-            private:
-                bool allocateAndMap;
-                static std::map<long int, std::vector<int>*> mappings; //keeps the task mapping after allocation
+        private:
+            bool allocateAndMap;
+            static std::map<long int, std::vector < int>*>
+            mappings; //keeps the task mapping after allocation
 
-            protected:
-                std::vector<bool>* isFree;      //keeps a temporary copy of node list
-                //fills the two given vectors
-                //@usedNodes - allocated node IDs
-                //@taskToNode - tasks to machine node mapping
-                virtual void allocMap(const AllocInfo & ai,
-                                      std::vector<long int> & usedNodes,
-                                      std::vector<int> & taskToNode) = 0;
+        protected:
+            std::vector<bool> *isFree;      //keeps a temporary copy of node list
+            //fills the two given vectors
+            //@usedNodes - allocated node IDs
+            //@taskToNode - tasks to machine node mapping
+            virtual void allocMap(const AllocInfo &ai,
+                                  std::vector<long int> &usedNodes,
+                                  std::vector<int> &taskToNode) = 0;
         };
     }
 }

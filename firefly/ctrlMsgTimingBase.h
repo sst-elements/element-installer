@@ -17,25 +17,31 @@
 #define COMPONENTS_FIREFLY_CTRL_MSG_TIMING_BASE_H
 
 namespace SST {
-namespace Firefly {
-namespace CtrlMsg {
+    namespace Firefly {
+        namespace CtrlMsg {
 
-class MsgTimingBase {
-  public:
+            class MsgTimingBase {
+            public:
 
-    virtual ~MsgTimingBase() {}
-    virtual uint64_t txDelay( size_t ) = 0;
-    virtual uint64_t rxDelay( size_t ) = 0;
+                virtual ~MsgTimingBase() {}
 
-    virtual uint64_t sendReqFiniDelay( size_t ) = 0;
-    virtual uint64_t recvReqFiniDelay( size_t ) = 0;
-    virtual uint64_t rxPostDelay_ns( size_t ) = 0;
-    virtual uint64_t sendAckDelay() = 0;
-    virtual uint64_t shortMsgLength() = 0;
-};
+                virtual uint64_t txDelay(size_t) = 0;
 
-}
-}
+                virtual uint64_t rxDelay(size_t) = 0;
+
+                virtual uint64_t sendReqFiniDelay(size_t) = 0;
+
+                virtual uint64_t recvReqFiniDelay(size_t) = 0;
+
+                virtual uint64_t rxPostDelay_ns(size_t) = 0;
+
+                virtual uint64_t sendAckDelay() = 0;
+
+                virtual uint64_t shortMsgLength() = 0;
+            };
+
+        }
+    }
 }
 
 #endif

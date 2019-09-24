@@ -13,36 +13,38 @@
 # information, see the LICENSE file in the top level directory of the
 # distribution.
 
-import componentConfig 
-import myprint
 import copy
 
+import componentConfig
+
+
 def getOptions():
-	return ['netPktSize=','nicVerboseLevel=','nicVerboseMask=']
+    return ['netPktSize=', 'nicVerboseLevel=', 'nicVerboseMask=']
+
 
 class NicConfig(componentConfig.ComponentConfig):
-	def __init__( self, params, opts, getNicParams = None ):
-		self.params = params 
-		self.getNicParams = getNicParams
-		for o,a in opts:
-			if o in ('--netPktSize'):
-				self.params['packetSize'] = a
-			elif o in ('--nicVerboseLevel'):
-				self.params['verboseLevel'] = int( a )
-			elif o in ('--nicVerboseMask'):
-				self.params['verboseMask'] = int( a )
+    def __init__(self, params, opts, getNicParams=None):
+        self.params = params
+        self.getNicParams = getNicParams
+        for o, a in opts:
+            if o in ('--netPktSize'):
+                self.params['packetSize'] = a
+            elif o in ('--nicVerboseLevel'):
+                self.params['verboseLevel'] = int(a)
+            elif o in ('--nicVerboseMask'):
+                self.params['verboseMask'] = int(a)
 
-		#myprint.printParams( 'NicConfig:', self.params )
+    # myprint.printParams( 'NicConfig:', self.params )
 
-	def getParams( self, nodeNum, ranksPerNode ):
-		extra = copy.deepcopy(self.params)
-		extra["nid"] =  nodeNum	
-		extra["num_vNics"] = ranksPerNode	
+    def getParams(self, nodeNum, ranksPerNode):
+        extra = copy.deepcopy(self.params)
+        extra["nid"] = nodeNum
+        extra["num_vNics"] = ranksPerNode
 
-		if self.getNicParams:
-			extra.update(self.getNicParams( nodeNum ) )
-	
-		return extra
+        if self.getNicParams:
+            extra.update(self.getNicParams(nodeNum))
 
-	def getName( self, nodeNum ): 
-		return "firefly.nic"
+        return extra
+
+    def getName(self, nodeNum):
+        return "firefly.nic"

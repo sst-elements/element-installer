@@ -19,37 +19,34 @@
 
 using namespace SST::Firefly;
 
-SendFuncSM::SendFuncSM( SST::Params& params ) :
+SendFuncSM::SendFuncSM(SST::Params &params) :
     FunctionSMInterface(params),
-    m_event( NULL )
-{ 
+    m_event(nullptr) {
 }
 
-void SendFuncSM::handleStartEvent( SST::Event *e, Retval& retval ) 
-{
-    assert( NULL == m_event );
-    m_event = static_cast< SendStartEvent* >(e);
+void SendFuncSM::handleStartEvent(SST::Event *e, Retval &retval) {
+    assert(nullptr == m_event);
+    m_event = static_cast< SendStartEvent * >(e);
 
-    m_dbg.debug(CALL_INFO,1,0,"%s buf=%p count=%d type=%d dest=%d tag=%#x\n",
-                m_event->req ? "Isend":"Send",
+    m_dbg.debug(CALL_INFO, 1, 0, "%s buf=%p count=%d type=%d dest=%d tag=%#x\n",
+                m_event->req ? "Isend" : "Send",
                 &m_event->buf,
                 m_event->count,
                 m_event->dtype,
                 m_event->dest,
-                m_event->tag );
+                m_event->tag);
 
-	if ( NULL == m_event->req ) {
-		proto()->send( m_event->buf, m_event->count, m_event->dtype, m_event->dest,
-			m_event->tag, m_event->group );
-	} else {
-		proto()->isend( m_event->buf, m_event->count, m_event->dtype, m_event->dest,
-			m_event->tag, m_event->group, m_event->req );
-	}
+    if (nullptr == m_event->req) {
+        proto()->send(m_event->buf, m_event->count, m_event->dtype, m_event->dest,
+                      m_event->tag, m_event->group);
+    } else {
+        proto()->isend(m_event->buf, m_event->count, m_event->dtype, m_event->dest,
+                       m_event->tag, m_event->group, m_event->req);
+    }
 }
 
-void SendFuncSM::handleEnterEvent( Retval& retval )
-{
+void SendFuncSM::handleEnterEvent(Retval &retval) {
     delete m_event;
-    m_event = NULL;
+    m_event = nullptr;
     retval.setExit(0);
 }

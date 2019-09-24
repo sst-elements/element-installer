@@ -20,17 +20,21 @@ namespace SST {
     namespace Scheduler {
 
         class AllocInfo;
+
         class Job;
 
         class DragonflyAllocator : public Allocator {
-            public:
-                DragonflyAllocator(const DragonflyMachine & mach)
-                  : dMach(mach), Allocator(mach) { }
-                ~DragonflyAllocator() { }
-                virtual std::string getSetupInfo(bool comment) const = 0;
-                virtual AllocInfo* allocate(Job* job) = 0;
+        public:
+            DragonflyAllocator(const DragonflyMachine &mach)
+                : dMach(mach), Allocator(mach) {}
 
-                const DragonflyMachine & dMach;
+            ~DragonflyAllocator() {}
+
+            virtual std::string getSetupInfo(bool comment) const = 0;
+
+            virtual AllocInfo *allocate(Job *job) = 0;
+
+            const DragonflyMachine &dMach;
         };
 
     }

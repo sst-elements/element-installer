@@ -26,20 +26,19 @@ using namespace SST;
 using namespace SST::MemHierarchy;
 
 
-streamCPU::streamCPU(ComponentId_t id, Params& params) :
-    Component(id), rng(id, 13)
-{
+streamCPU::streamCPU(ComponentId_t id, Params &params) :
+    Component(id), rng(id, 13) {
     uint32_t outputLevel = params.find<uint32_t>("verbose", 0);
     out.init("StreamCPU:@p:@l: ", outputLevel, 0, Output::STDOUT);
 
     // get parameters
     commFreq = params.find<int>("commFreq", -1);
     if (commFreq < 0) {
-	out.fatal(CALL_INFO, -1,"couldn't find communication frequency\n");
+        out.fatal(CALL_INFO, -1, "couldn't find communication frequency\n");
     }
-    
-    maxAddr = params.find<uint32_t>("memSize", -1) -1;
-    if ( !maxAddr ) {
+
+    maxAddr = params.find<uint32_t>("memSize", -1) - 1;
+    if (!maxAddr) {
         out.fatal(CALL_INFO, -1, "Must set memSize\n");
     }
 
@@ -51,7 +50,8 @@ streamCPU::streamCPU(ComponentId_t id, Params& params) :
 
     maxReqsPerIssue = params.find<uint32_t>("reqsPerIssue", 1);
     if (maxReqsPerIssue < 1) {
-        out.fatal(CALL_INFO, -1, "Cannot issue less than one request per cycle...fix your input deck\n");
+        out.fatal(CALL_INFO, -1,
+                  "Cannot issue less than one request per cycle...fix your input deck\n");
     }
 
     // tell the simulator not to end without us
@@ -63,14 +63,23 @@ streamCPU::streamCPU(ComponentId_t id, Params& params) :
     clockHandler = new Clock::Handler<streamCPU>(this, &streamCPU::clockTic);
     clockTC = registerClock(clockFreq, clockHandler);
     num_reads_issued = num_reads_returned = 0;
-    
-    memory = loadUserSubComponent<Interfaces::SimpleMem>("memory", ComponentInfo::SHARE_NONE, clockTC, new Interfaces::SimpleMem::Handler<streamCPU>(this, &streamCPU::handleEvent));
-    
+
+    memory = loadUserSubComponent<Interfaces::SimpleMem>("memory", ComponentInfo::SHARE_NONE,
+                                                         clockTC,
+                                                         new Interfaces::SimpleMem::Handler<streamCPU>(
+                                                             this, &streamCPU::handleEvent));
+
     if (!memory) {
         Params interfaceParams;
         interfaceParams.insert("port", "mem_link");
-        memory = loadAnonymousSubComponent<Interfaces::SimpleMem>("memHierarchy.memInterface", "memory", 0, ComponentInfo::SHARE_PORTS | ComponentInfo::INSERT_STATS,
-                interfaceParams, clockTC, new Interfaces::SimpleMem::Handler<streamCPU>(this, &streamCPU::handleEvent));
+        memory = loadAnonymousSubComponent<Interfaces::SimpleMem>("memHierarchy.memInterface",
+                                                                  "memory", 0,
+                                                                  ComponentInfo::SHARE_PORTS |
+                                                                  ComponentInfo::INSERT_STATS,
+                                                                  interfaceParams, clockTC,
+                                                                  new Interfaces::SimpleMem::Handler<streamCPU>(
+                                                                      this,
+                                                                      &streamCPU::handleEvent));
         //out.fatal(CALL_INFO, -1, "Unable to load memHierarchy.memInterface subcomponent\n");
     }
 
@@ -82,79 +91,89 @@ streamCPU::streamCPU(ComponentId_t id, Params& params) :
 }
 
 streamCPU::streamCPU() :
-	Component(-1)
-{
-	// for serialization only
+    Component(-1) {
+    // for serialization only
 }
 
 
-void streamCPU::init(unsigned int phase)
-{
+void streamCPU::init(unsigned int phase) {
     memory->init(phase);
 }
 
 // incoming events are scanned and deleted
-void streamCPU::handleEvent(Interfaces::SimpleMem::Request * req)
-{
-	//out.output("recv\n");
+void streamCPU::handleEvent(Interfaces::SimpleMem::Request *req) {
+    //out.output("recv\n");
     std::map<uint64_t, SimTime_t>::iterator i = requests.find(req->id);
     if (i == requests.end()) {
-	out.fatal(CALL_INFO, -1, "Request ID (%" PRIx64 ") not found in outstanding requests!\n", req->id);
+        out.fatal(CALL_INFO, -1, "Request ID (%"
+        PRIx64
+        ") not found in outstanding requests!\n", req->id);
     } else {
         SimTime_t et = getCurrentSimTime() - i->second;
         requests.erase(i);
 
-	out.verbose(CALL_INFO, 1, 0, "Received MemEvent (response to: %10" PRIu64 ", Addr=%15" PRIu64 ", Took: %7" PRIu64 "ns, %6zu pending requests).\n",
-                req->id, req->addr, et, requests.size());
+        out.verbose(CALL_INFO, 1, 0, "Received MemEvent (response to: %10"
+        PRIu64
+        ", Addr=%15"
+        PRIu64
+        ", Took: %7"
+        PRIu64
+        "ns, %6zu pending requests).\n",
+            req->id, req->addr, et, requests.size());
         num_reads_returned++;
     }
     delete req;
 }
 
-bool streamCPU::clockTic( Cycle_t )
-{
+bool streamCPU::clockTic(Cycle_t) {
     // communicate?
-    if ((numLS != 0) && ((rng.generateNextUInt32() % commFreq) == 0) && requests.size() <= maxOutstanding) {
-	// yes, communicate
-	// create event
-	// x8 to prevent splitting blocks
+    if ((numLS != 0) && ((rng.generateNextUInt32() % commFreq) == 0) &&
+        requests.size() <= maxOutstanding) {
+        // yes, communicate
+        // create event
+        // x8 to prevent splitting blocks
         uint32_t reqsToSend = 1;
         if (maxReqsPerIssue > 1) reqsToSend += rng.generateNextUInt32() % maxReqsPerIssue;
-        if (reqsToSend > (maxOutstanding - requests.size())) reqsToSend = maxOutstanding - requests.size();
+        if (reqsToSend > (maxOutstanding - requests.size()))
+            reqsToSend = maxOutstanding - requests.size();
         if (reqsToSend > numLS) reqsToSend = numLS;
 
         for (int i = 0; i < reqsToSend; i++) {
 
-    	    bool doWrite = do_write && (((rng.generateNextUInt32() % 10) == 0));
-            Interfaces::SimpleMem::Request::Command cmd = doWrite ? Interfaces::SimpleMem::Request::Write : Interfaces::SimpleMem::Request::Read;
+            bool doWrite = do_write && (((rng.generateNextUInt32() % 10) == 0));
+            Interfaces::SimpleMem::Request::Command cmd = doWrite
+                                                          ? Interfaces::SimpleMem::Request::Write
+                                                          : Interfaces::SimpleMem::Request::Read;
 
-            Interfaces::SimpleMem::Request *req = new Interfaces::SimpleMem::Request(cmd, nextAddr, 4/* 4 bytes*/);
-	    
-	    if ( doWrite ) {
-	        req->data.resize(4);
+            Interfaces::SimpleMem::Request *req = new Interfaces::SimpleMem::Request(cmd, nextAddr,
+                                                                                     4/* 4 bytes*/);
+
+            if (doWrite) {
+                req->data.resize(4);
                 req->data[0] = (nextAddr >> 24) & 0xff;
                 req->data[1] = (nextAddr >> 16) & 0xff;
-                req->data[2] = (nextAddr >>  8) & 0xff;
-                req->data[3] = (nextAddr >>  0) & 0xff;
-	    }
-	    
+                req->data[2] = (nextAddr >> 8) & 0xff;
+                req->data[3] = (nextAddr >> 0) & 0xff;
+            }
+
             memory->sendRequest(req);
             requests.insert(std::make_pair(req->id, getCurrentSimTime()));
 
-	    out.verbose(CALL_INFO, 1, 0, "Issued request %10d: %5s for address %20d.\n", numLS, (doWrite ? "write" : "read"), nextAddr);
+            out.verbose(CALL_INFO, 1, 0, "Issued request %10d: %5s for address %20d.\n", numLS,
+                        (doWrite ? "write" : "read"), nextAddr);
 
-	    num_reads_issued++;
+            num_reads_issued++;
             nextAddr = (nextAddr + 8);
 
             if (nextAddr > (maxAddr - 4)) {
-		nextAddr = addrOffset;
-	    }
+                nextAddr = addrOffset;
+            }
 
-	    numLS--;
-	}
+            numLS--;
+        }
     }
 
-    if ( numLS == 0 && requests.size() == 0 ) {
+    if (numLS == 0 && requests.size() == 0) {
         primaryComponentOKToEndSim();
         return true;
     }

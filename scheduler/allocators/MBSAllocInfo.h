@@ -34,37 +34,37 @@ namespace SST {
 
         class MBSMeshAllocInfo : public AllocInfo {
 
-            public:
-                std::set<Block*, Block>* blocks;
-                std::vector<MeshLocation*>* nodes;
+        public:
+            std::set<Block *, Block> *blocks;
+            std::vector<MeshLocation *> *nodes;
 
-                MBSMeshAllocInfo(Job* j, const Machine & mach) : AllocInfo(j, mach){
-                    //Keep track of the blocks allocated
-                    Block* BComp = new Block(NULL,NULL);
-                    blocks = new std::set<Block*, Block>(*BComp);
-                    delete BComp;
-                    nodes = new std::vector<MeshLocation*>(j -> getProcsNeeded());
-                    for (int x = 0; x < j -> getProcsNeeded(); x++) {
-                        nodeIndices[x] = -1;
-                    }
+            MBSMeshAllocInfo(Job *j, const Machine &mach) : AllocInfo(j, mach) {
+                //Keep track of the blocks allocated
+                Block *BComp = new Block(nullptr, nullptr);
+                blocks = new std::set<Block *, Block>(*BComp);
+                delete BComp;
+                nodes = new std::vector<MeshLocation *>(j->getProcsNeeded());
+                for (int x = 0; x < j->getProcsNeeded(); x++) {
+                    nodeIndices[x] = -1;
                 }
-                
-                ~MBSMeshAllocInfo()
-                {
-                    for (int x = 0; x < (int)nodes -> size(); x++) {
-                        delete nodes -> at (x);
-                    }
-                    delete nodes;
+            }
+
+            ~MBSMeshAllocInfo() {
+                for (int x = 0; x < (int) nodes->size(); x++) {
+                    delete nodes->at(x);
                 }
+                delete nodes;
+            }
 
 
-                std::string toString(){
-                    std::string retVal = job -> toString() + "\n  ";
-                    for (std::set<Block*, Block>::iterator block = blocks -> begin(); block != blocks -> end(); block++){
-                        retVal = retVal + (*block) -> toString();
-                    }
-                    return retVal;
+            std::string toString() {
+                std::string retVal = job->toString() + "\n  ";
+                for (std::set<Block *, Block>::iterator block = blocks->begin();
+                     block != blocks->end(); block++) {
+                    retVal = retVal + (*block)->toString();
                 }
+                return retVal;
+            }
         };
 
     }

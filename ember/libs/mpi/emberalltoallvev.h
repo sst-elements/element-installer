@@ -20,56 +20,55 @@
 #include "emberMPIEvent.h"
 
 namespace SST {
-namespace Ember {
+    namespace Ember {
 
-class EmberAlltoallvEvent : public EmberMPIEvent {
-public:
-    EmberAlltoallvEvent( MP::Interface& api, Output* output,
-                        EmberEventTimeStatistic* stat,
-        const Hermes::MemAddr& sendData,
-        Addr sendCnts, Addr sendDsp, PayloadDataType senddtype,
-        const Hermes::MemAddr& recvData,
-        Addr recvCnts, Addr recvDsp, PayloadDataType recvdtype, 
-        Communicator group ) :
+        class EmberAlltoallvEvent : public EmberMPIEvent {
+        public:
+            EmberAlltoallvEvent(MP::Interface &api, Output *output,
+                                EmberEventTimeStatistic *stat,
+                                const Hermes::MemAddr &sendData,
+                                Addr sendCnts, Addr sendDsp, PayloadDataType senddtype,
+                                const Hermes::MemAddr &recvData,
+                                Addr recvCnts, Addr recvDsp, PayloadDataType recvdtype,
+                                Communicator group) :
 
-        EmberMPIEvent( api, output, stat ),
-        m_senddata(sendData),
-        m_sendcnts(sendCnts),
-        m_senddsp(sendDsp),
-        m_senddtype(senddtype),
-        m_recvdata(recvData),
-        m_recvcnts(recvCnts),
-        m_recvdsp(recvDsp),
-        m_recvdtype(recvdtype),
-        m_group(group)
-    {}
+                EmberMPIEvent(api, output, stat),
+                m_senddata(sendData),
+                m_sendcnts(sendCnts),
+                m_senddsp(sendDsp),
+                m_senddtype(senddtype),
+                m_recvdata(recvData),
+                m_recvcnts(recvCnts),
+                m_recvdsp(recvDsp),
+                m_recvdtype(recvdtype),
+                m_group(group) {}
 
-	~EmberAlltoallvEvent() {}
+            ~EmberAlltoallvEvent() {}
 
-    std::string getName() { return "Alltoallv"; }
+            std::string getName() { return "Alltoallv"; }
 
-    void issue( uint64_t time, FOO* functor ) {
+            void issue(uint64_t time, FOO *functor) {
 
-        EmberEvent::issue( time );
+                EmberEvent::issue(time);
 
-        m_api.alltoallv( m_senddata, m_sendcnts, m_senddsp, m_senddtype,
-                        m_recvdata, m_recvcnts, m_recvdsp, m_recvdtype,
-                                                    m_group, functor );
+                m_api.alltoallv(m_senddata, m_sendcnts, m_senddsp, m_senddtype,
+                                m_recvdata, m_recvcnts, m_recvdsp, m_recvdtype,
+                                m_group, functor);
+            }
+
+        private:
+            Hermes::MemAddr m_senddata;
+            Addr m_sendcnts;
+            Addr m_senddsp;
+            PayloadDataType m_senddtype;
+            Hermes::MemAddr m_recvdata;
+            Addr m_recvcnts;
+            Addr m_recvdsp;
+            PayloadDataType m_recvdtype;
+            Communicator m_group;
+        };
+
     }
-
-private:
-    Hermes::MemAddr     m_senddata;
-    Addr                m_sendcnts;
-    Addr                m_senddsp;
-    PayloadDataType     m_senddtype;
-    Hermes::MemAddr     m_recvdata;
-    Addr                m_recvcnts;
-    Addr                m_recvdsp;
-    PayloadDataType     m_recvdtype;
-    Communicator        m_group;
-};
-
-}
 }
 
 #endif

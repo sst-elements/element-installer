@@ -21,16 +21,18 @@
 #include "sst/elements/hermes/hermes.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-struct IoVec {
-    IoVec() {}
-    IoVec( const Hermes::MemAddr& _addr, size_t _size ) : 
-        addr( _addr ), len( _size ) {}
-	Hermes::MemAddr addr;
-    size_t len;
-};
-}
+        struct IoVec {
+            IoVec() {}
+
+            IoVec(const Hermes::MemAddr &_addr, size_t _size) :
+                addr(_addr), len(_size) {}
+
+            Hermes::MemAddr addr;
+            size_t len;
+        };
+    }
 }
 
 #endif

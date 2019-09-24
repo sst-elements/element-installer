@@ -25,237 +25,270 @@
 #include "ioVec.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class NicRespEvent;
-class NicShmemRespBaseEvent;
+        class NicRespEvent;
 
-class VirtNic : public SST::Module {
+        class NicShmemRespBaseEvent;
 
-  public:
-    SST_ELI_REGISTER_MODULE(
-        VirtNic,
-        "firefly",
-        "VirtNic",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        "SST::Firefly::VirtNic"
-    )
+        class VirtNic : public SST::Module {
 
-    SST_ELI_DOCUMENT_PARAMS(
-        {"debugLevel", "Sets the output verbosity of the component", "1"},
-        {"debug", "Sets the messaging API of the end point", "0"},
-        {"portName", "Sets the name of the port for the link", "nic"},
-    ) 
+        public:
+            SST_ELI_REGISTER_MODULE(
+                VirtNic,
+            "firefly",
+            "VirtNic",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            "SST::Firefly::VirtNic"
+            )
 
-  private:
+            SST_ELI_DOCUMENT_PARAMS(
+            { "debugLevel", "Sets the output verbosity of the component", "1" },
+            { "debug", "Sets the messaging API of the end point", "0" },
+            { "portName", "Sets the name of the port for the link", "nic" },
+            )
 
-    // Functor classes for handling callbacks
-    template < typename argT >
-    class HandlerBase {
-      public:
-        virtual bool operator()(argT) = 0;
-        virtual ~HandlerBase() {}
-    };
+        private:
 
-    template < typename T1, typename T2, typename T3, typename T4 >
-    class HandlerBase4Args {
-      public:
-        virtual bool operator()( T1, T2, T3, T4 ) = 0;
-        virtual ~HandlerBase4Args() {}
-    };
+            // Functor classes for handling callbacks
+            template<typename argT>
+            class HandlerBase {
+            public:
+                virtual bool operator()(argT) = 0;
 
-    template < typename T1, typename T2 >
-    class HandlerBase2Args {
-      public:
-        virtual bool operator()( T1, T2 ) = 0;
-        virtual ~HandlerBase2Args() {}
-    };
+                virtual ~HandlerBase() {}
+            };
 
-  public:
+            template<typename T1, typename T2, typename T3, typename T4>
+            class HandlerBase4Args {
+            public:
+                virtual bool operator()(T1, T2, T3, T4) = 0;
 
-    typedef std::function<void(Hermes::Value&)> CallbackV;
-    typedef std::function<void()> Callback;
+                virtual ~HandlerBase4Args() {}
+            };
 
-    template <typename classT, typename argT >
-    class Handler : public HandlerBase<argT> {
-      private:
-        typedef bool (classT::*PtrMember)(argT);
-        classT* object;
-        const PtrMember member;
-        argT data;
+            template<typename T1, typename T2>
+            class HandlerBase2Args {
+            public:
+                virtual bool operator()(T1, T2) = 0;
 
-      public:
-        Handler( classT* const object, PtrMember member ) :
-            object(object),
-            member(member)
-        {}
+                virtual ~HandlerBase2Args() {}
+            };
 
-        bool operator()(argT data) {
-            return (object->*member)(data);
-        }
-    };
+        public:
 
-    template <typename classT, typename T1, typename T2 >
-    class Handler2Args : public HandlerBase2Args< T1, T2 > {
-      private:
-        typedef bool (classT::*PtrMember)( T1, T2 );
-        classT* object;
-        const PtrMember member;
+            typedef std::function<void(Hermes::Value & )> CallbackV;
+            typedef std::function<void()> Callback;
 
-      public:
-        Handler2Args( classT* const object, PtrMember member ) :
-            object(object),
-            member(member)
-        {}
+            template<typename classT, typename argT>
+            class Handler : public HandlerBase<argT> {
+            private:
+                typedef bool (classT::*PtrMember)(argT);
 
-        bool operator()( T1 arg1, T2 arg2) {
-            return (object->*member)( arg1, arg2);
-        }
-    };
+                classT *object;
+                const PtrMember member;
+                argT data;
 
-    template <typename classT, typename T1, typename T2,
-                                        typename T3, typename T4 >
-    class Handler4Args : public HandlerBase4Args< T1, T2, T3, T4 > {
-      private:
-        typedef bool (classT::*PtrMember)( T1, T2, T3, T4 );
-        classT* object;
-        const PtrMember member;
+            public:
+                Handler(classT *const object, PtrMember member) :
+                    object(object),
+                    member(member) {}
 
-      public:
-        Handler4Args( classT* const object, PtrMember member ) :
-            object(object),
-            member(member)
-        {}
+                bool operator()(argT data) {
+                    return (object->*member)(data);
+                }
+            };
 
-        bool operator()( T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
-            return (object->*member)( arg1, arg2, arg3, arg4 );
-        }
-    };
+            template<typename classT, typename T1, typename T2>
+            class Handler2Args : public HandlerBase2Args<T1, T2> {
+            private:
+                typedef bool (classT::*PtrMember)(T1, T2);
+
+                classT *object;
+                const PtrMember member;
+
+            public:
+                Handler2Args(classT *const object, PtrMember member) :
+                    object(object),
+                    member(member) {}
+
+                bool operator()(T1 arg1, T2 arg2) {
+                    return (object->*member)(arg1, arg2);
+                }
+            };
+
+            template<typename classT, typename T1, typename T2,
+                typename T3, typename T4>
+            class Handler4Args : public HandlerBase4Args<T1, T2, T3, T4> {
+            private:
+                typedef bool (classT::*PtrMember)(T1, T2, T3, T4);
+
+                classT *object;
+                const PtrMember member;
+
+            public:
+                Handler4Args(classT *const object, PtrMember member) :
+                    object(object),
+                    member(member) {}
+
+                bool operator()(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
+                    return (object->*member)(arg1, arg2, arg3, arg4);
+                }
+            };
 
 
-    VirtNic( Component* owner, Params&);
-    ~VirtNic();
-    void init( unsigned int );
+            VirtNic(Component *owner, Params &);
 
-	int getNumCores() {
-		return m_numCores;
-	}
+            ~VirtNic();
 
-	int getCoreId() {
-		return m_coreId;
-	}
+            void init(unsigned int);
 
-    int getRealNodeId() {
-		return m_realNicId;
+            int getNumCores() {
+                return m_numCores;
+            }
+
+            int getCoreId() {
+                return m_coreId;
+            }
+
+            int getRealNodeId() {
+                return m_realNicId;
+            }
+
+            int getNodeId() {
+                return m_realNicId * m_numCores + m_coreId;
+            }
+
+            bool isLocal(int nodeId) {
+                return ((nodeId / m_numCores) == m_realNicId);
+            }
+
+            int calcCoreId(int nodeId) {
+                if (-1 == nodeId) {
+                    return -1;
+                } else if (nodeId & (1 << 31)) {
+                    return 0;
+                } else {
+                    return nodeId % m_numCores;
+                }
+            }
+
+            bool canDmaSend();
+
+            bool canDmaRecv();
+
+            void dmaRecv(int src, int tag, std::vector <IoVec> &vec, void *key);
+
+            void pioSend(int dest, int tag, std::vector <IoVec> &vec, void *key);
+
+            void get(int node, int tag, std::vector <IoVec> &vec, void *key);
+
+            void regMem(int node, int tag, std::vector <IoVec> &vec, void *key);
+
+            void shmemInit(Hermes::Vaddr, Callback);
+
+            void shmemFence(Callback);
+
+            void shmemRegMem(Hermes::MemAddr &, size_t len, Callback);
+
+            void shmemWait(Hermes::Vaddr dest, Hermes::Shmem::WaitOp, Hermes::Value &, Callback);
+
+            void shmemPutv(int node, Hermes::Vaddr dest, Hermes::Value &);
+
+            void shmemGetv(int node, Hermes::Vaddr src, Hermes::Value::Type, CallbackV);
+
+            void shmemPut(int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len, Callback);
+
+            void shmemGet(int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len, Callback);
+
+            void shmemPutOp(int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len,
+                            Hermes::Shmem::ReduOp, Hermes::Value::Type, Callback);
+
+            void shmemSwap(int node, Hermes::Vaddr dest, Hermes::Value &value, CallbackV);
+
+            void shmemCswap(int node, Hermes::Vaddr dest, Hermes::Value &cond, Hermes::Value &value,
+                            CallbackV);
+
+            void shmemAdd(int node, Hermes::Vaddr dest, Hermes::Value &);
+
+            void shmemFadd(int node, Hermes::Vaddr dest, Hermes::Value &, CallbackV);
+
+            void setNotifyOnRecvDmaDone(
+                VirtNic::HandlerBase4Args<int, int, size_t, void *> *functor);
+
+            void setNotifyOnSendPioDone(VirtNic::HandlerBase<void *> *functor);
+
+            void setNotifyOnGetDone(VirtNic::HandlerBase<void *> *functor);
+
+            void setNotifyNeedRecv(VirtNic::HandlerBase2Args<int, size_t> *functor);
+
+            void notifyGetDone(void *key);
+
+            void notifySendPioDone(void *key);
+
+            void notifyRecvDmaDone(int src, int tag, size_t len, void *key);
+
+            void notifyNeedRecv(int src, int tag, size_t length);
+
+            bool isBlocked() {
+                m_dbg.debug(CALL_INFO, 2, 0, "%d %d\n", m_curNicQdepth, m_maxNicQdepth);
+                return m_curNicQdepth == m_maxNicQdepth;
+            }
+
+            void setBlockedCallback(Callback callback) {
+                m_dbg.debug(CALL_INFO, 2, 0, "\n");
+                assert(!m_blockedCallback);
+                m_blockedCallback = callback;
+            }
+
+        private:
+
+            void sendCmd(SimTime_t delay, Event *ev) {
+                m_dbg.debug(CALL_INFO, 2, 0, "%d %d\n", m_curNicQdepth, m_maxNicQdepth);
+                assert(m_curNicQdepth < m_maxNicQdepth);
+                ++m_curNicQdepth;
+                m_toNicLink->send(delay, ev);
+            }
+
+            int calcRealNicId(int nodeId) {
+                if (-1 == nodeId) {
+                    return -1;
+                } else if (nodeId & (1 << 31)) {
+                    return nodeId & ~(1 << 31);
+                } else {
+                    return nodeId / m_numCores;
+                }
+            }
+
+            int calcNodeId(int nic, int vNic) {
+                return nic * m_numCores + vNic;
+            }
+
+            void handleEvent(Event *);
+
+            void handleMsgEvent(NicRespEvent *);
+
+            void handleShmemEvent(NicShmemRespBaseEvent *);
+
+            int m_realNicId;
+            int m_coreId;
+            int m_numCores;
+            Output m_dbg;
+            Link *m_toNicLink;
+
+            VirtNic::HandlerBase<void *> *m_notifyGetDone;
+            VirtNic::HandlerBase<void *> *m_notifyPutDone;
+            VirtNic::HandlerBase<void *> *m_notifySendPioDone;
+            VirtNic::HandlerBase<void *> *m_notifySendDmaDone;
+            VirtNic::HandlerBase4Args<int, int, size_t, void *> *m_notifyRecvDmaDone;
+            VirtNic::HandlerBase2Args<int, size_t> *m_notifyNeedRecv;
+            int m_maxNicQdepth;
+            int m_curNicQdepth;
+            Callback m_blockedCallback;
+        };
+
     }
-
-    int getNodeId() {
-		return m_realNicId * m_numCores + m_coreId;
-    }
-
-    bool isLocal( int nodeId ) {
-        return ( (nodeId / m_numCores) == m_realNicId ); 
-    }
-
-	int calcCoreId( int nodeId ) {
-		if ( -1 == nodeId ) {
-			return -1;
-		} else if ( nodeId & (1<<31) )  {
-			return 0;
-		} else {
-			return nodeId % m_numCores;
-		}
-	}
-
-    bool canDmaSend();
-    bool canDmaRecv();
-
-    void dmaRecv( int src, int tag, std::vector<IoVec>& vec, void* key );
-    void pioSend( int dest, int tag, std::vector<IoVec>& vec, void* key );
-    void get( int node, int tag, std::vector<IoVec>& vec, void* key );
-    void regMem( int node, int tag, std::vector<IoVec>& vec, void *key );
-
-    void shmemInit( Hermes::Vaddr, Callback );
-    void shmemFence( Callback );
-    void shmemRegMem( Hermes::MemAddr&, size_t len, Callback );
-    void shmemWait( Hermes::Vaddr dest, Hermes::Shmem::WaitOp, Hermes::Value&, Callback );
-    void shmemPutv( int node, Hermes::Vaddr dest, Hermes::Value& );
-    void shmemGetv( int node, Hermes::Vaddr src, Hermes::Value::Type, CallbackV );
-    void shmemPut( int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len, Callback );
-    void shmemGet( int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len, Callback );
-    void shmemPutOp( int node, Hermes::Vaddr dest, Hermes::Vaddr src, size_t len, Hermes::Shmem::ReduOp, Hermes::Value::Type, Callback );
-    void shmemSwap( int node, Hermes::Vaddr dest, Hermes::Value& value, CallbackV );
-    void shmemCswap( int node, Hermes::Vaddr dest, Hermes::Value& cond, Hermes::Value& value, CallbackV );
-    void shmemAdd( int node, Hermes::Vaddr dest, Hermes::Value& );
-    void shmemFadd( int node, Hermes::Vaddr dest, Hermes::Value&, CallbackV );
-
-    void setNotifyOnRecvDmaDone(
-        VirtNic::HandlerBase4Args<int,int,size_t,void*>* functor);
-    void setNotifyOnSendPioDone(VirtNic::HandlerBase<void*>* functor);
-    void setNotifyOnGetDone(VirtNic::HandlerBase<void*>* functor);
-    void setNotifyNeedRecv( VirtNic::HandlerBase2Args<int,size_t>* functor);
-
-    void notifyGetDone( void* key );
-    void notifySendPioDone( void* key );
-    void notifyRecvDmaDone( int src, int tag, size_t len, void* key );
-    void notifyNeedRecv( int src, int tag, size_t length );
-
-    bool isBlocked() {
-		m_dbg.debug(CALL_INFO,2,0,"%d %d\n", m_curNicQdepth, m_maxNicQdepth);
-        return m_curNicQdepth == m_maxNicQdepth;  
-    }
-
-    void setBlockedCallback( Callback callback ) {
-		m_dbg.debug(CALL_INFO,2,0,"\n");
-        assert( ! m_blockedCallback );
-        m_blockedCallback = callback;
-    }
-
-  private:
-
-    void sendCmd( SimTime_t delay ,Event* ev) {
-		m_dbg.debug(CALL_INFO,2,0,"%d %d\n", m_curNicQdepth, m_maxNicQdepth);
-        assert( m_curNicQdepth < m_maxNicQdepth );
-        ++m_curNicQdepth;
-        m_toNicLink->send( delay, ev );  
-    }
-         
-	int calcRealNicId( int nodeId ) {
-		if ( -1 == nodeId ) {
-			return -1;
-		} else if ( nodeId & (1<<31) )  {
-			return nodeId & ~(1<<31);
-		} else {
-			return nodeId / m_numCores;
-		}
-	}
-	int calcNodeId( int nic, int vNic ) {
-        return nic * m_numCores + vNic;
-    }
-
-    void handleEvent( Event * );
-    void handleMsgEvent( NicRespEvent * );
-    void handleShmemEvent( NicShmemRespBaseEvent * );
-
-    int         m_realNicId;
-    int         m_coreId;
-    int         m_numCores;
-    Output      m_dbg;
-    Link*       m_toNicLink;
-
-    VirtNic::HandlerBase<void*>* m_notifyGetDone; 
-    VirtNic::HandlerBase<void*>* m_notifyPutDone; 
-    VirtNic::HandlerBase<void*>* m_notifySendPioDone; 
-    VirtNic::HandlerBase<void*>* m_notifySendDmaDone; 
-    VirtNic::HandlerBase4Args<int, int, size_t, void*>* m_notifyRecvDmaDone; 
-    VirtNic::HandlerBase2Args<int, size_t>* m_notifyNeedRecv;
-    int m_maxNicQdepth;
-    int m_curNicQdepth;
-    Callback m_blockedCallback;
-};
-
-}
 }
 
 #endif

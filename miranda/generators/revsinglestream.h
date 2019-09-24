@@ -23,48 +23,54 @@
 #include <queue>
 
 namespace SST {
-namespace Miranda {
+    namespace Miranda {
 
-class ReverseSingleStreamGenerator : public RequestGenerator {
+        class ReverseSingleStreamGenerator : public RequestGenerator {
 
-public:
-	ReverseSingleStreamGenerator( Component* owner, Params& params );
-	ReverseSingleStreamGenerator( ComponentId_t id, Params& params );
-        void build(Params& params);
-	~ReverseSingleStreamGenerator();
-	void generate(MirandaRequestQueue<GeneratorRequest*>* q);
-	bool isFinished();
-	void completed();
+        public:
+            ReverseSingleStreamGenerator(Component *owner, Params &params);
 
-	SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
-               	ReverseSingleStreamGenerator,
-                "miranda",
-                "ReverseSingleStreamGenerator",
-                SST_ELI_ELEMENT_VERSION(1,0,0),
-		"Creates a single reverse ordering stream of accesses to/from memory",
-                SST::Miranda::RequestGenerator
-        )
+            ReverseSingleStreamGenerator(ComponentId_t id, Params &params);
 
-	SST_ELI_DOCUMENT_PARAMS(
-		{ "start_at",         "Sets the start *index* for this generator", "2048" },
-    		{ "stop_at",          "Sets the stop *index* for this generator, stop < start", "0" },
-    		{ "verbose",          "Sets the verbosity of the output", "0" },
-    		{ "datawidth",        "Sets the width of the memory operation", "8" },
-    		{ "stride",           "Sets the stride, since this is a reverse stream this is subtracted per iteration, def=1", "1" },
-        )
+            void build(Params &params);
 
-private:
-	uint64_t startIndex;
-	uint64_t stopIndex;
-	uint64_t datawidth;
-	uint64_t nextIndex;
-	uint64_t stride;
+            ~ReverseSingleStreamGenerator();
 
-	Output*  out;
+            void generate(MirandaRequestQueue<GeneratorRequest *> *q);
 
-};
+            bool isFinished();
 
-}
+            void completed();
+
+            SST_ELI_REGISTER_SUBCOMPONENT_DERIVED(
+                ReverseSingleStreamGenerator,
+            "miranda",
+            "ReverseSingleStreamGenerator",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "Creates a single reverse ordering stream of accesses to/from memory",
+            SST::Miranda::RequestGenerator
+            )
+
+            SST_ELI_DOCUMENT_PARAMS(
+            { "start_at", "Sets the start *index* for this generator", "2048" },
+            { "stop_at", "Sets the stop *index* for this generator, stop < start", "0" },
+            { "verbose", "Sets the verbosity of the output", "0" },
+            { "datawidth", "Sets the width of the memory operation", "8" },
+            { "stride", "Sets the stride, since this is a reverse stream this is subtracted per iteration, def=1", "1" },
+            )
+
+        private:
+            uint64_t startIndex;
+            uint64_t stopIndex;
+            uint64_t datawidth;
+            uint64_t nextIndex;
+            uint64_t stride;
+
+            Output *out;
+
+        };
+
+    }
 }
 
 #endif

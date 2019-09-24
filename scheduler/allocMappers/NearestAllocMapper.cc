@@ -34,65 +34,63 @@
 using namespace SST::Scheduler;
 using namespace std;
 
-NearestAllocMapper::NearestAllocMapper(const Machine & mach,
+NearestAllocMapper::NearestAllocMapper(const Machine &mach,
                                        bool allocateAndMap,
                                        NodeGenType inNodeGen)
-    : AllocMapper(mach, allocateAndMap)
-{
+    : AllocMapper(mach, allocateAndMap) {
     nodeGen = inNodeGen;
     lastNode = 0;
-    Machine* tempMach = const_cast<Machine*>(&mach);
-    if(dynamic_cast<StencilMachine*>(tempMach) == NULL
-        && dynamic_cast<DragonflyMachine*>(tempMach) == NULL){
-        schedout.fatal(CALL_INFO, 1, "NearestAllocMapper only supports stencil and dragonfly machines\n");
+    Machine *tempMach = const_cast<Machine *>(&mach);
+    if (dynamic_cast<StencilMachine *>(tempMach) == nullptr
+        && dynamic_cast<DragonflyMachine *>(tempMach) == nullptr) {
+        schedout.fatal(CALL_INFO, 1,
+                       "NearestAllocMapper only supports stencil and dragonfly machines\n");
     }
     //calculate minimum distances for a given radius
     radiusToVolume.push_back(1);
-    for(int rad = 1; radiusToVolume.back() < mach.numNodes ; rad++){
+    for (int rad = 1; radiusToVolume.back() < mach.numNodes; rad++) {
         radiusToVolume.push_back(radiusToVolume.back() + mach.nodesAtDistance(rad));
     }
 }
 
-NearestAllocMapper::~NearestAllocMapper()
-{
+NearestAllocMapper::~NearestAllocMapper() {
 
 }
 
-std::string NearestAllocMapper::getSetupInfo(bool comment) const
-{
+std::string NearestAllocMapper::getSetupInfo(bool comment) const {
     std::string com;
     if (comment) {
-        com="# ";
-    } else  {
-        com="";
+        com = "# ";
+    } else {
+        com = "";
     }
     return com + "Nearest AllocMapper";
 }
 
-void NearestAllocMapper::allocMap(const AllocInfo & ai,
-                                  vector<long int> & usedNodes,
-                                  vector<int> & taskToNode)
-{
+void NearestAllocMapper::allocMap(const AllocInfo &ai,
+                                  vector<long int> &usedNodes,
+                                  vector<int> &taskToNode) {
     Job *job = ai.job;
     int nodesNeeded = ai.getNodesNeeded();
     int jobSize = job->getProcsNeeded();
 
     //choose center node
-    switch(nodeGen){
-    case GREEDY_NODE:
-        centerNode = getCenterNodeGr();
-        break;
-    case EXHAUST_NODE:
-        centerNode = getCenterNodeExh(nodesNeeded);
-        break;
-    default:
-        schedout.fatal(CALL_INFO, 1, "Unknown node selection algorithm for Nearest AllocMapper");
+    switch (nodeGen) {
+        case GREEDY_NODE:
+            centerNode = getCenterNodeGr();
+            break;
+        case EXHAUST_NODE:
+            centerNode = getCenterNodeExh(nodesNeeded);
+            break;
+        default:
+            schedout.fatal(CALL_INFO, 1,
+                           "Unknown node selection algorithm for Nearest AllocMapper");
     };
 
     //Optimization: Simple allocation & mapping if single node is needed
-    if(nodesNeeded == 1){
+    if (nodesNeeded == 1) {
         usedNodes[0] = centerNode;
-        for(int i = 0; i < jobSize; i++){
+        for (int i = 0; i < jobSize; i++) {
             taskToNode[i] = centerNode;
         }
         return;
@@ -102,7 +100,7 @@ void NearestAllocMapper::allocMap(const AllocInfo & ai,
     createCommGraph(*job);
 
     FibonacciHeap tasks(nodesNeeded); //task frame
-    tasks.insert(centerTask,0);
+    tasks.insert(centerTask, 0);
     list<int> frameNodes; //nodes that "frame" the current allocation
     frameNodes.push_back(centerNode);
     marked.resize(commGraph->size(), false);
@@ -112,12 +110,12 @@ void NearestAllocMapper::allocMap(const AllocInfo & ai,
     int mappedCounter = 0;
 
     //main loop
-    while(mappedCounter < nodesNeeded){
-        if(tasks.isEmpty()){ //This only happens if the task graph is not connected
+    while (mappedCounter < nodesNeeded) {
+        if (tasks.isEmpty()) { //This only happens if the task graph is not connected
             //find an unmapped vertex and put it in the task list
-            for(int taskIt = 0; taskIt < jobSize; taskIt++){
-                if(vertexToNode[taskIt] == -1){
-                    tasks.insert(taskIt,0);
+            for (int taskIt = 0; taskIt < jobSize; taskIt++) {
+                if (vertexToNode[taskIt] == -1) {
+                    tasks.insert(taskIt, 0);
                     break;
                 }
             }
@@ -135,15 +133,16 @@ void NearestAllocMapper::allocMap(const AllocInfo & ai,
 
             //extend frame - do not add the same node twice
             list<int> *newNodes = closestNodes(nodeToAlloc, 0);
-            for(list<int>::iterator newIt = newNodes->begin(); newIt != newNodes->end(); newIt++){
+            for (list<int>::iterator newIt = newNodes->begin(); newIt != newNodes->end(); newIt++) {
                 bool found = false;
-                for(list<int>::iterator oldIt = frameNodes.begin(); oldIt != frameNodes.end(); oldIt++){
-                    if(*oldIt == *newIt){
+                for (list<int>::iterator oldIt = frameNodes.begin();
+                     oldIt != frameNodes.end(); oldIt++) {
+                    if (*oldIt == *newIt) {
                         found = true;
                         break;
                     }
                 }
-                if(!found){
+                if (!found) {
                     frameNodes.push_back(*newIt);
                 }
             }
@@ -152,7 +151,7 @@ void NearestAllocMapper::allocMap(const AllocInfo & ai,
     }
 
     //fill taskToNode
-    for(int taskIt = 0; taskIt < jobSize; taskIt++){
+    for (int taskIt = 0; taskIt < jobSize; taskIt++) {
         taskToNode[taskIt] = vertexToNode[taskToVertex[taskIt]];
     }
 
@@ -163,9 +162,8 @@ void NearestAllocMapper::allocMap(const AllocInfo & ai,
     marked.clear();
 }
 
-void NearestAllocMapper::createCommGraph(const Job & job)
-{
-    std::vector<std::map<int,int> >* rawCommGraph = job.taskCommInfo->getCommInfo();
+void NearestAllocMapper::createCommGraph(const Job &job) {
+    std::vector <std::map<int, int>> *rawCommGraph = job.taskCommInfo->getCommInfo();
     int jobSize = job.procsNeeded;
     int nodesNeeded = ceil((float) jobSize / mach.coresPerNode);
 
@@ -174,13 +172,13 @@ void NearestAllocMapper::createCommGraph(const Job & job)
 
     centerTask = job.taskCommInfo->centerTask;
 
-    if(mach.coresPerNode == 1){
+    if (mach.coresPerNode == 1) {
         commGraph = rawCommGraph;
-        for(int i = 0; i < nodesNeeded; i++){
+        for (int i = 0; i < nodesNeeded; i++) {
             taskToVertex[i] = i;
         }
         //assign center task
-        if(centerTask == -1){
+        if (centerTask == -1) {
             centerTask = getCenterTask(*rawCommGraph);
         }
     } else {
@@ -206,8 +204,8 @@ void NearestAllocMapper::createCommGraph(const Job & job)
         std::vector<idx_t> METIS_taskToVertex(taskToVertex.size()); //to avoid build error
 
         //partition
-        METIS_PartGraphKway(&nvtxs, &ncon, &xadj[0], &adjncy[0], NULL, NULL,
-                            &adjwgt[0], &nparts, NULL, NULL, NULL, &objval, &METIS_taskToVertex[0]);
+        METIS_PartGraphKway(&nvtxs, &ncon, &xadj[0], &adjncy[0], nullptr, nullptr,
+                            &adjwgt[0], &nparts, nullptr, nullptr, nullptr, &objval, &METIS_taskToVertex[0]);
 
         //check if partitioning is balanced or not, correct if necessary
         //count number of tasks at each vertex
@@ -259,38 +257,37 @@ void NearestAllocMapper::createCommGraph(const Job & job)
             centerTask = taskToVertex[centerTask];
         }
 #else
-        schedout.fatal(CALL_INFO, 1, "NearestAllocMapper requires METIS library for multi-core nodes.");
+        schedout.fatal(CALL_INFO, 1,
+                       "NearestAllocMapper requires METIS library for multi-core nodes.");
 #endif
     }
 }
 
-int NearestAllocMapper::getCenterTask(const std::vector<std::map<int,int> > & inCommGraph,
-    const long int upperLimit) const
-{
+int NearestAllocMapper::getCenterTask(const std::vector <std::map<int, int>> &inCommGraph,
+                                      const long int upperLimit) const {
     int centerTask = -1;
     double minDist = DBL_MAX;
     int jobSize = inCommGraph.size();
     long int searchCount = 0;
 
     double newDist;
-    int minTask = max((long int) 0, jobSize / 2  - upperLimit / 2);
+    int minTask = max((long int) 0, jobSize / 2 - upperLimit / 2);
     int maxTask = min((long int) jobSize, jobSize / 2 + upperLimit / 2);
-    for(int task = minTask; task < maxTask; task++){
+    for (int task = minTask; task < maxTask; task++) {
         newDist = dijkstraWithLimit(inCommGraph, task, minDist);
-        if(newDist < minDist){
+        if (newDist < minDist) {
             minDist = newDist;
             centerTask = task;
         }
         searchCount++;
-        if(searchCount > upperLimit){
+        if (searchCount > upperLimit) {
             break;
         }
     }
     return centerTask;
 }
 
-int NearestAllocMapper::getCenterNodeExh(const int nodesNeeded, const long int upperLimit)
-{
+int NearestAllocMapper::getCenterNodeExh(const int nodesNeeded, const long int upperLimit) {
     int bestNode = -1;
     double bestScore = -DBL_MAX;
     long int searchCount = 0;
@@ -308,18 +305,18 @@ int NearestAllocMapper::getCenterNodeExh(const int nodesNeeded, const long int u
         if (isFree->at(lastNode)) {
             double curScore = 1;
             int availNodes = 1;
-            for(int dist = 1; dist <= searchRadius; dist++){
+            for (int dist = 1; dist <= searchRadius; dist++) {
                 double scoreFactor = mach.nodesAtDistance(dist);
-                if ( scoreFactor == 0) {
+                if (scoreFactor == 0) {
                     continue;
                 }
-                std::list<int>* toDelete = closestNodes(lastNode, dist);
+                std::list<int> *toDelete = closestNodes(lastNode, dist);
                 int availInDist = toDelete->size();
                 delete toDelete;
                 if (availNodes < nodesNeeded && availNodes + availInDist > nodesNeeded) {
-                    curScore += (2*nodesNeeded - 2*availNodes - availInDist) / scoreFactor;
+                    curScore += (2 * nodesNeeded - 2 * availNodes - availInDist) / scoreFactor;
                     availNodes = nodesNeeded;
-                } else if(availNodes < nodesNeeded) {
+                } else if (availNodes < nodesNeeded) {
                     curScore += availInDist / scoreFactor;
                     availNodes += availInDist;
                 } else { //penalize extra nodes
@@ -328,14 +325,14 @@ int NearestAllocMapper::getCenterNodeExh(const int nodesNeeded, const long int u
             }
 
             //update best node
-            if(curScore > bestScore){
+            if (curScore > bestScore) {
                 bestScore = curScore;
                 bestNode = lastNode;
             }
 
             //preempt if upper bound is reached
             searchCount++;
-            if(searchCount >= upperLimit){
+            if (searchCount >= upperLimit) {
                 break;
             }
         }
@@ -344,10 +341,9 @@ int NearestAllocMapper::getCenterNodeExh(const int nodesNeeded, const long int u
     return bestNode;
 }
 
-int NearestAllocMapper::getCenterNodeGr()
-{
-    for(long int nodeIt = 0; nodeIt < mach.numNodes; nodeIt++){
-        if(isFree->at(lastNode)){
+int NearestAllocMapper::getCenterNodeGr() {
+    for (long int nodeIt = 0; nodeIt < mach.numNodes; nodeIt++) {
+        if (isFree->at(lastNode)) {
             break;
         } else {
             lastNode = (lastNode + 1) % mach.numNodes;
@@ -356,11 +352,10 @@ int NearestAllocMapper::getCenterNodeGr()
     return lastNode;
 }
 
-double NearestAllocMapper::dijkstraWithLimit(const vector<map<int,int> > & graph,
-                                         const unsigned int source,
-                                         const double limit
-                                         ) const
-{
+double NearestAllocMapper::dijkstraWithLimit(const vector <map<int, int>> &graph,
+                                             const unsigned int source,
+                                             const double limit
+) const {
     //initialize
     double totDist = 0;
     vector<double> dists(graph.size(), DBL_MAX);
@@ -368,21 +363,22 @@ double NearestAllocMapper::dijkstraWithLimit(const vector<map<int,int> > & graph
     vector<unsigned int> prevVertex(graph.size());
     prevVertex[source] = source;
     FibonacciHeap heap(dists.size());
-    for(unsigned int i = 0; i < dists.size(); i++){
+    for (unsigned int i = 0; i < dists.size(); i++) {
         heap.insert(i, dists[i]);
     }
 
     //main loop
-    while(!heap.isEmpty()){
+    while (!heap.isEmpty()) {
         unsigned int curNode = heap.deleteMin();
         //preempt if total distance is higher than limit
         totDist += dists[curNode];
-        if(totDist > limit){
+        if (totDist > limit) {
             break;
         }
-        for(std::map<int, int>::const_iterator it = graph[curNode].begin(); it != graph[curNode].end(); it++){
+        for (std::map<int, int>::const_iterator it = graph[curNode].begin();
+             it != graph[curNode].end(); it++) {
             double newDist = dists[curNode] + (double) 1 / it->second;
-            if(newDist < dists[it->first]){
+            if (newDist < dists[it->first]) {
                 dists[it->first] = newDist;
                 prevVertex[it->first] = curNode;
                 heap.decreaseKey(it->first, newDist);
@@ -392,14 +388,13 @@ double NearestAllocMapper::dijkstraWithLimit(const vector<map<int,int> > & graph
     return totDist;
 }
 
-std::list<int>* NearestAllocMapper::closestNodes(const long int srcNode, const int initDist) const
-{
+std::list<int> *NearestAllocMapper::closestNodes(const long int srcNode, const int initDist) const {
     int delta = initDist - 1;  //distance to search for
-    std::list<int>* outList = new std::list<int>();
-    while(outList->size() == 0){
+    std::list<int> *outList = new std::list<int>();
+    while (outList->size() == 0) {
         //increase distance of the search
         delta++;
-        if(delta > machine.numNodes){
+        if (delta > machine.numNodes) {
             //no available node found - this is an exception when allocating the last node in machine
             break;
         }
@@ -407,33 +402,33 @@ std::list<int>* NearestAllocMapper::closestNodes(const long int srcNode, const i
         outList = machine.getFreeAtDistance(srcNode, delta);
         //eliminate those which are not free in the temporary list
         list<int>::iterator it = outList->begin();
-        while(it != outList->end()){
-            if(!isFree->at(*it)){
+        while (it != outList->end()) {
+            if (!isFree->at(*it)) {
                 it = outList->erase(it);
             } else {
                 it++;
             }
         }
-        if(initDist != 0){ //function is called for specific distance
+        if (initDist != 0) { //function is called for specific distance
             break;
         }
     }
     return outList;
 }
 
-int NearestAllocMapper::bestNode(list<int> & tiedNodes, int inTask) const
-{
+int NearestAllocMapper::bestNode(list<int> &tiedNodes, int inTask) const {
     int bestNode = 0;
     //optimization
-    if(tiedNodes.size() == 1){
+    if (tiedNodes.size() == 1) {
         bestNode = tiedNodes.front();
         tiedNodes.clear();
     } else {
         //get allocated neighbors
         vector<unsigned int> neighbors;
         vector<double> neighWeights;
-        for(map<int, int>::iterator it = commGraph->at(inTask).begin(); it != commGraph->at(inTask).end(); it++){
-            if(vertexToNode[it->first] != -1){ //if allocated
+        for (map<int, int>::iterator it = commGraph->at(inTask).begin();
+             it != commGraph->at(inTask).end(); it++) {
+            if (vertexToNode[it->first] != -1) { //if allocated
                 neighbors.push_back(vertexToNode[it->first]);
                 neighWeights.push_back(it->second);
             }
@@ -443,20 +438,20 @@ int NearestAllocMapper::bestNode(list<int> & tiedNodes, int inTask) const
         double minWeight = DBL_MAX;
         double bestToCenter = DBL_MAX; //used to break ties
         list<int>::iterator bestIt; //to be able to erase from the list
-        for(list<int>::iterator nodeIt = tiedNodes.begin(); nodeIt != tiedNodes.end(); nodeIt++){
+        for (list<int>::iterator nodeIt = tiedNodes.begin(); nodeIt != tiedNodes.end(); nodeIt++) {
             double curWeight = 0;
             //iterate over task neighbors and
             //calculate the total comm distance if this task was allocated here
-            for(unsigned int nIt = 0; nIt < neighbors.size(); nIt++){
+            for (unsigned int nIt = 0; nIt < neighbors.size(); nIt++) {
                 curWeight += mach.getNodeDistance(neighbors[nIt], *nodeIt) * neighWeights[nIt];
             }
-            if(curWeight < minWeight
-              || (curWeight == minWeight
-                  && mach.getNodeDistance(*nodeIt,centerNode) < bestToCenter) ){
+            if (curWeight < minWeight
+                || (curWeight == minWeight
+                    && mach.getNodeDistance(*nodeIt, centerNode) < bestToCenter)) {
                 minWeight = curWeight;
                 bestNode = *nodeIt;
                 bestIt = nodeIt;
-                bestToCenter = mach.getNodeDistance(*nodeIt,centerNode);
+                bestToCenter = mach.getNodeDistance(*nodeIt, centerNode);
             }
         }
         tiedNodes.erase(bestIt);
@@ -464,16 +459,15 @@ int NearestAllocMapper::bestNode(list<int> & tiedNodes, int inTask) const
     return bestNode;
 }
 
-void NearestAllocMapper::updateTaskList(int mappedTask, FibonacciHeap & taskList)
-{
+void NearestAllocMapper::updateTaskList(int mappedTask, FibonacciHeap &taskList) {
     //look at neighbors of the mapped task
-    for(map<int, int>::const_iterator it = commGraph->at(mappedTask).begin();
-      it != commGraph->at(mappedTask).end();
-      it++){
-        if(!marked[it->first]){ //add this neighbor to the tsak list
+    for (map<int, int>::const_iterator it = commGraph->at(mappedTask).begin();
+         it != commGraph->at(mappedTask).end();
+         it++) {
+        if (!marked[it->first]) { //add this neighbor to the tsak list
             marked[it->first] = true;
             taskList.insert(it->first, -it->second);
-        } else if(vertexToNode[it->first] == -1) {
+        } else if (vertexToNode[it->first] == -1) {
             //this neighbor was already in the list; update its weight
             taskList.decreaseKey(it->first, (taskList.getKey(it->first) - it->second));
         }

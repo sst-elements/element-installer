@@ -23,22 +23,23 @@
 
 namespace SST {
     namespace Scheduler {
-        
-            class ObjectRetrievalEvent : public SST::Event{
-                public:
-                       ObjectRetrievalEvent() : SST::Event(){}
-                           ObjectRetrievalEvent * copy(){
-                               ObjectRetrievalEvent * newEvent = new ObjectRetrievalEvent();
-                                   newEvent -> payload = payload;
-                                   
-                                   return newEvent;
-                           }
-                       
-                           SST::Component * payload;
-                           
-                      NotSerializable(ObjectRetrievalEvent)
-            };
-        
+
+        class ObjectRetrievalEvent : public SST::Event {
+        public:
+            ObjectRetrievalEvent() : SST::Event() {}
+
+            ObjectRetrievalEvent *copy() {
+                ObjectRetrievalEvent *newEvent = new ObjectRetrievalEvent();
+                newEvent->payload = payload;
+
+                return newEvent;
+            }
+
+            SST::Component *payload;
+
+            NotSerializable(ObjectRetrievalEvent)
+        };
+
     }
 }
 #endif

@@ -19,45 +19,45 @@
 #include "funcSM/collectiveTree.h"
 
 namespace SST {
-namespace Firefly {
+    namespace Firefly {
 
-class BarrierFuncSM :  public CollectiveTreeFuncSM 
-{
-  public:
-    SST_ELI_REGISTER_MODULE(
-        BarrierFuncSM,
-        "firefly",
-        "Barrier",
-        SST_ELI_ELEMENT_VERSION(1,0,0),
-        "",
-        ""
-    )
+        class BarrierFuncSM : public CollectiveTreeFuncSM {
+        public:
+            SST_ELI_REGISTER_MODULE(
+                BarrierFuncSM,
+            "firefly",
+            "Barrier",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "",
+            ""
+            )
 
-  public:
-    BarrierFuncSM( SST::Params& params ) : CollectiveTreeFuncSM( params ) {}
+        public:
+            BarrierFuncSM(SST::Params &params) : CollectiveTreeFuncSM(params) {}
 
-    virtual void handleStartEvent( SST::Event* e, Retval& retval ) {
-        BarrierStartEvent* event = static_cast<BarrierStartEvent*>( e );
+            virtual void handleStartEvent(SST::Event *e, Retval &retval) {
+                BarrierStartEvent *event = static_cast<BarrierStartEvent *>( e );
 
-		Hermes::MemAddr addr(1,NULL);
-        CollectiveStartEvent* tmp = new CollectiveStartEvent( addr, addr, 0,
-                MP::CHAR, MP::MAX, 0, event->group, 
-                                CollectiveStartEvent::Allreduce );
+                Hermes::MemAddr addr(1, nullptr);
+                CollectiveStartEvent *tmp = new CollectiveStartEvent(addr, addr, 0,
+                                                                     MP::CHAR, MP::MAX, 0,
+                                                                     event->group,
+                                                                     CollectiveStartEvent::Allreduce);
 
-        delete event;
+                delete event;
 
-        CollectiveTreeFuncSM::handleStartEvent(
-                        static_cast<SST::Event*>( tmp ), retval );
+                CollectiveTreeFuncSM::handleStartEvent(
+                    static_cast<SST::Event *>( tmp ), retval);
+            }
+
+            virtual void handleEnterEvent(Retval &retval) {
+                CollectiveTreeFuncSM::handleEnterEvent(retval);
+            }
+
+            virtual std::string protocolName() { return "CtrlMsgProtocol"; }
+        };
+
     }
-
-    virtual void handleEnterEvent( Retval& retval ) {
-        CollectiveTreeFuncSM::handleEnterEvent( retval );
-    }
-
-    virtual std::string protocolName() { return "CtrlMsgProtocol"; }
-};
-
-}
 }
 
 #endif

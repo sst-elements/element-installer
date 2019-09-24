@@ -26,25 +26,25 @@ namespace SST {
     namespace Scheduler {
 
         class SnapshotEvent : public SST::Event {
-            public:
+        public:
 
-                SnapshotEvent(SimTime_t time, int jobNum) : SST::Event() {
-                    this -> time = time;
-                    this -> jobNum = jobNum;
-                    this -> nextJobArrivalTime = 0;
-                }
+            SnapshotEvent(SimTime_t time, int jobNum) : SST::Event() {
+                this->time = time;
+                this->jobNum = jobNum;
+                this->nextJobArrivalTime = 0;
+            }
 
-                SimTime_t time;   //current time of the snapshot
-                int jobNum;
-                //ITMI itmi;
-                unsigned long nextJobArrivalTime;
-                std::map<int, ITMI> runningJobs;
+            SimTime_t time;   //current time of the snapshot
+            int jobNum;
+            //ITMI itmi;
+            unsigned long nextJobArrivalTime;
+            std::map<int, ITMI> runningJobs;
 
-            private:
-                SnapshotEvent();
+        private:
+            SnapshotEvent();
 
-                NotSerializable(SnapshotEvent)
-         };
+            NotSerializable(SnapshotEvent)
+        };
 
     }
 }

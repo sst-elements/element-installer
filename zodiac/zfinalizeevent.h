@@ -22,19 +22,20 @@
 using namespace SST::Hermes;
 
 namespace SST {
-namespace Zodiac {
+    namespace Zodiac {
 
-class ZodiacFinalizeEvent : public ZodiacEvent {
+        class ZodiacFinalizeEvent : public ZodiacEvent {
 
-	public:
-		ZodiacFinalizeEvent();
-		ZodiacEventType getEventType();
+        public:
+            ZodiacFinalizeEvent();
 
-	private:
+            ZodiacEventType getEventType();
 
-};
+        private:
 
-}
+        };
+
+    }
 }
 
 #endif

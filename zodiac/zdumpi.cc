@@ -23,40 +23,40 @@ using namespace std;
 using namespace SST;
 using namespace SST::Zodiac;
 
-ZodiacDUMPITraceReader::ZodiacDUMPITraceReader(ComponentId_t id, Params& params) :
-  Component(id) {
+ZodiacDUMPITraceReader::ZodiacDUMPITraceReader(ComponentId_t id, Params &params) :
+    Component(id) {
 
     string msgiface = params.find<std::string>("msgapi");
 
-    if ( msgiface == "" ) {
+    if (msgiface == "") {
         msgapi = new SST::Hermes::MP::Interface(this);
     } else {
-	msgapi = dynamic_cast<SST::Hermes::MP::Interface*>(loadSubComponent(msgiface, this, params));
+        msgapi = dynamic_cast<SST::Hermes::MP::Interface *>(loadSubComponent(msgiface, this,
+                                                                             params));
 
-        if(NULL == msgapi) {
-		std::cerr << "Message API: " << msgiface << " could not be loaded." << std::endl;
-		exit(-1);
+        if (nullptr == msgapi) {
+            std::cerr << "Message API: " << msgiface << " could not be loaded." << std::endl;
+            exit(-1);
         }
     }
 
     string trace_file = params.find<std::string>("tracefile");
-    if("" == trace_file) {
-	std::cerr << "Error: could not find a file contain a trace to simulate!" << std::endl;
-	exit(-1);
+    if ("" == trace_file) {
+        std::cerr << "Error: could not find a file contain a trace to simulate!" << std::endl;
+        exit(-1);
     }
 
     uint32_t rank = params.find<uint32_t>("rank", 0);
-    eventQ = new std::queue<ZodiacEvent*>();
+    eventQ = new std::queue<ZodiacEvent *>();
     trace = new DUMPIReader(trace_file, rank, 64, eventQ);
 }
 
 ZodiacDUMPITraceReader::~ZodiacDUMPITraceReader() {
-	trace->close();
+    trace->close();
 }
 
 ZodiacDUMPITraceReader::ZodiacDUMPITraceReader() :
-    Component(-1)
-{
+    Component(-1) {
     // for serialization only
 }
 
@@ -64,8 +64,8 @@ void ZodiacDUMPITraceReader::handleEvent(Event *ev) {
 
 }
 
-bool ZodiacDUMPITraceReader::clockTic( Cycle_t ) {
-  // return false so we keep going
-  return false;
+bool ZodiacDUMPITraceReader::clockTic(Cycle_t) {
+    // return false so we keep going
+    return false;
 }
 

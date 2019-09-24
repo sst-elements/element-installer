@@ -3,9 +3,8 @@
 import re
 import sys;
 
-
-reqPattern = re.compile('\A[0-9]+:Cache::makeCPUResponse\(\):[0-9]+ ([^ ]+): Creating ([0-9]+) byte Response to CPU: \([0-9+, [0-9]+\) in Response To (\([0-9]+, [0-9]+\)) \[(WriteResp|ReadResp): (0x[0-9a-f]+)\] \[0x([0-9a-f]+)\]')
-
+reqPattern = re.compile(
+    '\A[0-9]+:Cache::makeCPUResponse\(\):[0-9]+ ([^ ]+): Creating ([0-9]+) byte Response to CPU: \([0-9+, [0-9]+\) in Response To (\([0-9]+, [0-9]+\)) \[(WriteResp|ReadResp): (0x[0-9a-f]+)\] \[0x([0-9a-f]+)\]')
 
 reqs = dict()
 
@@ -26,7 +25,7 @@ with open(sys.argv[1]) as f:
 
             if cmd == "WriteResp":
                 for byte in range(size):
-                    reqs[addr + byte] = val[byte*2:(byte+1)*2]
+                    reqs[addr + byte] = val[byte * 2:(byte + 1) * 2]
                     stores = stores + 1
             else:
                 loads = loads + 1
@@ -35,9 +34,10 @@ with open(sys.argv[1]) as f:
                     if addr2 in reqs:
                         matchedLoads = matchedLoads + 1
                         oldval = reqs[addr2]
-                        if oldval != val[byte*2:(byte+1)*2]:
-                            sys.stderr.write( "Read %s of address %s has value %s.  Does not match old value of %s.\n\n" % (tag, addr, val, oldval))
+                        if oldval != val[byte * 2:(byte + 1) * 2]:
+                            sys.stderr.write(
+                                "Read %s of address %s has value %s.  Does not match old value of %s.\n\n" % (
+                                tag, addr, val, oldval))
                             sys.exit(0)
 
-
-sys.stderr.write( "Checked %d stores, matched %d loads (%d total)\n" % (stores, matchedLoads, loads))
+sys.stderr.write("Checked %d stores, matched %d loads (%d total)\n" % (stores, matchedLoads, loads))

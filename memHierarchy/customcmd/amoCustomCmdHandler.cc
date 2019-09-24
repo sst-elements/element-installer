@@ -23,24 +23,24 @@ using namespace std;
 using namespace SST;
 using namespace SST::MemHierarchy;
 
-CustomCmdMemHandler::MemEventInfo AMOCustomCmdMemHandler::receive(MemEventBase* ev){
-    CustomCmdMemHandler::MemEventInfo MEI(ev->getRoutingAddress(),true);
+CustomCmdMemHandler::MemEventInfo AMOCustomCmdMemHandler::receive(MemEventBase *ev) {
+    CustomCmdMemHandler::MemEventInfo MEI(ev->getRoutingAddress(), true);
     return MEI;
 }
 
-CustomCmdInfo* AMOCustomCmdMemHandler::ready(MemEventBase* ev){
-    CustomCmdEvent * cme = static_cast<CustomCmdEvent*>(ev);
+CustomCmdInfo *AMOCustomCmdMemHandler::ready(MemEventBase *ev) {
+    CustomCmdEvent *cme = static_cast<CustomCmdEvent *>(ev);
     CustomOpCodeCmdInfo *CI = new CustomOpCodeCmdInfo(cme->getID(),
-                                        cme->getRqstr(),
-                                        cme->getAddr(),
-                                        cme->getOpCode(),
-                                        MemEventBase::F_SUCCESS);
+                                                      cme->getRqstr(),
+                                                      cme->getAddr(),
+                                                      cme->getOpCode(),
+                                                      MemEventBase::F_SUCCESS);
     return CI;
 }
 
-MemEventBase* AMOCustomCmdMemHandler::finish(MemEventBase *ev, uint32_t flags){
-    if(ev->queryFlag(MemEventBase::F_NORESPONSE)||
-         ((flags & MemEventBase::F_NORESPONSE)>0)){
+MemEventBase *AMOCustomCmdMemHandler::finish(MemEventBase *ev, uint32_t flags) {
+    if (ev->queryFlag(MemEventBase::F_NORESPONSE) ||
+        ((flags & MemEventBase::F_NORESPONSE) > 0)) {
         // posted request
         return nullptr;
     }

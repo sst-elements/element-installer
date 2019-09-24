@@ -18,31 +18,31 @@
 
 namespace SST {
     namespace Scheduler {
-        
-            class JobKillEvent : public SST::Event{
-                public:
-                       
-                           JobKillEvent( int jobNumber ) : SST::Event(){
-                               this->jobNum= jobNumber;
-                           }
-                       
-                           
-                           JobKillEvent * copy(){
-                               JobKillEvent * newKill = new JobKillEvent( jobNum);
-                                   newKill->jobNum= jobNum;
-                                   
-                                   return newKill;
-                           }
-                       
-                           
-                           int jobNum;
-                           
-                private:
-                        JobKillEvent();
-                            
-                        NotSerializable(JobKillEvent)
-            };
-        
+
+        class JobKillEvent : public SST::Event {
+        public:
+
+            JobKillEvent(int jobNumber) : SST::Event() {
+                this->jobNum = jobNumber;
+            }
+
+
+            JobKillEvent *copy() {
+                JobKillEvent *newKill = new JobKillEvent(jobNum);
+                newKill->jobNum = jobNum;
+
+                return newKill;
+            }
+
+
+            int jobNum;
+
+        private:
+            JobKillEvent();
+
+            NotSerializable(JobKillEvent)
+        };
+
     }
 }
 #endif
