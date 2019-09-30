@@ -7,112 +7,213 @@ import shutil
 import subprocess
 import urllib.request
 
+# single official list of all trusted elements
 ELEMENT_LIST_URL = "https://raw.githubusercontent.com/sabbirahm3d/sst-elements/standalone/elements"
+CWD = os.getcwd()
 
 
-def get_elements():
+def list_all_elements():
+    """Grab official list of trusted elements
+
+    The list document is a simple file with elements delimited by '\n'
+
+    Returns:
+        {list{str}} -- list of elements
+    """
     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:
         return elements_list.read().decode("utf-8").split()
 
 
 def uninstall(element):
+    """Remove and uninstall element from system
+
+    The path of the element is first located before a subprocess instance is
+    created to avoid shell injection
+
+    Arguments:
+        element {str} -- name of element
+    """
 
     if os.path.exists(element):
         shutil.rmtree(element)
-        command = "sst-register -u {}".format(element)
-        subprocess.call(command, shell=True)
+        subprocess.call(
+            f"sst-register -u {element}", shell=True
+        )
     else:
         print(f"{element} not found")
 
 
-def clone(element, url, force=False):
+def __clone(element, url, force=False):
+    """Clone repository of element if it is deemed official and trusted
+
+    If element is found on `list_all_elements()`, it will be cloned from its
+    repository with the URL provided
+
+    Arguments:
+        element {str} -- name of element
+        url {str} -- base URL of repositories
+
+    Keyword Arguments:
+        force {bool} -- flag to force install (default: {False})
+                        If true and element is already installed,
+                        the element is re-cloned
+    """
     if os.path.exists(element):
         if not force:
             print(element, "already installed")
             return
         else:
             uninstall(element)
-    if element in get_elements():
-        command = "git clone {url}{element}".format(url=url, element=element)
-        subprocess.call(command, shell=True)
+
+    if element in list_all_elements():
+        subprocess.call(
+            f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
+        )
     else:
         print(f"{element} not found")
         exit(1)
 
 
-def get_requirements(element):
+def __get_dependencies(element):
+    """Parse dependencies of element into list
 
+    Arguments:
+        element {str} -- name of element
+
+    Returns:
+        {list{str}} -- dependencies
+    """
     print(f"Gathering dependencies for {element}...")
     with open(element + "/requirements.txt") as req_file:
         return req_file.read().split()
 
 
+def __add_dependencies(old, new):
+    """Add new elements to list of dependencies
+
+    If the new list of dependencies include elements already in the original
+    list of dependencies, the index of the element is shifted to properly
+    update the dependency graph
+
+    Arguments:
+        old {list{str}} -- original list of dependencies
+        new {list{str}} -- new list of elements to be added as dependencies
+
+    Returns:
+        {list{str}} -- updated list of dependencies
+    """
+    for elem in new:
+        if elem in old:
+            old.remove(elem)
+        old.append(elem)
+
+    return old
+
+
+def __get_var_path(elem, dep):
+    """Generate Makefile variable definitions for elements with dependencies
+
+    Arguments:
+        elem {str} -- name of element
+        dep {list{str}} -- list of dependencies for the element
+    """
+    return (elem, " ".join(f"{i}={CWD}/{i}"for i in dep))
+
+
 def install(element, url, force=False):
+    """Install element as well as its dependencies
 
-    requirements = []
+    The element's repository is first cloned and its dependencies are
+    determined. The dependency elements are then cloned as well until no more
+    dependencies are required. All the elements are finally installed with
+    their respective Makefiles in the reversed order of when they were added.
 
-    def __add_requirements(old, new):
+    Arguments:
+        element {str} -- name of element
+        url {str} -- URL of element repository
 
-        for elem in new:
-            if elem in old:
-                old.remove(elem)
-            old.append(elem)
+    Keyword Arguments:
+        force {bool} -- flag to force install (default: {False})
+                        If true and element is already installed,
+                        the element is re-cloned
+    """
+    install_vars = []
+    dependencies = []
 
-        return old
+    # clone the targeted element repository
+    __clone(element, url, force)
+    # add its dependencies as well as its Makefile variable definitions
+    dependencies.extend(__get_dependencies(element))
+    install_vars.append(__get_var_path(element, dependencies))
 
-    clone(element, url, force)
-    requirements.extend(get_requirements(element))
-    if requirements:
-        print(f"Found dependencies: {', '.join(requirements)}")
-        for i in requirements:
-            clone(i, url, force)
-            new_requirements = get_requirements(i)
-            requirements = __add_requirements(requirements, new_requirements)
-            if new_requirements:
+    # if the element depends on any other elements
+    if dependencies:
+        print(f"Found dependencies: {', '.join(dependencies)}")
+
+        # loop through its dependencies to generate a dependency graph
+        for dep in dependencies:
+            __clone(dep, url, force)
+            # update the list of elements to be installed along with their
+            # corresponding makefile variable definitions
+            new_dependencies = __get_dependencies(dep)
+            dependencies = __add_dependencies(dependencies, new_dependencies)
+            install_vars.append(__get_var_path(dep, new_dependencies))
+            if new_dependencies:
                 print(
-                    f"Found dependencies: {', '.join(new_requirements)} (from {i})"
+                    f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
                 )
 
-        requirements = requirements[::-1] + [element]
+        # reverse the dependency graph represented in a flat array so that
+        # the parent elements are installed before their children
+        install_vars = install_vars[::-1]
         print("Installing dependencies...")
+
+    # if the element does not depend on any other elements
     else:
         print("No dependencies found")
 
-    for element in requirements:
+    for element, path in install_vars:
         print(f"Installing {element}...")
         subprocess.call(
-            f"""cd {element} && make all && sst-register {element} {element}_LIBDIR={os.getcwd()} && cd -""",
-            shell=True
+            f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
+            shell=True, stdout=subprocess.DEVNULL
         )
+
+    print(f"Installed {', '.join(i[0] for i in install_vars)}")
 
 
 def list_elems():
+    """List elements installed in system
 
+    This function is a wrapper for the list option provided by SST
+    """
     subprocess.call("sst-register -l", shell=True)
 
 
-parser = argparse.ArgumentParser(description="SST Element Installer")
-parser.add_argument("--install", "-i", metavar="ELEMENT",
-                    type=str, default="", help="Install element")
-parser.add_argument("--uninstall", "-u", metavar="ELEMENT",
-                    type=str, default="", help="Uninstall element")
-parser.add_argument("--force", "-f", action="store_true", default=False)
-parser.add_argument("--list", "-l", action="store_true", default=False)
-parser.add_argument("--url", "-x", type=str,
-                    default="https://github.com/sabbirahm3d/")
+if __name__ == "__main__":
 
-args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="SST Element Installer")
+    parser.add_argument("--install", "-i", metavar="ELEMENT",
+                        type=str, default="", help="Install element")
+    parser.add_argument("--uninstall", "-u", metavar="ELEMENT",
+                        type=str, default="", help="Uninstall element")
+    parser.add_argument("--force", "-f", action="store_true", default=False)
+    parser.add_argument("--list", "-l", action="store_true", default=False)
+    parser.add_argument("--url", "-x", type=str,
+                        default="https://github.com/sabbirahm3d/")
 
-if args.install and args.uninstall:
-    print("no")
-    exit(1)
+    args = parser.parse_args()
 
-if args.install:
-    install(args.install, args.url, args.force)
+    # install and uninstall options are mutually exclusive
+    if args.install and args.uninstall:
+        parser.print_help()
+        exit(1)
 
-if args.uninstall:
-    uninstall(args.uninstall)
+    elif args.install:
+        install(args.install, args.url, args.force)
 
-else:
-    if args.list:
+    elif args.uninstall:
+        uninstall(args.uninstall)
+
+    elif args.list:
         list_elems()
