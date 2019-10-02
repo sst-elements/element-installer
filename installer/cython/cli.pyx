@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import os
 import shutil
 import subprocess
-from typing import List, Tuple
 import urllib.request
 
-from .config import ELEMENT_LIST_URL
+# single official list of all trusted elements
+ELEMENT_LIST_URL = "https://raw.githubusercontent.com/sabbirahm3d/sst-elements/standalone/elements"
 
-CWD: str = os.getcwd()
+# official repository collection of all elements
+ELEMENT_REPO_URL = "https://github.com/sabbirahm3d/"
+
+CWD = os.getcwd()
 
 
-def list_all_elements() -> List[str]:
+def list_all_elements():
     """Grab official list of trusted elements
 
     The list document is a simple file with elements delimited by '\n'
@@ -23,7 +27,7 @@ def list_all_elements() -> List[str]:
         return elements_list.read().decode("utf-8").split()
 
 
-def uninstall(element: str) -> None:
+cdef void uninstall(str element):
     """Remove and uninstall element from system
 
     The path of the element is first located before a subprocess instance is created to avoid shell
@@ -41,7 +45,7 @@ def uninstall(element: str) -> None:
         print(f"{element} not found")
 
 
-def __clone(element: str, url: str, force: bool) -> None:
+cdef void __clone(str element, str url, bint force):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `list_all_elements()`, it will be cloned from its repository with the
@@ -67,7 +71,7 @@ def __clone(element: str, url: str, force: bool) -> None:
         exit(1)
 
 
-def __get_dependencies(element: str) -> List[str]:
+cdef __get_dependencies(str element):
     """Parse dependencies of element into list
 
     :param element: name of element
@@ -75,11 +79,11 @@ def __get_dependencies(element: str) -> List[str]:
     :return: dependencies
     """
     print(f"Gathering dependencies for {element}...")
-    with open(element + "/requirements.txt") as req_file:
+    with open(element + "/dependencies.txt") as req_file:
         return req_file.read().split()
 
 
-def __add_dependencies(old: List[str], new: List[str]) -> List[str]:
+def __add_dependencies(old, new):
     """Add new elements to list of dependencies
 
     If the new list of dependencies include elements already in the original list of dependencies,
@@ -98,7 +102,7 @@ def __add_dependencies(old: List[str], new: List[str]) -> List[str]:
     return old
 
 
-def __get_var_path(elem: str, dep: List[str]) -> Tuple[str, str]:
+def __get_var_path(elem, dep):
     """Generate Makefile variable definitions for elements with dependencies
 
     :param elem: name of element
@@ -109,7 +113,7 @@ def __get_var_path(elem: str, dep: List[str]) -> Tuple[str, str]:
     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)
 
 
-def install(element: str, url: str, force: bool = False) -> None:
+cdef void install(str element, str url, bint force = False):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -166,9 +170,40 @@ def install(element: str, url: str, force: bool = False) -> None:
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
 
 
-def list_elems() -> None:
+cdef void list_elems():
     """List elements installed in system
 
     This function is a wrapper for the list option provided by SST
     """
     subprocess.call("sst-register -l", shell=True)
+
+
+if __name__ == "__main__":
+
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
+    parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+                        help="Install element")
+    parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+                        help="Uninstall element")
+    parser.add_argument("--force", "-f", action="store_true", default=False)
+    parser.add_argument("--list", "-l", action="store_true", default=False)
+    parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
+
+    args: argparse.Namespace = parser.parse_args()
+
+    # install and uninstall options are mutually exclusive
+    if args.install and args.uninstall:
+        parser.print_help()
+        exit(1)
+
+    elif args.install:
+        install(args.install, args.url, args.force)
+
+    elif args.uninstall:
+        uninstall(args.uninstall)
+
+    elif args.list:
+        list_elems()
+
+    else:
+        parser.print_help()
