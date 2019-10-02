@@ -52,7 +52,8 @@ namespace SST {
                     } else {
                         flags |= MAP_ANON;
                     }
-                    m_buffer = (uint8_t *) mmap(nullptr, size, PROT_READ | PROT_WRITE, flags, m_fd, 0);
+                    m_buffer = (uint8_t *) mmap(nullptr, size, PROT_READ | PROT_WRITE, flags, m_fd,
+                                                0);
 
                     if (m_buffer == MAP_FAILED) {
                         throw 2;
@@ -71,8 +72,9 @@ namespace SST {
                 }
 
                 void set(Addr addr, size_t size, std::vector <uint8_t> &data) {
-                    for (size_t i = 0; i < size; i++)
+                    for (size_t i = 0; i < size; i++) {
                         m_buffer[addr + i] = data[i];
+                    }
                 }
 
                 uint8_t get(Addr addr) {
@@ -80,8 +82,9 @@ namespace SST {
                 }
 
                 void get(Addr addr, size_t size, std::vector <uint8_t> &data) {
-                    for (size_t i = 0; i < size; i++)
+                    for (size_t i = 0; i < size; i++) {
                         data[i] = m_buffer[addr + i];
+                    }
                 }
 
             private:

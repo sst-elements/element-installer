@@ -1215,7 +1215,8 @@ CacheAction MESIController::handlePutMRequest(MemEvent *event, CacheLine *cacheL
         case E_Inv:
             if (reqEvent->getCmd() == Command::FlushLineInv) {
                 event->getDirty() ? cacheLine->setState(M) : cacheLine->setState(E);
-                if (handleFlushLineInvRequest(reqEvent, cacheLine, nullptr, true) == DONE) return DONE;
+                if (handleFlushLineInvRequest(reqEvent, cacheLine, nullptr, true) == DONE)
+                    return DONE;
                 else return IGNORE;
             } else {
                 sendResponseDown(reqEvent, cacheLine, event->getDirty(), true);
@@ -1229,7 +1230,8 @@ CacheAction MESIController::handlePutMRequest(MemEvent *event, CacheLine *cacheL
                 cacheLine->setState(I);
             } else if (reqEvent->getCmd() == Command::FlushLineInv) {
                 cacheLine->setState(M);
-                if (handleFlushLineInvRequest(reqEvent, cacheLine, nullptr, true) == DONE) return DONE;
+                if (handleFlushLineInvRequest(reqEvent, cacheLine, nullptr, true) == DONE)
+                    return DONE;
                 else return IGNORE;
             } else {
                 cacheLine->setState(M);

@@ -39,12 +39,12 @@ def run_sim(options):
     # Parse scheduler snapshot->run ember->Parse ember output->run scheduler->...
     if options.shuffle == True:
         ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s --shuffle > %s" % (
-        options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
-        options.rankmapper, options.emberOutFile)
+            options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
+            options.rankmapper, options.emberOutFile)
     else:
         ember_cmd = "./%s --xml %s --alpha %s --link_arrangement %s --routing %s --rankmapper %s > %s" % (
-        options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
-        options.rankmapper, options.emberOutFile)
+            options.sched_parser, options.xmlFile, options.alpha, options.link_arrangement, options.routing,
+            options.rankmapper, options.emberOutFile)
 
     # ember_cmd = "./%s --xml %s > %s" %(options.sched_parser, options.xmlFile, options.emberOutFile)
     # ember_cmd = "./%s --xml %s --alpha %s" %(options.sched_parser, options.xmlFile, options.alpha)

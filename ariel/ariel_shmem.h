@@ -131,7 +131,7 @@ namespace SST {
             }
 
             void waitForChild(void) {
-                while (sharedData->child_attached == 0);
+                while (sharedData->child_attached == 0) {}
             }
 
             /** Update the current simulation cycle count in the SharedData region */

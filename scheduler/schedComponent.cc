@@ -257,8 +257,10 @@ void schedComponent::setup() {
         schedout.output("ignoreUntilTime: %llu\n", this->ignoreUntilTime);
 
         schedout.output("The jobs that are still running in ember\n");
-        for (std::map < int, std::pair < unsigned long, int
-            >> ::iterator iter = emberRunningJobs.begin(); iter != emberRunningJobs.end();
+        for (std::map <int, std::pair<unsigned long, int
+        >> ::iterator
+        iter = emberRunningJobs.begin();
+        iter != emberRunningJobs.end();
         iter++){
             schedout.output("Job %d: soFarRunningTime: %lu currentMotifCount: %d\n", iter->first,
                             iter->second.first, iter->second.second);

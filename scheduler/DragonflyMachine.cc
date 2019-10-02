@@ -242,8 +242,9 @@ list<int> *DragonflyMachine::getFreeAtDistance(int center, int distance) const {
         rQ1 = rQ2;
         distance--;
     }
-    for (int i = 0; i < numRouters; i++)
+    for (int i = 0; i < numRouters; i++) {
         rQ1->push_back(i);
+    }
 
     //get all nodes connected to the routers in the queue
     while (!rQ1->empty()) {

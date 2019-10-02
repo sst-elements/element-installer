@@ -19,8 +19,8 @@ def run(cmd):
 
 def submit_job(options):
     exp_name = "%s_%s_%s_%sKB_N%s_alpha%s_%s_%s_%s_iter%s" % (
-    options.system_name, options.link_arrangement, options.routing, options.message_size, options.N, options.alpha,
-    options.application, options.allocator, options.mapper, options.iteration)
+        options.system_name, options.link_arrangement, options.routing, options.message_size, options.N, options.alpha,
+        options.application, options.allocator, options.mapper, options.iteration)
 
     options.outdir = "%s/%s/%s" % (options.main_sim_path, options.exp_folder, exp_name)
     # os.environ['SIMOUTPUT'] = folder
@@ -30,12 +30,12 @@ def submit_job(options):
     execcommand += "export SIMOUTPUT=%s/\n" % (options.outdir)
     if options.application == "alltoall" or options.application == "alltoallnative" or options.application == "bisection":
         execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper linear --routing %s --shuffle --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" % (
-        options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
-        options.mapper, options.application, options.N, options.message_size)
+            options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
+            options.mapper, options.application, options.N, options.message_size)
     else:
         execcommand += "python run_DetailedNetworkSim.py --emberOut ember.out --alpha %s --link_arrangement %s --rankmapper custom --routing %s --schedPy ./%s_%s_%s_%s_N%s_%sKB.py\n" % (
-        options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
-        options.mapper, options.application, options.N, options.message_size)
+            options.alpha, options.link_arrangement, options.routing, options.system_name, options.allocator,
+            options.mapper, options.application, options.N, options.message_size)
     execcommand += "date\n"
 
     shfile = "%s/%s.sh" % (options.outdir, exp_name)
@@ -66,7 +66,7 @@ def submit_job(options):
         cmd = "chmod +x %s" % (shfile)
         run(cmd)
         cmd = ("qsub -q bme.q,budge.q,bungee.q,icsg.q -cwd -l mem_free=16G,s_vmem=16G -S /bin/bash -o %s -j y %s" % (
-        outfile, shfile))
+            outfile, shfile))
         run(cmd)
         # run("%s" %(shfile))
 

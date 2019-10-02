@@ -621,8 +621,9 @@ void MemController::readData(MemEvent *event) {
 void MemController::writeData(Addr addr, std::vector <uint8_t> *data) {
     if (!backing_) return;
 
-    for (size_t i = 0; i < data->size(); i++)
+    for (size_t i = 0; i < data->size(); i++) {
         backing_->set(addr + i, data->at(i));
+    }
 }
 
 
@@ -631,8 +632,9 @@ void MemController::readData(Addr addr, size_t bytes, std::vector <uint8_t> &dat
 
     if (!backing_) return;
 
-    for (size_t i = 0; i < bytes; i++)
+    for (size_t i = 0; i < bytes; i++) {
         data[i] = backing_->get(addr + i);
+    }
 }
 
 

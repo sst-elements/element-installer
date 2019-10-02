@@ -168,8 +168,9 @@ bool MemBackendConvertor::clock(Cycle_t cycle) {
  */
 void MemBackendConvertor::turnClockOn(Cycle_t cycle) {
     Cycle_t cyclesOff = cycle - m_cycleCount;
-    for (Cycle_t i = 0; i < cyclesOff; i++)
+    for (Cycle_t i = 0; i < cyclesOff; i++) {
         stat_outstandingReqs->addData(m_pendingRequests.size());
+    }
     m_cycleCount = cycle;
     m_clockOn = true;
 }

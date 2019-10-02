@@ -433,8 +433,9 @@ namespace SST {
                 }
 
                 void clearSharers(void) {
-                    for (uint32_t i = 0; i < sharers.size(); i++)
+                    for (uint32_t i = 0; i < sharers.size(); i++) {
                         sharers[i] = false;
+                    }
                 }
 
                 void addSharer(int id) {

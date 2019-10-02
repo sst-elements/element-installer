@@ -886,12 +886,14 @@ bool Opal::tick(SST::Cycle_t x) {
 void Opal::finish() {
     uint32_t i;
 
-    for (i = 0; i < num_nodes; i++)
+    for (i = 0; i < num_nodes; i++) {
         nodeInfo[i]->pool->finish();
+    }
 
 
-    for (i = 0; i < num_shared_mempools; i++)
+    for (i = 0; i < num_shared_mempools; i++) {
         sharedMemoryInfo[i]->finish();
+    }
 
 }
 

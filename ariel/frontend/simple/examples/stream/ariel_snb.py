@@ -255,8 +255,8 @@ for next_group in range(groups):
         dc.addParams({
             "memNIC.addr_range_start": next_memory_ctrl_id * mem_interleave_size,
             "memNIC.addr_range_end": (memory_capacity * 1024 * 1024) - (
-                        groups * memory_controllers_per_group * mem_interleave_size) + (
-                                                 next_memory_ctrl_id * mem_interleave_size)
+                    groups * memory_controllers_per_group * mem_interleave_size) + (
+                                             next_memory_ctrl_id * mem_interleave_size)
         })
         dc.addParams(dc_params)
 

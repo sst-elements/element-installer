@@ -792,13 +792,15 @@ bool c_DeviceDriver::occupyCommandBus(c_BankCommand *l_cmdPtr) {
     }
 
     //Check whether all command buses are occupied
-    for (auto &value: m_blockColCmd)
+    for (auto &value: m_blockColCmd) {
         if (value == 0)
             l_NumAvailableBus++;
+    }
 
-    for (auto &value: m_blockRowCmd)
+    for (auto &value: m_blockRowCmd) {
         if (value == 0)
             l_NumAvailableBus++;
+    }
 
     if (l_NumAvailableBus > 0) {
         return false;
@@ -942,8 +944,9 @@ unsigned c_DeviceDriver::getNumIssuedACTinFAW(unsigned x_rankid) {
     // get count of ACT cmds issued in the FAW
     unsigned l_cmdACTIssuedInFAW = 0;
     assert(m_cmdACTFAWtrackers[x_rankid].size() == m_bankParams.at("nFAW") - 1);
-    for (auto &l_issued : m_cmdACTFAWtrackers[x_rankid])
+    for (auto &l_issued : m_cmdACTFAWtrackers[x_rankid]) {
         l_cmdACTIssuedInFAW += l_issued;
+    }
     return l_cmdACTIssuedInFAW;
 }
 

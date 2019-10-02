@@ -35,7 +35,8 @@ namespace SST {
             )
 
         public:
-            MakeProgressFuncSM(SST::Params &params) : FunctionSMInterface(params), m_event(nullptr) {}
+            MakeProgressFuncSM(SST::Params &params) : FunctionSMInterface(params),
+                                                      m_event(nullptr) {}
 
             virtual std::string protocolName() { return "CtrlMsgProtocol"; }
 

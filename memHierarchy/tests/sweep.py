@@ -69,9 +69,9 @@ for protocol in protocols:
 
                             command = ["sst sweep.xml"]
                             print(
-                                        "Output File: " + outFile + " Protocol: " + protocol + ", Repl: " + repl + ", MSHR Size: " + mshr_size + ", "),
+                                    "Output File: " + outFile + " Protocol: " + protocol + ", Repl: " + repl + ", MSHR Size: " + mshr_size + ", "),
                             print(
-                                        "L1 Assoc: " + l1_assoc + ", L1 Size: " + l1_size + ", L2 Assoc: " + l2_assoc + ", L2 Size: " + l2_size)
+                                    "L1 Assoc: " + l1_assoc + ", L1 Size: " + l1_size + ", L2 Assoc: " + l2_assoc + ", L2 Size: " + l2_size)
 
                             outFd = open(outPath, "w")
                             returnType = subprocess.call(command, stdout=outFd, shell=True)

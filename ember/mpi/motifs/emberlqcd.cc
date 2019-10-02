@@ -195,22 +195,25 @@ void EmberLQCDGenerator::setup_hyper_prime() {
     while (i < num_nodes) {
         /* figure out which prime to divide by starting with largest */
         k = len_primes - 1;
-        while ((num_nodes / i) % prime[k] != 0 && k > 0) --k;
+        while ((num_nodes / i) % prime[k] != 0 && k > 0) { --k; }
         /* figure out which direction to divide */
 
         /* find largest dimension of h-cubes divisible by prime[k] */
-        for (j = 0, dir = XUP; dir <= TUP; dir++)
+        for (j = 0, dir = XUP; dir <= TUP; dir++) {
             if (squaresize[dir] > j && squaresize[dir] % prime[k] == 0)
                 j = squaresize[dir];
+        }
 
         /* if one direction with largest dimension has already been
            divided, divide it again.  Otherwise divide first direction
            with largest dimension. */
-        for (dir = XUP; dir <= TUP; dir++)
+        for (dir = XUP; dir <= TUP; dir++) {
             if (squaresize[dir] == j && nsquares[dir] > 1)break;
+        }
         if (dir > TUP)
-            for (dir = XUP; dir <= TUP; dir++)
+            for (dir = XUP; dir <= TUP; dir++) {
                 if (squaresize[dir] == j)break;
+            }
         /* This can fail if I run out of prime factors in the dimensions */
         if (dir > TUP) {
             if (rank() == 0)

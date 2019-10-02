@@ -81,7 +81,7 @@ namespace SST {
         inline int log2Of(int x) {
             int temp = x;
             int result = 0;
-            while (temp >>= 1) result++;
+            while (temp >>= 1) { result++; }
             return result;
         }
 

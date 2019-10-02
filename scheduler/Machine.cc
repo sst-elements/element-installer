@@ -36,8 +36,9 @@ Machine::Machine(int inNumNodes,
 
 Machine::~Machine() {
     if (D_matrix != nullptr) {
-        for (int i = 0; i < numNodes; i++)
+        for (int i = 0; i < numNodes; i++) {
             delete[] D_matrix[i];
+        }
         delete[] D_matrix;
     }
 }

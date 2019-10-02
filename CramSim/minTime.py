@@ -121,12 +121,12 @@ for line in inFile:
                                     if delta < minDict[struct][calCmd][cmd]:
                                         minDict[struct][calCmd][cmd] = delta
                                         minLineDict[struct][calCmd][cmd][0] = \
-                                        lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
+                                            lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
                                         minLineDict[struct][calCmd][cmd][1] = line
                                 else:
                                     minDict[struct][calCmd][cmd] = delta
                                     minLineDict[struct][calCmd][cmd][0] = \
-                                    lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
+                                        lastCmdLine[calCmd][calChan][calRank][calGroup][calBank]
                                     minLineDict[struct][calCmd][cmd][1] = line
 
     lastCmd[cmd][chan][rank][bankGroup][bank] = cycle

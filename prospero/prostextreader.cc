@@ -58,8 +58,7 @@ ProsperoTraceEntry *ProsperoTextTraceReader::readNextEntry() {
     char reqType = 'R';
     uint32_t reqLength = 0;
 
-    if (EOF == fscanf(traceInput, "%" PRIu64
-    " %c %"
+    if (EOF == fscanf(traceInput, "%" PRIu64" %c %"
     PRIu64
     " %"
     PRIu32

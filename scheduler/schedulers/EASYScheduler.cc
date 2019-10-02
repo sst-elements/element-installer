@@ -39,12 +39,12 @@ using namespace std;
 using namespace SST::Scheduler;
 
 const EASYScheduler::compTableEntry EASYScheduler::compTable[6] = {
-    {FIFO, "fifo"},
+    {FIFO,       "fifo"},
     {LARGEFIRST, "largefirst"},
     {SMALLFIRST, "smallfirst"},
-    {LONGFIRST, "longfirst"},
+    {LONGFIRST,  "longfirst"},
     {SHORTFIRST, "shortfirst"},
-    {BETTERFIT, "betterfit"}
+    {BETTERFIT,  "betterfit"}
 };
 
 const int EASYScheduler::numCompTableEntries = 6;
@@ -301,8 +301,9 @@ EASYScheduler::JobComparator::JobComparator(ComparatorType type) {
 
 
 void EASYScheduler::JobComparator::printComparatorList(ostream &out) {
-    for (int i = 0; i < numCompTableEntries; i++)
+    for (int i = 0; i < numCompTableEntries; i++) {
         out << "  " << compTable[i].name << endl;
+    }
 }
 
 EASYScheduler::JobComparator *EASYScheduler::JobComparator::Make(string typeName) {

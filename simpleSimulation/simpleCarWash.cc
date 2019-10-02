@@ -259,8 +259,9 @@ namespace SST {
             CAR_RECORD *ptr = m_ptrCarRecordList;
 
             if (nullptr != ptr) {            // Check to see if the list is empty
-                while (nullptr != ptr->ptrNext)    // If not walk down the list to the end
-                    ptr = ptr->ptrNext;        //
+                while (nullptr != ptr->ptrNext) {    // If not walk down the list to the end
+                    ptr = ptr->ptrNext;
+                }        //
             }  // if(nullptr != ptr...
 
             // Allocate a bit of memory, formatted for a car record, and set the pointers.

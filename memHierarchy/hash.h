@@ -61,15 +61,18 @@ namespace SST {
         public:
             uint64_t hash(uint32_t ID, uint64_t x) {
                 unsigned char b[8];
-                for (unsigned i = 0; i < 8; ++i)
+                for (unsigned i = 0; i < 8; ++i) {
                     b[i] = (x >> (i * 8)) & 0xff;
+                }
 
-                for (unsigned i = 0; i < 7; ++i)
+                for (unsigned i = 0; i < 7; ++i) {
                     b[i] ^= b[i + 1];
+                }
 
                 uint64_t result = 0;
-                for (unsigned i = 0; i < 8; ++i)
+                for (unsigned i = 0; i < 8; ++i) {
                     result |= (b[i] << (i * 8));
+                }
 
                 return result;
             }

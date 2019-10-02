@@ -222,7 +222,7 @@ class DDRBuilder:
         })
         self.next_ddr_id = self.next_ddr_id + 1
         return (mem, "network", mesh_link_latency), (mem, "network_ack", mesh_link_latency), (
-        mem, "network_fwd", mesh_link_latency), (mem, "network_data", mesh_link_latency)
+            mem, "network_fwd", mesh_link_latency), (mem, "network_data", mesh_link_latency)
 
 
 class DDRDCBuilder:
@@ -267,7 +267,7 @@ class DDRDCBuilder:
 
         self.next_ddr_dc_id = self.next_ddr_dc_id + 1
         return (dc, "network", mesh_link_latency), (dc, "network_ack", mesh_link_latency), (
-        dc, "network_fwd", mesh_link_latency), (dc, "network_data", mesh_link_latency)
+            dc, "network_fwd", mesh_link_latency), (dc, "network_data", mesh_link_latency)
 
 
 class TileBuilder:
@@ -415,7 +415,7 @@ class TileBuilder:
         self.next_core_id = self.next_core_id + 1
 
         return (tileL2cache, "directory", mesh_link_latency), (tileL2cache, "directory_ack", mesh_link_latency), (
-        tileL2cache, "directory_fwd", mesh_link_latency), (tileL2cache, "directory_data", mesh_link_latency)
+            tileL2cache, "directory_fwd", mesh_link_latency), (tileL2cache, "directory_data", mesh_link_latency)
 
 
 tileBuilder = TileBuilder()

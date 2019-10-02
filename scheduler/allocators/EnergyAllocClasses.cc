@@ -38,13 +38,15 @@ namespace SST {
                 //rounds off the solution stored in x with the given number of processors
                 //find the (numneeded) largest values in x, set these processors to value 1
                 int count;
-                for (count = 0; count < processors; count++)
+                for (count = 0; count < processors; count++) {
                     newx[count] = 0;
+                }
 
                 for (count = 0; count < numneeded; count++) {
                     int xcount = 0;
-                    while (newx[xcount] != 0)
+                    while (newx[xcount] != 0) {
                         xcount++;
+                    }
                     double max = x[xcount];
                     int maxpos = xcount;
                     for (; xcount < processors; xcount++) {

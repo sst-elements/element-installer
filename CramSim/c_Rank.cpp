@@ -48,9 +48,10 @@ c_Rank::c_Rank(std::map<std::string, unsigned> *x_bankParams) {
 }
 
 c_Rank::~c_Rank() {
-    for (unsigned l_i = 0; l_i != m_bankGroupPtrs.size(); ++l_i)
+    for (unsigned l_i = 0; l_i != m_bankGroupPtrs.size(); ++l_i) {
         if (m_bankGroupPtrs.at(l_i) != nullptr)
             delete m_bankGroupPtrs.at(l_i);
+    }
 }
 
 void c_Rank::acceptBankGroup(c_BankGroup *x_bankGroupPtr) {
@@ -65,8 +66,9 @@ void c_Rank::acceptChannel(c_Channel *x_channelPtr) {
 
 unsigned c_Rank::getNumBanks() const {
     unsigned l_numBanks = 0;
-    for (auto &l_bankGroupPtr : m_bankGroupPtrs)
+    for (auto &l_bankGroupPtr : m_bankGroupPtrs) {
         l_numBanks += l_bankGroupPtr->getNumBanks();
+    }
 
     return l_numBanks;
 }

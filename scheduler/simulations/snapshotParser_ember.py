@@ -215,7 +215,7 @@ def generate_scheduler_inputs(InfoPair, TimeObject, JobObjects, options):
 
             # Write the updated time and motif counts
             line = "job\t%d\t%d\t%d\n" % (
-            Job.jobNum, (Job.soFarRunningTime + emberTime), (Job.startingMotif + emberMotifNum))
+                Job.jobNum, (Job.soFarRunningTime + emberTime), (Job.startingMotif + emberMotifNum))
             erFile.writelines(line)
 
     ecFile.close()

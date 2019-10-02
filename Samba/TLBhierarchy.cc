@@ -173,8 +173,9 @@ bool TLBhierarchy::tick(SST::Cycle_t x) {
 
             addr = invalid_addrs.front();
 
-            for (int level = levels; level >= 1; level--)
+            for (int level = levels; level >= 1; level--) {
                 TLB_CACHE[level]->invalidate(addr);
+            }
 
             PTW->invalidate(addr);
 

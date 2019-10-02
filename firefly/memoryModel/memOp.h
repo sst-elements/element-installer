@@ -41,7 +41,8 @@ public:
     MemOp(Hermes::Vaddr addr, size_t length, Op op, Callback callback = nullptr) :
         addr(addr), length(length), type(op), offset(0), callback(callback), m_pending(0) {}
 
-    MemOp(Hermes::Vaddr dest, Hermes::Vaddr src, size_t length, Op op, Callback callback = nullptr) :
+    MemOp(Hermes::Vaddr dest, Hermes::Vaddr src, size_t length, Op op, Callback callback = nullptr)
+        :
         dest(dest), src(src), length(length), type(op), offset(0), chunk(0), callback(callback),
         m_pending(0) {
         //printf("%s() dest=%#lx src=%#lx length=%lu\n",__func__,dest,src,length);

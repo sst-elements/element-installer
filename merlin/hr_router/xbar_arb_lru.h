@@ -103,7 +103,7 @@ namespace SST {
 #endif
             ) {
 
-                for (int i = 0; i < num_ports; i++) progress_vc[i] = -1;
+                for (int i = 0; i < num_ports; i++) { progress_vc[i] = -1; }
 
                 // std::cout << "---------" << std::endl;
                 // for ( int i = 0; i < total_entries; i++ ) {

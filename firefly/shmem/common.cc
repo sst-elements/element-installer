@@ -106,9 +106,10 @@ void ShmemCommon::build_kary_tree(int radix, int PE_start, int stride,
                         "\t\tid=%d, parent=%d, children[%d] = { ",
                         my_id, *parent, *num_children);
 
-        for (i = 0; i < *num_children && len < sizeof(debug_str); i++)
+        for (i = 0; i < *num_children && len < sizeof(debug_str); i++) {
             len += snprintf(debug_str + len, sizeof(debug_str) - len, "%d ",
                             children[i]);
+        }
 
         if (len < sizeof(debug_str))
             len += snprintf(debug_str + len, sizeof(debug_str) - len, "}");

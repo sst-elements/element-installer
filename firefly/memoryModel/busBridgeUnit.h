@@ -19,9 +19,9 @@ class BusBridgeUnit : public Unit {
 
     struct Entry {
         Entry(UnitBase *src, MemReq *req, Callback *callback = nullptr) : src(src), req(req),
-                                                                       callback(callback),
-                                                                       addr(req->addr),
-                                                                       length(req->length) {}
+                                                                          callback(callback),
+                                                                          addr(req->addr),
+                                                                          length(req->length) {}
 
         MemReq *req;
         Callback *callback;

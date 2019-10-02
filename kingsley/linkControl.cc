@@ -92,7 +92,7 @@ namespace SST {
 
             // The output credits are set to zero and the other side of the
             // link will send the number of tokens.
-            for (int i = 0; i < req_vns; i++) rtr_credits[i] = 0;
+            for (int i = 0; i < req_vns; i++) { rtr_credits[i] = 0; }
 
             // Configure the links
             // For now give it a fake timebase.  Will give it the real timebase during init

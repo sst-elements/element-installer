@@ -105,7 +105,7 @@ def convertToMicro(number, unit):
 
 def set_file_name(options):
     exp_name = "N%s_alpha%s_%s_%s_%s_iter%s" % (
-    options.N, options.alpha, options.application, options.allocator, options.mapper, options.iteration)
+        options.N, options.alpha, options.application, options.allocator, options.mapper, options.iteration)
     options.outdir = "%s/%s/%s" % (options.main_sim_path, options.exp_folder, exp_name)
 
     options.runtimeFile = "%s/ember.out" % (options.outdir)

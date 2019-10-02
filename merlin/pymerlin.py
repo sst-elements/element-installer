@@ -1302,7 +1302,8 @@ class TrafficGenEndPoint(EndPoint):
             self.nicKeys.append("PacketDest:NearestNeighbor:3DSize")
             if not "PacketDest:NearestNeighbor:3DSize" in _params:
                 _params["PacketDest:NearestNeighbor:3DSize"] = "%s %s %s" % (
-                _params["PacketDest:3D shape X"], _params["PacketDest:3D shape Y"], _params["PacketDest:3D shape Z"])
+                    _params["PacketDest:3D shape X"], _params["PacketDest:3D shape Y"],
+                    _params["PacketDest:3D shape Z"])
         elif _params["PacketDest:pattern"] == "HotSpot":
             self.nicKeys.append("PacketDest:HotSpot:target")
             self.nicKeys.append("PacketDest:HotSpot:targetProbability")

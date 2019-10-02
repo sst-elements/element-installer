@@ -347,8 +347,9 @@ namespace SST {
 
             /** Destructor - Delete all cache line objects */
             virtual ~CacheArray() {
-                for (unsigned int i = 0; i < lines_.size(); i++)
+                for (unsigned int i = 0; i < lines_.size(); i++) {
                     delete lines_[i];
+                }
                 delete replacementMgr_;
                 delete hash_;
             }

@@ -384,8 +384,9 @@ pair<long, long> *LInfDistFromCenterScorer::valueOf(MeshLocation *center,
     //returns the sum of the LInf distances of the num closest processors
 
     long retVal = 0;
-    for (unsigned int i = 0; i < procs->size(); i++)
+    for (unsigned int i = 0; i < procs->size(); i++) {
         retVal += center->LInfDistanceTo(*((*procs)[i]));
+    }
 
     long tiebreak = tiebreaker->getTiebreak(center, procs, mach);
 
@@ -414,8 +415,9 @@ pair<long, long> *L1DistFromCenterScorer::valueOf(MeshLocation *center,
                                                   StencilMachine *mach) {
     //returns sum of L1 distances from center
     long retVal = 0;
-    for (unsigned int i = 0; i < procs->size(); i++)
+    for (unsigned int i = 0; i < procs->size(); i++) {
         retVal += center->L1DistanceTo(*(procs->at(i)));
+    }
     return new pair<long, long>(retVal, 0);
 }
 

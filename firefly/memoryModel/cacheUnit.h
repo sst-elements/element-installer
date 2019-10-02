@@ -37,7 +37,8 @@ class CacheUnit : public Unit {
 public:
     CacheUnit(SimpleMemoryModel &model, Output &dbg, int id, Unit *memory, int cacheSize,
               int cacheLineSize, int numMSHR, std::string name) :
-        Unit(model, dbg), m_memory(memory), m_numPending(0), m_blockedSrc(nullptr), m_numMSHR(numMSHR),
+        Unit(model, dbg), m_memory(memory), m_numPending(0), m_blockedSrc(nullptr),
+        m_numMSHR(numMSHR),
         m_scheduled(false),
         m_cacheLineSize(cacheLineSize), m_qSize(numMSHR), m_numIssuedLoads(0),
         m_cache(cacheSize), m_blockedOnMemUnit(false) {

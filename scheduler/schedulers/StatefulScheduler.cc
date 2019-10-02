@@ -36,12 +36,12 @@ using namespace std;
 using namespace SST::Scheduler;
 
 const StatefulScheduler::compTableEntry StatefulScheduler::compTable[6] = {
-    {FIFO, "fifo"},
+    {FIFO,       "fifo"},
     {LARGEFIRST, "largefirst"},
     {SMALLFIRST, "smallfirst"},
-    {LONGFIRST, "longfirst"},
+    {LONGFIRST,  "longfirst"},
     {SHORTFIRST, "shortfirst"},
-    {BETTERFIT, "betterfit"}};
+    {BETTERFIT,  "betterfit"}};
 const int StatefulScheduler::numCompTableEntries = 6;
 
 //each manager has a different constructor for stateful scheduler
@@ -1110,7 +1110,8 @@ void StatefulScheduler::EvenLessManager::deepCopy(set<SchedChange *, SCComparato
     for (set<SchedChange *, SCComparator>::iterator sc = from->begin(); sc != from->end(); sc++) {
         if (!((*sc)->isEnd)) {
             SchedChange *je = new SchedChange(
-                (*sc)->getTime() + (*sc)->j->getEstimatedRunningTime(), (*sc)->j, true, mach, nullptr);
+                (*sc)->getTime() + (*sc)->j->getEstimatedRunningTime(), (*sc)->j, true, mach,
+                nullptr);
             SchedChange *js = new SchedChange((*sc)->getTime(), (*sc)->j, false, mach, je);
             to->insert(js);
             to->insert(je);

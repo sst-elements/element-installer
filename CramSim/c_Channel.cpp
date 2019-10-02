@@ -52,9 +52,10 @@ c_Channel::c_Channel(std::map<std::string, unsigned> *x_bankParams, unsigned x_c
 
 
 c_Channel::~c_Channel() {
-    for (unsigned l_i = 0; l_i != m_rankPtrs.size(); ++l_i)
+    for (unsigned l_i = 0; l_i != m_rankPtrs.size(); ++l_i) {
         if (m_rankPtrs.at(l_i) != nullptr)
             delete m_rankPtrs.at(l_i);
+    }
 }
 
 void c_Channel::acceptRank(c_Rank *x_rankPtr) {
@@ -64,8 +65,9 @@ void c_Channel::acceptRank(c_Rank *x_rankPtr) {
 
 unsigned c_Channel::getNumBanks() const {
     unsigned l_numBanks = 0;
-    for (auto &l_rankPtr : m_rankPtrs)
+    for (auto &l_rankPtr : m_rankPtrs) {
         l_numBanks += l_rankPtr->getNumBanks();
+    }
 
     return l_numBanks;
 }

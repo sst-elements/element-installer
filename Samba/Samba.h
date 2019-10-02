@@ -102,7 +102,7 @@ namespace SST {
 
             void setup() {};
 
-            void finish() { for (int i = 0; i < (int) core_count; i++) TLB[i]->finish(); };
+            void finish() { for (int i = 0; i < (int) core_count; i++) { TLB[i]->finish(); }};
 
             void handleEvent(SST::Event *event) {};
 

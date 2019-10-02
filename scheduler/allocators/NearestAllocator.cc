@@ -280,8 +280,9 @@ AllocInfo *NearestAllocator::allocate(Job *job, std::vector<MeshLocation *> *ava
         if (recordingTies && val->first == bestVal->first) {
             delete alloc;
             alloc = new std::vector<MeshLocation *>();
-            for (int i = 0; i < nodesNeeded; i++)
+            for (int i = 0; i < nodesNeeded; i++) {
                 alloc->push_back((*nearest)[i]);
+            }
             bestAllocs->push_back(alloc);
         }
         delete nearest;

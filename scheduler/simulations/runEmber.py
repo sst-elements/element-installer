@@ -34,7 +34,7 @@ class Application:
         self.numTimeSteps = numTimeSteps
 
         self.timeStepMotif.append("Halo3D iterations=%s computetime=%s doreduce=0 nx=%s ny=%s nz=%s\n" % (
-        self.numBoundaryIter, self.computeTime, self.nx, self.ny, self.nz))
+            self.numBoundaryIter, self.computeTime, self.nx, self.ny, self.nz))
         self.timeStepMotif.append("Allreduce iterations=%s compute=0\n" % (self.numAllreduceIter))
 
 

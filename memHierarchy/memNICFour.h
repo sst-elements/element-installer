@@ -119,8 +119,9 @@ namespace SST {
             void init(unsigned int phase);
 
             void finish() {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++) {
                     link_control[i]->finish();
+                }
             }
 
             void setup();

@@ -157,14 +157,16 @@ FibonacciHeap::Node *FibonacciHeap::mergeRoots(Node *node0, Node *node1) {
 void FibonacciHeap::printNode(Node *node, int shift) const {
     if (node == nullptr)
         return;
-    for (int i = 0; i < shift; i++)
+    for (int i = 0; i < shift; i++) {
         std::cout << "\t";
+    }
     std::cout << node->ID << "(" << node->key << ")";
     if (node->marked)
         std::cout << "*";
     std::cout << "\n";
-    for (int i = 0; i < node->child.size(); i++)
+    for (int i = 0; i < node->child.size(); i++) {
         printNode(node->child[i], shift + 1);
+    }
 }
 
 void FibonacciHeap::print() const {

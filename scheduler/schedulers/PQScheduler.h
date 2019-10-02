@@ -60,7 +60,8 @@ namespace SST {
 
             class JobComparator : public std::binary_function<Job *, Job *, bool> {
             public:
-                static JobComparator *Make(std::string typeName);  //return nullptr if name is invalid
+                static JobComparator *Make(
+                    std::string typeName);  //return nullptr if name is invalid
                 static void printComparatorList(
                     std::ostream &out);  //print list of possible comparators
                 bool operator()(Job *&j1, Job *&j2);

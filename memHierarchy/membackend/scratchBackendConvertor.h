@@ -55,9 +55,10 @@ namespace SST {
 
                 MemEvent *getMemEvent() { return m_event; }
 
-                bool isWrite() { return (m_event->getCmd() == Command::PutM ||
-                                         (m_event->queryFlag(MemEvent::F_NONCACHEABLE) &&
-                                          m_event->getCmd() == Command::GetX)) ? true : false;
+                bool isWrite() {
+                    return (m_event->getCmd() == Command::PutM ||
+                            (m_event->queryFlag(MemEvent::F_NONCACHEABLE) &&
+                             m_event->getCmd() == Command::GetX)) ? true : false;
                 }
 
                 uint32_t size() { return m_event->getSize(); }

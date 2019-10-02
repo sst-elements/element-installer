@@ -161,7 +161,7 @@ namespace SST {
 #endif
             ) {
 
-                for (int i = 0; i < num_ports; i++) progress_vc[i] = -1;
+                for (int i = 0; i < num_ports; i++) { progress_vc[i] = -1; }
 
 
                 // Find all ports that have data and who's inputs to the xbar

@@ -1,5 +1,4 @@
 import sst
-import sys
 
 # Define SST core options
 sst.setProgramOption("timebase", "1ps")
@@ -105,7 +104,7 @@ memStartAddr = 0x00
 
 if (num_l2 % total_mems) != 0:
     print "FAIL Number of L2s (%d) must be a multiple of the total number memory controllers (%d)." % (
-    num_l2, total_mems)
+        num_l2, total_mems)
     raise SystemExit
 
 for next_group_id in range(hbmStacks):

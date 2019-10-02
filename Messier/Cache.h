@@ -109,9 +109,10 @@ namespace SST {
 
                 long long int set = (add / bs) % num_sets;
 
-                for (int i = 0; i < assoc; i++)
+                for (int i = 0; i < assoc; i++) {
                     if (valid[set][i] && (tag_array[set][i] / bs == add / bs))
                         return true;
+                }
 
                 return false;
 
@@ -124,7 +125,7 @@ namespace SST {
                 long long int set = (add / bs) % num_sets;
                 long long int evicted = 0;
 
-                for (int i = 0; i < assoc; i++)
+                for (int i = 0; i < assoc; i++) {
                     if (lru[set][i] == (assoc - 1)) {
                         evicted = tag_array[set][i];
                         valid[set][i] = true;
@@ -132,6 +133,7 @@ namespace SST {
                         dirty[set][i] = !clean;
                         break;
                     }
+                }
 
                 return evicted;
 
@@ -141,7 +143,7 @@ namespace SST {
 
                 long long int set = (add / bs) % num_sets;
 
-                for (int i = 0; i < assoc; i++)
+                for (int i = 0; i < assoc; i++) {
                     if (lru[set][i] == (assoc - 1)) {
                         //   valid[set][i] = true;
                         //  tag_array[set][i] = add;
@@ -150,6 +152,7 @@ namespace SST {
                         else
                             return false;
                     }
+                }
 
                 return false;
 
@@ -195,9 +198,10 @@ namespace SST {
                     return;
 
 
-                for (int i = 0; i < assoc; i++)
+                for (int i = 0; i < assoc; i++) {
                     if (lru[set][i] < lru_pos)
                         lru[set][i]++;
+                }
 
                 lru[set][lru_ind] = 0;
 

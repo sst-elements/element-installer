@@ -187,8 +187,9 @@ void Samba::init(unsigned int phase) {
 bool Samba::tick(SST::Cycle_t x) {
 
     // We tick the MMU hierarchy of each core
-    for (uint32_t i = 0; i < core_count; ++i)
+    for (uint32_t i = 0; i < core_count; ++i) {
         TLB[i]->tick(x);
+    }
 
 
     return false;

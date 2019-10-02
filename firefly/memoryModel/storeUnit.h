@@ -18,7 +18,8 @@ class StoreUnit : public Unit {
 public:
     StoreUnit(SimpleMemoryModel &model, Output &dbg, int id, int thread_id, Unit *cache,
               int numSlots, std::string name) :
-        Unit(model, dbg), m_qSize(numSlots), m_cache(cache), m_blocked(false), m_blockedSrc(nullptr),
+        Unit(model, dbg), m_qSize(numSlots), m_cache(cache), m_blocked(false),
+        m_blockedSrc(nullptr),
         m_scheduled(false), m_name(name) {
         m_prefix =
             "@t:" + std::to_string(id) + ":SimpleMemoryModel::" + name + "StoreUnit::@p():@l ";

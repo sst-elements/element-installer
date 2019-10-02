@@ -156,7 +156,8 @@ namespace SST {
         }
 
         void EmberGenerator::enQ_detailedCompute(Queue &q, std::string name,
-                                                 Params &params, std::function<int()> fini = nullptr) {
+                                                 Params &params,
+                                                 std::function<int()> fini = nullptr) {
             assert(m_detailedCompute);
             q.push(new EmberDetailedComputeEvent(&getOutput(), *m_detailedCompute, name, params,
                                                  fini));

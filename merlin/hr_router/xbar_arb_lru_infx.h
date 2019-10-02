@@ -104,7 +104,7 @@ namespace SST {
             ) {
                 // TraceFunction trace(CALL_INFO_LONG);
 
-                for (int i = 0; i < num_ports; i++) progress_vc[i] = -1;
+                for (int i = 0; i < num_ports; i++) { progress_vc[i] = -1; }
 
 
                 priority_entry_t *sat_list = &next_list[total_entries - 1];

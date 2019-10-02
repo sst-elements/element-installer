@@ -151,7 +151,7 @@ void DMAEngine::issueNextCommand() {
         opsInFlight++;
 
         // Keep issuing until we can't do any more
-        while (issueNextReadOperation());
+        while (issueNextReadOperation()) {}
     }
 }
 

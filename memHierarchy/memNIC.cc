@@ -62,8 +62,9 @@ void MemNICBase::build(Params &params) {
     uint32_t id;
     while (sources >> id) {
         sourceIDs.insert(id);
-        while (sources.peek() == ',' || sources.peek() == ' ')
+        while (sources.peek() == ',' || sources.peek() == ' ') {
             sources.ignore();
+        }
     }
 
     if (sourceIDs.empty())
@@ -71,8 +72,9 @@ void MemNICBase::build(Params &params) {
 
     while (destinations >> id) {
         destIDs.insert(id);
-        while (destinations.peek() == ',' || destinations.peek() == ' ')
+        while (destinations.peek() == ',' || destinations.peek() == ' ') {
             destinations.ignore();
+        }
     }
     if (destIDs.empty())
         destIDs.insert(info.id + 1);

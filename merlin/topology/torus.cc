@@ -47,8 +47,9 @@ topo_torus::topo_torus(Component *comp, Params &params) :
 
     std::string width = params.find<std::string>("torus:width", "");
     if (width.compare("") == 0) {
-        for (int i = 0; i < dimensions; i++)
+        for (int i = 0; i < dimensions; i++) {
             dim_width[i] = 1;
+        }
     } else {
         parseDimString(width, dim_width);
     }

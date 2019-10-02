@@ -253,10 +253,11 @@ void NVM_DIMM::schedule_delivery() {
 BANK *NVM_DIMM::getFreeBank(long long int Address) {
 
     long long int add = Address;
-    for (int i = 0; i < params->num_banks; i++)
+    for (int i = 0; i < params->num_banks; i++) {
         if (bank_hist[i] == 0)
             if (ranks[WhichRank(add)]->getBank(i)->getBusyUntil() < cycles)
                 return (ranks[WhichRank(add)])->getBank(i);
+    }
 
     return (ranks[WhichRank(add)])->getBank(WhichBank(add));
 

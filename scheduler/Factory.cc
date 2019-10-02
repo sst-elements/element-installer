@@ -463,8 +463,9 @@ Allocator *Factory::getAllocator(SST::Params &params, Machine *m, schedComponent
             case SORTEDFREELIST:
                 schedout.debug(CALL_INFO, 4, 0, "Sorted Free List Allocator\n");
                 nearestparams = new vector<string>;
-                for (int x = 1; x < (int) schedparams->size(); x++)
+                for (int x = 1; x < (int) schedparams->size(); x++) {
                     nearestparams->push_back(schedparams->at(x));
+                }
                 return new SortedFreeListAllocator(nearestparams, m);
 
                 //Constraint Allocator tries to separate nodes whose estimated failure rates are close

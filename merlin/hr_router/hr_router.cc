@@ -39,11 +39,11 @@ int hr_router::print_debug = 0;
 static string trim(string str) {
     // Find whitespace in front
     int front_index = 0;
-    while (isspace(str[front_index])) front_index++;
+    while (isspace(str[front_index])) { front_index++; }
 
     // Find whitespace in back
     int back_index = str.length() - 1;
-    while (isspace(str[back_index])) back_index--;
+    while (isspace(str[back_index])) { back_index--; }
 
     return str.substr(front_index, back_index - front_index + 1);
 }

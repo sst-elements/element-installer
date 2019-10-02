@@ -49,8 +49,9 @@ topo_hyperx::topo_hyperx(Component *comp, Params &params) :
 
     std::string width = params.find<std::string>("hyperx:width", "");
     if (width.compare("") == 0) {
-        for (int i = 0; i < dimensions; i++)
+        for (int i = 0; i < dimensions; i++) {
             dim_width[i] = 1;
+        }
     } else {
         parseDimString(width, dim_width);
     }

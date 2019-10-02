@@ -339,7 +339,7 @@ def generate_ember_script(TimeObject, JobObjects, loadfile, mapfile, options):
     # execcommand += " --model-options=\"--topo=dragonfly2 --shape=2:4:1:9 --routingAlg=%s --link_arrangement=%s --numCores=2 --netFlitSize=8B --netPktSize=1024B --emberVerbose=0 --debug=0" %(options.routing, options.link_arrangement)
     # execcommand += " --model-options=\"--topo=dragonfly2 --shape=2:5:1:11 --routingAlg=%s --link_arrangement=%s --numCores=2 --netFlitSize=8B --netPktSize=1024B --emberVerbose=0 --debug=0" %(options.routing, options.link_arrangement)
     execcommand += " --model-options=\"--topo=dragonfly2 --shape=2:8:1:17 --routingAlg=%s --link_arrangement=%s --numCores=2 --netFlitSize=8B --netPktSize=1024B --emberVerbose=0 --debug=0" % (
-    options.routing, options.link_arrangement)
+        options.routing, options.link_arrangement)
     execcommand += " --host_bw=1GB/s --group_bw=1GB/s --global_bw=%sGB/s --netBW=%sGB/s" % (global_bw, netBW)
     execcommand += " --embermotifLog=" + options.output_folder + "motif"
     if options.rankmapper == "custom":

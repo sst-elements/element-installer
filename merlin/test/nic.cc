@@ -88,8 +88,9 @@ namespace SST {
 
             last_target = id;
             next_seq = new int[num_peers];
-            for (int i = 0; i < num_peers; i++)
+            for (int i = 0; i < num_peers; i++) {
                 next_seq[i] = 0;
+            }
 
             // Register a clock
             registerClock("1GHz", new Clock::Handler<nic>(this, &nic::clock_handler), false);

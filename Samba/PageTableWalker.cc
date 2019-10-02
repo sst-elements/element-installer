@@ -491,11 +491,12 @@ bool PageTableWalker::tick(SST::Cycle_t x) {
 
         // We check the structures in parallel to find if it hits
         int k;
-        for (k = 0; k < sizes; k++)
+        for (k = 0; k < sizes; k++) {
             if (check_hit(addr, k)) {
                 hit_id = k;
                 break;
             }
+        }
 
 
         // Check if we found the entry in the PTWC of PTEs
@@ -733,9 +734,10 @@ bool PageTableWalker::check_hit(Address_t vadd, int struct_id) {
 
     int set = abs_int_Samba((vadd / page_size[struct_id]) % sets[struct_id]);
 
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (tags[struct_id][set][i] == vadd / page_size[struct_id])
             return valid[struct_id][set][i];
+    }
 
     return false;
 }
@@ -745,9 +747,10 @@ int PageTableWalker::find_victim_way(Address_t vadd, int struct_id) {
 
     int set = abs_int_Samba((vadd / page_size[struct_id]) % sets[struct_id]);
 
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (lru[struct_id][set][i] == (assoc[struct_id] - 1))
             return i;
+    }
 
 
     return 0;
@@ -759,11 +762,12 @@ void PageTableWalker::update_lru(Address_t vaddr, int struct_id) {
     int lru_place = assoc[struct_id] - 1;
 
     int set = abs_int_Samba((vaddr / page_size[struct_id]) % sets[struct_id]);
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (tags[struct_id][set][i] == vaddr / page_size[struct_id]) {
             lru_place = lru[struct_id][set][i];
             break;
         }
+    }
     for (int i = 0; i < assoc[struct_id]; i++) {
         if (lru[struct_id][set][i] == lru_place)
             lru[struct_id][set][i] = 0;

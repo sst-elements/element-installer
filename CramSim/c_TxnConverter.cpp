@@ -99,8 +99,9 @@ c_TxnConverter::c_TxnConverter(SST::Component *owner, SST::Params &x_params) : S
             exit(-1);
         }
         if (k_bankPolicy == 2) {
-            for (auto &it:m_bankInfo)
+            for (auto &it:m_bankInfo) {
                 it->setAutoPreTimer(k_bankCloseTime);
+            }
         }
     } else {
         std::cout << "TxnConverter: bank policy error!!\n";
@@ -157,9 +158,10 @@ void c_TxnConverter::run() {
 
     //For psuedo open page policy, update bankinfo
     if (k_bankPolicy == 2) {
-        for (auto &it:m_bankInfo)
+        for (auto &it:m_bankInfo) {
             if (it->isRowOpen())
                 it->clockTic(m_owner->getSimCycle());
+        }
     }
     assert(m_inputQ.empty());
 }

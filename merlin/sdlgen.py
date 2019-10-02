@@ -179,7 +179,7 @@ class topoTorus(Topo):
                 theirlocstr = formatLoc(theirdims)
                 for num in xrange(params["dimwidth"][dim]):
                     out.write("    <link name=link.%s:%s:%d port=port%d latency=%s />\n" % (
-                    mylocstr, theirlocstr, num, port, params["link_lat"]))
+                        mylocstr, theirlocstr, num, port, params["link_lat"]))
                     port = port + 1
 
                 # Negative direction
@@ -187,7 +187,7 @@ class topoTorus(Topo):
                 theirlocstr = formatLoc(theirdims)
                 for num in xrange(params["dimwidth"][dim]):
                     out.write("    <link name=link.%s:%s:%d port=port%d latency=%s />\n" % (
-                    theirlocstr, mylocstr, num, port, params["link_lat"]))
+                        theirlocstr, mylocstr, num, port, params["link_lat"]))
                     port = port + 1
 
             for n in xrange(params["torus:local_ports"]):
@@ -278,11 +278,11 @@ class topoFatTree(Topo):
 
                 for l in xrange(params["router_radix"] / 2):
                     out.write("    <link name=link:pod%d_aggr%d_edge%d port=port%d latency=%s />\n" % (
-                    pod, r, l, l, params["link_lat"]))
+                        pod, r, l, l, params["link_lat"]))
                 for l in xrange(params["router_radix"] / 2):
                     core = (params["router_radix"] / 2) * r + l
                     out.write("    <link name=link:pod%d_core%d port=port%d latency=%s />\n" % (
-                    pod, core, l + params["router_radix"] / 2, params["link_lat"]))
+                        pod, core, l + params["router_radix"] / 2, params["link_lat"]))
                 out.write("  </component>\n")
                 out.write("\n")
 
@@ -304,11 +304,11 @@ class topoFatTree(Topo):
                     node_id = node_id + r * params["fattree:hosts_per_edge_rtr"]
                     node_id = node_id + l
                     out.write("    <link name=link:pod%d_edge%d_node%d port=port%d latency=%s />\n" % (
-                    pod, r, node_id, l, params["link_lat"]))
+                        pod, r, node_id, l, params["link_lat"]))
 
                 for l in xrange(params["router_radix"] / 2):
                     out.write("    <link name=link:pod%d_aggr%d_edge%d port=port%d latency=%s />\n" % (
-                    pod, l, r, l + params["router_radix"] / 2, params["link_lat"]))
+                        pod, l, r, l + params["router_radix"] / 2, params["link_lat"]))
                 out.write("  </component>\n")
                 out.write("\n");
 
@@ -380,7 +380,7 @@ class topoDragonFly(Topo):
                 port = 0
                 for p in xrange(params["dragonfly:hosts_per_router"]):
                     out.write("    <link name=link:g%dr%dh%d port=port%d latency=%s />\n" % (
-                    g, r, p, port, params["link_lat"]))
+                        g, r, p, port, params["link_lat"]))
                     port = port + 1
 
                 for p in xrange(params["dragonfly:routers_per_group"]):
@@ -388,7 +388,7 @@ class topoDragonFly(Topo):
                         src = min(p, r)
                         dst = max(p, r)
                         out.write("    <link name=link:g%dr%dr%d port=port%d latency=%s />\n" % (
-                        g, src, dst, port, params["link_lat"]))
+                            g, src, dst, port, params["link_lat"]))
                         port = port + 1
 
                 for p in xrange(params["dragonfly:intergroup_per_router"]):
@@ -399,7 +399,7 @@ class topoDragonFly(Topo):
                     dst_g = max(g, tgt_grp % params["dragonfly:num_groups"])
 
                     out.write("    <link name=link:g%dg%d:%d port=port%d latency=%s />\n" % (
-                    src_g, dst_g, tgt_grp / params["dragonfly:num_groups"], port, params["link_lat"]))
+                        src_g, dst_g, tgt_grp / params["dragonfly:num_groups"], port, params["link_lat"]))
                     port = port + 1
                     tgt_grp = tgt_grp + 1
 
@@ -475,7 +475,7 @@ class TrafficGenEndPoint:
 
         if params["PacketDest:pattern"] == "NearestNeighbor":
             out.write("    <PacketDest:NearestNeighbor:3DSize> %s %s %s </PacketDest:NearestNeighbor:3DSize>\n" % (
-            params["PacketDest:3D shape X"], params["PacketDest:3D shape Y"], params["PacketDest:3D shape Z"]))
+                params["PacketDest:3D shape X"], params["PacketDest:3D shape Y"], params["PacketDest:3D shape Z"]))
         elif params["PacketDest:pattern"] == "HotSpot":
             params.emit(out, "PacketDest:HotSpot:target")
             params.emit(out, "PacketDest:HotSpot:targetProbability")

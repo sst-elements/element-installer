@@ -129,7 +129,8 @@ Statistics::Statistics(Machine *machine, Scheduler *sched, Allocator *alloc, Tas
                 if (logName == supportedLogs[i].logName) {
                     found = true;
 
-                    if ((nullptr == (StencilMachine *) machine) && ((ALLOC == i) || (VISUAL == i))) {
+                    if ((nullptr == (StencilMachine *) machine) &&
+                        ((ALLOC == i) || (VISUAL == i))) {
                         schedout.fatal(CALL_INFO, 1, "%s log only implemented for mesh/torus",
                                        string(logName).c_str());
                     }
@@ -152,7 +153,8 @@ Statistics::Statistics(Machine *machine, Scheduler *sched, Allocator *alloc, Tas
                 if (logName == supportedLogsFST[i].logName) {
                     found = true;
 
-                    if ((nullptr == (StencilMachine *) machine) && ((ALLOC == i) || (VISUAL == i))) {
+                    if ((nullptr == (StencilMachine *) machine) &&
+                        ((ALLOC == i) || (VISUAL == i))) {
                         schedout.fatal(CALL_INFO, 1, "%s log only implemented for mesh/torus",
                                        string(logName).c_str());
                     }

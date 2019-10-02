@@ -37,7 +37,7 @@ with open(sys.argv[1]) as f:
                         if oldval != val[byte * 2:(byte + 1) * 2]:
                             sys.stderr.write(
                                 "Read %s of address %s has value %s.  Does not match old value of %s.\n\n" % (
-                                tag, addr, val, oldval))
+                                    tag, addr, val, oldval))
                             sys.exit(0)
 
 sys.stderr.write("Checked %d stores, matched %d loads (%d total)\n" % (stores, matchedLoads, loads))

@@ -45,7 +45,7 @@ static PyMethodDef pyEventMethods[] = {
 static PyMemberDef pyEventMembers[] = {
     {(char *) "type", T_OBJECT, offsetof(PyEvent_t, type), 0, (char *) "Type of Event"},
     {(char *) "sst",  T_OBJECT, offsetof(PyEvent_t, dict), 0, (char *) "SST Event members"},
-    {nullptr,            0,        0,                         0, nullptr}
+    {nullptr,         0,        0,                         0, nullptr}
 };
 
 static PyTypeObject PyEventDef = {
@@ -98,9 +98,9 @@ static PyObject *pyLink_send(PyObject *self, PyObject *args);
 
 
 static PyMethodDef pyLinkMethods[] = {
-    {"recv", pyLink_recv, METH_NOARGS,  "Receive from a link"},
-    {"send", pyLink_send, METH_VARARGS, "Send on a link"},
-    {nullptr,   nullptr,        0,            nullptr}
+    {"recv",  pyLink_recv, METH_NOARGS,  "Receive from a link"},
+    {"send",  pyLink_send, METH_VARARGS, "Send on a link"},
+    {nullptr, nullptr,     0,            nullptr}
 };
 
 
@@ -163,7 +163,7 @@ static PyMethodDef pyProtoMethods[] = {
     {"init",      pyProto_init,      METH_O,       "Called during init"},
     {"setup",     pyProto_setup,     METH_NOARGS,  "Called during setup"},
     {"finish",    pyProto_finish,    METH_NOARGS,  "Called during finish"},
-    {nullptr,        nullptr,              0,            nullptr}
+    {nullptr,     nullptr,           0,            nullptr}
 };
 
 static PyTypeObject PyProtoDef = {

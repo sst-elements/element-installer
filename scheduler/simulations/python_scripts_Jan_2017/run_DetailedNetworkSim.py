@@ -46,8 +46,8 @@ def run_sim(options):
         run(ember_cmd)
 
         sched_cmd = "./%s --xml %s --emberOut %s --schedPy %s --ember_completed %s --ember_running %s " % (
-        options.ember_parser, options.xmlFile, options.emberOutFile, options.schedPythonFile,
-        options.emberCompletedFile, options.emberRunningFile)
+            options.ember_parser, options.xmlFile, options.emberOutFile, options.schedPythonFile,
+            options.emberCompletedFile, options.emberRunningFile)
         Rtnvalue = run(sched_cmd)
         if Rtnvalue != 0:
             sys.stderr.write(" run(sched_cmd)  returned NON zero \n")

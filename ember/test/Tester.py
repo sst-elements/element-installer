@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
-from CrossProduct import *
 import hashlib
+
+from CrossProduct import *
 
 config = "emberLoad.py"
 

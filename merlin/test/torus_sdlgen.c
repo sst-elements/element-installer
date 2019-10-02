@@ -121,13 +121,15 @@ main(int argc, char **argv) {
     fprintf(output, "    <topology> torus </topology>\n");
 
     fprintf(output, "    <torus:shape> %d", params.dims[0]);
-    for (int i = 1; i < params.ndim; i++)
+    for (int i = 1; i < params.ndim; i++) {
         fprintf(output, "x%d", params.dims[i]);
+    }
     fprintf(output, " </torus:shape>\n");
 
     fprintf(output, "    <torus:width> %d", params.dimwidth[0]);
-    for (int i = 1; i < params.ndim; i++)
+    for (int i = 1; i < params.ndim; i++) {
         fprintf(output, "x%d", params.dimwidth[i]);
+    }
     fprintf(output, " </torus:width>\n");
 
     fprintf(output, "    <torus:local_ports> %d </torus:local_ports>\n", params.numnodes);

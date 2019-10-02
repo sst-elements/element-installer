@@ -43,7 +43,9 @@ namespace SST {
 
             Value() : m_type(Empty), m_ptr(nullptr), m_length(0) {}
 
-            Value(const Value &obj) : m_type(Empty), m_ptr(nullptr), m_length(0) { copy(*this, obj); }
+            Value(const Value &obj) : m_type(Empty), m_ptr(nullptr), m_length(0) {
+                copy(*this, obj);
+            }
 
             Value &operator=(const Value &v) {
                 copy(*this, v);

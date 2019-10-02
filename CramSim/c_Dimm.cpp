@@ -308,8 +308,9 @@ c_Dimm::c_Dimm() :
 void c_Dimm::printQueues() {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::cout << "m_cmdResQ.size() = " << m_cmdResQ.size() << std::endl;
-    for (auto &l_cmdPtr : m_cmdResQ)
+    for (auto &l_cmdPtr : m_cmdResQ) {
         (l_cmdPtr)->print(m_simCycle);
+    }
 }
 
 bool c_Dimm::clockTic(SST::Cycle_t) {

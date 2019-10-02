@@ -164,8 +164,7 @@ namespace SST {
                 uint64_t pinAddr = 0;
 
                 while (!feof(popFile)) {
-                    if (EOF == fscanf(popFile, "%" PRIu64
-                    "\n", &pinAddr)) {
+                    if (EOF == fscanf(popFile, "%" PRIu64"\n", &pinAddr)) {
                         break;
                     }
 

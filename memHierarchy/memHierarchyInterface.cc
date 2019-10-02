@@ -290,8 +290,9 @@ void MemHierarchyInterface::updateCustomRequest(SimpleMem::Request *req, MemEven
 bool MemHierarchyInterface::initialize(const std::string &linkName, HandlerBase *handler) {
     recvHandler_ = handler;
     if (nullptr == recvHandler_) link_ = configureLink(linkName);
-    else link_ = configureLink(linkName, new Event::Handler<MemHierarchyInterface>(this,
-                                                                                   &MemHierarchyInterface::handleIncoming));
+    else
+        link_ = configureLink(linkName, new Event::Handler<MemHierarchyInterface>(this,
+                                                                                  &MemHierarchyInterface::handleIncoming));
 
     return (link_ != nullptr);
 }

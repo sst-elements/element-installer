@@ -276,8 +276,9 @@ void MemHierarchyScratchInterface::updateRequest(SimpleMem::Request *req, MemEve
 bool MemHierarchyScratchInterface::initialize(const std::string &linkName, HandlerBase *handler) {
     recvHandler_ = handler;
     if (nullptr == recvHandler_) link_ = configureLink(linkName);
-    else link_ = configureLink(linkName, new Event::Handler<MemHierarchyScratchInterface>(this,
-                                                                                          &MemHierarchyScratchInterface::handleIncoming));
+    else
+        link_ = configureLink(linkName, new Event::Handler<MemHierarchyScratchInterface>(this,
+                                                                                         &MemHierarchyScratchInterface::handleIncoming));
 
     return (link_ != nullptr);
 }

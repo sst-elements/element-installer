@@ -255,12 +255,13 @@ bool TLB::tick(SST::Cycle_t x) {
         int hit_id = 0;
 
         // We check the structures in parallel to find if it hits
-        for (int k = 0; k < sizes; k++)
+        for (int k = 0; k < sizes; k++) {
             if (check_hit(addr, k) || (perfect == 1)) {
                 hit = true;
                 hit_id = k;
                 break;
             }
+        }
 
         // If it hist in any page size structure, we update the lru position of the translation and update statistics
         if (hit) {
@@ -432,9 +433,10 @@ bool TLB::check_hit(Address_t vadd, int struct_id) {
 
 
     int set = abs_int((vadd / page_size[struct_id]) % sets[struct_id]);
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (tags[struct_id][set][i] == vadd / page_size[struct_id])
             return valid[struct_id][set][i];
+    }
 
     return false;
 }
@@ -444,9 +446,10 @@ int TLB::find_victim_way(Address_t vadd, int struct_id) {
 
     int set = abs_int((vadd / page_size[struct_id]) % sets[struct_id]);
 
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (lru[struct_id][set][i] == (assoc[struct_id] - 1))
             return i;
+    }
 
 
     return 0;
@@ -458,11 +461,12 @@ void TLB::update_lru(Address_t vaddr, int struct_id) {
     int lru_place = assoc[struct_id] - 1;
 
     int set = abs_int((vaddr / page_size[struct_id]) % sets[struct_id]);
-    for (int i = 0; i < assoc[struct_id]; i++)
+    for (int i = 0; i < assoc[struct_id]; i++) {
         if (tags[struct_id][set][i] == vaddr / page_size[struct_id]) {
             lru_place = lru[struct_id][set][i];
             break;
         }
+    }
     for (int i = 0; i < assoc[struct_id]; i++) {
         if (lru[struct_id][set][i] == lru_place)
             lru[struct_id][set][i] = 0;

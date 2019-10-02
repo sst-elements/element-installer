@@ -196,8 +196,9 @@ void Bus::configureParameters(SST::Params &params) {
 
     std::vector <Addr> addrArr;
     params.find_array<Addr>("debug_addr", addrArr);
-    for (std::vector<Addr>::iterator it = addrArr.begin(); it != addrArr.end(); it++)
+    for (std::vector<Addr>::iterator it = addrArr.begin(); it != addrArr.end(); it++) {
         DEBUG_ADDR.insert(*it);
+    }
 
     numHighNetPorts_ = 0;
     numLowNetPorts_ = 0;
@@ -237,14 +238,16 @@ void Bus::init(unsigned int phase) {
                            getName().c_str(), numLowNetPorts_,
                            memEvent->getVerboseString().c_str());
                 mapNodeEntry(memEvent->getSrc(), highNetPorts_[i]->getId());
-                for (int k = 0; k < numLowNetPorts_; k++)
+                for (int k = 0; k < numLowNetPorts_; k++) {
                     lowNetPorts_[k]->sendInitData(memEvent->clone());
+                }
             } else if (memEvent) {
                 dbg_.debug(_L10_, "bus %s broadcasting upper event to lower ports (%d): %s\n",
                            getName().c_str(), numLowNetPorts_,
                            memEvent->getVerboseString().c_str());
-                for (int k = 0; k < numLowNetPorts_; k++)
+                for (int k = 0; k < numLowNetPorts_; k++) {
                     lowNetPorts_[k]->sendInitData(memEvent->clone());
+                }
             }
             delete memEvent;
         }

@@ -147,8 +147,9 @@ bool trivialCPU::clockTic(Cycle_t) {
             // x4 to prevent splitting blocks
             uint32_t reqsToSend = 1;
             if (maxReqsPerIssue > 1) reqsToSend += rng.generateNextUInt32() % maxReqsPerIssue;
-            if (reqsToSend > (maxOutstanding - requests.size())) reqsToSend = maxOutstanding -
-                                                                              requests.size();
+            if (reqsToSend > (maxOutstanding - requests.size()))
+                reqsToSend = maxOutstanding -
+                             requests.size();
             if (reqsToSend > numLS) reqsToSend = numLS;
 
             for (int i = 0; i < reqsToSend; i++) {

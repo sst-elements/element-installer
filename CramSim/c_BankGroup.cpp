@@ -49,9 +49,10 @@ c_BankGroup::c_BankGroup(std::map<std::string, unsigned> *x_bankParams, unsigned
 }
 
 c_BankGroup::~c_BankGroup() {
-    for (unsigned l_i = 0; l_i != m_bankPtrs.size(); ++l_i)
+    for (unsigned l_i = 0; l_i != m_bankPtrs.size(); ++l_i) {
         if (m_bankPtrs[l_i] != nullptr)
             delete m_bankPtrs[l_i];
+    }
 }
 
 void c_BankGroup::acceptBank(c_BankInfo *x_bankPtr) {

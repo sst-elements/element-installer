@@ -59,8 +59,8 @@ CacheAction MESIInternalDirectory::handleEviction(CacheLine *replacementLine, st
     // If so, we should handle it immediately to avoid deadlocks (A waiting for B to evict, B waiting for A to handle its eviction)
     MemEvent *waitingEvent = (mshr_->isHit(wbBaseAddr)) ? mshr_->lookupFront(wbBaseAddr) : nullptr;
     bool collision = (waitingEvent != nullptr && (waitingEvent->getCmd() == Command::PutS ||
-                                               waitingEvent->getCmd() == Command::PutE ||
-                                               waitingEvent->getCmd() == Command::PutM));
+                                                  waitingEvent->getCmd() == Command::PutE ||
+                                                  waitingEvent->getCmd() == Command::PutM));
     if (collision) {    // Note that 'collision' and 'fromDataCache' cannot both be true, don't need to handle that case
         if (state == E && waitingEvent->getDirty()) replacementLine->setState(M);
         if (replacementLine->isSharer(waitingEvent->getSrc()))
@@ -263,8 +263,8 @@ CacheAction MESIInternalDirectory::handleInvalidationRequest(MemEvent *event, Ca
         return DONE;
     } else {
         collision = (collisionEvent != nullptr && (collisionEvent->getCmd() == Command::PutS ||
-                                                collisionEvent->getCmd() == Command::PutE ||
-                                                collisionEvent->getCmd() == Command::PutM));
+                                                   collisionEvent->getCmd() == Command::PutE ||
+                                                   collisionEvent->getCmd() == Command::PutM));
     }
 
     Command cmd = event->getCmd();
@@ -2701,7 +2701,8 @@ void MESIInternalDirectory::forwardFlushLine(MemEvent *origFlush, CacheLine *dir
     if (dirty) flush->setDirty(true);
     // Always forward data if available
     if (dirLine) {
-        if (dirLine->getDataLine() != nullptr) flush->setPayload(*dirLine->getDataLine()->getData());
+        if (dirLine->getDataLine() != nullptr)
+            flush->setPayload(*dirLine->getDataLine()->getData());
         else if (mshr_->isHit(origFlush->getBaseAddr()))
             flush->setPayload(*mshr_->getDataBuffer(origFlush->getBaseAddr()));
         else if (origFlush->getPayloadSize() != 0) flush->setPayload(origFlush->getPayload());
