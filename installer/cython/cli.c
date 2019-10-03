@@ -811,10 +811,10 @@ struct __pyx_obj_3cli___pyx_scope_struct_2___pyx_f_3cli_install;
 struct __pyx_obj_3cli___pyx_scope_struct_3_genexpr;
 struct __pyx_opt_args_3cli_install;
 
-/* "cli.pyx":116
+/* "cli.pyx":113
  * 
  * 
- * cdef void install(str element, str url, bint force = False):             # <<<<<<<<<<<<<<
+ * cdef void install(str element, str url, bint force=False):             # <<<<<<<<<<<<<<
  *     """Install element as well as its dependencies
  * 
  */
@@ -823,7 +823,7 @@ struct __pyx_opt_args_3cli_install {
   int force;
 };
 
-/* "cli.pyx":105
+/* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
@@ -836,7 +836,7 @@ struct __pyx_obj_3cli___pyx_scope_struct____get_var_path {
 };
 
 
-/* "cli.pyx":113
+/* "cli.pyx":110
  *     :return: name of element along with the generated Makefile variable definitions
  *     """
  *     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)             # <<<<<<<<<<<<<<
@@ -850,10 +850,10 @@ struct __pyx_obj_3cli___pyx_scope_struct_1_genexpr {
 };
 
 
-/* "cli.pyx":116
+/* "cli.pyx":113
  * 
  * 
- * cdef void install(str element, str url, bint force = False):             # <<<<<<<<<<<<<<
+ * cdef void install(str element, str url, bint force=False):             # <<<<<<<<<<<<<<
  *     """Install element as well as its dependencies
  * 
  */
@@ -863,7 +863,7 @@ struct __pyx_obj_3cli___pyx_scope_struct_2___pyx_f_3cli_install {
 };
 
 
-/* "cli.pyx":170
+/* "cli.pyx":167
  *         )
  * 
  *     print(f"Installed {', '.join(i[0] for i in install_vars)}")             # <<<<<<<<<<<<<<
@@ -1291,11 +1291,16 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GenericGetAttrNoDict(PyObject* obj
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
-/* BytesEquals.proto */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* UnicodeEquals.proto */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
+/* DictGetItem.proto */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
+#define __Pyx_PyObject_Dict_GetItem(obj, name)\
+    (likely(PyDict_CheckExact(obj)) ?\
+     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
+#else
+#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
+#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
+#endif
 
 /* CLineInTraceback.proto */
 #ifdef CYTHON_CLINE_IN_TRACEBACK
@@ -1450,7 +1455,7 @@ static void __pyx_f_3cli_uninstall(PyObject *); /*proto*/
 static void __pyx_f_3cli___clone(PyObject *, PyObject *, int); /*proto*/
 static PyObject *__pyx_f_3cli___get_dependencies(PyObject *); /*proto*/
 static void __pyx_f_3cli_install(PyObject *, PyObject *, struct __pyx_opt_args_3cli_install *__pyx_optional_args); /*proto*/
-static void __pyx_f_3cli_list_elems(void); /*proto*/
+static void __pyx_f_3cli_list_registered_elements(void); /*proto*/
 #define __Pyx_MODULE_NAME "cli"
 extern int __pyx_module_is_main_cli;
 int __pyx_module_is_main_cli = 0;
@@ -1462,6 +1467,7 @@ static PyObject *__pyx_builtin_open;
 static const char __pyx_k_f[] = "-f";
 static const char __pyx_k_i[] = "-i";
 static const char __pyx_k_l[] = "-l";
+static const char __pyx_k_r[] = "-r";
 static const char __pyx_k_u[] = "-u";
 static const char __pyx_k_x[] = "-x";
 static const char __pyx_k__3[] = "...";
@@ -1474,6 +1480,7 @@ static const char __pyx_k_cd[] = "cd ";
 static const char __pyx_k_os[] = "os";
 static const char __pyx_k_CWD[] = "CWD";
 static const char __pyx_k__20[] = "";
+static const char __pyx_k__26[] = "\n";
 static const char __pyx_k_cli[] = "cli";
 static const char __pyx_k_dep[] = "dep";
 static const char __pyx_k_new[] = "new";
@@ -1483,6 +1490,7 @@ static const char __pyx_k_None[] = "None";
 static const char __pyx_k_args[] = "args";
 static const char __pyx_k_call[] = "call";
 static const char __pyx_k_cd_2[] = " && cd -";
+static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_elem[] = "elem";
 static const char __pyx_k_exit[] = "exit";
 static const char __pyx_k_from[] = " (from ";
@@ -1541,12 +1549,14 @@ static const char __pyx_k_uninstall[] = "--uninstall";
 static const char __pyx_k_Installing[] = "Installing ";
 static const char __pyx_k_parse_args[] = "parse_args";
 static const char __pyx_k_print_help[] = "print_help";
+static const char __pyx_k_registered[] = "--registered";
 static const char __pyx_k_store_true[] = "store_true";
 static const char __pyx_k_subprocess[] = "subprocess";
 static const char __pyx_k_description[] = "description";
 static const char __pyx_k_uninstall_2[] = "uninstall";
 static const char __pyx_k_add_argument[] = "add_argument";
 static const char __pyx_k_get_var_path[] = "__get_var_path";
+static const char __pyx_k_registered_2[] = "registered";
 static const char __pyx_k_sst_register[] = " && sst-register ";
 static const char __pyx_k_elements_list[] = "elements_list";
 static const char __pyx_k_ArgumentParser[] = "ArgumentParser";
@@ -1558,15 +1568,19 @@ static const char __pyx_k_ELEMENT_LIST_URL[] = "ELEMENT_LIST_URL";
 static const char __pyx_k_ELEMENT_REPO_URL[] = "ELEMENT_REPO_URL";
 static const char __pyx_k_add_dependencies[] = "__add_dependencies";
 static const char __pyx_k_dependencies_txt[] = "/dependencies.txt";
+static const char __pyx_k_List_all_elements[] = "List all elements";
 static const char __pyx_k_Uninstall_element[] = "Uninstall element";
 static const char __pyx_k_already_installed[] = "already installed";
 static const char __pyx_k_list_all_elements[] = "list_all_elements";
+static const char __pyx_k_Force_installation[] = "Force installation";
 static const char __pyx_k_Found_dependencies[] = "Found dependencies: ";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_No_dependencies_found[] = "No dependencies found";
 static const char __pyx_k_SST_Element_Installer[] = "SST Element Installer";
 static const char __pyx_k_install_locals_genexpr[] = "install.<locals>.genexpr";
 static const char __pyx_k_Installing_dependencies[] = "Installing dependencies...";
+static const char __pyx_k_External_URL_for_element[] = "External URL for element";
+static const char __pyx_k_List_registered_elements[] = "List registered elements";
 static const char __pyx_k_Gathering_dependencies_for[] = "Gathering dependencies for ";
 static const char __pyx_k_get_var_path_locals_genexpr[] = "__get_var_path.<locals>.genexpr";
 static const char __pyx_k_https_github_com_sabbirahm3d[] = "https://github.com/sabbirahm3d/";
@@ -1577,6 +1591,8 @@ static PyObject *__pyx_n_s_DEVNULL;
 static PyObject *__pyx_n_u_ELEMENT;
 static PyObject *__pyx_n_s_ELEMENT_LIST_URL;
 static PyObject *__pyx_n_s_ELEMENT_REPO_URL;
+static PyObject *__pyx_kp_u_External_URL_for_element;
+static PyObject *__pyx_kp_u_Force_installation;
 static PyObject *__pyx_kp_u_Found_dependencies;
 static PyObject *__pyx_kp_u_Gathering_dependencies_for;
 static PyObject *__pyx_kp_u_Install_element;
@@ -1584,11 +1600,14 @@ static PyObject *__pyx_kp_u_Installed;
 static PyObject *__pyx_kp_u_Installing;
 static PyObject *__pyx_kp_u_Installing_dependencies;
 static PyObject *__pyx_kp_u_LIBDIR;
+static PyObject *__pyx_kp_u_List_all_elements;
+static PyObject *__pyx_kp_u_List_registered_elements;
 static PyObject *__pyx_kp_u_No_dependencies_found;
 static PyObject *__pyx_kp_u_None;
 static PyObject *__pyx_kp_u_SST_Element_Installer;
 static PyObject *__pyx_kp_u_Uninstall_element;
 static PyObject *__pyx_kp_u__20;
+static PyObject *__pyx_kp_u__26;
 static PyObject *__pyx_kp_u__3;
 static PyObject *__pyx_kp_u__4;
 static PyObject *__pyx_kp_u__5;
@@ -1614,6 +1633,7 @@ static PyObject *__pyx_n_s_default;
 static PyObject *__pyx_n_s_dep;
 static PyObject *__pyx_kp_u_dependencies_txt;
 static PyObject *__pyx_n_s_description;
+static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_elem;
 static PyObject *__pyx_n_s_elements_list;
 static PyObject *__pyx_n_s_enter;
@@ -1623,7 +1643,7 @@ static PyObject *__pyx_n_s_exit_2;
 static PyObject *__pyx_n_s_extend;
 static PyObject *__pyx_kp_u_f;
 static PyObject *__pyx_kp_u_force;
-static PyObject *__pyx_n_s_force_2;
+static PyObject *__pyx_n_u_force_2;
 static PyObject *__pyx_kp_u_from;
 static PyObject *__pyx_n_s_genexpr;
 static PyObject *__pyx_n_s_get_var_path;
@@ -1636,14 +1656,13 @@ static PyObject *__pyx_kp_u_https_raw_githubusercontent_com;
 static PyObject *__pyx_kp_u_i;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_kp_u_install;
-static PyObject *__pyx_n_s_install_2;
+static PyObject *__pyx_n_u_install_2;
 static PyObject *__pyx_n_s_install_locals_genexpr;
 static PyObject *__pyx_kp_u_l;
 static PyObject *__pyx_kp_u_list;
-static PyObject *__pyx_n_s_list_2;
+static PyObject *__pyx_n_u_list_2;
 static PyObject *__pyx_n_s_list_all_elements;
 static PyObject *__pyx_n_s_main;
-static PyObject *__pyx_n_u_main;
 static PyObject *__pyx_kp_u_make_all;
 static PyObject *__pyx_n_s_metavar;
 static PyObject *__pyx_n_s_name;
@@ -1657,7 +1676,10 @@ static PyObject *__pyx_n_s_parser;
 static PyObject *__pyx_n_s_path;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_print_help;
+static PyObject *__pyx_kp_u_r;
 static PyObject *__pyx_n_s_read;
+static PyObject *__pyx_kp_u_registered;
+static PyObject *__pyx_n_u_registered_2;
 static PyObject *__pyx_n_s_remove;
 static PyObject *__pyx_n_s_request;
 static PyObject *__pyx_n_s_rmtree;
@@ -1676,9 +1698,9 @@ static PyObject *__pyx_n_s_throw;
 static PyObject *__pyx_n_s_type;
 static PyObject *__pyx_kp_u_u;
 static PyObject *__pyx_kp_u_uninstall;
-static PyObject *__pyx_n_s_uninstall_2;
+static PyObject *__pyx_n_u_uninstall_2;
 static PyObject *__pyx_kp_u_url;
-static PyObject *__pyx_n_s_url_2;
+static PyObject *__pyx_n_u_url_2;
 static PyObject *__pyx_n_s_urllib;
 static PyObject *__pyx_n_s_urllib_request;
 static PyObject *__pyx_n_s_urlopen;
@@ -1709,12 +1731,13 @@ static PyObject *__pyx_tuple__21;
 static PyObject *__pyx_tuple__22;
 static PyObject *__pyx_tuple__23;
 static PyObject *__pyx_tuple__24;
+static PyObject *__pyx_tuple__25;
 static PyObject *__pyx_codeobj__14;
 static PyObject *__pyx_codeobj__16;
 static PyObject *__pyx_codeobj__18;
 /* Late includes */
 
-/* "cli.pyx":19
+/* "cli.pyx":16
  * 
  * 
  * def list_all_elements():             # <<<<<<<<<<<<<<
@@ -1754,7 +1777,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
   int __pyx_t_12;
   __Pyx_RefNannySetupContext("list_all_elements", 0);
 
-  /* "cli.pyx":26
+  /* "cli.pyx":23
  *     :return: list of elements
  *     """
  *     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:             # <<<<<<<<<<<<<<
@@ -1762,15 +1785,15 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
  * 
  */
   /*with:*/ {
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_urllib); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_urllib); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_request); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_request); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_urlopen); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_urlopen); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_ELEMENT_LIST_URL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_ELEMENT_LIST_URL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1785,12 +1808,12 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
     __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_5 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_exit_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_exit_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L3_error)
+    __pyx_t_3 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_enter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 23, __pyx_L3_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -1804,7 +1827,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
     }
     __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L3_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L3_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_3 = __pyx_t_2;
@@ -1822,7 +1845,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
           __pyx_v_elements_list = __pyx_t_3;
           __pyx_t_3 = 0;
 
-          /* "cli.pyx":27
+          /* "cli.pyx":24
  *     """
  *     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:
  *         return elements_list.read().decode("utf-8").split()             # <<<<<<<<<<<<<<
@@ -1830,7 +1853,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
  * 
  */
           __Pyx_XDECREF(__pyx_r);
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_elements_list, __pyx_n_s_read); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 27, __pyx_L7_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_elements_list, __pyx_n_s_read); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_9 = NULL;
           if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -1844,10 +1867,10 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
           }
           __pyx_t_2 = (__pyx_t_9) ? __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_9) : __Pyx_PyObject_CallNoArg(__pyx_t_4);
           __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 27, __pyx_L7_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_decode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 27, __pyx_L7_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_decode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __pyx_t_2 = NULL;
@@ -1862,10 +1885,10 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
           }
           __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_2, __pyx_kp_u_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_kp_u_utf_8);
           __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L7_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_split); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 27, __pyx_L7_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_split); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_t_1 = NULL;
@@ -1880,14 +1903,14 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
           }
           __pyx_t_3 = (__pyx_t_1) ? __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_1) : __Pyx_PyObject_CallNoArg(__pyx_t_4);
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 27, __pyx_L7_error)
+          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 24, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_r = __pyx_t_3;
           __pyx_t_3 = 0;
           goto __pyx_L11_try_return;
 
-          /* "cli.pyx":26
+          /* "cli.pyx":23
  *     :return: list of elements
  *     """
  *     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:             # <<<<<<<<<<<<<<
@@ -1903,20 +1926,20 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
         __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
         /*except:*/ {
           __Pyx_AddTraceback("cli.list_all_elements", __pyx_clineno, __pyx_lineno, __pyx_filename);
-          if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_4, &__pyx_t_1) < 0) __PYX_ERR(0, 26, __pyx_L9_except_error)
+          if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_4, &__pyx_t_1) < 0) __PYX_ERR(0, 23, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_2 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L9_except_error)
+          __pyx_t_2 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_2);
           __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 26, __pyx_L9_except_error)
+          if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 23, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_10);
           __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_10);
           __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-          if (__pyx_t_11 < 0) __PYX_ERR(0, 26, __pyx_L9_except_error)
+          if (__pyx_t_11 < 0) __PYX_ERR(0, 23, __pyx_L9_except_error)
           __pyx_t_12 = ((!(__pyx_t_11 != 0)) != 0);
           if (__pyx_t_12) {
             __Pyx_GIVEREF(__pyx_t_3);
@@ -1924,7 +1947,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
             __Pyx_XGIVEREF(__pyx_t_1);
             __Pyx_ErrRestoreWithState(__pyx_t_3, __pyx_t_4, __pyx_t_1);
             __pyx_t_3 = 0; __pyx_t_4 = 0; __pyx_t_1 = 0; 
-            __PYX_ERR(0, 26, __pyx_L9_except_error)
+            __PYX_ERR(0, 23, __pyx_L9_except_error)
           }
           __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -1955,7 +1978,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
         if (__pyx_t_5) {
           __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple_, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 26, __pyx_L1_error)
+          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 23, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         }
@@ -1967,7 +1990,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
         if (__pyx_t_5) {
           __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple_, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 26, __pyx_L1_error)
+          if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 23, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         }
@@ -1984,7 +2007,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
     __pyx_L16:;
   }
 
-  /* "cli.pyx":19
+  /* "cli.pyx":16
  * 
  * 
  * def list_all_elements():             # <<<<<<<<<<<<<<
@@ -2010,7 +2033,7 @@ static PyObject *__pyx_pf_3cli_list_all_elements(CYTHON_UNUSED PyObject *__pyx_s
   return __pyx_r;
 }
 
-/* "cli.pyx":30
+/* "cli.pyx":27
  * 
  * 
  * cdef void uninstall(str element):             # <<<<<<<<<<<<<<
@@ -2027,19 +2050,19 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
   PyObject *__pyx_t_5 = NULL;
   __Pyx_RefNannySetupContext("uninstall", 0);
 
-  /* "cli.pyx":39
+  /* "cli.pyx":36
  *     """
  * 
  *     if os.path.exists(element):             # <<<<<<<<<<<<<<
  *         shutil.rmtree(element)
  *         subprocess.call(
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_os); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_os); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_path); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_path); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_exists); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_exists); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -2054,23 +2077,23 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_v_element) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_element);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "cli.pyx":40
+    /* "cli.pyx":37
  * 
  *     if os.path.exists(element):
  *         shutil.rmtree(element)             # <<<<<<<<<<<<<<
  *         subprocess.call(
  *             f"sst-register -u {element}", shell=True
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_shutil); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_shutil); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_rmtree); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_rmtree); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = NULL;
@@ -2085,76 +2108,76 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
     }
     __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_2, __pyx_v_element) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_element);
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":41
+    /* "cli.pyx":38
  *     if os.path.exists(element):
  *         shutil.rmtree(element)
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"sst-register -u {element}", shell=True
  *         )
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_call); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_call); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":42
+    /* "cli.pyx":39
  *         shutil.rmtree(element)
  *         subprocess.call(
  *             f"sst-register -u {element}", shell=True             # <<<<<<<<<<<<<<
  *         )
  *     else:
  */
-    __pyx_t_1 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_sst_register_u, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_sst_register_u, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":41
+    /* "cli.pyx":38
  *     if os.path.exists(element):
  *         shutil.rmtree(element)
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"sst-register -u {element}", shell=True
  *         )
  */
-    __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "cli.pyx":42
+    /* "cli.pyx":39
  *         shutil.rmtree(element)
  *         subprocess.call(
  *             f"sst-register -u {element}", shell=True             # <<<<<<<<<<<<<<
  *         )
  *     else:
  */
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 39, __pyx_L1_error)
 
-    /* "cli.pyx":41
+    /* "cli.pyx":38
  *     if os.path.exists(element):
  *         shutil.rmtree(element)
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"sst-register -u {element}", shell=True
  *         )
  */
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "cli.pyx":39
+    /* "cli.pyx":36
  *     """
  * 
  *     if os.path.exists(element):             # <<<<<<<<<<<<<<
@@ -2164,7 +2187,7 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
     goto __pyx_L3;
   }
 
-  /* "cli.pyx":45
+  /* "cli.pyx":42
  *         )
  *     else:
  *         print(f"{element} not found")             # <<<<<<<<<<<<<<
@@ -2172,19 +2195,19 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
  * 
  */
   /*else*/ {
-    __pyx_t_5 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_t_5, __pyx_kp_u_not_found); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_t_5, __pyx_kp_u_not_found); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __pyx_L3:;
 
-  /* "cli.pyx":30
+  /* "cli.pyx":27
  * 
  * 
  * cdef void uninstall(str element):             # <<<<<<<<<<<<<<
@@ -2204,7 +2227,7 @@ static void __pyx_f_3cli_uninstall(PyObject *__pyx_v_element) {
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cli.pyx":48
+/* "cli.pyx":45
  * 
  * 
  * cdef void __clone(str element, str url, bint force):             # <<<<<<<<<<<<<<
@@ -2225,19 +2248,19 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   PyObject *__pyx_t_9 = NULL;
   __Pyx_RefNannySetupContext("__clone", 0);
 
-  /* "cli.pyx":58
+  /* "cli.pyx":55
  *     :param force: flag to force install. If true and element is already installed, the element is re-cloned
  *     """
  *     if os.path.exists(element):             # <<<<<<<<<<<<<<
  *         if not force:
  *             print(element, "already installed")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_os); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_os); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_path); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_path); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_exists); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_exists); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -2252,14 +2275,14 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_v_element) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_element);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "cli.pyx":59
+    /* "cli.pyx":56
  *     """
  *     if os.path.exists(element):
  *         if not force:             # <<<<<<<<<<<<<<
@@ -2269,14 +2292,14 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_4 = ((!(__pyx_v_force != 0)) != 0);
     if (__pyx_t_4) {
 
-      /* "cli.pyx":60
+      /* "cli.pyx":57
  *     if os.path.exists(element):
  *         if not force:
  *             print(element, "already installed")             # <<<<<<<<<<<<<<
  *             return
  *         else:
  */
-      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 60, __pyx_L1_error)
+      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_INCREF(__pyx_v_element);
       __Pyx_GIVEREF(__pyx_v_element);
@@ -2284,12 +2307,12 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_INCREF(__pyx_kp_u_already_installed);
       __Pyx_GIVEREF(__pyx_kp_u_already_installed);
       PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_u_already_installed);
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 60, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "cli.pyx":61
+      /* "cli.pyx":58
  *         if not force:
  *             print(element, "already installed")
  *             return             # <<<<<<<<<<<<<<
@@ -2298,7 +2321,7 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  */
       goto __pyx_L0;
 
-      /* "cli.pyx":59
+      /* "cli.pyx":56
  *     """
  *     if os.path.exists(element):
  *         if not force:             # <<<<<<<<<<<<<<
@@ -2307,7 +2330,7 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  */
     }
 
-    /* "cli.pyx":63
+    /* "cli.pyx":60
  *             return
  *         else:
  *             uninstall(element)             # <<<<<<<<<<<<<<
@@ -2318,7 +2341,7 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __pyx_f_3cli_uninstall(__pyx_v_element);
     }
 
-    /* "cli.pyx":58
+    /* "cli.pyx":55
  *     :param force: flag to force install. If true and element is already installed, the element is re-cloned
  *     """
  *     if os.path.exists(element):             # <<<<<<<<<<<<<<
@@ -2327,14 +2350,14 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  */
   }
 
-  /* "cli.pyx":65
+  /* "cli.pyx":62
  *             uninstall(element)
  * 
  *     if element in list_all_elements():             # <<<<<<<<<<<<<<
  *         subprocess.call(
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_list_all_elements); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_list_all_elements); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
@@ -2348,35 +2371,35 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   }
   __pyx_t_2 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_4 = (__Pyx_PySequence_ContainsTF(__pyx_v_element, __pyx_t_2, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PySequence_ContainsTF(__pyx_v_element, __pyx_t_2, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_5 = (__pyx_t_4 != 0);
   if (__pyx_t_5) {
 
-    /* "cli.pyx":66
+    /* "cli.pyx":63
  * 
  *     if element in list_all_elements():
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
  *         )
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_call); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_call); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":67
+    /* "cli.pyx":64
  *     if element in list_all_elements():
  *         subprocess.call(
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL             # <<<<<<<<<<<<<<
  *         )
  *     else:
  */
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_6 = 0;
     __pyx_t_7 = 127;
@@ -2384,70 +2407,70 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_6 += 10;
     __Pyx_GIVEREF(__pyx_kp_u_git_clone);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_u_git_clone);
-    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_url); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_url); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_7 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_7) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_7;
     __pyx_t_6 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_7 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_7) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_7;
     __pyx_t_6 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_2, 3, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_2, 3, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":66
+    /* "cli.pyx":63
  * 
  *     if element in list_all_elements():
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
  *         )
  */
-    __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "cli.pyx":67
+    /* "cli.pyx":64
  *     if element in list_all_elements():
  *         subprocess.call(
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL             # <<<<<<<<<<<<<<
  *         )
  *     else:
  */
-    __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 67, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_DEVNULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_DEVNULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_stdout, __pyx_t_9) < 0) __PYX_ERR(0, 67, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_stdout, __pyx_t_9) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "cli.pyx":66
+    /* "cli.pyx":63
  * 
  *     if element in list_all_elements():
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
  *         )
  */
-    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "cli.pyx":65
+    /* "cli.pyx":62
  *             uninstall(element)
  * 
  *     if element in list_all_elements():             # <<<<<<<<<<<<<<
@@ -2457,7 +2480,7 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     goto __pyx_L5;
   }
 
-  /* "cli.pyx":70
+  /* "cli.pyx":67
  *         )
  *     else:
  *         print(f"{element} not found")             # <<<<<<<<<<<<<<
@@ -2465,30 +2488,30 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  * 
  */
   /*else*/ {
-    __pyx_t_9 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_9, __pyx_kp_u_not_found); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_9, __pyx_kp_u_not_found); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "cli.pyx":71
+    /* "cli.pyx":68
  *     else:
  *         print(f"{element} not found")
  *         exit(1)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_exit, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_exit, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 68, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __pyx_L5:;
 
-  /* "cli.pyx":48
+  /* "cli.pyx":45
  * 
  * 
  * cdef void __clone(str element, str url, bint force):             # <<<<<<<<<<<<<<
@@ -2509,7 +2532,7 @@ static void __pyx_f_3cli___clone(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cli.pyx":74
+/* "cli.pyx":71
  * 
  * 
  * cdef __get_dependencies(str element):             # <<<<<<<<<<<<<<
@@ -2536,14 +2559,14 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
   int __pyx_t_13;
   __Pyx_RefNannySetupContext("__get_dependencies", 0);
 
-  /* "cli.pyx":81
+  /* "cli.pyx":78
  *     :return: dependencies
  *     """
  *     print(f"Gathering dependencies for {element}...")             # <<<<<<<<<<<<<<
  *     with open(element + "/dependencies.txt") as req_file:
  *         return req_file.read().split()
  */
-  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = 0;
   __pyx_t_3 = 127;
@@ -2551,7 +2574,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
   __pyx_t_2 += 27;
   __Pyx_GIVEREF(__pyx_kp_u_Gathering_dependencies_for);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Gathering_dependencies_for);
-  __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -2562,15 +2585,15 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
   __pyx_t_2 += 3;
   __Pyx_GIVEREF(__pyx_kp_u__3);
   PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u__3);
-  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 3, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 3, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":82
+  /* "cli.pyx":79
  *     """
  *     print(f"Gathering dependencies for {element}...")
  *     with open(element + "/dependencies.txt") as req_file:             # <<<<<<<<<<<<<<
@@ -2578,14 +2601,14 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
  * 
  */
   /*with:*/ {
-    __pyx_t_1 = __Pyx_PyUnicode_ConcatSafe(__pyx_v_element, __pyx_kp_u_dependencies_txt); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_ConcatSafe(__pyx_v_element, __pyx_kp_u_dependencies_txt); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_open, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_open, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_5 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_exit_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_exit_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_enter); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 82, __pyx_L3_error)
+    __pyx_t_6 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_enter); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 79, __pyx_L3_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_7 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
@@ -2599,7 +2622,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
     }
     __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L3_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L3_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = __pyx_t_1;
@@ -2617,7 +2640,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
           __pyx_v_req_file = __pyx_t_6;
           __pyx_t_6 = 0;
 
-          /* "cli.pyx":83
+          /* "cli.pyx":80
  *     print(f"Gathering dependencies for {element}...")
  *     with open(element + "/dependencies.txt") as req_file:
  *         return req_file.read().split()             # <<<<<<<<<<<<<<
@@ -2625,7 +2648,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
  * 
  */
           __Pyx_XDECREF(__pyx_r);
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_req_file, __pyx_n_s_read); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L7_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_req_file, __pyx_n_s_read); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_1);
           __pyx_t_7 = NULL;
           if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
@@ -2639,10 +2662,10 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
           }
           __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_1);
           __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L7_error)
+          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_split); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L7_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_split); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_t_4 = NULL;
@@ -2657,14 +2680,14 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
           }
           __pyx_t_6 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_1);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 83, __pyx_L7_error)
+          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 80, __pyx_L7_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_r = __pyx_t_6;
           __pyx_t_6 = 0;
           goto __pyx_L11_try_return;
 
-          /* "cli.pyx":82
+          /* "cli.pyx":79
  *     """
  *     print(f"Gathering dependencies for {element}...")
  *     with open(element + "/dependencies.txt") as req_file:             # <<<<<<<<<<<<<<
@@ -2679,20 +2702,20 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         /*except:*/ {
           __Pyx_AddTraceback("cli.__get_dependencies", __pyx_clineno, __pyx_lineno, __pyx_filename);
-          if (__Pyx_GetException(&__pyx_t_6, &__pyx_t_1, &__pyx_t_4) < 0) __PYX_ERR(0, 82, __pyx_L9_except_error)
+          if (__Pyx_GetException(&__pyx_t_6, &__pyx_t_1, &__pyx_t_4) < 0) __PYX_ERR(0, 79, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_7 = PyTuple_Pack(3, __pyx_t_6, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 82, __pyx_L9_except_error)
+          __pyx_t_7 = PyTuple_Pack(3, __pyx_t_6, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 79, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_7);
           __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 82, __pyx_L9_except_error)
+          if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 79, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_11);
           __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_11);
           __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-          if (__pyx_t_12 < 0) __PYX_ERR(0, 82, __pyx_L9_except_error)
+          if (__pyx_t_12 < 0) __PYX_ERR(0, 79, __pyx_L9_except_error)
           __pyx_t_13 = ((!(__pyx_t_12 != 0)) != 0);
           if (__pyx_t_13) {
             __Pyx_GIVEREF(__pyx_t_6);
@@ -2700,7 +2723,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
             __Pyx_XGIVEREF(__pyx_t_4);
             __Pyx_ErrRestoreWithState(__pyx_t_6, __pyx_t_1, __pyx_t_4);
             __pyx_t_6 = 0; __pyx_t_1 = 0; __pyx_t_4 = 0; 
-            __PYX_ERR(0, 82, __pyx_L9_except_error)
+            __PYX_ERR(0, 79, __pyx_L9_except_error)
           }
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -2731,7 +2754,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
         if (__pyx_t_5) {
           __pyx_t_10 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple_, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 82, __pyx_L1_error)
+          if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 79, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_10);
           __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
         }
@@ -2743,7 +2766,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
         if (__pyx_t_5) {
           __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple_, NULL);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 82, __pyx_L1_error)
+          if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 79, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_9);
           __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         }
@@ -2760,7 +2783,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
     __pyx_L16:;
   }
 
-  /* "cli.pyx":74
+  /* "cli.pyx":71
  * 
  * 
  * cdef __get_dependencies(str element):             # <<<<<<<<<<<<<<
@@ -2785,7 +2808,7 @@ static PyObject *__pyx_f_3cli___get_dependencies(PyObject *__pyx_v_element) {
   return __pyx_r;
 }
 
-/* "cli.pyx":86
+/* "cli.pyx":83
  * 
  * 
  * def __add_dependencies(old, new):             # <<<<<<<<<<<<<<
@@ -2825,11 +2848,11 @@ static PyObject *__pyx_pw_3cli_3__add_dependencies(PyObject *__pyx_self, PyObjec
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_new)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__add_dependencies", 1, 2, 2, 1); __PYX_ERR(0, 86, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__add_dependencies", 1, 2, 2, 1); __PYX_ERR(0, 83, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__add_dependencies") < 0)) __PYX_ERR(0, 86, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__add_dependencies") < 0)) __PYX_ERR(0, 83, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -2842,7 +2865,7 @@ static PyObject *__pyx_pw_3cli_3__add_dependencies(PyObject *__pyx_self, PyObjec
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__add_dependencies", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 86, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__add_dependencies", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 83, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cli.__add_dependencies", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2870,7 +2893,7 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
   int __pyx_t_9;
   __Pyx_RefNannySetupContext("__add_dependencies", 0);
 
-  /* "cli.pyx":97
+  /* "cli.pyx":94
  *     :return {list{str}}: updated list of dependencies
  *     """
  *     for elem in new:             # <<<<<<<<<<<<<<
@@ -2881,26 +2904,26 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
     __pyx_t_1 = __pyx_v_new; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
     __pyx_t_3 = NULL;
   } else {
-    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_new); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_new); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_3)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 97, __pyx_L1_error)
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 97, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
         if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 97, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 97, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 94, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
@@ -2910,7 +2933,7 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 97, __pyx_L1_error)
+          else __PYX_ERR(0, 94, __pyx_L1_error)
         }
         break;
       }
@@ -2919,25 +2942,25 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
     __Pyx_XDECREF_SET(__pyx_v_elem, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "cli.pyx":98
+    /* "cli.pyx":95
  *     """
  *     for elem in new:
  *         if elem in old:             # <<<<<<<<<<<<<<
  *             old.remove(elem)
  *         old.append(elem)
  */
-    __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_v_elem, __pyx_v_old, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_v_elem, __pyx_v_old, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 95, __pyx_L1_error)
     __pyx_t_6 = (__pyx_t_5 != 0);
     if (__pyx_t_6) {
 
-      /* "cli.pyx":99
+      /* "cli.pyx":96
  *     for elem in new:
  *         if elem in old:
  *             old.remove(elem)             # <<<<<<<<<<<<<<
  *         old.append(elem)
  * 
  */
-      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_old, __pyx_n_s_remove); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 99, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_old, __pyx_n_s_remove); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_t_8 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -2951,12 +2974,12 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
       }
       __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_elem) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_elem);
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 99, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 96, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "cli.pyx":98
+      /* "cli.pyx":95
  *     """
  *     for elem in new:
  *         if elem in old:             # <<<<<<<<<<<<<<
@@ -2965,16 +2988,16 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
  */
     }
 
-    /* "cli.pyx":100
+    /* "cli.pyx":97
  *         if elem in old:
  *             old.remove(elem)
  *         old.append(elem)             # <<<<<<<<<<<<<<
  * 
  *     return old
  */
-    __pyx_t_9 = __Pyx_PyObject_Append(__pyx_v_old, __pyx_v_elem); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(0, 100, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_Append(__pyx_v_old, __pyx_v_elem); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(0, 97, __pyx_L1_error)
 
-    /* "cli.pyx":97
+    /* "cli.pyx":94
  *     :return {list{str}}: updated list of dependencies
  *     """
  *     for elem in new:             # <<<<<<<<<<<<<<
@@ -2984,7 +3007,7 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":102
+  /* "cli.pyx":99
  *         old.append(elem)
  * 
  *     return old             # <<<<<<<<<<<<<<
@@ -2996,7 +3019,7 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
   __pyx_r = __pyx_v_old;
   goto __pyx_L0;
 
-  /* "cli.pyx":86
+  /* "cli.pyx":83
  * 
  * 
  * def __add_dependencies(old, new):             # <<<<<<<<<<<<<<
@@ -3019,7 +3042,7 @@ static PyObject *__pyx_pf_3cli_2__add_dependencies(CYTHON_UNUSED PyObject *__pyx
   return __pyx_r;
 }
 
-/* "cli.pyx":105
+/* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
@@ -3059,11 +3082,11 @@ static PyObject *__pyx_pw_3cli_5__get_var_path(PyObject *__pyx_self, PyObject *_
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_dep)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__get_var_path", 1, 2, 2, 1); __PYX_ERR(0, 105, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__get_var_path", 1, 2, 2, 1); __PYX_ERR(0, 102, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__get_var_path") < 0)) __PYX_ERR(0, 105, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__get_var_path") < 0)) __PYX_ERR(0, 102, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3076,7 +3099,7 @@ static PyObject *__pyx_pw_3cli_5__get_var_path(PyObject *__pyx_self, PyObject *_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__get_var_path", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 105, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__get_var_path", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 102, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cli.__get_var_path", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3090,7 +3113,7 @@ static PyObject *__pyx_pw_3cli_5__get_var_path(PyObject *__pyx_self, PyObject *_
 }
 static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "cli.pyx":113
+/* "cli.pyx":110
  *     :return: name of element along with the generated Makefile variable definitions
  *     """
  *     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)             # <<<<<<<<<<<<<<
@@ -3107,7 +3130,7 @@ static PyObject *__pyx_pf_3cli_14__get_var_path_genexpr(PyObject *__pyx_self) {
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_3cli___pyx_scope_struct_1_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 113, __pyx_L1_error)
+    __PYX_ERR(0, 110, __pyx_L1_error)
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
@@ -3115,7 +3138,7 @@ static PyObject *__pyx_pf_3cli_14__get_var_path_genexpr(PyObject *__pyx_self) {
   __Pyx_INCREF(((PyObject *)__pyx_cur_scope->__pyx_outer_scope));
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_outer_scope);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_3cli_14__get_var_path_2generator, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_get_var_path_locals_genexpr, __pyx_n_s_cli); if (unlikely(!gen)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_3cli_14__get_var_path_2generator, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_get_var_path_locals_genexpr, __pyx_n_s_cli); if (unlikely(!gen)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -3152,34 +3175,34 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 113, __pyx_L1_error)
-  __pyx_r = PyList_New(0); if (unlikely(!__pyx_r)) __PYX_ERR(0, 113, __pyx_L1_error)
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_r = PyList_New(0); if (unlikely(!__pyx_r)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep)) { __Pyx_RaiseClosureNameError("dep"); __PYX_ERR(0, 113, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep)) { __Pyx_RaiseClosureNameError("dep"); __PYX_ERR(0, 110, __pyx_L1_error) }
   if (likely(PyList_CheckExact(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep)) || PyTuple_CheckExact(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep)) {
     __pyx_t_1 = __pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
     __pyx_t_3 = NULL;
   } else {
-    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_dep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 110, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_3)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 113, __pyx_L1_error)
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 110, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
         if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 113, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 110, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
@@ -3189,7 +3212,7 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 113, __pyx_L1_error)
+          else __PYX_ERR(0, 110, __pyx_L1_error)
         }
         break;
       }
@@ -3199,11 +3222,11 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_i, __pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_4 = PyTuple_New(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = 0;
     __pyx_t_6 = 127;
-    __pyx_t_7 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_i, __pyx_empty_unicode); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_i, __pyx_empty_unicode); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_6 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_7) > __pyx_t_6) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_7) : __pyx_t_6;
     __pyx_t_5 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_7);
@@ -3214,9 +3237,9 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
     __pyx_t_5 += 1;
     __Pyx_GIVEREF(__pyx_kp_u__4);
     PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_kp_u__4);
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_CWD); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_CWD); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = __Pyx_PyObject_FormatSimple(__pyx_t_7, __pyx_empty_unicode); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_FormatSimple(__pyx_t_7, __pyx_empty_unicode); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_6 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_8) > __pyx_t_6) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_8) : __pyx_t_6;
@@ -3228,17 +3251,17 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
     __pyx_t_5 += 1;
     __Pyx_GIVEREF(__pyx_kp_u__5);
     PyTuple_SET_ITEM(__pyx_t_4, 3, __pyx_kp_u__5);
-    __pyx_t_8 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_i, __pyx_empty_unicode); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_i, __pyx_empty_unicode); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_6 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_8) > __pyx_t_6) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_8) : __pyx_t_6;
     __pyx_t_5 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_8);
     __Pyx_GIVEREF(__pyx_t_8);
     PyTuple_SET_ITEM(__pyx_t_4, 4, __pyx_t_8);
     __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyUnicode_Join(__pyx_t_4, 5, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyUnicode_Join(__pyx_t_4, 5, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(__Pyx_ListComp_Append(__pyx_r, (PyObject*)__pyx_t_8))) __PYX_ERR(0, 113, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_r, (PyObject*)__pyx_t_8))) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -3264,7 +3287,7 @@ static PyObject *__pyx_gb_3cli_14__get_var_path_2generator(__pyx_CoroutineObject
   return __pyx_r;
 }
 
-/* "cli.pyx":105
+/* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
@@ -3283,7 +3306,7 @@ static PyObject *__pyx_pf_3cli_4__get_var_path(CYTHON_UNUSED PyObject *__pyx_sel
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_3cli___pyx_scope_struct____get_var_path *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 105, __pyx_L1_error)
+    __PYX_ERR(0, 102, __pyx_L1_error)
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
@@ -3291,7 +3314,7 @@ static PyObject *__pyx_pf_3cli_4__get_var_path(CYTHON_UNUSED PyObject *__pyx_sel
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_dep);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_dep);
 
-  /* "cli.pyx":113
+  /* "cli.pyx":110
  *     :return: name of element along with the generated Makefile variable definitions
  *     """
  *     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)             # <<<<<<<<<<<<<<
@@ -3299,15 +3322,15 @@ static PyObject *__pyx_pf_3cli_4__get_var_path(CYTHON_UNUSED PyObject *__pyx_sel
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_pf_3cli_14__get_var_path_genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_1 = __pyx_pf_3cli_14__get_var_path_genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_Generator_Next(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Generator_Next(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__6, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__6, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_elem);
   __Pyx_GIVEREF(__pyx_v_elem);
@@ -3319,7 +3342,7 @@ static PyObject *__pyx_pf_3cli_4__get_var_path(CYTHON_UNUSED PyObject *__pyx_sel
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "cli.pyx":105
+  /* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
@@ -3341,7 +3364,7 @@ static PyObject *__pyx_pf_3cli_4__get_var_path(CYTHON_UNUSED PyObject *__pyx_sel
 }
 static PyObject *__pyx_gb_3cli_7install_2generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "cli.pyx":170
+/* "cli.pyx":167
  *         )
  * 
  *     print(f"Installed {', '.join(i[0] for i in install_vars)}")             # <<<<<<<<<<<<<<
@@ -3358,7 +3381,7 @@ static PyObject *__pyx_pf_3cli_7install_genexpr(PyObject *__pyx_self) {
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_3cli___pyx_scope_struct_3_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 170, __pyx_L1_error)
+    __PYX_ERR(0, 167, __pyx_L1_error)
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
@@ -3366,7 +3389,7 @@ static PyObject *__pyx_pf_3cli_7install_genexpr(PyObject *__pyx_self) {
   __Pyx_INCREF(((PyObject *)__pyx_cur_scope->__pyx_outer_scope));
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_outer_scope);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_3cli_7install_2generator1, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_install_locals_genexpr, __pyx_n_s_cli); if (unlikely(!gen)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_3cli_7install_2generator1, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_genexpr, __pyx_n_s_install_locals_genexpr, __pyx_n_s_cli); if (unlikely(!gen)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -3398,30 +3421,30 @@ static PyObject *__pyx_gb_3cli_7install_2generator1(__pyx_CoroutineObject *__pyx
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 170, __pyx_L1_error)
-  __pyx_r = PyList_New(0); if (unlikely(!__pyx_r)) __PYX_ERR(0, 170, __pyx_L1_error)
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_r = PyList_New(0); if (unlikely(!__pyx_r)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_install_vars)) { __Pyx_RaiseClosureNameError("install_vars"); __PYX_ERR(0, 170, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_install_vars)) { __Pyx_RaiseClosureNameError("install_vars"); __PYX_ERR(0, 167, __pyx_L1_error) }
   if (unlikely(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_install_vars == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 170, __pyx_L1_error)
+    __PYX_ERR(0, 167, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_cur_scope->__pyx_outer_scope->__pyx_v_install_vars; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
   for (;;) {
     if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 167, __pyx_L1_error)
     #else
-    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_i);
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_i, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_cur_scope->__pyx_v_i, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 170, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_cur_scope->__pyx_v_i, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_r, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 170, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_r, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -3445,10 +3468,10 @@ static PyObject *__pyx_gb_3cli_7install_2generator1(__pyx_CoroutineObject *__pyx
   return __pyx_r;
 }
 
-/* "cli.pyx":116
+/* "cli.pyx":113
  * 
  * 
- * cdef void install(str element, str url, bint force = False):             # <<<<<<<<<<<<<<
+ * cdef void install(str element, str url, bint force=False):             # <<<<<<<<<<<<<<
  *     """Install element as well as its dependencies
  * 
  */
@@ -3480,7 +3503,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_3cli___pyx_scope_struct_2___pyx_f_3cli_install *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 116, __pyx_L1_error)
+    __PYX_ERR(0, 113, __pyx_L1_error)
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
@@ -3491,32 +3514,32 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   }
   __Pyx_INCREF(__pyx_v_element);
 
-  /* "cli.pyx":128
+  /* "cli.pyx":125
  *                          If true and element is already installed, the element is re-cloned
  *     """
  *     install_vars = []             # <<<<<<<<<<<<<<
  *     dependencies = []
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __pyx_cur_scope->__pyx_v_install_vars = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cli.pyx":129
+  /* "cli.pyx":126
  *     """
  *     install_vars = []
  *     dependencies = []             # <<<<<<<<<<<<<<
  * 
  *     # clone the targeted element repository
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 126, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_dependencies = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "cli.pyx":132
+  /* "cli.pyx":129
  * 
  *     # clone the targeted element repository
  *     __clone(element, url, force)             # <<<<<<<<<<<<<<
@@ -3525,16 +3548,16 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  */
   __pyx_f_3cli___clone(__pyx_v_element, __pyx_v_url, __pyx_v_force);
 
-  /* "cli.pyx":134
+  /* "cli.pyx":131
  *     __clone(element, url, force)
  *     # add its dependencies as well as its Makefile variable definitions
  *     dependencies.extend(__get_dependencies(element))             # <<<<<<<<<<<<<<
  *     install_vars.append(__get_var_path(element, dependencies))
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_dependencies, __pyx_n_s_extend); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_dependencies, __pyx_n_s_extend); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_f_3cli___get_dependencies(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_3cli___get_dependencies(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3549,19 +3572,19 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":135
+  /* "cli.pyx":132
  *     # add its dependencies as well as its Makefile variable definitions
  *     dependencies.extend(__get_dependencies(element))
  *     install_vars.append(__get_var_path(element, dependencies))             # <<<<<<<<<<<<<<
  * 
  *     # if the element depends on any other elements
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_get_var_path); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_get_var_path); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_5 = 0;
@@ -3578,7 +3601,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_element, __pyx_v_dependencies};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -3586,13 +3609,13 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_element, __pyx_v_dependencies};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 132, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -3603,42 +3626,42 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __Pyx_INCREF(__pyx_v_dependencies);
     __Pyx_GIVEREF(__pyx_v_dependencies);
     PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_v_dependencies);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_6 = __Pyx_PyList_Append(__pyx_cur_scope->__pyx_v_install_vars, __pyx_t_1); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyList_Append(__pyx_cur_scope->__pyx_v_install_vars, __pyx_t_1); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":138
+  /* "cli.pyx":135
  * 
  *     # if the element depends on any other elements
  *     if dependencies:             # <<<<<<<<<<<<<<
  *         print(f"Found dependencies: {', '.join(dependencies)}")
  * 
  */
-  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_dependencies); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_dependencies); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 135, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "cli.pyx":139
+    /* "cli.pyx":136
  *     # if the element depends on any other elements
  *     if dependencies:
  *         print(f"Found dependencies: {', '.join(dependencies)}")             # <<<<<<<<<<<<<<
  * 
  *         # loop through its dependencies to generate a dependency graph
  */
-    __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__7, __pyx_v_dependencies); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__7, __pyx_v_dependencies); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Found_dependencies, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Found_dependencies, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":142
+    /* "cli.pyx":139
  * 
  *         # loop through its dependencies to generate a dependency graph
  *         for dep in dependencies:             # <<<<<<<<<<<<<<
@@ -3649,26 +3672,26 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __pyx_t_1 = __pyx_v_dependencies; __Pyx_INCREF(__pyx_t_1); __pyx_t_8 = 0;
       __pyx_t_9 = NULL;
     } else {
-      __pyx_t_8 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_dependencies); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
+      __pyx_t_8 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_dependencies); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 139, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_9 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 142, __pyx_L1_error)
+      __pyx_t_9 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 139, __pyx_L1_error)
     }
     for (;;) {
       if (likely(!__pyx_t_9)) {
         if (likely(PyList_CheckExact(__pyx_t_1))) {
           if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_1)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 139, __pyx_L1_error)
           #else
-          __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           #endif
         } else {
           if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 139, __pyx_L1_error)
           #else
-          __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+          __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           #endif
         }
@@ -3678,7 +3701,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 142, __pyx_L1_error)
+            else __PYX_ERR(0, 139, __pyx_L1_error)
           }
           break;
         }
@@ -3687,37 +3710,37 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_XDECREF_SET(__pyx_v_dep, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "cli.pyx":143
+      /* "cli.pyx":140
  *         # loop through its dependencies to generate a dependency graph
  *         for dep in dependencies:
  *             __clone(dep, url, force)             # <<<<<<<<<<<<<<
  *             # update the list of elements to be installed along with their corresponding Makefile
  *             # variable definitions
  */
-      if (!(likely(PyUnicode_CheckExact(__pyx_v_dep))||((__pyx_v_dep) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_dep)->tp_name), 0))) __PYX_ERR(0, 143, __pyx_L1_error)
+      if (!(likely(PyUnicode_CheckExact(__pyx_v_dep))||((__pyx_v_dep) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_dep)->tp_name), 0))) __PYX_ERR(0, 140, __pyx_L1_error)
       __pyx_f_3cli___clone(((PyObject*)__pyx_v_dep), __pyx_v_url, __pyx_v_force);
 
-      /* "cli.pyx":146
+      /* "cli.pyx":143
  *             # update the list of elements to be installed along with their corresponding Makefile
  *             # variable definitions
  *             new_dependencies = __get_dependencies(dep)             # <<<<<<<<<<<<<<
  *             dependencies = __add_dependencies(dependencies, new_dependencies)
  *             install_vars.append(__get_var_path(dep, new_dependencies))
  */
-      if (!(likely(PyUnicode_CheckExact(__pyx_v_dep))||((__pyx_v_dep) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_dep)->tp_name), 0))) __PYX_ERR(0, 146, __pyx_L1_error)
-      __pyx_t_2 = __pyx_f_3cli___get_dependencies(((PyObject*)__pyx_v_dep)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 146, __pyx_L1_error)
+      if (!(likely(PyUnicode_CheckExact(__pyx_v_dep))||((__pyx_v_dep) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_v_dep)->tp_name), 0))) __PYX_ERR(0, 143, __pyx_L1_error)
+      __pyx_t_2 = __pyx_f_3cli___get_dependencies(((PyObject*)__pyx_v_dep)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_XDECREF_SET(__pyx_v_new_dependencies, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "cli.pyx":147
+      /* "cli.pyx":144
  *             # variable definitions
  *             new_dependencies = __get_dependencies(dep)
  *             dependencies = __add_dependencies(dependencies, new_dependencies)             # <<<<<<<<<<<<<<
  *             install_vars.append(__get_var_path(dep, new_dependencies))
  *             if new_dependencies:
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_add_dependencies); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_add_dependencies); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 144, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_3 = NULL;
       __pyx_t_5 = 0;
@@ -3734,7 +3757,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_4)) {
         PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_dependencies, __pyx_v_new_dependencies};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -3742,13 +3765,13 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
         PyObject *__pyx_temp[3] = {__pyx_t_3, __pyx_v_dependencies, __pyx_v_new_dependencies};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_10 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_10 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 144, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_10);
         if (__pyx_t_3) {
           __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -3759,7 +3782,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
         __Pyx_INCREF(__pyx_v_new_dependencies);
         __Pyx_GIVEREF(__pyx_v_new_dependencies);
         PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_5, __pyx_v_new_dependencies);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_10, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_10, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       }
@@ -3767,14 +3790,14 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_DECREF_SET(__pyx_v_dependencies, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "cli.pyx":148
+      /* "cli.pyx":145
  *             new_dependencies = __get_dependencies(dep)
  *             dependencies = __add_dependencies(dependencies, new_dependencies)
  *             install_vars.append(__get_var_path(dep, new_dependencies))             # <<<<<<<<<<<<<<
  *             if new_dependencies:
  *                 print(
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_get_var_path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_get_var_path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 145, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_10 = NULL;
       __pyx_t_5 = 0;
@@ -3791,7 +3814,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_4)) {
         PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_v_dep, __pyx_v_new_dependencies};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -3799,13 +3822,13 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
         PyObject *__pyx_temp[3] = {__pyx_t_10, __pyx_v_dep, __pyx_v_new_dependencies};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_10); __pyx_t_10 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_3 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_3 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 145, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         if (__pyx_t_10) {
           __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_10); __pyx_t_10 = NULL;
@@ -3816,32 +3839,32 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
         __Pyx_INCREF(__pyx_v_new_dependencies);
         __Pyx_GIVEREF(__pyx_v_new_dependencies);
         PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_5, __pyx_v_new_dependencies);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       }
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_6 = __Pyx_PyList_Append(__pyx_cur_scope->__pyx_v_install_vars, __pyx_t_2); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 148, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyList_Append(__pyx_cur_scope->__pyx_v_install_vars, __pyx_t_2); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 145, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "cli.pyx":149
+      /* "cli.pyx":146
  *             dependencies = __add_dependencies(dependencies, new_dependencies)
  *             install_vars.append(__get_var_path(dep, new_dependencies))
  *             if new_dependencies:             # <<<<<<<<<<<<<<
  *                 print(
  *                     f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
  */
-      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_new_dependencies); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 149, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_new_dependencies); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 146, __pyx_L1_error)
       if (__pyx_t_7) {
 
-        /* "cli.pyx":151
+        /* "cli.pyx":148
  *             if new_dependencies:
  *                 print(
  *                     f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"             # <<<<<<<<<<<<<<
  *                 )
  * 
  */
-        __pyx_t_2 = PyTuple_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+        __pyx_t_2 = PyTuple_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_11 = 0;
         __pyx_t_12 = 127;
@@ -3849,7 +3872,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
         __pyx_t_11 += 20;
         __Pyx_GIVEREF(__pyx_kp_u_Found_dependencies);
         PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_u_Found_dependencies);
-        __pyx_t_4 = PyUnicode_Join(__pyx_kp_u__7, __pyx_v_new_dependencies); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+        __pyx_t_4 = PyUnicode_Join(__pyx_kp_u__7, __pyx_v_new_dependencies); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
         __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3860,7 +3883,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
         __pyx_t_11 += 7;
         __Pyx_GIVEREF(__pyx_kp_u_from);
         PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_kp_u_from);
-        __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_dep, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_dep, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
         __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3871,23 +3894,23 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
         __pyx_t_11 += 1;
         __Pyx_GIVEREF(__pyx_kp_u__8);
         PyTuple_SET_ITEM(__pyx_t_2, 4, __pyx_kp_u__8);
-        __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_2, 5, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 151, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_2, 5, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "cli.pyx":150
+        /* "cli.pyx":147
  *             install_vars.append(__get_var_path(dep, new_dependencies))
  *             if new_dependencies:
  *                 print(             # <<<<<<<<<<<<<<
  *                     f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
  *                 )
  */
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "cli.pyx":149
+        /* "cli.pyx":146
  *             dependencies = __add_dependencies(dependencies, new_dependencies)
  *             install_vars.append(__get_var_path(dep, new_dependencies))
  *             if new_dependencies:             # <<<<<<<<<<<<<<
@@ -3896,7 +3919,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  */
       }
 
-      /* "cli.pyx":142
+      /* "cli.pyx":139
  * 
  *         # loop through its dependencies to generate a dependency graph
  *         for dep in dependencies:             # <<<<<<<<<<<<<<
@@ -3906,32 +3929,32 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":156
+    /* "cli.pyx":153
  *         # reverse the dependency graph represented in a flat array so that the parent elements are
  *         # installed before their children
  *         install_vars = install_vars[::-1]             # <<<<<<<<<<<<<<
  *         print("Installing dependencies...")
  * 
  */
-    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_install_vars, __pyx_slice__9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_install_vars, __pyx_slice__9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_GOTREF(__pyx_cur_scope->__pyx_v_install_vars);
     __Pyx_DECREF_SET(__pyx_cur_scope->__pyx_v_install_vars, ((PyObject*)__pyx_t_1));
     __Pyx_GIVEREF(__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "cli.pyx":157
+    /* "cli.pyx":154
  *         # installed before their children
  *         install_vars = install_vars[::-1]
  *         print("Installing dependencies...")             # <<<<<<<<<<<<<<
  * 
  *     # if the element does not depend on any other elements
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":138
+    /* "cli.pyx":135
  * 
  *     # if the element depends on any other elements
  *     if dependencies:             # <<<<<<<<<<<<<<
@@ -3941,7 +3964,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     goto __pyx_L3;
   }
 
-  /* "cli.pyx":161
+  /* "cli.pyx":158
  *     # if the element does not depend on any other elements
  *     else:
  *         print("No dependencies found")             # <<<<<<<<<<<<<<
@@ -3949,13 +3972,13 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
  *     for element, path in install_vars:
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 158, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_L3:;
 
-  /* "cli.pyx":163
+  /* "cli.pyx":160
  *         print("No dependencies found")
  * 
  *     for element, path in install_vars:             # <<<<<<<<<<<<<<
@@ -3966,9 +3989,9 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   for (;;) {
     if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_2); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 160, __pyx_L1_error)
     #else
-    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 160, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
     if ((likely(PyTuple_CheckExact(__pyx_t_2))) || (PyList_CheckExact(__pyx_t_2))) {
@@ -3977,7 +4000,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 163, __pyx_L1_error)
+        __PYX_ERR(0, 160, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -3990,15 +4013,15 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_INCREF(__pyx_t_4);
       __Pyx_INCREF(__pyx_t_3);
       #else
-      __pyx_t_4 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
+      __pyx_t_4 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 160, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 163, __pyx_L1_error)
+      __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 160, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       #endif
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_10 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 163, __pyx_L1_error)
+      __pyx_t_10 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 160, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_13 = Py_TYPE(__pyx_t_10)->tp_iternext;
@@ -4006,7 +4029,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_GOTREF(__pyx_t_4);
       index = 1; __pyx_t_3 = __pyx_t_13(__pyx_t_10); if (unlikely(!__pyx_t_3)) goto __pyx_L9_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_3);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_13(__pyx_t_10), 2) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_13(__pyx_t_10), 2) < 0) __PYX_ERR(0, 160, __pyx_L1_error)
       __pyx_t_13 = NULL;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       goto __pyx_L10_unpacking_done;
@@ -4014,23 +4037,23 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __pyx_t_13 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 163, __pyx_L1_error)
+      __PYX_ERR(0, 160, __pyx_L1_error)
       __pyx_L10_unpacking_done:;
     }
-    if (!(likely(PyUnicode_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 163, __pyx_L1_error)
+    if (!(likely(PyUnicode_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 160, __pyx_L1_error)
     __Pyx_DECREF_SET(__pyx_v_element, ((PyObject*)__pyx_t_4));
     __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_path, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "cli.pyx":164
+    /* "cli.pyx":161
  * 
  *     for element, path in install_vars:
  *         print(f"Installing {element}...")             # <<<<<<<<<<<<<<
  *         subprocess.call(
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
  */
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_11 = 0;
     __pyx_t_12 = 127;
@@ -4038,7 +4061,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 11;
     __Pyx_GIVEREF(__pyx_kp_u_Installing);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_u_Installing);
-    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_12;
     __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
@@ -4049,35 +4072,35 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 3;
     __Pyx_GIVEREF(__pyx_kp_u__3);
     PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_kp_u__3);
-    __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_2, 3, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_2, 3, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":165
+    /* "cli.pyx":162
  *     for element, path in install_vars:
  *         print(f"Installing {element}...")
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
  *             shell=True, stdout=subprocess.DEVNULL
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_call); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_call); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":166
+    /* "cli.pyx":163
  *         print(f"Installing {element}...")
  *         subprocess.call(
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",             # <<<<<<<<<<<<<<
  *             shell=True, stdout=subprocess.DEVNULL
  *         )
  */
-    __pyx_t_2 = PyTuple_New(11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(11); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_11 = 0;
     __pyx_t_12 = 127;
@@ -4085,7 +4108,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 3;
     __Pyx_GIVEREF(__pyx_kp_u_cd);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_u_cd);
-    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
     __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -4096,7 +4119,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 13;
     __Pyx_GIVEREF(__pyx_kp_u_make_all);
     PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_kp_u_make_all);
-    __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_path, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_path, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
     __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -4107,7 +4130,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 17;
     __Pyx_GIVEREF(__pyx_kp_u_sst_register);
     PyTuple_SET_ITEM(__pyx_t_2, 4, __pyx_kp_u_sst_register);
-    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
     __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -4118,7 +4141,7 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 1;
     __Pyx_GIVEREF(__pyx_kp_u__6);
     PyTuple_SET_ITEM(__pyx_t_2, 6, __pyx_kp_u__6);
-    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_Unicode(__pyx_v_element); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_12;
     __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -4129,9 +4152,9 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 8;
     __Pyx_GIVEREF(__pyx_kp_u_LIBDIR);
     PyTuple_SET_ITEM(__pyx_t_2, 8, __pyx_kp_u_LIBDIR);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_CWD); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_CWD); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_10 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_10) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_10) : __pyx_t_12;
@@ -4143,56 +4166,56 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
     __pyx_t_11 += 8;
     __Pyx_GIVEREF(__pyx_kp_u_cd_2);
     PyTuple_SET_ITEM(__pyx_t_2, 10, __pyx_kp_u_cd_2);
-    __pyx_t_10 = __Pyx_PyUnicode_Join(__pyx_t_2, 11, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 166, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyUnicode_Join(__pyx_t_2, 11, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 163, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":165
+    /* "cli.pyx":162
  *     for element, path in install_vars:
  *         print(f"Installing {element}...")
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
  *             shell=True, stdout=subprocess.DEVNULL
  */
-    __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_GIVEREF(__pyx_t_10);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_10);
     __pyx_t_10 = 0;
 
-    /* "cli.pyx":167
+    /* "cli.pyx":164
  *         subprocess.call(
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
  *             shell=True, stdout=subprocess.DEVNULL             # <<<<<<<<<<<<<<
  *         )
  * 
  */
-    __pyx_t_10 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 167, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 164, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 167, __pyx_L1_error)
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 167, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 164, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 164, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_DEVNULL); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 167, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_DEVNULL); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 164, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_stdout, __pyx_t_14) < 0) __PYX_ERR(0, 167, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_10, __pyx_n_s_stdout, __pyx_t_14) < 0) __PYX_ERR(0, 164, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "cli.pyx":165
+    /* "cli.pyx":162
  *     for element, path in install_vars:
  *         print(f"Installing {element}...")
  *         subprocess.call(             # <<<<<<<<<<<<<<
  *             f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
  *             shell=True, stdout=subprocess.DEVNULL
  */
-    __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_10); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 165, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_10); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "cli.pyx":163
+    /* "cli.pyx":160
  *         print("No dependencies found")
  * 
  *     for element, path in install_vars:             # <<<<<<<<<<<<<<
@@ -4202,33 +4225,33 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":170
+  /* "cli.pyx":167
  *         )
  * 
  *     print(f"Installed {', '.join(i[0] for i in install_vars)}")             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_1 = __pyx_pf_3cli_7install_genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_1 = __pyx_pf_3cli_7install_genexpr(((PyObject*)__pyx_cur_scope)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_14 = __Pyx_Generator_Next(__pyx_t_1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_Generator_Next(__pyx_t_1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__7, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__7, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-  __pyx_t_14 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Installed, __pyx_t_1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Installed, __pyx_t_1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":116
+  /* "cli.pyx":113
  * 
  * 
- * cdef void install(str element, str url, bint force = False):             # <<<<<<<<<<<<<<
+ * cdef void install(str element, str url, bint force=False):             # <<<<<<<<<<<<<<
  *     """Install element as well as its dependencies
  * 
  */
@@ -4253,46 +4276,46 @@ static void __pyx_f_3cli_install(PyObject *__pyx_v_element, PyObject *__pyx_v_ur
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cli.pyx":173
+/* "cli.pyx":170
  * 
  * 
- * cdef void list_elems():             # <<<<<<<<<<<<<<
+ * cdef void list_registered_elements():             # <<<<<<<<<<<<<<
  *     """List elements installed in system
  * 
  */
 
-static void __pyx_f_3cli_list_elems(void) {
+static void __pyx_f_3cli_list_registered_elements(void) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
-  __Pyx_RefNannySetupContext("list_elems", 0);
+  __Pyx_RefNannySetupContext("list_registered_elements", 0);
 
-  /* "cli.pyx":178
+  /* "cli.pyx":175
  *     This function is a wrapper for the list option provided by SST
  *     """
  *     subprocess.call("sst-register -l", shell=True)             # <<<<<<<<<<<<<<
  * 
- * 
+ * parser = argparse.ArgumentParser(description="SST Element Installer")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_subprocess); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_call); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_call); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__12, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_shell, Py_True) < 0) __PYX_ERR(0, 175, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__12, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "cli.pyx":173
+  /* "cli.pyx":170
  * 
  * 
- * cdef void list_elems():             # <<<<<<<<<<<<<<
+ * cdef void list_registered_elements():             # <<<<<<<<<<<<<<
  *     """List elements installed in system
  * 
  */
@@ -4303,7 +4326,7 @@ static void __pyx_f_3cli_list_elems(void) {
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_WriteUnraisable("cli.list_elems", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __Pyx_WriteUnraisable("cli.list_registered_elements", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
 }
@@ -4778,6 +4801,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_ELEMENT, __pyx_k_ELEMENT, sizeof(__pyx_k_ELEMENT), 0, 1, 0, 1},
   {&__pyx_n_s_ELEMENT_LIST_URL, __pyx_k_ELEMENT_LIST_URL, sizeof(__pyx_k_ELEMENT_LIST_URL), 0, 0, 1, 1},
   {&__pyx_n_s_ELEMENT_REPO_URL, __pyx_k_ELEMENT_REPO_URL, sizeof(__pyx_k_ELEMENT_REPO_URL), 0, 0, 1, 1},
+  {&__pyx_kp_u_External_URL_for_element, __pyx_k_External_URL_for_element, sizeof(__pyx_k_External_URL_for_element), 0, 1, 0, 0},
+  {&__pyx_kp_u_Force_installation, __pyx_k_Force_installation, sizeof(__pyx_k_Force_installation), 0, 1, 0, 0},
   {&__pyx_kp_u_Found_dependencies, __pyx_k_Found_dependencies, sizeof(__pyx_k_Found_dependencies), 0, 1, 0, 0},
   {&__pyx_kp_u_Gathering_dependencies_for, __pyx_k_Gathering_dependencies_for, sizeof(__pyx_k_Gathering_dependencies_for), 0, 1, 0, 0},
   {&__pyx_kp_u_Install_element, __pyx_k_Install_element, sizeof(__pyx_k_Install_element), 0, 1, 0, 0},
@@ -4785,11 +4810,14 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_Installing, __pyx_k_Installing, sizeof(__pyx_k_Installing), 0, 1, 0, 0},
   {&__pyx_kp_u_Installing_dependencies, __pyx_k_Installing_dependencies, sizeof(__pyx_k_Installing_dependencies), 0, 1, 0, 0},
   {&__pyx_kp_u_LIBDIR, __pyx_k_LIBDIR, sizeof(__pyx_k_LIBDIR), 0, 1, 0, 0},
+  {&__pyx_kp_u_List_all_elements, __pyx_k_List_all_elements, sizeof(__pyx_k_List_all_elements), 0, 1, 0, 0},
+  {&__pyx_kp_u_List_registered_elements, __pyx_k_List_registered_elements, sizeof(__pyx_k_List_registered_elements), 0, 1, 0, 0},
   {&__pyx_kp_u_No_dependencies_found, __pyx_k_No_dependencies_found, sizeof(__pyx_k_No_dependencies_found), 0, 1, 0, 0},
   {&__pyx_kp_u_None, __pyx_k_None, sizeof(__pyx_k_None), 0, 1, 0, 0},
   {&__pyx_kp_u_SST_Element_Installer, __pyx_k_SST_Element_Installer, sizeof(__pyx_k_SST_Element_Installer), 0, 1, 0, 0},
   {&__pyx_kp_u_Uninstall_element, __pyx_k_Uninstall_element, sizeof(__pyx_k_Uninstall_element), 0, 1, 0, 0},
   {&__pyx_kp_u__20, __pyx_k__20, sizeof(__pyx_k__20), 0, 1, 0, 0},
+  {&__pyx_kp_u__26, __pyx_k__26, sizeof(__pyx_k__26), 0, 1, 0, 0},
   {&__pyx_kp_u__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 1, 0, 0},
   {&__pyx_kp_u__4, __pyx_k__4, sizeof(__pyx_k__4), 0, 1, 0, 0},
   {&__pyx_kp_u__5, __pyx_k__5, sizeof(__pyx_k__5), 0, 1, 0, 0},
@@ -4815,6 +4843,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_dep, __pyx_k_dep, sizeof(__pyx_k_dep), 0, 0, 1, 1},
   {&__pyx_kp_u_dependencies_txt, __pyx_k_dependencies_txt, sizeof(__pyx_k_dependencies_txt), 0, 1, 0, 0},
   {&__pyx_n_s_description, __pyx_k_description, sizeof(__pyx_k_description), 0, 0, 1, 1},
+  {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_elem, __pyx_k_elem, sizeof(__pyx_k_elem), 0, 0, 1, 1},
   {&__pyx_n_s_elements_list, __pyx_k_elements_list, sizeof(__pyx_k_elements_list), 0, 0, 1, 1},
   {&__pyx_n_s_enter, __pyx_k_enter, sizeof(__pyx_k_enter), 0, 0, 1, 1},
@@ -4824,7 +4853,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_extend, __pyx_k_extend, sizeof(__pyx_k_extend), 0, 0, 1, 1},
   {&__pyx_kp_u_f, __pyx_k_f, sizeof(__pyx_k_f), 0, 1, 0, 0},
   {&__pyx_kp_u_force, __pyx_k_force, sizeof(__pyx_k_force), 0, 1, 0, 0},
-  {&__pyx_n_s_force_2, __pyx_k_force_2, sizeof(__pyx_k_force_2), 0, 0, 1, 1},
+  {&__pyx_n_u_force_2, __pyx_k_force_2, sizeof(__pyx_k_force_2), 0, 1, 0, 1},
   {&__pyx_kp_u_from, __pyx_k_from, sizeof(__pyx_k_from), 0, 1, 0, 0},
   {&__pyx_n_s_genexpr, __pyx_k_genexpr, sizeof(__pyx_k_genexpr), 0, 0, 1, 1},
   {&__pyx_n_s_get_var_path, __pyx_k_get_var_path, sizeof(__pyx_k_get_var_path), 0, 0, 1, 1},
@@ -4837,14 +4866,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 1, 0, 0},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_kp_u_install, __pyx_k_install, sizeof(__pyx_k_install), 0, 1, 0, 0},
-  {&__pyx_n_s_install_2, __pyx_k_install_2, sizeof(__pyx_k_install_2), 0, 0, 1, 1},
+  {&__pyx_n_u_install_2, __pyx_k_install_2, sizeof(__pyx_k_install_2), 0, 1, 0, 1},
   {&__pyx_n_s_install_locals_genexpr, __pyx_k_install_locals_genexpr, sizeof(__pyx_k_install_locals_genexpr), 0, 0, 1, 1},
   {&__pyx_kp_u_l, __pyx_k_l, sizeof(__pyx_k_l), 0, 1, 0, 0},
   {&__pyx_kp_u_list, __pyx_k_list, sizeof(__pyx_k_list), 0, 1, 0, 0},
-  {&__pyx_n_s_list_2, __pyx_k_list_2, sizeof(__pyx_k_list_2), 0, 0, 1, 1},
+  {&__pyx_n_u_list_2, __pyx_k_list_2, sizeof(__pyx_k_list_2), 0, 1, 0, 1},
   {&__pyx_n_s_list_all_elements, __pyx_k_list_all_elements, sizeof(__pyx_k_list_all_elements), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
-  {&__pyx_n_u_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 1, 0, 1},
   {&__pyx_kp_u_make_all, __pyx_k_make_all, sizeof(__pyx_k_make_all), 0, 1, 0, 0},
   {&__pyx_n_s_metavar, __pyx_k_metavar, sizeof(__pyx_k_metavar), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -4858,7 +4886,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_path, __pyx_k_path, sizeof(__pyx_k_path), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_print_help, __pyx_k_print_help, sizeof(__pyx_k_print_help), 0, 0, 1, 1},
+  {&__pyx_kp_u_r, __pyx_k_r, sizeof(__pyx_k_r), 0, 1, 0, 0},
   {&__pyx_n_s_read, __pyx_k_read, sizeof(__pyx_k_read), 0, 0, 1, 1},
+  {&__pyx_kp_u_registered, __pyx_k_registered, sizeof(__pyx_k_registered), 0, 1, 0, 0},
+  {&__pyx_n_u_registered_2, __pyx_k_registered_2, sizeof(__pyx_k_registered_2), 0, 1, 0, 1},
   {&__pyx_n_s_remove, __pyx_k_remove, sizeof(__pyx_k_remove), 0, 0, 1, 1},
   {&__pyx_n_s_request, __pyx_k_request, sizeof(__pyx_k_request), 0, 0, 1, 1},
   {&__pyx_n_s_rmtree, __pyx_k_rmtree, sizeof(__pyx_k_rmtree), 0, 0, 1, 1},
@@ -4877,9 +4908,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_type, __pyx_k_type, sizeof(__pyx_k_type), 0, 0, 1, 1},
   {&__pyx_kp_u_u, __pyx_k_u, sizeof(__pyx_k_u), 0, 1, 0, 0},
   {&__pyx_kp_u_uninstall, __pyx_k_uninstall, sizeof(__pyx_k_uninstall), 0, 1, 0, 0},
-  {&__pyx_n_s_uninstall_2, __pyx_k_uninstall_2, sizeof(__pyx_k_uninstall_2), 0, 0, 1, 1},
+  {&__pyx_n_u_uninstall_2, __pyx_k_uninstall_2, sizeof(__pyx_k_uninstall_2), 0, 1, 0, 1},
   {&__pyx_kp_u_url, __pyx_k_url, sizeof(__pyx_k_url), 0, 1, 0, 0},
-  {&__pyx_n_s_url_2, __pyx_k_url_2, sizeof(__pyx_k_url_2), 0, 0, 1, 1},
+  {&__pyx_n_u_url_2, __pyx_k_url_2, sizeof(__pyx_k_url_2), 0, 1, 0, 1},
   {&__pyx_n_s_urllib, __pyx_k_urllib, sizeof(__pyx_k_urllib), 0, 0, 1, 1},
   {&__pyx_n_s_urllib_request, __pyx_k_urllib_request, sizeof(__pyx_k_urllib_request), 0, 0, 1, 1},
   {&__pyx_n_s_urlopen, __pyx_k_urlopen, sizeof(__pyx_k_urlopen), 0, 0, 1, 1},
@@ -4888,9 +4919,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_exit = __Pyx_GetBuiltinName(__pyx_n_s_exit); if (!__pyx_builtin_exit) __PYX_ERR(0, 197, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 45, __pyx_L1_error)
-  __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 82, __pyx_L1_error)
+  __pyx_builtin_exit = __Pyx_GetBuiltinName(__pyx_n_s_exit); if (!__pyx_builtin_exit) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 205, __pyx_L1_error)
+  __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 79, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -4900,162 +4931,173 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "cli.pyx":26
+  /* "cli.pyx":23
  *     :return: list of elements
  *     """
  *     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:             # <<<<<<<<<<<<<<
  *         return elements_list.read().decode("utf-8").split()
  * 
  */
-  __pyx_tuple_ = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "cli.pyx":71
+  /* "cli.pyx":68
  *     else:
  *         print(f"{element} not found")
  *         exit(1)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "cli.pyx":156
+  /* "cli.pyx":153
  *         # reverse the dependency graph represented in a flat array so that the parent elements are
  *         # installed before their children
  *         install_vars = install_vars[::-1]             # <<<<<<<<<<<<<<
  *         print("Installing dependencies...")
  * 
  */
-  __pyx_slice__9 = PySlice_New(Py_None, Py_None, __pyx_int_neg_1); if (unlikely(!__pyx_slice__9)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __pyx_slice__9 = PySlice_New(Py_None, Py_None, __pyx_int_neg_1); if (unlikely(!__pyx_slice__9)) __PYX_ERR(0, 153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__9);
   __Pyx_GIVEREF(__pyx_slice__9);
 
-  /* "cli.pyx":157
+  /* "cli.pyx":154
  *         # installed before their children
  *         install_vars = install_vars[::-1]
  *         print("Installing dependencies...")             # <<<<<<<<<<<<<<
  * 
  *     # if the element does not depend on any other elements
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_Installing_dependencies); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 157, __pyx_L1_error)
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_Installing_dependencies); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "cli.pyx":161
+  /* "cli.pyx":158
  *     # if the element does not depend on any other elements
  *     else:
  *         print("No dependencies found")             # <<<<<<<<<<<<<<
  * 
  *     for element, path in install_vars:
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_No_dependencies_found); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 161, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_No_dependencies_found); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "cli.pyx":178
+  /* "cli.pyx":175
  *     This function is a wrapper for the list option provided by SST
  *     """
  *     subprocess.call("sst-register -l", shell=True)             # <<<<<<<<<<<<<<
  * 
- * 
+ * parser = argparse.ArgumentParser(description="SST Element Installer")
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_sst_register_l); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_sst_register_l); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 175, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "cli.pyx":19
+  /* "cli.pyx":16
  * 
  * 
  * def list_all_elements():             # <<<<<<<<<<<<<<
  *     """Grab official list of trusted elements
  * 
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_n_s_elements_list); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_n_s_elements_list); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
-  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_list_all_elements, 19, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_list_all_elements, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 16, __pyx_L1_error)
 
-  /* "cli.pyx":86
+  /* "cli.pyx":83
  * 
  * 
  * def __add_dependencies(old, new):             # <<<<<<<<<<<<<<
  *     """Add new elements to list of dependencies
  * 
  */
-  __pyx_tuple__15 = PyTuple_Pack(3, __pyx_n_s_old, __pyx_n_s_new, __pyx_n_s_elem); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(3, __pyx_n_s_old, __pyx_n_s_new, __pyx_n_s_elem); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__15);
   __Pyx_GIVEREF(__pyx_tuple__15);
-  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_add_dependencies, 86, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_add_dependencies, 83, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 83, __pyx_L1_error)
 
-  /* "cli.pyx":105
+  /* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
  *     """Generate Makefile variable definitions for elements with dependencies
  * 
  */
-  __pyx_tuple__17 = PyTuple_Pack(4, __pyx_n_s_elem, __pyx_n_s_dep, __pyx_n_s_genexpr, __pyx_n_s_genexpr); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_tuple__17 = PyTuple_Pack(4, __pyx_n_s_elem, __pyx_n_s_dep, __pyx_n_s_genexpr, __pyx_n_s_genexpr); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__17);
   __Pyx_GIVEREF(__pyx_tuple__17);
-  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_get_var_path, 105, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cli_pyx, __pyx_n_s_get_var_path, 102, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) __PYX_ERR(0, 102, __pyx_L1_error)
 
-  /* "cli.pyx":184
+  /* "cli.pyx":178
  * 
- *     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
- *     parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
- *                         help="Install element")
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+ * parser = argparse.ArgumentParser(description="SST Element Installer")
+ * parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
+ *                     help="Install element")
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
  */
-  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_kp_u_install, __pyx_kp_u_i); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_kp_u_install, __pyx_kp_u_i); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 178, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
 
-  /* "cli.pyx":186
- *     parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
- *                         help="Install element")
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
+  /* "cli.pyx":180
+ * parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+ *                     help="Install element")
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
+ *                     help="Uninstall element")
+ * parser.add_argument("--force", "-f", action="store_true", default=False,
  */
-  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_kp_u_uninstall, __pyx_kp_u_u); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_kp_u_uninstall, __pyx_kp_u_u); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
 
-  /* "cli.pyx":188
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)             # <<<<<<<<<<<<<<
- *     parser.add_argument("--list", "-l", action="store_true", default=False)
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
+  /* "cli.pyx":182
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+ *                     help="Uninstall element")
+ * parser.add_argument("--force", "-f", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="Force installation")
+ * parser.add_argument("--list", "-l", action="store_true", default=False,
  */
-  __pyx_tuple__22 = PyTuple_Pack(2, __pyx_kp_u_force, __pyx_kp_u_f); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(2, __pyx_kp_u_force, __pyx_kp_u_f); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__22);
   __Pyx_GIVEREF(__pyx_tuple__22);
 
-  /* "cli.pyx":189
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
- *     parser.add_argument("--list", "-l", action="store_true", default=False)             # <<<<<<<<<<<<<<
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
- * 
+  /* "cli.pyx":184
+ * parser.add_argument("--force", "-f", action="store_true", default=False,
+ *                     help="Force installation")
+ * parser.add_argument("--list", "-l", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="List all elements")
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,
  */
-  __pyx_tuple__23 = PyTuple_Pack(2, __pyx_kp_u_list, __pyx_kp_u_l); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_tuple__23 = PyTuple_Pack(2, __pyx_kp_u_list, __pyx_kp_u_l); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__23);
   __Pyx_GIVEREF(__pyx_tuple__23);
 
-  /* "cli.pyx":190
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
- *     parser.add_argument("--list", "-l", action="store_true", default=False)
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)             # <<<<<<<<<<<<<<
- * 
- *     args: argparse.Namespace = parser.parse_args()
+  /* "cli.pyx":186
+ * parser.add_argument("--list", "-l", action="store_true", default=False,
+ *                     help="List all elements")
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="List registered elements")
+ * parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL,
  */
-  __pyx_tuple__24 = PyTuple_Pack(2, __pyx_kp_u_url, __pyx_kp_u_x); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 190, __pyx_L1_error)
+  __pyx_tuple__24 = PyTuple_Pack(2, __pyx_kp_u_registered, __pyx_kp_u_r); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 186, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__24);
   __Pyx_GIVEREF(__pyx_tuple__24);
+
+  /* "cli.pyx":188
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,
+ *                     help="List registered elements")
+ * parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL,             # <<<<<<<<<<<<<<
+ *                     help="External URL for element")
+ * 
+ */
+  __pyx_tuple__25 = PyTuple_Pack(2, __pyx_kp_u_url, __pyx_kp_u_x); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5108,7 +5150,7 @@ static int __Pyx_modinit_type_init_code(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct____get_var_path) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct____get_var_path) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_3cli___pyx_scope_struct____get_var_path.tp_print = 0;
   #endif
@@ -5116,7 +5158,7 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_type_3cli___pyx_scope_struct____get_var_path.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
   __pyx_ptype_3cli___pyx_scope_struct____get_var_path = &__pyx_type_3cli___pyx_scope_struct____get_var_path;
-  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_1_genexpr) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_1_genexpr) < 0) __PYX_ERR(0, 110, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_3cli___pyx_scope_struct_1_genexpr.tp_print = 0;
   #endif
@@ -5124,7 +5166,7 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_type_3cli___pyx_scope_struct_1_genexpr.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
   __pyx_ptype_3cli___pyx_scope_struct_1_genexpr = &__pyx_type_3cli___pyx_scope_struct_1_genexpr;
-  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_2___pyx_f_3cli_install) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_2___pyx_f_3cli_install) < 0) __PYX_ERR(0, 113, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_3cli___pyx_scope_struct_2___pyx_f_3cli_install.tp_print = 0;
   #endif
@@ -5132,7 +5174,7 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_type_3cli___pyx_scope_struct_2___pyx_f_3cli_install.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
   __pyx_ptype_3cli___pyx_scope_struct_2___pyx_f_3cli_install = &__pyx_type_3cli___pyx_scope_struct_2___pyx_f_3cli_install;
-  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_3_genexpr) < 0) __PYX_ERR(0, 170, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_3cli___pyx_scope_struct_3_genexpr) < 0) __PYX_ERR(0, 167, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_3cli___pyx_scope_struct_3_genexpr.tp_print = 0;
   #endif
@@ -5265,8 +5307,8 @@ static CYTHON_SMALL_CODE int __pyx_pymod_exec_cli(PyObject *__pyx_pyinit_module)
 {
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  int __pyx_t_3;
-  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  int __pyx_t_4;
   int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
   struct __pyx_opt_args_3cli_install __pyx_t_7;
@@ -5374,542 +5416,592 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "cli.pyx":4
- * # -*- coding: utf-8 -*-
- * 
+  /* "cli.pyx":1
  * import argparse             # <<<<<<<<<<<<<<
  * import os
  * import shutil
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_argparse, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_argparse, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_argparse, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_argparse, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":5
- * 
+  /* "cli.pyx":2
  * import argparse
  * import os             # <<<<<<<<<<<<<<
  * import shutil
  * import subprocess
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_os, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_os, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_os, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_os, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":6
+  /* "cli.pyx":3
  * import argparse
  * import os
  * import shutil             # <<<<<<<<<<<<<<
  * import subprocess
  * import urllib.request
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_shutil, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_shutil, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_shutil, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_shutil, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":7
+  /* "cli.pyx":4
  * import os
  * import shutil
  * import subprocess             # <<<<<<<<<<<<<<
  * import urllib.request
  * 
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_subprocess, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_subprocess, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_subprocess, __pyx_t_1) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_subprocess, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":8
+  /* "cli.pyx":5
  * import shutil
  * import subprocess
  * import urllib.request             # <<<<<<<<<<<<<<
  * 
  * # single official list of all trusted elements
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_urllib_request, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_urllib_request, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_urllib, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_urllib, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":11
+  /* "cli.pyx":8
  * 
  * # single official list of all trusted elements
  * ELEMENT_LIST_URL = "https://raw.githubusercontent.com/sabbirahm3d/sst-elements/standalone/elements"             # <<<<<<<<<<<<<<
  * 
  * # official repository collection of all elements
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ELEMENT_LIST_URL, __pyx_kp_u_https_raw_githubusercontent_com) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ELEMENT_LIST_URL, __pyx_kp_u_https_raw_githubusercontent_com) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
 
-  /* "cli.pyx":14
+  /* "cli.pyx":11
  * 
  * # official repository collection of all elements
  * ELEMENT_REPO_URL = "https://github.com/sabbirahm3d/"             # <<<<<<<<<<<<<<
  * 
  * CWD = os.getcwd()
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ELEMENT_REPO_URL, __pyx_kp_u_https_github_com_sabbirahm3d) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ELEMENT_REPO_URL, __pyx_kp_u_https_github_com_sabbirahm3d) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
 
-  /* "cli.pyx":16
+  /* "cli.pyx":13
  * ELEMENT_REPO_URL = "https://github.com/sabbirahm3d/"
  * 
  * CWD = os.getcwd()             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_os); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_os); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_getcwd); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_getcwd); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_CWD, __pyx_t_1) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_CWD, __pyx_t_1) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":19
+  /* "cli.pyx":16
  * 
  * 
  * def list_all_elements():             # <<<<<<<<<<<<<<
  *     """Grab official list of trusted elements
  * 
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_1list_all_elements, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_1list_all_elements, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_list_all_elements, __pyx_t_1) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_list_all_elements, __pyx_t_1) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":86
+  /* "cli.pyx":83
  * 
  * 
  * def __add_dependencies(old, new):             # <<<<<<<<<<<<<<
  *     """Add new elements to list of dependencies
  * 
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_3__add_dependencies, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_3__add_dependencies, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_add_dependencies, __pyx_t_1) < 0) __PYX_ERR(0, 86, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_add_dependencies, __pyx_t_1) < 0) __PYX_ERR(0, 83, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":105
+  /* "cli.pyx":102
  * 
  * 
  * def __get_var_path(elem, dep):             # <<<<<<<<<<<<<<
  *     """Generate Makefile variable definitions for elements with dependencies
  * 
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_5__get_var_path, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3cli_5__get_var_path, NULL, __pyx_n_s_cli); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_var_path, __pyx_t_1) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_var_path, __pyx_t_1) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cli.pyx":181
+  /* "cli.pyx":177
+ *     subprocess.call("sst-register -l", shell=True)
  * 
- * 
- * if __name__ == "__main__":             # <<<<<<<<<<<<<<
- * 
- *     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
+ * parser = argparse.ArgumentParser(description="SST Element Installer")             # <<<<<<<<<<<<<<
+ * parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+ *                     help="Install element")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_name); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 181, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_argparse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = (__Pyx_PyUnicode_Equals(__pyx_t_1, __pyx_n_u_main, Py_EQ)); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 181, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ArgumentParser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_description, __pyx_kp_u_SST_Element_Installer) < 0) __PYX_ERR(0, 177, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_parser, __pyx_t_3) < 0) __PYX_ERR(0, 177, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cli.pyx":183
- * if __name__ == "__main__":
+  /* "cli.pyx":178
  * 
- *     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")             # <<<<<<<<<<<<<<
- *     parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
- *                         help="Install element")
+ * parser = argparse.ArgumentParser(description="SST Element Installer")
+ * parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
+ *                     help="Install element")
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_argparse); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ArgumentParser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 183, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_description, __pyx_kp_u_SST_Element_Installer) < 0) __PYX_ERR(0, 183, __pyx_L1_error)
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (PyDict_SetItem(__pyx_d, __pyx_n_s_parser, __pyx_t_4) < 0) __PYX_ERR(0, 183, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_parser); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_metavar, __pyx_n_u_ELEMENT) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_default, __pyx_kp_u__20) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_help, __pyx_kp_u_Install_element) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__19, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cli.pyx":184
+  /* "cli.pyx":180
+ * parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+ *                     help="Install element")
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
+ *                     help="Uninstall element")
+ * parser.add_argument("--force", "-f", action="store_true", default=False,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_parser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_metavar, __pyx_n_u_ELEMENT) < 0) __PYX_ERR(0, 180, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 180, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_default, __pyx_kp_u__20) < 0) __PYX_ERR(0, 180, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_help, __pyx_kp_u_Uninstall_element) < 0) __PYX_ERR(0, 180, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__21, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "cli.pyx":182
+ * parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+ *                     help="Uninstall element")
+ * parser.add_argument("--force", "-f", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="Force installation")
+ * parser.add_argument("--list", "-l", action="store_true", default=False,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_action, __pyx_n_u_store_true) < 0) __PYX_ERR(0, 182, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_default, Py_False) < 0) __PYX_ERR(0, 182, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_help, __pyx_kp_u_Force_installation) < 0) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__22, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "cli.pyx":184
+ * parser.add_argument("--force", "-f", action="store_true", default=False,
+ *                     help="Force installation")
+ * parser.add_argument("--list", "-l", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="List all elements")
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_parser); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_action, __pyx_n_u_store_true) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_default, Py_False) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_help, __pyx_kp_u_List_all_elements) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__23, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "cli.pyx":186
+ * parser.add_argument("--list", "-l", action="store_true", default=False,
+ *                     help="List all elements")
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,             # <<<<<<<<<<<<<<
+ *                     help="List registered elements")
+ * parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_parser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_action, __pyx_n_u_store_true) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_default, Py_False) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_help, __pyx_kp_u_List_registered_elements) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__24, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "cli.pyx":188
+ * parser.add_argument("--registered", "-r", action="store_true", default=False,
+ *                     help="List registered elements")
+ * parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL,             # <<<<<<<<<<<<<<
+ *                     help="External URL for element")
  * 
- *     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
- *     parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
- *                         help="Install element")
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_parser); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 184, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_metavar, __pyx_n_u_ELEMENT) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_default, __pyx_kp_u__20) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_help, __pyx_kp_u_Install_element) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__19, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_ELEMENT_REPO_URL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_default, __pyx_t_3) < 0) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_help, __pyx_kp_u_External_URL_for_element) < 0) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__25, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cli.pyx":186
- *     parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
- *                         help="Install element")
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",             # <<<<<<<<<<<<<<
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_parser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 186, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_metavar, __pyx_n_u_ELEMENT) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_default, __pyx_kp_u__20) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_help, __pyx_kp_u_Uninstall_element) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__21, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-    /* "cli.pyx":188
- *     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)             # <<<<<<<<<<<<<<
- *     parser.add_argument("--list", "-l", action="store_true", default=False)
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 188, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_action, __pyx_n_u_store_true) < 0) __PYX_ERR(0, 188, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_default, Py_False) < 0) __PYX_ERR(0, 188, __pyx_L1_error)
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__22, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 188, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-    /* "cli.pyx":189
- *                         help="Uninstall element")
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
- *     parser.add_argument("--list", "-l", action="store_true", default=False)             # <<<<<<<<<<<<<<
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
+  /* "cli.pyx":191
+ *                     help="External URL for element")
  * 
+ * args = parser.parse_args().__dict__             # <<<<<<<<<<<<<<
+ * 
+ * # install and uninstall options are mutually exclusive
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_parser); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 189, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_action, __pyx_n_u_store_true) < 0) __PYX_ERR(0, 189, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_default, Py_False) < 0) __PYX_ERR(0, 189, __pyx_L1_error)
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__23, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_parser); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_parse_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_dict); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_args, __pyx_t_1) < 0) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "cli.pyx":190
- *     parser.add_argument("--force", "-f", action="store_true", default=False)
- *     parser.add_argument("--list", "-l", action="store_true", default=False)
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)             # <<<<<<<<<<<<<<
+  /* "cli.pyx":194
  * 
- *     args: argparse.Namespace = parser.parse_args()
+ * # install and uninstall options are mutually exclusive
+ * if args["install"] and args["uninstall"]:             # <<<<<<<<<<<<<<
+ *     parser.print_help()
+ *     exit(1)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_parser); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_add_argument); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_type, ((PyObject *)(&PyUnicode_Type))) < 0) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_ELEMENT_REPO_URL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_default, __pyx_t_1) < 0) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__24, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-    /* "cli.pyx":192
- *     parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
- * 
- *     args: argparse.Namespace = parser.parse_args()             # <<<<<<<<<<<<<<
- * 
- *     # install and uninstall options are mutually exclusive
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 192, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_parse_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 192, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 192, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (PyDict_SetItem(__pyx_d, __pyx_n_s_args, __pyx_t_1) < 0) __PYX_ERR(0, 192, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_u_install_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__pyx_t_5) {
+  } else {
+    __pyx_t_4 = __pyx_t_5;
+    goto __pyx_L3_bool_binop_done;
+  }
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_args); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_uninstall_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_4 = __pyx_t_5;
+  __pyx_L3_bool_binop_done:;
+  if (__pyx_t_4) {
 
     /* "cli.pyx":195
+ * # install and uninstall options are mutually exclusive
+ * if args["install"] and args["uninstall"]:
+ *     parser.print_help()             # <<<<<<<<<<<<<<
+ *     exit(1)
  * 
- *     # install and uninstall options are mutually exclusive
- *     if args.install and args.uninstall:             # <<<<<<<<<<<<<<
- *         parser.print_help()
- *         exit(1)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_install_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 195, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_print_help); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 195, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 195, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (__pyx_t_5) {
-    } else {
-      __pyx_t_3 = __pyx_t_5;
-      goto __pyx_L4_bool_binop_done;
-    }
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 195, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_uninstall_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 195, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_3 = __pyx_t_5;
-    __pyx_L4_bool_binop_done:;
-    if (__pyx_t_3) {
 
-      /* "cli.pyx":196
- *     # install and uninstall options are mutually exclusive
- *     if args.install and args.uninstall:
- *         parser.print_help()             # <<<<<<<<<<<<<<
- *         exit(1)
+    /* "cli.pyx":196
+ * if args["install"] and args["uninstall"]:
+ *     parser.print_help()
+ *     exit(1)             # <<<<<<<<<<<<<<
  * 
+ * elif args["install"]:
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_print_help); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "cli.pyx":197
- *     if args.install and args.uninstall:
- *         parser.print_help()
- *         exit(1)             # <<<<<<<<<<<<<<
- * 
- *     elif args.install:
- */
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_exit, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 197, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "cli.pyx":195
- * 
- *     # install and uninstall options are mutually exclusive
- *     if args.install and args.uninstall:             # <<<<<<<<<<<<<<
- *         parser.print_help()
- *         exit(1)
- */
-      goto __pyx_L3;
-    }
-
-    /* "cli.pyx":199
- *         exit(1)
- * 
- *     elif args.install:             # <<<<<<<<<<<<<<
- *         install(args.install, args.url, args.force)
- * 
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_exit, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_install_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 199, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (__pyx_t_3) {
 
-      /* "cli.pyx":200
+    /* "cli.pyx":194
  * 
- *     elif args.install:
- *         install(args.install, args.url, args.force)             # <<<<<<<<<<<<<<
- * 
- *     elif args.uninstall:
+ * # install and uninstall options are mutually exclusive
+ * if args["install"] and args["uninstall"]:             # <<<<<<<<<<<<<<
+ *     parser.print_help()
+ *     exit(1)
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_install_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_url_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (!(likely(PyUnicode_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_force_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 200, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_7.__pyx_n = 1;
-      __pyx_t_7.force = __pyx_t_3;
-      __pyx_f_3cli_install(((PyObject*)__pyx_t_1), ((PyObject*)__pyx_t_4), &__pyx_t_7); 
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-      /* "cli.pyx":199
- *         exit(1)
- * 
- *     elif args.install:             # <<<<<<<<<<<<<<
- *         install(args.install, args.url, args.force)
- * 
- */
-      goto __pyx_L3;
-    }
-
-    /* "cli.pyx":202
- *         install(args.install, args.url, args.force)
- * 
- *     elif args.uninstall:             # <<<<<<<<<<<<<<
- *         uninstall(args.uninstall)
- * 
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_args); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 202, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_uninstall_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 202, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_3) {
-
-      /* "cli.pyx":203
- * 
- *     elif args.uninstall:
- *         uninstall(args.uninstall)             # <<<<<<<<<<<<<<
- * 
- *     elif args.list:
- */
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_uninstall_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (!(likely(PyUnicode_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 203, __pyx_L1_error)
-      __pyx_f_3cli_uninstall(((PyObject*)__pyx_t_4));
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-      /* "cli.pyx":202
- *         install(args.install, args.url, args.force)
- * 
- *     elif args.uninstall:             # <<<<<<<<<<<<<<
- *         uninstall(args.uninstall)
- * 
- */
-      goto __pyx_L3;
-    }
-
-    /* "cli.pyx":205
- *         uninstall(args.uninstall)
- * 
- *     elif args.list:             # <<<<<<<<<<<<<<
- *         list_elems()
- * 
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_args); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_list_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 205, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_3) {
-
-      /* "cli.pyx":206
- * 
- *     elif args.list:
- *         list_elems()             # <<<<<<<<<<<<<<
- * 
- *     else:
- */
-      __pyx_f_3cli_list_elems();
-
-      /* "cli.pyx":205
- *         uninstall(args.uninstall)
- * 
- *     elif args.list:             # <<<<<<<<<<<<<<
- *         list_elems()
- * 
- */
-      goto __pyx_L3;
-    }
-
-    /* "cli.pyx":209
- * 
- *     else:
- *         parser.print_help()             # <<<<<<<<<<<<<<
- */
-    /*else*/ {
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_print_help); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    }
-    __pyx_L3:;
-
-    /* "cli.pyx":181
- * 
- * 
- * if __name__ == "__main__":             # <<<<<<<<<<<<<<
- * 
- *     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
- */
+    goto __pyx_L2;
   }
 
-  /* "cli.pyx":1
- * #!/usr/bin/env python             # <<<<<<<<<<<<<<
- * # -*- coding: utf-8 -*-
+  /* "cli.pyx":198
+ *     exit(1)
  * 
+ * elif args["install"]:             # <<<<<<<<<<<<<<
+ *     install(args["install"], args["url"], args["force"])
+ * 
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_u_install_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 198, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 198, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__pyx_t_4) {
+
+    /* "cli.pyx":199
+ * 
+ * elif args["install"]:
+ *     install(args["install"], args["url"], args["force"])             # <<<<<<<<<<<<<<
+ * 
+ * elif args["uninstall"]:
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_args); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_install_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_args); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_url_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (!(likely(PyUnicode_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_2)->tp_name), 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_args); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_3, __pyx_n_u_force_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 199, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_7.__pyx_n = 1;
+    __pyx_t_7.force = __pyx_t_4;
+    __pyx_f_3cli_install(((PyObject*)__pyx_t_1), ((PyObject*)__pyx_t_2), &__pyx_t_7); 
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "cli.pyx":198
+ *     exit(1)
+ * 
+ * elif args["install"]:             # <<<<<<<<<<<<<<
+ *     install(args["install"], args["url"], args["force"])
+ * 
+ */
+    goto __pyx_L2;
+  }
+
+  /* "cli.pyx":201
+ *     install(args["install"], args["url"], args["force"])
+ * 
+ * elif args["uninstall"]:             # <<<<<<<<<<<<<<
+ *     uninstall(args["uninstall"])
+ * 
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_u_uninstall_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_4) {
+
+    /* "cli.pyx":202
+ * 
+ * elif args["uninstall"]:
+ *     uninstall(args["uninstall"])             # <<<<<<<<<<<<<<
+ * 
+ * elif args["list"]:
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_u_uninstall_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    if (!(likely(PyUnicode_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_2)->tp_name), 0))) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_f_3cli_uninstall(((PyObject*)__pyx_t_2));
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "cli.pyx":201
+ *     install(args["install"], args["url"], args["force"])
+ * 
+ * elif args["uninstall"]:             # <<<<<<<<<<<<<<
+ *     uninstall(args["uninstall"])
+ * 
+ */
+    goto __pyx_L2;
+  }
+
+  /* "cli.pyx":204
+ *     uninstall(args["uninstall"])
+ * 
+ * elif args["list"]:             # <<<<<<<<<<<<<<
+ *     print("\n".join(list_all_elements()))
+ * 
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_u_list_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 204, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_4) {
+
+    /* "cli.pyx":205
+ * 
+ * elif args["list"]:
+ *     print("\n".join(list_all_elements()))             # <<<<<<<<<<<<<<
+ * 
+ * elif args["registered"]:
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_list_all_elements); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = PyUnicode_Join(__pyx_kp_u__26, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "cli.pyx":204
+ *     uninstall(args["uninstall"])
+ * 
+ * elif args["list"]:             # <<<<<<<<<<<<<<
+ *     print("\n".join(list_all_elements()))
+ * 
+ */
+    goto __pyx_L2;
+  }
+
+  /* "cli.pyx":207
+ *     print("\n".join(list_all_elements()))
+ * 
+ * elif args["registered"]:             # <<<<<<<<<<<<<<
+ *     list_registered_elements()
+ * 
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_u_registered_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (__pyx_t_4) {
+
+    /* "cli.pyx":208
+ * 
+ * elif args["registered"]:
+ *     list_registered_elements()             # <<<<<<<<<<<<<<
+ * 
+ * else:
+ */
+    __pyx_f_3cli_list_registered_elements();
+
+    /* "cli.pyx":207
+ *     print("\n".join(list_all_elements()))
+ * 
+ * elif args["registered"]:             # <<<<<<<<<<<<<<
+ *     list_registered_elements()
+ * 
+ */
+    goto __pyx_L2;
+  }
+
+  /* "cli.pyx":211
+ * 
+ * else:
+ *     parser.print_help()             # <<<<<<<<<<<<<<
+ */
+  /*else*/ {
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_parser); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_print_help); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  }
+  __pyx_L2:;
+
+  /* "cli.pyx":1
+ * import argparse             # <<<<<<<<<<<<<<
+ * import os
+ * import shutil
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -5922,7 +6014,7 @@ if (!__Pyx_RefNanny) {
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   if (__pyx_m) {
     if (__pyx_d) {
@@ -7143,154 +7235,29 @@ bad:
     return module;
 }
 
-/* BytesEquals */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY
-    return PyObject_RichCompareBool(s1, s2, equals);
-#else
-    if (s1 == s2) {
-        return (equals == Py_EQ);
-    } else if (PyBytes_CheckExact(s1) & PyBytes_CheckExact(s2)) {
-        const char *ps1, *ps2;
-        Py_ssize_t length = PyBytes_GET_SIZE(s1);
-        if (length != PyBytes_GET_SIZE(s2))
-            return (equals == Py_NE);
-        ps1 = PyBytes_AS_STRING(s1);
-        ps2 = PyBytes_AS_STRING(s2);
-        if (ps1[0] != ps2[0]) {
-            return (equals == Py_NE);
-        } else if (length == 1) {
-            return (equals == Py_EQ);
-        } else {
-            int result;
-#if CYTHON_USE_UNICODE_INTERNALS
-            Py_hash_t hash1, hash2;
-            hash1 = ((PyBytesObject*)s1)->ob_shash;
-            hash2 = ((PyBytesObject*)s2)->ob_shash;
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                return (equals == Py_NE);
-            }
-#endif
-            result = memcmp(ps1, ps2, (size_t)length);
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & PyBytes_CheckExact(s2)) {
-        return (equals == Py_NE);
-    } else if ((s2 == Py_None) & PyBytes_CheckExact(s1)) {
-        return (equals == Py_NE);
-    } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
-    }
-#endif
-}
-
-/* UnicodeEquals */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY
-    return PyObject_RichCompareBool(s1, s2, equals);
-#else
-#if PY_MAJOR_VERSION < 3
-    PyObject* owned_ref = NULL;
-#endif
-    int s1_is_unicode, s2_is_unicode;
-    if (s1 == s2) {
-        goto return_eq;
-    }
-    s1_is_unicode = PyUnicode_CheckExact(s1);
-    s2_is_unicode = PyUnicode_CheckExact(s2);
-#if PY_MAJOR_VERSION < 3
-    if ((s1_is_unicode & (!s2_is_unicode)) && PyString_CheckExact(s2)) {
-        owned_ref = PyUnicode_FromObject(s2);
-        if (unlikely(!owned_ref))
-            return -1;
-        s2 = owned_ref;
-        s2_is_unicode = 1;
-    } else if ((s2_is_unicode & (!s1_is_unicode)) && PyString_CheckExact(s1)) {
-        owned_ref = PyUnicode_FromObject(s1);
-        if (unlikely(!owned_ref))
-            return -1;
-        s1 = owned_ref;
-        s1_is_unicode = 1;
-    } else if (((!s2_is_unicode) & (!s1_is_unicode))) {
-        return __Pyx_PyBytes_Equals(s1, s2, equals);
-    }
-#endif
-    if (s1_is_unicode & s2_is_unicode) {
-        Py_ssize_t length;
-        int kind;
-        void *data1, *data2;
-        if (unlikely(__Pyx_PyUnicode_READY(s1) < 0) || unlikely(__Pyx_PyUnicode_READY(s2) < 0))
-            return -1;
-        length = __Pyx_PyUnicode_GET_LENGTH(s1);
-        if (length != __Pyx_PyUnicode_GET_LENGTH(s2)) {
-            goto return_ne;
-        }
-#if CYTHON_USE_UNICODE_INTERNALS
-        {
-            Py_hash_t hash1, hash2;
-        #if CYTHON_PEP393_ENABLED
-            hash1 = ((PyASCIIObject*)s1)->hash;
-            hash2 = ((PyASCIIObject*)s2)->hash;
-        #else
-            hash1 = ((PyUnicodeObject*)s1)->hash;
-            hash2 = ((PyUnicodeObject*)s2)->hash;
-        #endif
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                goto return_ne;
+/* DictGetItem */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
+    PyObject *value;
+    value = PyDict_GetItemWithError(d, key);
+    if (unlikely(!value)) {
+        if (!PyErr_Occurred()) {
+            if (unlikely(PyTuple_Check(key))) {
+                PyObject* args = PyTuple_Pack(1, key);
+                if (likely(args)) {
+                    PyErr_SetObject(PyExc_KeyError, args);
+                    Py_DECREF(args);
+                }
+            } else {
+                PyErr_SetObject(PyExc_KeyError, key);
             }
         }
-#endif
-        kind = __Pyx_PyUnicode_KIND(s1);
-        if (kind != __Pyx_PyUnicode_KIND(s2)) {
-            goto return_ne;
-        }
-        data1 = __Pyx_PyUnicode_DATA(s1);
-        data2 = __Pyx_PyUnicode_DATA(s2);
-        if (__Pyx_PyUnicode_READ(kind, data1, 0) != __Pyx_PyUnicode_READ(kind, data2, 0)) {
-            goto return_ne;
-        } else if (length == 1) {
-            goto return_eq;
-        } else {
-            int result = memcmp(data1, data2, (size_t)(length * kind));
-            #if PY_MAJOR_VERSION < 3
-            Py_XDECREF(owned_ref);
-            #endif
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & s2_is_unicode) {
-        goto return_ne;
-    } else if ((s2 == Py_None) & s1_is_unicode) {
-        goto return_ne;
-    } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        #if PY_MAJOR_VERSION < 3
-        Py_XDECREF(owned_ref);
-        #endif
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
+        return NULL;
     }
-return_eq:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_EQ);
-return_ne:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_NE);
-#endif
+    Py_INCREF(value);
+    return value;
 }
+#endif
 
 /* CLineInTraceback */
 #ifndef CYTHON_CLINE_IN_TRACEBACK

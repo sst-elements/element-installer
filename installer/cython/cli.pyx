@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import argparse
 import os
 import shutil
@@ -113,7 +110,7 @@ def __get_var_path(elem, dep):
     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)
 
 
-cdef void install(str element, str url, bint force = False):
+cdef void install(str element, str url, bint force=False):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -170,40 +167,45 @@ cdef void install(str element, str url, bint force = False):
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
 
 
-cdef void list_elems():
+cdef void list_registered_elements():
     """List elements installed in system
 
     This function is a wrapper for the list option provided by SST
     """
     subprocess.call("sst-register -l", shell=True)
 
+parser = argparse.ArgumentParser(description="SST Element Installer")
+parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+                    help="Install element")
+parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+                    help="Uninstall element")
+parser.add_argument("--force", "-f", action="store_true", default=False,
+                    help="Force installation")
+parser.add_argument("--list", "-l", action="store_true", default=False,
+                    help="List all elements")
+parser.add_argument("--registered", "-r", action="store_true", default=False,
+                    help="List registered elements")
+parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL,
+                    help="External URL for element")
 
-if __name__ == "__main__":
+args = parser.parse_args().__dict__
 
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(description="SST Element Installer")
-    parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
-                        help="Install element")
-    parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
-                        help="Uninstall element")
-    parser.add_argument("--force", "-f", action="store_true", default=False)
-    parser.add_argument("--list", "-l", action="store_true", default=False)
-    parser.add_argument("--url", "-x", type=str, default=ELEMENT_REPO_URL)
+# install and uninstall options are mutually exclusive
+if args["install"] and args["uninstall"]:
+    parser.print_help()
+    exit(1)
 
-    args: argparse.Namespace = parser.parse_args()
+elif args["install"]:
+    install(args["install"], args["url"], args["force"])
 
-    # install and uninstall options are mutually exclusive
-    if args.install and args.uninstall:
-        parser.print_help()
-        exit(1)
+elif args["uninstall"]:
+    uninstall(args["uninstall"])
 
-    elif args.install:
-        install(args.install, args.url, args.force)
+elif args["list"]:
+    print("\n".join(list_all_elements()))
 
-    elif args.uninstall:
-        uninstall(args.uninstall)
+elif args["registered"]:
+    list_registered_elements()
 
-    elif args.list:
-        list_elems()
-
-    else:
-        parser.print_help()
+else:
+    parser.print_help()

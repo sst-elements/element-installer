@@ -166,9 +166,10 @@ def install(element: str, url: str, force: bool = False) -> None:
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
 
 
-def list_elems() -> None:
+def list_registered_elements() -> List[str]:
     """List elements installed in system
 
     This function is a wrapper for the list option provided by SST
     """
-    subprocess.call("sst-register -l", shell=True)
+    elements = subprocess.check_output("sst-register -l", shell=True).split(b"\n")[5:]
+    return filter(None, (i.decode("utf-8") for i in elements))
