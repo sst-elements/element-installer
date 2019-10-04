@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import urllib.request
 
-from config import ELEMENT_LIST_URL
+from config import ELEMENT_LIST_URL, ELEMENT_README_URL
 
 CWD: str = os.getcwd()
 
@@ -59,14 +59,14 @@ def uninstall(element):
         print(f"{element} not found")
 
 
-def __clone(element, url, force):
+def __clone(element, user, force):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `__list_all_elements()`, it will be cloned from its repository with the
     URL provided
 
     :param {str} element: name of element
-    :param {str} url: base URL of repositories
+    :param {str} user: base URL of repositories
     :param {bool} force: flag to force install. If true and element is already installed, the
                          element is re-cloned
     """
@@ -80,7 +80,7 @@ def __clone(element, url, force):
     all_elements = __list_all_elements()
     if element in all_elements:
         subprocess.call(
-            f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
+            f"git clone https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
         )
     else:
         print(f"{element} not found")
@@ -95,7 +95,7 @@ def __get_dependencies(element):
     :return {List[str]}: dependencies
     """
     print(f"Gathering dependencies for {element}...")
-    with open(element + "/requirements.txt") as req_file:
+    with open(element + "/dependencies.txt") as req_file:
         return req_file.read().split()
 
 
@@ -197,3 +197,37 @@ def list_registered_elements():
     elements = subprocess.check_output("sst-register -l", shell=True).decode("utf-8")
     matches = reg_elem_re.finditer(elements)
     return [match.group() for match in matches]
+
+
+def get_info(element, user="sabbirahm3d"):
+    """[summary]
+
+    [description]
+
+    Arguments:
+        element {[type]} -- [description]
+    """
+    README_FILE_PATS = ("/README", "/README.md")
+    reg_elements = list_registered_elements()
+    if element in reg_elements:
+
+        for file_name in README_FILE_PATS:
+            if os.path.exists(element + file_name):
+                with open(element + file_name) as readme_file:
+                    return readme_file.read()
+
+        return "No information found on " + element
+
+    else:
+
+        all_elements = __list_all_elements()
+        if element in all_elements:
+            for file_name in README_FILE_PATS:
+                try:
+                    return urllib.request.urlopen(
+                        ELEMENT_README_URL.format(user=user, elem=element) + file_name
+                    ).read().decode("utf-8")
+                except urllib.error.HTTPError:
+                    continue
+
+        return "No information found on " + element

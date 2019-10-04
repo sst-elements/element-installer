@@ -11,28 +11,24 @@ import install
 from child_windows import ChildWindow
 
 
-ALL_ELEMENTS = install.list_all_elements()
-REG_ELEMENTS = list(install.list_registered_elements())
+ALL_ELEMENTS = install.__list_all_elements()
+REG_ELEMENTS = install.list_registered_elements()
 
 
-class ElementOptionsWindow(QMainWindow):
+class ElementOptionsWindow(ChildWindow):
 
     def __init__(self, parent, registered=True):
 
-        super(ElementOptionsWindow, self).__init__(parent)
+        self.about = QTextEdit()
 
-        self.parent = parent
-
-        self.push_button = QPushButton("element")
-        self.setCentralWidget(self.push_button)
-        self.push_button.clicked.connect(self.on_push_back)
+        super(ElementOptionsWindow, self).__init__(
+            parent,
+            header="Element",
+            widgets=[self.about]
+        )
 
     def set_element(self, element):
-        print(element)
-
-    def on_push_back(self):
-        self.hide()
-        self.parent.show()
+        self.about.setText(install.get_info(element))
 
 
 class RegisteredElementsWindow(ChildWindow):
@@ -63,9 +59,12 @@ class ElementsWindow(ChildWindow):
 
     def __init__(self, parent):
 
-        self.list_view = QListView()
-        self.list_view.setModel(QStringListModel(ALL_ELEMENTS))
-        self.list_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.list_view = QListWidget()
+        for element in ALL_ELEMENTS:
+            element_item = QListWidgetItem(element)
+            if element in REG_ELEMENTS:
+                element_item.setBackground(QColor("#7fc97f"))
+            self.list_view.addItem(element_item)
 
         super(ElementsWindow, self).__init__(
             parent,
@@ -88,6 +87,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
 
         super(MainWindow, self).__init__()
+        self.setFixedSize(640, 480)
 
         self.window = QWidget(self)
         self.setCentralWidget(self.window)
@@ -107,9 +107,6 @@ class MainWindow(QMainWindow):
         self.elements_window = ElementsWindow(self)
         self.registered_elements_window = RegisteredElementsWindow(self)
 
-    def set_element(self, element):
-        print(element)
-
     def on_list_elems_clicked(self):
         self.hide()
         self.registered_elements_window.show()
@@ -122,7 +119,7 @@ class MainWindow(QMainWindow):
 def main():
 
     app = QApplication(sys.argv)
-    app.setApplicationName("Megasolid Idiom")
+    app.setApplicationName("SST Elements")
     app.setStyle("Fusion")
 
     palette = QPalette()

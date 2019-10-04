@@ -10,6 +10,7 @@ class ChildWindow(QMainWindow):
     def __init__(self, parent, header, widgets):
 
         super(ChildWindow, self).__init__(parent)
+        self.setFixedSize(640, 480)
 
         self.parent = parent
 
@@ -18,7 +19,7 @@ class ChildWindow(QMainWindow):
         layout = QVBoxLayout()
 
         self.header = QLabel()
-        self.header.setText(header)
+        self.header.setText(f"<h1>{header}</h1>")
 
         self.back_btn = QPushButton("Back")
 
@@ -32,5 +33,6 @@ class ChildWindow(QMainWindow):
         self.back_btn.clicked.connect(self.on_back_clicked)
 
     def on_back_clicked(self):
+
         self.hide()
         self.parent.show()

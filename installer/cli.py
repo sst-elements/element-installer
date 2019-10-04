@@ -3,7 +3,6 @@
 
 import argparse
 
-import config
 import install
 
 if __name__ == "__main__":
@@ -19,8 +18,10 @@ if __name__ == "__main__":
                         help="List all elements")
     parser.add_argument("--registered", "-r", action="store_true", default=False,
                         help="List registered elements")
-    parser.add_argument("--url", "-x", type=str, default=config.ELEMENT_REPO_URL,
+    parser.add_argument("--url", "-x", type=str, default="sabbirahm3d",
                         help="External URL for element")
+    parser.add_argument("--details", "-d", metavar="ELEMENT", type=str, default="",
+                        help="Display element information")
 
     args: argparse.Namespace = parser.parse_args().__dict__
 
@@ -40,6 +41,9 @@ if __name__ == "__main__":
 
     elif args["registered"]:
         print("\n".join(install.list_registered_elements()))
+
+    elif args["details"]:
+        print(install.get_info(args["details"]))
 
     else:
         parser.print_help()
