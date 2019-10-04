@@ -36,7 +36,7 @@ if __name__ == "__main__":
         install.uninstall(args["uninstall"])
 
     elif args["list"]:
-        print("\n".join(install.list_all_elements()))
+        install.pprint_all_elements()
 
     elif args["registered"]:
         print("\n".join(install.list_registered_elements()))

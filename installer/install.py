@@ -2,36 +2,54 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import shutil
 import subprocess
-from typing import List, Tuple
 import urllib.request
 
 from config import ELEMENT_LIST_URL
 
 CWD: str = os.getcwd()
 
+reg_elem_re = re.compile(r"(((?<=^\d{1}\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
-def list_all_elements() -> List[str]:
+
+def __list_all_elements():
     """Grab official list of trusted elements
 
     The list document is a simple file with elements delimited by '\n'
 
-    :return: list of elements
+    :return {List[str]}: list of elements
     """
     with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:
         return elements_list.read().decode("utf-8").split()
 
 
-def uninstall(element: str) -> None:
+def pprint_all_elements():
+    """[summary]
+
+    [description]
+    """
+    all_elements = __list_all_elements()
+    reg_elements = list_registered_elements()
+    print("SST Elements".ljust(25), "Registered")
+    print("-" * 41)
+    for element in all_elements:
+        if element in reg_elements:
+            # print check mark (✓)
+            print(element.ljust(28), "\033[32m✓\033[0m")
+        else:
+            print(element)
+
+
+def uninstall(element):
     """Remove and uninstall element from system
 
     The path of the element is first located before a subprocess instance is created to avoid shell
     injection
 
-    :param element: name of element
+    :param {str} element: name of element
     """
-
     if os.path.exists(element):
         shutil.rmtree(element)
         subprocess.call(
@@ -41,15 +59,16 @@ def uninstall(element: str) -> None:
         print(f"{element} not found")
 
 
-def __clone(element: str, url: str, force: bool) -> None:
+def __clone(element, url, force):
     """Clone repository of element if it is deemed official and trusted
 
-    If element is found on `list_all_elements()`, it will be cloned from its repository with the
+    If element is found on `__list_all_elements()`, it will be cloned from its repository with the
     URL provided
 
-    :param element: name of element
-    :param url: base URL of repositories
-    :param force: flag to force install. If true and element is already installed, the element is re-cloned
+    :param {str} element: name of element
+    :param {str} url: base URL of repositories
+    :param {bool} force: flag to force install. If true and element is already installed, the
+                         element is re-cloned
     """
     if os.path.exists(element):
         if not force:
@@ -58,7 +77,8 @@ def __clone(element: str, url: str, force: bool) -> None:
         else:
             uninstall(element)
 
-    if element in list_all_elements():
+    all_elements = __list_all_elements()
+    if element in all_elements:
         subprocess.call(
             f"git clone {url}{element}", shell=True, stdout=subprocess.DEVNULL
         )
@@ -67,28 +87,28 @@ def __clone(element: str, url: str, force: bool) -> None:
         exit(1)
 
 
-def __get_dependencies(element: str) -> List[str]:
+def __get_dependencies(element):
     """Parse dependencies of element into list
 
-    :param element: name of element
+    :param {str} element: name of element
 
-    :return: dependencies
+    :return {List[str]}: dependencies
     """
     print(f"Gathering dependencies for {element}...")
     with open(element + "/requirements.txt") as req_file:
         return req_file.read().split()
 
 
-def __add_dependencies(old: List[str], new: List[str]) -> List[str]:
+def __add_dependencies(old, new):
     """Add new elements to list of dependencies
 
     If the new list of dependencies include elements already in the original list of dependencies,
     the index of the element is shifted to properly update the dependency graph
 
-    :param old {list{str}}: original list of dependencies
-    :param new {list{str}}: new list of elements to be added as dependencies
+    :param {List{str}} old: original list of dependencies
+    :param {List{str}} new: new list of elements to be added as dependencies
 
-    :return {list{str}}: updated list of dependencies
+    :return {List{str}}: updated list of dependencies
     """
     for elem in new:
         if elem in old:
@@ -98,27 +118,28 @@ def __add_dependencies(old: List[str], new: List[str]) -> List[str]:
     return old
 
 
-def __get_var_path(elem: str, dep: List[str]) -> Tuple[str, str]:
+def __get_var_path(elem, dep):
     """Generate Makefile variable definitions for elements with dependencies
 
-    :param elem: name of element
-    :param dep: list of dependencies for the element
+    :param {str} elem: name of element
+    :param {List{str}} dep: list of dependencies for the element
 
-    :return: name of element along with the generated Makefile variable definitions
+    :return {Tuple[str, str]}: name of element along with the generated Makefile variable
+                               definitions
     """
     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)
 
 
-def install(element: str, url: str, force: bool = False) -> None:
+def install(element, url, force=False):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
     elements are then cloned as well until no more dependencies are required. All the elements are
     finally installed with their respective Makefiles in the reversed order of when they were added.
 
-    :param element: name of element
-    :param url: URL of element repository
-    :param force: flag to force install (default: {False})
+    :param {str} element: name of element
+    :param {str} url: URL of element repository
+    :param {bool} force: flag to force install (default: {False})
                          If true and element is already installed, the element is re-cloned
     """
     install_vars = []
@@ -166,10 +187,13 @@ def install(element: str, url: str, force: bool = False) -> None:
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
 
 
-def list_registered_elements() -> List[str]:
+def list_registered_elements():
     """List elements installed in system
 
     This function is a wrapper for the list option provided by SST
+
+    :return {List[str]}:
     """
-    elements = subprocess.check_output("sst-register -l", shell=True).split(b"\n")[5:]
-    return filter(None, (i.decode("utf-8") for i in elements))
+    elements = subprocess.check_output("sst-register -l", shell=True).decode("utf-8")
+    matches = reg_elem_re.finditer(elements)
+    return [match.group() for match in matches]
