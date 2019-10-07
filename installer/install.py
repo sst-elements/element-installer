@@ -11,10 +11,10 @@ from config import ELEMENT_LIST_URL, ELEMENT_README_URL
 
 CWD: str = os.getcwd()
 
-reg_elem_re = re.compile(r"(((?<=^\d{1}\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
+reg_elem_re = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
 
-def __list_all_elements():
+def _list_all_elements():
     """Grab official list of trusted elements
 
     The list document is a simple file with elements delimited by '\n'
@@ -30,7 +30,7 @@ def pprint_all_elements():
 
     [description]
     """
-    all_elements = __list_all_elements()
+    all_elements = _list_all_elements()
     reg_elements = list_registered_elements()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
@@ -77,7 +77,7 @@ def __clone(element, user, force):
         else:
             uninstall(element)
 
-    all_elements = __list_all_elements()
+    all_elements = _list_all_elements()
     if element in all_elements:
         subprocess.call(
             f"git clone https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
@@ -220,7 +220,7 @@ def get_info(element, user="sabbirahm3d"):
 
     else:
 
-        all_elements = __list_all_elements()
+        all_elements = _list_all_elements()
         if element in all_elements:
             for file_name in README_FILE_PATS:
                 try:

@@ -11,24 +11,34 @@ import install
 from child_windows import ChildWindow
 
 
-ALL_ELEMENTS = install.__list_all_elements()
-REG_ELEMENTS = install.list_registered_elements()
-
-
 class ElementOptionsWindow(ChildWindow):
 
     def __init__(self, parent, registered=True):
 
         self.about = QTextEdit()
+        self.install_btn = QPushButton("Install")
+        self.uninstall_btn = QPushButton("Uninstall")
 
         super(ElementOptionsWindow, self).__init__(
             parent,
             header="Element",
-            widgets=[self.about]
+            widgets=[self.about, self.install_btn, self.uninstall_btn]
         )
+        self.install_btn.clicked.connect(self.install_element)
+        self.uninstall_btn.clicked.connect(self.uninstall_element)
+        self.element = None
 
     def set_element(self, element):
-        self.about.setText(install.get_info(element))
+        self.element = element
+        self.about.setText(install.get_info(self.element))
+
+    def install_element(self):
+        install.install(self.element, url="sabbirahm3d")
+        self.parent.update()
+
+    def uninstall_element(self):
+        install.uninstall(self.element)
+        self.parent.update()
 
 
 class RegisteredElementsWindow(ChildWindow):
@@ -36,14 +46,13 @@ class RegisteredElementsWindow(ChildWindow):
     def __init__(self, parent):
 
         self.list_view = QListView()
-        self.list_view.setModel(QStringListModel(REG_ELEMENTS))
-        self.list_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         super(RegisteredElementsWindow, self).__init__(
             parent,
             header="Registered Elements",
             widgets=[self.list_view]
         )
+        self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
         self.selected_element_window = ElementOptionsWindow(self)
 
@@ -51,8 +60,13 @@ class RegisteredElementsWindow(ChildWindow):
     def on_list_view_clicked(self, index):
 
         self.hide()
-        self.selected_element_window.set_element(REG_ELEMENTS[index.row()])
+        self.selected_element_window.set_element(self.reg_elements[index.row()])
         self.selected_element_window.show()
+
+    def update(self):
+        self.reg_elements = install.list_registered_elements()
+        self.list_view.setModel(QStringListModel(self.reg_elements))
+        self.list_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
 
 class ElementsWindow(ChildWindow):
@@ -60,17 +74,14 @@ class ElementsWindow(ChildWindow):
     def __init__(self, parent):
 
         self.list_view = QListWidget()
-        for element in ALL_ELEMENTS:
-            element_item = QListWidgetItem(element)
-            if element in REG_ELEMENTS:
-                element_item.setBackground(QColor("#7fc97f"))
-            self.list_view.addItem(element_item)
 
         super(ElementsWindow, self).__init__(
             parent,
             header="SST Elements",
             widgets=[self.list_view]
         )
+
+        self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
         self.selected_element_window = ElementOptionsWindow(self)
 
@@ -78,8 +89,18 @@ class ElementsWindow(ChildWindow):
     def on_list_view_clicked(self, index):
 
         self.hide()
-        self.selected_element_window.set_element(ALL_ELEMENTS[index.row()])
+        self.selected_element_window.set_element(self.all_elements[index.row()])
         self.selected_element_window.show()
+
+    def update(self):
+        self.list_view.clear()
+        self.all_elements = install._list_all_elements()
+        reg_elements = install.list_registered_elements()
+        for element in self.all_elements:
+            element_item = QListWidgetItem(element)
+            if element in reg_elements:
+                element_item.setBackground(QColor("#7fc97f"))
+            self.list_view.addItem(element_item)
 
 
 class MainWindow(QMainWindow):
@@ -109,6 +130,7 @@ class MainWindow(QMainWindow):
 
     def on_list_elems_clicked(self):
         self.hide()
+        self.registered_elements_window.update()
         self.registered_elements_window.show()
 
     def on_install_elems_clicked(self):
