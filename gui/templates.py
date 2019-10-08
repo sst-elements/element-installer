@@ -1,7 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
+from spinner import QtWaitingSpinner
+
+
+class RequestRunnable(QtCore.QRunnable):
+    def __init__(self, window, action, *args):
+
+        QtCore.QRunnable.__init__(self)
+        self.window = window
+        self.action = action
+        self.args = args
+
+    def run(self):
+
+        QtCore.QMetaObject.invokeMethod(
+            self.window, "set_data",
+            QtCore.Qt.QueuedConnection,
+            QtCore.Q_ARG(int, self.action(*self.args)))
 
 
 class ChildWindow(QtWidgets.QMainWindow):
@@ -12,6 +29,7 @@ class ChildWindow(QtWidgets.QMainWindow):
         self.setFixedSize(640, 480)
 
         self.parent = parent
+        self.spinner = QtWaitingSpinner(self)
 
         __window = QtWidgets.QWidget(self)
         self.setCentralWidget(__window)
@@ -31,11 +49,21 @@ class ChildWindow(QtWidgets.QMainWindow):
         __hlayout.addWidget(__back_btn)
         __hlayout.addWidget(__exit_btn)
         __layout.addLayout(__hlayout)
+        __layout.addWidget(self.spinner)
 
         __window.setLayout(__layout)
 
         __back_btn.clicked.connect(self.on_back_clicked)
         __exit_btn.clicked.connect(self.on_exit_clicked)
+
+        self.runnable = RequestRunnable
+
+    @QtCore.pyqtSlot(int)
+    def set_data(self):
+
+        self.spinner.stop()
+        self.adjustSize()
+        self.parent.update()
 
     def on_back_clicked(self):
 

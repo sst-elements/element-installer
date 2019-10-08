@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("SST Elements")
-    app.setStyle("Fusion")
-    app.setPalette(ColorPalette())
+    # app.setStyle("Fusion")
+    # app.setPalette(ColorPalette())
 
     main = MainWindow()
     main.show()
