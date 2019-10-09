@@ -25,17 +25,24 @@ def _list_all_elements():
         return elements_list.read().decode("utf-8").split()
 
 
+def is_registered(element):
+
+    reg_elements = list_registered_elements()
+    if element in reg_elements:
+        return True
+    return False
+
+
 def pprint_all_elements():
     """[summary]
 
     [description]
     """
     all_elements = _list_all_elements()
-    reg_elements = list_registered_elements()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
     for element in all_elements:
-        if element in reg_elements:
+        if is_registered(element):
             # print check mark (✓)
             print(element.ljust(28), "\033[32m✓\033[0m")
         else:
@@ -55,8 +62,10 @@ def uninstall(element):
         subprocess.call(
             f"sst-register -u {element}", shell=True
         )
+        return 1
     else:
         print(f"{element} not found")
+        return 0
 
 
 def __clone(element, user, force):
@@ -185,6 +194,7 @@ def install(element, url, force=False):
         )
 
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
+    return 2
 
 
 def list_registered_elements():

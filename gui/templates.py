@@ -50,10 +50,11 @@ class SplashScreen(QtWidgets.QDialog):
         )
 
     @QtCore.pyqtSlot(int)
-    def stop(self):
+    def stop(self, rdata):
+
         self.spinner.stop()
         self.adjustSize()
-        self.parent.update()
+        self.parent.update(rdata)
         self.hide()
 
 
@@ -68,14 +69,14 @@ class ChildWindow(QtWidgets.QMainWindow):
 
         __window = QtWidgets.QWidget(self)
         self.setCentralWidget(__window)
-        __layout = QtWidgets.QVBoxLayout()
+        self._layout = QtWidgets.QVBoxLayout()
 
-        __header_label = QtWidgets.QLabel()
-        __header_label.setText(f"<h1>{header}</h1>")
+        self._header_label = QtWidgets.QLabel()
+        self._header_label.setText(f"<h1>{header}</h1>")
 
-        __layout.addWidget(__header_label)
+        self._layout.addWidget(self._header_label)
         for widget in widgets:
-            __layout.addWidget(widget)
+            self._layout.addWidget(widget)
 
         __back_btn = QtWidgets.QPushButton("Back")
         __exit_btn = QtWidgets.QPushButton("Exit")
@@ -83,9 +84,9 @@ class ChildWindow(QtWidgets.QMainWindow):
         __hlayout = QtWidgets.QHBoxLayout()
         __hlayout.addWidget(__back_btn)
         __hlayout.addWidget(__exit_btn)
-        __layout.addLayout(__hlayout)
+        self._layout.addLayout(__hlayout)
 
-        __window.setLayout(__layout)
+        __window.setLayout(self._layout)
 
         __back_btn.clicked.connect(self.on_back_clicked)
         __exit_btn.clicked.connect(self.on_exit_clicked)

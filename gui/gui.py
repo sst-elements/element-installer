@@ -5,7 +5,7 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from mainwindow import MainWindow
+from windows import MainWindow
 from templates import ColorPalette
 
 
