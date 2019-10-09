@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from spinner import QtWaitingSpinner
 
 
-class RequestRunnable(QtCore.QRunnable):
+class RunnableAction(QtCore.QRunnable):
     def __init__(self, window, action, *args):
 
         QtCore.QRunnable.__init__(self)
@@ -16,9 +16,45 @@ class RequestRunnable(QtCore.QRunnable):
     def run(self):
 
         QtCore.QMetaObject.invokeMethod(
-            self.window, "set_data",
+            self.window, "stop",
             QtCore.Qt.QueuedConnection,
             QtCore.Q_ARG(int, self.action(*self.args)))
+
+
+class SplashScreen(QtWidgets.QDialog):
+
+    def __init__(self, parent, element, action, *action_args):
+
+        super(SplashScreen, self).__init__(None)
+        self.resize(200, 100)
+
+        self.parent = parent
+
+        self.element = element
+
+        self.action = action
+        self.action_args = action_args
+
+        self.setLayout(QtWidgets.QVBoxLayout())
+
+        __header_label = QtWidgets.QLabel()
+        __header_label.setText(f"Installing {self.element}...")
+
+        self.spinner = QtWaitingSpinner(self)
+        self.layout().addWidget(__header_label)
+        self.layout().addWidget(self.spinner)
+
+        self.spinner.start()
+        QtCore.QThreadPool.globalInstance().start(
+            RunnableAction(self, self.action, self.element, *self.action_args)
+        )
+
+    @QtCore.pyqtSlot(int)
+    def stop(self):
+        self.spinner.stop()
+        self.adjustSize()
+        self.parent.update()
+        self.hide()
 
 
 class ChildWindow(QtWidgets.QMainWindow):
@@ -29,7 +65,6 @@ class ChildWindow(QtWidgets.QMainWindow):
         self.setFixedSize(640, 480)
 
         self.parent = parent
-        self.spinner = QtWaitingSpinner(self)
 
         __window = QtWidgets.QWidget(self)
         self.setCentralWidget(__window)
@@ -49,21 +84,11 @@ class ChildWindow(QtWidgets.QMainWindow):
         __hlayout.addWidget(__back_btn)
         __hlayout.addWidget(__exit_btn)
         __layout.addLayout(__hlayout)
-        __layout.addWidget(self.spinner)
 
         __window.setLayout(__layout)
 
         __back_btn.clicked.connect(self.on_back_clicked)
         __exit_btn.clicked.connect(self.on_exit_clicked)
-
-        self.runnable = RequestRunnable
-
-    @QtCore.pyqtSlot(int)
-    def set_data(self):
-
-        self.spinner.stop()
-        self.adjustSize()
-        self.parent.update()
 
     def on_back_clicked(self):
 

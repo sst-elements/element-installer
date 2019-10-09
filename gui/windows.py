@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
-from templates import ChildWindow
+from templates import ChildWindow, SplashScreen
 
 
 class ElementOptionsWindow(ChildWindow):
@@ -53,16 +53,12 @@ class ElementOptionsWindow(ChildWindow):
         self.parent.update()
 
     def element_action(self, install):
-
-        self.spinner.start()
         if install:
-            QtCore.QThreadPool.globalInstance().start(
-                self.runnable(self, sstelements.install, self.element, "sabbirahm3d")
-            )
+            splash = SplashScreen(self, self.element, sstelements.install, "sabbirahm3d")
         else:
-            QtCore.QThreadPool.globalInstance().start(
-                self.runnable(self, sstelements.uninstall, self.element)
-            )
+            splash = SplashScreen(self, self.element, sstelements.uninstall)
+        splash.setWindowModality(QtCore.Qt.ApplicationModal)
+        splash.show()
 
 
 class RegisteredElementsWindow(ChildWindow):
@@ -126,4 +122,5 @@ class ElementsWindow(ChildWindow):
             element_item = QtWidgets.QListWidgetItem(element)
             if element in reg_elements:
                 element_item.setBackground(QtGui.QColor("#7fc97f"))
+            element_item.setSelected(False)
             self.list_view.addItem(element_item)
