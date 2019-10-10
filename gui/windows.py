@@ -3,6 +3,7 @@
 
 import os
 import sys
+import urllib.request
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -40,6 +41,7 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.uninstall_btn.clicked.connect(
                     lambda: self.element_action(sstelements.uninstall))
                 self._layout.insertWidget(2, self.uninstall_btn)
+                self.uninstall_btn.setStyleSheet("background-color: #e74c3c")
 
             if self.install_btn:
                 self.install_btn.deleteLater()
@@ -52,6 +54,7 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.install_btn.clicked.connect(
                     lambda: self.element_action(sstelements.install, "sabbirahm3d"))
                 self._layout.insertWidget(2, self.install_btn)
+                self.install_btn.setStyleSheet("background-color: #27ae60")
 
             if self.uninstall_btn:
                 self.uninstall_btn.deleteLater()
@@ -137,7 +140,7 @@ class ElementsWindow(SSTElementWindow):
         for element in self.all_elements:
             element_item = QtWidgets.QListWidgetItem(element)
             if sstelements.is_registered(element):
-                element_item.setBackground(QtGui.QColor("#7fc97f"))
+                element_item.setBackground(QtGui.QColor("#2ecc71"))
             element_item.setSelected(False)
             self.list_view.addItem(element_item)
 
@@ -146,14 +149,26 @@ class MainWindow(SSTElementWindow):
 
     def __init__(self):
 
+        img_url = "http://sst-simulator.org/img/sst-logo-small.png"
+        img_data = urllib.request.urlopen(img_url).read()
+        self.pixmap = QtGui.QPixmap()
+        self.pixmap.loadFromData(img_data)
+        self.pixmap_label = QtWidgets.QLabel()
+        self.pixmap_label.setPixmap(self.pixmap)
+        self.pixmap_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.pixmap_label.resize(self.pixmap.height(), self.pixmap.width())
+
         self.reg_elems_btn = QtWidgets.QPushButton("Registered elements")
         self.install_elems_btn = QtWidgets.QPushButton("New elements")
 
         super(MainWindow, self).__init__(
             None,
-            widgets=[self.reg_elems_btn, self.install_elems_btn]
+            widgets=[self.pixmap_label, self.reg_elems_btn, self.install_elems_btn]
         )
-        self.set_header("<p style=\"text-align: center\"><h1>SST Elements</h1>")
+
+        if self._header_label:
+            self._header_label.deleteLater()
+            self._header_label = None
 
         self.reg_elems_btn.clicked.connect(self.on_list_elems_clicked)
         self.install_elems_btn.clicked.connect(self.on_install_elems_clicked)

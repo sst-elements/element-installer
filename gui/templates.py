@@ -86,13 +86,14 @@ class SSTElementWindow(QtWidgets.QMainWindow):
         self._layout.addLayout(self._hlayout)
 
         self._window.setLayout(self._layout)
+        self.setStyleSheet("background-color: #ecf0f1")
 
         self._back_btn.clicked.connect(self.on_back_clicked)
         self._exit_btn.clicked.connect(self.on_exit_clicked)
 
     def set_header(self, header):
 
-        self._header_label.setText(f"<h1>{header}</h1>")
+        self._header_label.setText(header)
 
     def on_back_clicked(self):
 
@@ -103,24 +104,3 @@ class SSTElementWindow(QtWidgets.QMainWindow):
     def on_exit_clicked(self):
 
         self.close()
-
-
-class ColorPalette(QtGui.QPalette):
-
-    def __init__(self):
-
-        super(ColorPalette, self).__init__()
-
-        self.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
-        self.setColor(QtGui.QPalette.WindowText, QtGui.QColor(255, 255, 255))
-        self.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
-        self.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
-        self.setColor(QtGui.QPalette.ToolTipBase, QtGui.QColor(255, 255, 255))
-        self.setColor(QtGui.QPalette.ToolTipText, QtGui.QColor(255, 255, 255))
-        self.setColor(QtGui.QPalette.Text, QtGui.QColor(255, 255, 255))
-        self.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
-        self.setColor(QtGui.QPalette.ButtonText, QtGui.QColor(255, 255, 255))
-        self.setColor(QtGui.QPalette.BrightText, QtGui.QColor(255, 0, 0))
-        self.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-        self.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-        self.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor(0, 0, 0))

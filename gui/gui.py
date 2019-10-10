@@ -6,15 +6,12 @@ import sys
 from PyQt5 import QtWidgets
 
 from windows import MainWindow
-from templates import ColorPalette
-
 
 if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("SST Elements")
-    # app.setStyle("Fusion")
-    # app.setPalette(ColorPalette())
+    app.setStyle("Fusion")
 
     main = MainWindow()
     main.show()
