@@ -21,7 +21,7 @@ def _list_all_elements():
 
     :return {List[str]}: list of elements
     """
-    with urllib.request.urlopen(ELEMENT_LIST_URL) as elements_list:
+    with urllib.request.urlopen(urllib.request.Request(ELEMENT_LIST_URL)) as elements_list:
         return elements_list.read().decode("utf-8").split()
 
 
@@ -203,7 +203,7 @@ def list_registered_elements():
 
     :return {List[str]}:
     """
-    elements = subprocess.check_output("sst-register -l", shell=True).decode("utf-8")
+    elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
     matches = reg_elem_re.finditer(elements)
     return [match.group() for match in matches]
 
@@ -234,7 +234,8 @@ def get_info(element, user="sabbirahm3d"):
             for file_name in README_FILE_PATS:
                 try:
                     return urllib.request.urlopen(
-                        ELEMENT_README_URL.format(user=user, elem=element) + file_name
+                        urllib.request.Request(
+                            ELEMENT_README_URL.format(user=user, elem=element) + file_name)
                     ).read().decode("utf-8")
                 except urllib.error.HTTPError:
                     continue

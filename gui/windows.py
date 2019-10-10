@@ -160,7 +160,7 @@ class MainWindow(SSTElementWindow):
         super(MainWindow, self).__init__(None)
 
         img_url = "http://sst-simulator.org/img/sst-logo-small.png"
-        img_data = urllib.request.urlopen(img_url).read()
+        img_data = urllib.request.urlopen(urllib.request.Request(img_url)).read()
         self.pixmap = QtGui.QPixmap()
         self.pixmap.loadFromData(img_data)
         self.pixmap_label = QtWidgets.QLabel()
