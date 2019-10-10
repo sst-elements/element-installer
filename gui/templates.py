@@ -29,19 +29,18 @@ class SplashScreen(QtWidgets.QDialog):
         self.resize(200, 100)
 
         self.parent = parent
-
         self.element = element
-
         self.action = action
         self.action_args = action_args
+        self._layout = QtWidgets.QVBoxLayout()
 
-        self.setLayout(QtWidgets.QVBoxLayout())
-
-        __header_label = QtWidgets.QLabel()
-        __header_label.setText(f"Installing {self.element}...")
+        self._header_label = QtWidgets.QLabel()
+        self._header_label.setText(f"Installing {self.element}...")
 
         self.spinner = QtWaitingSpinner(self)
-        self.layout().addWidget(__header_label)
+
+        self.setLayout(self._layout)
+        self.layout().addWidget(self._header_label)
         self.layout().addWidget(self.spinner)
 
         self.spinner.start()
@@ -58,42 +57,47 @@ class SplashScreen(QtWidgets.QDialog):
         self.hide()
 
 
-class ChildWindow(QtWidgets.QMainWindow):
+class SSTElementWindow(QtWidgets.QMainWindow):
 
-    def __init__(self, parent, header, widgets):
+    def __init__(self, parent, widgets):
 
-        super(ChildWindow, self).__init__(parent)
+        super(SSTElementWindow, self).__init__(parent)
         self.setFixedSize(640, 480)
 
         self.parent = parent
 
-        __window = QtWidgets.QWidget(self)
-        self.setCentralWidget(__window)
+        self._window = QtWidgets.QWidget(self)
+        self.setCentralWidget(self._window)
         self._layout = QtWidgets.QVBoxLayout()
 
         self._header_label = QtWidgets.QLabel()
-        self._header_label.setText(f"<h1>{header}</h1>")
+        # self.set_header(header)
 
         self._layout.addWidget(self._header_label)
         for widget in widgets:
             self._layout.addWidget(widget)
 
-        __back_btn = QtWidgets.QPushButton("Back")
-        __exit_btn = QtWidgets.QPushButton("Exit")
+        self._back_btn = QtWidgets.QPushButton("Back")
+        self._exit_btn = QtWidgets.QPushButton("Exit")
 
-        __hlayout = QtWidgets.QHBoxLayout()
-        __hlayout.addWidget(__back_btn)
-        __hlayout.addWidget(__exit_btn)
-        self._layout.addLayout(__hlayout)
+        self._hlayout = QtWidgets.QHBoxLayout()
+        self._hlayout.addWidget(self._back_btn)
+        self._hlayout.addWidget(self._exit_btn)
+        self._layout.addLayout(self._hlayout)
 
-        __window.setLayout(self._layout)
+        self._window.setLayout(self._layout)
 
-        __back_btn.clicked.connect(self.on_back_clicked)
-        __exit_btn.clicked.connect(self.on_exit_clicked)
+        self._back_btn.clicked.connect(self.on_back_clicked)
+        self._exit_btn.clicked.connect(self.on_exit_clicked)
+
+    def set_header(self, header):
+
+        self._header_label.setText(f"<h1>{header}</h1>")
 
     def on_back_clicked(self):
 
         self.hide()
+        self.parent.update()
         self.parent.show()
 
     def on_exit_clicked(self):

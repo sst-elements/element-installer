@@ -9,7 +9,7 @@ import urllib.request
 
 from config import ELEMENT_LIST_URL, ELEMENT_README_URL
 
-CWD: str = os.getcwd()
+CWD = os.getcwd()
 
 reg_elem_re = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
@@ -65,7 +65,6 @@ def uninstall(element):
         return 1
     else:
         print(f"{element} not found")
-        return 0
 
 
 def __clone(element, user, force):
@@ -194,7 +193,7 @@ def install(element, url, force=False):
         )
 
     print(f"Installed {', '.join(i[0] for i in install_vars)}")
-    return 2
+    return 0
 
 
 def list_registered_elements():

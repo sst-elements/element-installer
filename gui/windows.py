@@ -8,52 +8,54 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
-from templates import ChildWindow, SplashScreen
+from templates import SSTElementWindow, SplashScreen
 
 
-class ElementOptionsWindow(ChildWindow):
+class ElementOptionsWindow(SSTElementWindow):
 
-    def __init__(self, parent):
+    def __init__(self, parent, element):
 
+        self.parent = parent
+        self.element = element
         self.about = QtWidgets.QTextEdit()
         self.about.setReadOnly(True)
-        self.parent = parent
+        self.about.setText(sstelements.get_info(self.element))
 
-        if parent.__class__.__name__ == "ElementsWindow":
+        self.install_btn = None
+        self.uninstall_btn = None
 
-            self.install_btn = QtWidgets.QPushButton("Install")
-            self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
-
-            super(ElementOptionsWindow, self).__init__(
-                parent,
-                header="Element",
-                widgets=[self.about, self.install_btn, self.uninstall_btn]
-            )
-            self.install_btn.clicked.connect(
-                lambda: self.element_action(sstelements.install, "sabbirahm3d"))
-
-        else:
-
-            self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
-
-            super(ElementOptionsWindow, self).__init__(
-                parent,
-                header="Element",
-                widgets=[self.about, self.uninstall_btn]
-            )
-
-        self.uninstall_btn.clicked.connect(lambda: self.element_action(sstelements.uninstall))
-        self.element = None
+        super(ElementOptionsWindow, self).__init__(
+            self.parent,
+            widgets=[self.about]
+        )
 
     def set_registered(self, registered):
 
-        self.registered = registered
-        self._header_label.setText(f"<h1>{self.element}{(' ✓' if self.registered else '')}</h1>")
+        self.set_header(f"<h1>{self.element}{(' ✓' if registered else '')}</h1>")
 
-    def set_element(self, element):
+        if registered:
 
-        self.element = element
-        self.about.setText(sstelements.get_info(self.element))
+            if not self.uninstall_btn:
+                self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
+                self.uninstall_btn.clicked.connect(
+                    lambda: self.element_action(sstelements.uninstall))
+                self._layout.insertWidget(2, self.uninstall_btn)
+
+            if self.install_btn:
+                self.install_btn.deleteLater()
+                self.install_btn = None
+
+        else:
+
+            if not self.install_btn:
+                self.install_btn = QtWidgets.QPushButton("Install")
+                self.install_btn.clicked.connect(
+                    lambda: self.element_action(sstelements.install, "sabbirahm3d"))
+                self._layout.insertWidget(2, self.install_btn)
+
+            if self.uninstall_btn:
+                self.uninstall_btn.deleteLater()
+                self.uninstall_btn = None
 
     def element_action(self, *action_args):
 
@@ -63,15 +65,18 @@ class ElementOptionsWindow(ChildWindow):
 
     def update(self, rdata):
 
-        if rdata == 1:
+        # just uninstalled
+        if rdata:
             self.set_registered(False)
 
-        elif rdata == 2:
+        # just installed
+        else:
             self.set_registered(True)
+
         self.parent.update()
 
 
-class RegisteredElementsWindow(ChildWindow):
+class RegisteredElementsWindow(SSTElementWindow):
 
     def __init__(self, parent):
 
@@ -79,19 +84,18 @@ class RegisteredElementsWindow(ChildWindow):
 
         super(RegisteredElementsWindow, self).__init__(
             parent,
-            header="Registered Elements",
             widgets=[self.list_view]
         )
+        self.set_header("<h1>Registered Elements</h1>")
 
         self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
-        self.selected_element_window = ElementOptionsWindow(self)
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
 
         self.hide()
-        self.selected_element_window.set_element(self.reg_elements[index.row()])
+        self.selected_element_window = ElementOptionsWindow(self, self.reg_elements[index.row()])
         self.selected_element_window.set_registered(True)
         self.selected_element_window.show()
 
@@ -102,7 +106,7 @@ class RegisteredElementsWindow(ChildWindow):
         self.list_view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
 
-class ElementsWindow(ChildWindow):
+class ElementsWindow(SSTElementWindow):
 
     def __init__(self, parent):
 
@@ -110,20 +114,19 @@ class ElementsWindow(ChildWindow):
 
         super(ElementsWindow, self).__init__(
             parent,
-            header="SST Elements",
             widgets=[self.list_view]
         )
+        self.set_header("<h1>SST Elements</h1>")
 
         self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
-        self.selected_element_window = ElementOptionsWindow(self)
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
 
-        self.hide()
         element = self.all_elements[index.row()]
-        self.selected_element_window.set_element(element)
+        self.hide()
+        self.selected_element_window = ElementOptionsWindow(self, element)
         self.selected_element_window.set_registered(sstelements.is_registered(element))
         self.selected_element_window.show()
 
@@ -139,7 +142,7 @@ class ElementsWindow(ChildWindow):
             self.list_view.addItem(element_item)
 
 
-class MainWindow(ChildWindow):
+class MainWindow(SSTElementWindow):
 
     def __init__(self):
 
@@ -148,15 +151,18 @@ class MainWindow(ChildWindow):
 
         super(MainWindow, self).__init__(
             None,
-            header="SST Elements",
             widgets=[self.reg_elems_btn, self.install_elems_btn]
         )
+        self.set_header("<p style=\"text-align: center\"><h1>SST Elements</h1>")
 
         self.reg_elems_btn.clicked.connect(self.on_list_elems_clicked)
         self.install_elems_btn.clicked.connect(self.on_install_elems_clicked)
 
         self.elements_window = ElementsWindow(self)
         self.registered_elements_window = RegisteredElementsWindow(self)
+        if self._back_btn:
+            self._back_btn.deleteLater()
+            self._back_btn = None
 
     def on_list_elems_clicked(self):
 
