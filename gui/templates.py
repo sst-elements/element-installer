@@ -123,13 +123,39 @@ class SSTElementWindow(QtWidgets.QMainWindow):
         self.close()
 
 
+class ElementsListWindow(SSTElementWindow):
+
+    def __init__(self, parent, header):
+
+        super(ElementsListWindow, self).__init__(parent)
+
+        self.add_header()
+        self.set_header(header)
+
+        self.list_view = QtWidgets.QListWidget()
+        self.list_view.setViewMode(QtWidgets.QListView.IconMode)
+        self.list_view.setIconSize(QtCore.QSize(500, 500))
+        self.insert_widget(self.list_view)
+
+        self.add_back_btn()
+        self.add_exit_btn()
+        self.add_hlayout()
+
+        self.elements = None
+        self.list_view.clicked.connect(self.on_list_view_clicked)
+
+        self.default_icon = get_default_icon()
+
+        self.update()
+
+
 def get_default_icon():
 
-    icon = QtGui.QIcon()
     img_url = "http://sst-simulator.org/img/sst-logo-small.png"
     img_data = urllib.request.urlopen(urllib.request.Request(img_url)).read()
     pixmap = QtGui.QPixmap()
     pixmap.loadFromData(img_data)
+    icon = QtGui.QIcon()
     icon.addPixmap(pixmap, QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
     return icon

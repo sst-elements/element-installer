@@ -9,17 +9,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
-from templates import SSTElementWindow, SplashScreen, get_default_icon
+from templates import SSTElementWindow, SplashScreen, ElementsListWindow
 
 
 class ElementOptionsWindow(SSTElementWindow):
 
-    def __init__(self, parent, element):
+    def __init__(self, parent):
 
         self.parent = parent
         super(ElementOptionsWindow, self).__init__(self.parent)
-
-        self.element = element
 
         self.install_btn = None
         self.uninstall_btn = None
@@ -28,12 +26,16 @@ class ElementOptionsWindow(SSTElementWindow):
 
         self.about = QtWidgets.QTextEdit()
         self.about.setReadOnly(True)
-        self.about.setText(sstelements.get_info(self.element))
         self.insert_widget(self.about)
 
         self.add_back_btn()
         self.add_exit_btn()
         self.add_hlayout()
+
+    def set_element(self, element):
+
+        self.element = element
+        self.about.setText(sstelements.get_info(self.element))
 
     def set_registered(self, registered):
 
@@ -79,89 +81,53 @@ class ElementOptionsWindow(SSTElementWindow):
         self.parent.update()
 
 
-class RegisteredElementsWindow(SSTElementWindow):
+class RegisteredElementsWindow(ElementsListWindow):
 
     def __init__(self, parent):
 
-        super(RegisteredElementsWindow, self).__init__(parent)
-
-        self.add_header()
-        self.set_header("Registered Elements")
-
-        self.list_view = QtWidgets.QListWidget()
-        self.list_view.setViewMode(QtWidgets.QListView.IconMode)
-        self.list_view.setIconSize(QtCore.QSize(500, 500))
-        self.insert_widget(self.list_view)
-
-        self.add_back_btn()
-        self.add_exit_btn()
-        self.add_hlayout()
-
-        self.reg_elements = None
-        self.list_view.clicked.connect(self.on_list_view_clicked)
-
-        self.default_icon = get_default_icon()
-
-        self.update()
+        super(RegisteredElementsWindow, self).__init__(parent, header="Registered Elements")
+        self.selected_element_window = ElementOptionsWindow(self)
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
 
         self.hide()
-        selected_element_window = ElementOptionsWindow(self, self.reg_elements[index.row()])
-        selected_element_window.set_registered(True)
-        selected_element_window.show()
+        self.selected_element_window.set_element(self.elements[index.row()])
+        self.selected_element_window.set_registered(True)
+        self.selected_element_window.show()
 
     def update(self):
 
         self.list_view.clear()
-        self.reg_elements = sstelements.list_registered_elements()
-        for element in self.reg_elements:
+        self.elements = sstelements.list_registered_elements()
+        for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
             element_item.setSelected(False)
             element_item.setIcon(self.default_icon)
             self.list_view.addItem(element_item)
 
 
-class ElementsWindow(SSTElementWindow):
+class ElementsWindow(ElementsListWindow):
 
     def __init__(self, parent):
 
-        super(ElementsWindow, self).__init__(parent)
-
-        self.add_header()
-        self.set_header("SST Elements")
-
-        self.list_view = QtWidgets.QListWidget()
-        self.list_view.setViewMode(QtWidgets.QListView.IconMode)
-        self.list_view.setIconSize(QtCore.QSize(500, 500))
-        self.insert_widget(self.list_view)
-
-        self.add_back_btn()
-        self.add_exit_btn()
-        self.add_hlayout()
-
-        self.all_elements = None
-        self.list_view.clicked.connect(self.on_list_view_clicked)
-
-        self.default_icon = get_default_icon()
-
-        self.update()
+        super(ElementsWindow, self).__init__(parent, header="SST Elements")
+        self.selected_element_window = ElementOptionsWindow(self)
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
 
-        element = self.all_elements[index.row()]
+        element = self.elements[index.row()]
         self.hide()
-        selected_element_window = ElementOptionsWindow(self, element)
-        selected_element_window.set_registered(sstelements.is_registered(element))
-        selected_element_window.show()
+        self.selected_element_window.set_element(element)
+        self.selected_element_window.set_registered(sstelements.is_registered(element))
+        self.selected_element_window.show()
 
     def update(self):
 
         self.list_view.clear()
-        self.all_elements = sstelements._list_all_elements()
-        for element in self.all_elements:
+        self.elements = sstelements._list_all_elements()
+        for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
             if sstelements.is_registered(element):
                 element_item.setBackground(QtGui.QColor("#2ecc71"))
