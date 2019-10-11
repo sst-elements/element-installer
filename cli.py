@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import os
+import sys
 
 import sstelements
 
@@ -12,6 +14,8 @@ if __name__ == "__main__":
                         help="Install element")
     parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
                         help="Uninstall element")
+    parser.add_argument("--quiet", "-q", action="store_true", default=False,
+                        help="Supress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
                         help="Force installation")
     parser.add_argument("--list", "-l", action="store_true", default=False,
@@ -25,25 +29,30 @@ if __name__ == "__main__":
 
     args = parser.parse_args().__dict__
 
-    # install and uninstall options are mutually exclusive
-    if args["install"] and args["uninstall"]:
-        parser.print_help()
-        exit(1)
+    with open(os.devnull, "w") as devnull:
+        if args["quiet"]:
+            # suppress all console outputs
+            sys.stdout = devnull
 
-    elif args["install"]:
-        sstelements.install(args["install"], args["url"], args["force"])
+        # install and uninstall options are mutually exclusive
+        if args["install"] and args["uninstall"]:
+            parser.print_help()
+            exit(1)
 
-    elif args["uninstall"]:
-        sstelements.uninstall(args["uninstall"])
+        elif args["install"]:
+            sstelements.install(args["install"], args["url"], args["force"])
 
-    elif args["list"]:
-        sstelements.pprint_all_elements()
+        elif args["uninstall"]:
+            sstelements.uninstall(args["uninstall"])
 
-    elif args["registered"]:
-        print("\n".join(sstelements.list_registered_elements()))
+        elif args["list"]:
+            sstelements.pprint_all_elements()
 
-    elif args["details"]:
-        print(sstelements.get_info(args["details"]))
+        elif args["registered"]:
+            print("\n".join(sstelements.list_registered_elements()))
 
-    else:
-        parser.print_help()
+        elif args["details"]:
+            print(sstelements.get_info(args["details"]))
+
+        else:
+            parser.print_help()

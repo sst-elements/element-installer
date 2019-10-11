@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import urllib.request
 
-from config import ELEMENT_LIST_URL, ELEMENT_README_URL
+from config import ELEMENT_LIST_URL, ELEMENT_README_URL, ELEMENT_REPO_URL
 
 CWD = os.getcwd()
 
@@ -25,7 +25,7 @@ def _list_all_elements():
         elements_list = urllib.request.urlopen(urllib.request.Request(ELEMENT_LIST_URL))
     except urllib.error.HTTPError:
         print("Elements list file not found")
-        exit(1)
+        raise SystemExit(1)
     else:
         with elements_list:
             return elements_list.read().decode("utf-8").split()
@@ -66,7 +66,7 @@ def uninstall(element):
     if os.path.exists(element):
         shutil.rmtree(element)
         subprocess.call(
-            f"sst-register -u {element}", shell=True
+            f"sst-register -u {element}", shell=True, stdout=subprocess.DEVNULL
         )
         return 1
     else:
@@ -93,12 +93,12 @@ def __clone(element, user, force):
 
     all_elements = _list_all_elements()
     if element in all_elements:
-        subprocess.call(
-            f"git clone https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
+        return subprocess.call(
+            f"git clone -q https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
         )
     else:
         print(f"{element} not found")
-        exit(1)
+        raise SystemExit(1)
 
 
 def __get_dependencies(element):
@@ -109,8 +109,10 @@ def __get_dependencies(element):
     :return {List[str]}: dependencies
     """
     print(f"Gathering dependencies for {element}...")
-    with open(element + "/dependencies.txt") as req_file:
-        return req_file.read().split()
+    dep_file_name = f"{element}/dependencies.txt"
+    if os.path.exists(dep_file_name):
+        with open(dep_file_name) as req_file:
+            return req_file.read().split()
 
 
 def __add_dependencies(old, new):
@@ -144,7 +146,7 @@ def __get_var_path(elem, dep):
     return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)
 
 
-def install(element, url, force=False):
+def install(element, url=ELEMENT_REPO_URL, force=False):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -160,7 +162,9 @@ def install(element, url, force=False):
     dependencies = []
 
     # clone the targeted element repository
-    __clone(element, url, force)
+    if __clone(element, url, force):
+        print("Cloning of repository failed")
+        raise SystemExit(1)
     # add its dependencies as well as its Makefile variable definitions
     dependencies.extend(__get_dependencies(element))
     install_vars.append(__get_var_path(element, dependencies))
@@ -171,7 +175,9 @@ def install(element, url, force=False):
 
         # loop through its dependencies to generate a dependency graph
         for dep in dependencies:
-            __clone(dep, url, force)
+            if __clone(dep, url, force):
+                print("Cloning of repository failed")
+                raise SystemExit(1)
             # update the list of elements to be installed along with their corresponding Makefile
             # variable definitions
             new_dependencies = __get_dependencies(dep)
@@ -214,7 +220,7 @@ def list_registered_elements():
     return [match.group() for match in matches]
 
 
-def get_info(element, user="sabbirahm3d"):
+def get_info(element, user=ELEMENT_REPO_URL):
     """[summary]
 
     [description]

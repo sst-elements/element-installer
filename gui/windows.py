@@ -57,7 +57,7 @@ class ElementOptionsWindow(SSTElementWindow):
             if not self.install_btn:
                 self.install_btn = QtWidgets.QPushButton("Install")
                 self.install_btn.clicked.connect(
-                    lambda: self.element_action(sstelements.install, "sabbirahm3d"))
+                    lambda: self.element_action(sstelements.install))
                 self.insert_widget(self.install_btn, 2)
                 self.install_btn.setStyleSheet("background-color: #27ae60")
 
