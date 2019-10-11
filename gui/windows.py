@@ -37,7 +37,7 @@ class ElementOptionsWindow(SSTElementWindow):
 
     def set_registered(self, registered):
 
-        self.set_header(f"{self.element}{(' ✓' if registered else '')}")
+        self.set_header(f"{self.element}{' ✓' if registered else ''}")
 
         if registered:
 

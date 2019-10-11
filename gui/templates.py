@@ -34,16 +34,16 @@ class SplashScreen(QtWidgets.QDialog):
         self.action_args = action_args
         self.__layout = QtWidgets.QVBoxLayout()
 
-        self._header_label = QtWidgets.QLabel()
-        self._header_label.setText(f"Installing {self.element}...")
-
-        self.spinner = QtWaitingSpinner(self)
-
         self.setLayout(self.__layout)
-        self.layout().addWidget(self._header_label)
-        self.layout().addWidget(self.spinner)
 
-        self.spinner.start()
+        header_label = QtWidgets.QLabel()
+        header_label.setText(f"Installing {self.element}...")
+        self.layout().addWidget(header_label)
+
+        self.__spinner = QtWaitingSpinner(self)
+        self.layout().addWidget(self.__spinner)
+
+        self.__spinner.start()
         QtCore.QThreadPool.globalInstance().start(
             RunnableAction(self, self.action, self.element, *self.action_args)
         )
@@ -51,7 +51,7 @@ class SplashScreen(QtWidgets.QDialog):
     @QtCore.pyqtSlot(int)
     def stop(self, rdata):
 
-        self.spinner.stop()
+        self.__spinner.stop()
         self.adjustSize()
         self.parent.update(rdata)
         self.hide()
@@ -70,9 +70,9 @@ class SSTElementWindow(QtWidgets.QMainWindow):
         self.__layout = QtWidgets.QVBoxLayout()
         self.__hlayout = QtWidgets.QHBoxLayout()
 
-        __window = QtWidgets.QWidget(self)
-        __window.setLayout(self.__layout)
-        self.setCentralWidget(__window)
+        window = QtWidgets.QWidget(self)
+        window.setLayout(self.__layout)
+        self.setCentralWidget(window)
         self.setStyleSheet("background-color: #ecf0f1")
 
     def insert_widget(self, widget, index=0):
@@ -89,15 +89,16 @@ class SSTElementWindow(QtWidgets.QMainWindow):
 
     def add_back_btn(self):
 
-        self.__back_btn = QtWidgets.QPushButton("← Back")
-        self.__hlayout.addWidget(self.__back_btn)
-        self.__back_btn.clicked.connect(self.__on_back_clicked)
+        back_btn = QtWidgets.QPushButton("← Back")
+        self.__hlayout.addWidget(back_btn)
+        back_btn.clicked.connect(self.__on_back_clicked)
 
     def add_exit_btn(self):
 
-        self.__exit_btn = QtWidgets.QPushButton("❌ Exit")
-        self.__hlayout.addWidget(self.__exit_btn)
-        self.__exit_btn.clicked.connect(self.__on_exit_clicked)
+        exit_btn = QtWidgets.QPushButton("❌ Exit")
+        exit_btn.setStyleSheet("background-color: #34495e; color: #fff")
+        self.__hlayout.addWidget(exit_btn)
+        exit_btn.clicked.connect(self.__on_exit_clicked)
 
     def add_hlayout(self):
 

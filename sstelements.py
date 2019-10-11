@@ -21,8 +21,14 @@ def _list_all_elements():
 
     :return {List[str]}: list of elements
     """
-    with urllib.request.urlopen(urllib.request.Request(ELEMENT_LIST_URL)) as elements_list:
-        return elements_list.read().decode("utf-8").split()
+    try:
+        elements_list = urllib.request.urlopen(urllib.request.Request(ELEMENT_LIST_URL))
+    except urllib.error.HTTPError:
+        print("Elements list file not found")
+        exit(1)
+    else:
+        with elements_list:
+            return elements_list.read().decode("utf-8").split()
 
 
 def is_registered(element):
@@ -225,19 +231,21 @@ def get_info(element, user="sabbirahm3d"):
                 with open(element + file_name) as readme_file:
                     return readme_file.read()
 
-        return "No information found on " + element
-
     else:
 
         all_elements = _list_all_elements()
         if element in all_elements:
             for file_name in README_FILE_PATS:
                 try:
-                    return urllib.request.urlopen(
+                    readme_file = urllib.request.urlopen(
                         urllib.request.Request(
-                            ELEMENT_README_URL.format(user=user, elem=element) + file_name)
-                    ).read().decode("utf-8")
+                            ELEMENT_README_URL.format(user=user, elem=element) + file_name
+                        )
+                    )
                 except urllib.error.HTTPError:
                     continue
+                else:
+                    with readme_file:
+                        return readme_file.read().decode("utf-8")
 
-        return "No information found on " + element
+    return "No information found on " + element
