@@ -30,6 +30,7 @@ if __name__ == "__main__":
     args = parser.parse_args().__dict__
 
     with open(os.devnull, "w") as devnull:
+
         if args["quiet"]:
             # suppress all console outputs
             sys.stdout = devnull

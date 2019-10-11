@@ -7,11 +7,12 @@ import shutil
 import subprocess
 import urllib.request
 
-from config import ELEMENT_LIST_URL, ELEMENT_README_URL, ELEMENT_REPO_URL
-
 CWD = os.getcwd()
 
 reg_elem_re = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
+
+ELEMENT_LIST_URL = os.environ["ELEMENT_LIST_URL"]
+ELEMENT_REPO_URL = os.environ["ELEMENT_REPO_URL"]
 
 
 def _list_all_elements():
@@ -32,7 +33,11 @@ def _list_all_elements():
 
 
 def is_registered(element):
+    """Check if element is registered in system
 
+    :param {str} element: name of element
+    :return {bool}: if element is registered
+    """
     reg_elements = list_registered_elements()
     if element in reg_elements:
         return True
@@ -40,10 +45,7 @@ def is_registered(element):
 
 
 def pprint_all_elements():
-    """[summary]
-
-    [description]
-    """
+    """Print all elements, both registered and unregistered, in tabular format"""
     all_elements = _list_all_elements()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
@@ -83,11 +85,13 @@ def __clone(element, user, force):
     :param {str} user: base URL of repositories
     :param {bool} force: flag to force install. If true and element is already installed, the
                          element is re-cloned
+
+    :return {int}: exit code of git clone (0 for success)
     """
     if os.path.exists(element):
         if not force:
             print(element, "already installed")
-            return
+            return 0
         else:
             uninstall(element)
 
@@ -245,7 +249,7 @@ def get_info(element, user=ELEMENT_REPO_URL):
                 try:
                     readme_file = urllib.request.urlopen(
                         urllib.request.Request(
-                            ELEMENT_README_URL.format(user=user, elem=element) + file_name
+                            f"https://raw.githubusercontent.com/{user}/{element}/master/{file_name}"
                         )
                     )
                 except urllib.error.HTTPError:

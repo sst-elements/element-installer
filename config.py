@@ -6,6 +6,3 @@ ELEMENT_LIST_URL = "https://raw.githubusercontent.com/sabbirahm3d/sst-elements/i
 
 # official repository collection of all elements
 ELEMENT_REPO_URL = "sabbirahm3d"
-
-# element README URL patterns
-ELEMENT_README_URL = "https://raw.githubusercontent.com/{user}/{elem}/master/"

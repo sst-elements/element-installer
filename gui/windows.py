@@ -39,6 +39,7 @@ class ElementOptionsWindow(SSTElementWindow):
 
         self.set_header(f"{self.element}{' ✓' if registered else ''}")
 
+        # if element is registered, replace the install button with the uninstall button
         if registered:
 
             if not self.uninstall_btn:
@@ -52,6 +53,7 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.install_btn.deleteLater()
                 self.install_btn = None
 
+        # replace the uninstall button with the install button
         else:
 
             if not self.install_btn:
