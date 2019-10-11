@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
-from templates import SSTElementWindow, SplashScreen
+from templates import SSTElementWindow, SplashScreen, get_default_icon
 
 
 class ElementOptionsWindow(SSTElementWindow):
@@ -88,7 +88,9 @@ class RegisteredElementsWindow(SSTElementWindow):
         self.add_header()
         self.set_header("Registered Elements")
 
-        self.list_view = QtWidgets.QListView()
+        self.list_view = QtWidgets.QListWidget()
+        self.list_view.setViewMode(QtWidgets.QListView.IconMode)
+        self.list_view.setIconSize(QtCore.QSize(500, 500))
         self.insert_widget(self.list_view)
 
         self.add_back_btn()
@@ -96,8 +98,11 @@ class RegisteredElementsWindow(SSTElementWindow):
         self.add_hlayout()
 
         self.reg_elements = None
-        self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
+
+        self.default_icon = get_default_icon()
+
+        self.update()
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
@@ -109,9 +114,13 @@ class RegisteredElementsWindow(SSTElementWindow):
 
     def update(self):
 
+        self.list_view.clear()
         self.reg_elements = sstelements.list_registered_elements()
-        self.list_view.setModel(QtCore.QStringListModel(self.reg_elements))
-        self.list_view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        for element in self.reg_elements:
+            element_item = QtWidgets.QListWidgetItem(element)
+            element_item.setSelected(False)
+            element_item.setIcon(self.default_icon)
+            self.list_view.addItem(element_item)
 
 
 class ElementsWindow(SSTElementWindow):
@@ -124,6 +133,8 @@ class ElementsWindow(SSTElementWindow):
         self.set_header("SST Elements")
 
         self.list_view = QtWidgets.QListWidget()
+        self.list_view.setViewMode(QtWidgets.QListView.IconMode)
+        self.list_view.setIconSize(QtCore.QSize(500, 500))
         self.insert_widget(self.list_view)
 
         self.add_back_btn()
@@ -131,8 +142,11 @@ class ElementsWindow(SSTElementWindow):
         self.add_hlayout()
 
         self.all_elements = None
-        self.update()
         self.list_view.clicked.connect(self.on_list_view_clicked)
+
+        self.default_icon = get_default_icon()
+
+        self.update()
 
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
@@ -152,6 +166,7 @@ class ElementsWindow(SSTElementWindow):
             if sstelements.is_registered(element):
                 element_item.setBackground(QtGui.QColor("#2ecc71"))
             element_item.setSelected(False)
+            element_item.setIcon(self.default_icon)
             self.list_view.addItem(element_item)
 
 
@@ -163,25 +178,25 @@ class MainWindow(SSTElementWindow):
 
         img_url = "http://sst-simulator.org/img/sst-logo-small.png"
         img_data = urllib.request.urlopen(urllib.request.Request(img_url)).read()
-        self.pixmap = QtGui.QPixmap()
-        self.pixmap.loadFromData(img_data)
-        self.pixmap_label = QtWidgets.QLabel()
-        self.pixmap_label.setPixmap(self.pixmap)
-        self.pixmap_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.pixmap_label.resize(self.pixmap.height(), self.pixmap.width())
-        self.insert_widget(self.pixmap_label)
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(img_data)
+        pixmap_label = QtWidgets.QLabel()
+        pixmap_label.setPixmap(pixmap)
+        pixmap_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        pixmap_label.resize(pixmap.height(), pixmap.width())
+        self.insert_widget(pixmap_label)
 
-        self.reg_elems_btn = QtWidgets.QPushButton("Registered elements")
-        self.insert_widget(self.reg_elems_btn)
+        reg_elems_btn = QtWidgets.QPushButton("Registered elements")
+        self.insert_widget(reg_elems_btn)
 
-        self.install_elems_btn = QtWidgets.QPushButton("New elements")
-        self.insert_widget(self.install_elems_btn)
+        install_elems_btn = QtWidgets.QPushButton("New elements")
+        self.insert_widget(install_elems_btn)
 
         self.add_exit_btn()
         self.add_hlayout()
 
-        self.reg_elems_btn.clicked.connect(self.on_list_elems_clicked)
-        self.install_elems_btn.clicked.connect(self.on_install_elems_clicked)
+        reg_elems_btn.clicked.connect(self.on_list_elems_clicked)
+        install_elems_btn.clicked.connect(self.on_install_elems_clicked)
 
         self.elements_window = ElementsWindow(self)
         self.registered_elements_window = RegisteredElementsWindow(self)

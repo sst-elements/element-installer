@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore, QtWidgets
+import urllib.request
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 from spinner import QtWaitingSpinner
 
 
@@ -102,6 +105,7 @@ class SSTElementWindow(QtWidgets.QMainWindow):
 
     def add_hlayout(self):
 
+        self.__hlayout.setAlignment(QtCore.Qt.AlignRight)
         self.__layout.addLayout(self.__hlayout)
 
     def set_header(self, header):
@@ -117,3 +121,15 @@ class SSTElementWindow(QtWidgets.QMainWindow):
     def __on_exit_clicked(self):
 
         self.close()
+
+
+def get_default_icon():
+
+    icon = QtGui.QIcon()
+    img_url = "http://sst-simulator.org/img/sst-logo-small.png"
+    img_data = urllib.request.urlopen(urllib.request.Request(img_url)).read()
+    pixmap = QtGui.QPixmap()
+    pixmap.loadFromData(img_data)
+    icon.addPixmap(pixmap, QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+    return icon
