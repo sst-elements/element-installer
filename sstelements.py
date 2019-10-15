@@ -24,7 +24,7 @@ def _list_all_elements():
     :return {List[str]}: list of elements
     """
     try:
-        elements_list = urllib.request.urlopen(urllib.request.Request(ELEMENT_LIST_URL))
+        elements_list = urllib.request.urlopen(ELEMENT_LIST_URL)
     except urllib.error.HTTPError:
         print("Elements list file not found")
         raise SystemExit(1)
@@ -86,8 +86,6 @@ def __clone(element, user, force):
     :param {str} user: base URL of repositories
     :param {bool} force: flag to force install. If true and element is already installed, the
                          element is re-cloned
-
-    :return {int}: exit code of git clone (0 for success)
     """
     if os.path.exists(element):
         if not force:
@@ -98,9 +96,13 @@ def __clone(element, user, force):
 
     all_elements = _list_all_elements()
     if element in all_elements:
-        return subprocess.call(
+        # git clone failed if exit code is non-zero
+        if subprocess.call(
             f"git clone -q https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
-        )
+        ):
+            print(f"Cloning of repository for {element} failed")
+            raise SystemExit(1)
+
     else:
         print(f"{element} not found")
         raise SystemExit(1)
@@ -167,9 +169,8 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
     dependencies = []
 
     # clone the targeted element repository
-    if __clone(element, url, force):
-        print("Cloning of repository failed")
-        raise SystemExit(1)
+    __clone(element, url, force)
+
     # add its dependencies as well as its Makefile variable definitions
     dependencies.extend(__get_dependencies(element))
     install_vars.append(__get_var_path(element, dependencies))
@@ -180,9 +181,9 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
 
         # loop through its dependencies to generate a dependency graph
         for dep in dependencies:
-            if __clone(dep, url, force):
-                print("Cloning of repository failed")
-                raise SystemExit(1)
+
+            __clone(element, url, force)
+
             # update the list of elements to be installed along with their corresponding Makefile
             # variable definitions
             new_dependencies = __get_dependencies(dep)
@@ -249,9 +250,7 @@ def get_info(element, user=ELEMENT_REPO_URL):
             for file_name in README_FILE_PATS:
                 try:
                     readme_file = urllib.request.urlopen(
-                        urllib.request.Request(
-                            f"https://raw.githubusercontent.com/{user}/{element}/master/{file_name}"
-                        )
+                        f"https://raw.githubusercontent.com/{user}/{element}/master/{file_name}"
                     )
                 except urllib.error.HTTPError:
                     continue
