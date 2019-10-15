@@ -7,12 +7,13 @@ import shutil
 import subprocess
 import urllib.request
 
-CWD = os.getcwd()
-
-reg_elem_re = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
+REG_ELEM_RE = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
 ELEMENT_LIST_URL = os.environ["ELEMENT_LIST_URL"]
 ELEMENT_REPO_URL = os.environ["ELEMENT_REPO_URL"]
+ELEMENT_SRC_DIR = os.environ["ELEMENT_SRC_DIR"]
+
+os.chdir(ELEMENT_SRC_DIR)
 
 
 def _list_all_elements():
@@ -147,7 +148,7 @@ def __get_var_path(elem, dep):
     :return {Tuple[str, str]}: name of element along with the generated Makefile variable
                                definitions
     """
-    return elem, " ".join(f"{i}={CWD}/{i}" for i in dep)
+    return elem, " ".join(f"{i}={ELEMENT_SRC_DIR}/{i}" for i in dep)
 
 
 def install(element, url=ELEMENT_REPO_URL, force=False):
@@ -204,7 +205,7 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
     for element, path in install_vars:
         print(f"Installing {element}...")
         subprocess.call(
-            f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={CWD} && cd -",
+            f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR} && cd -",
             shell=True, stdout=subprocess.DEVNULL
         )
 
@@ -220,7 +221,7 @@ def list_registered_elements():
     :return {List[str]}:
     """
     elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
-    matches = reg_elem_re.finditer(elements)
+    matches = REG_ELEM_RE.finditer(elements)
     return [match.group() for match in matches]
 
 
