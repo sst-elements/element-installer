@@ -1,5 +1,8 @@
-# SST Elements
-Installer for SST Elements.
+# SST Elements Installer
+
+The SST core requires at least one [element](http://sst-simulator.org/SSTPages/SSTDeveloperElementSummaryInfo/) (a drivable library) to perform a simulation. As a stand-alone entity, the core fulfills no purpose.
+
+This installer provides users with the capability to manage the elements on their systems. Read [PROPOSAL.md](PROPOSAL.md) for further justification as well as details for contribution.
 
 ## Table of Contents
 
@@ -18,9 +21,9 @@ The installer is packaged in a simple command line interface (CLI) as well as a 
 ### Command Line Interface
 
 ```
-usage: cli.py [-h] [--install <ELEMENT>] [--uninstall <ELEMENT>] [--quiet]
-              [--force] [--list] [--registered] [--url <URL>]
-              [--details <ELEMENT>]
+usage: cli.py [-h] [--install <ELEMENT>] [--uninstall <ELEMENT>]
+              [--details <ELEMENT>] [--list] [--registered] [--quiet] [--force]
+              [--url <URL>]
 
 SST Element Installer
 
@@ -28,12 +31,12 @@ optional arguments:
   -h, --help                 show this help message and exit
   --install, -i <ELEMENT>    Install element
   --uninstall, -u <ELEMENT>  Uninstall element
-  --quiet, -q                Suppress standard outputs
-  --force, -f                Force installation
+  --details, -d <ELEMENT>    Display element information
   --list, -l                 List all SST elements
   --registered, -r           List elements registered to the system
+  --quiet, -q                Suppress standard outputs
+  --force, -f                Force installation
   --url, -x <URL>            External URL for element
-  --details, -d <ELEMENT>    Display element information
 
 ```
 

@@ -30,18 +30,18 @@ if __name__ == "__main__":
                         help="Install element")
     parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
                         help="Uninstall element")
-    parser.add_argument("--quiet", "-q", action="store_true", default=False,
-                        help="Suppress standard outputs")
-    parser.add_argument("--force", "-f", action="store_true", default=False,
-                        help="Force installation")
+    parser.add_argument("--details", "-d", metavar="<ELEMENT>", type=str, default="",
+                        help="Display element information")
     parser.add_argument("--list", "-l", action="store_true", default=False,
                         help="List all SST elements")
     parser.add_argument("--registered", "-r", action="store_true", default=False,
                         help="List elements registered to the system")
+    parser.add_argument("--quiet", "-q", action="store_true", default=False,
+                        help="Suppress standard outputs")
+    parser.add_argument("--force", "-f", action="store_true", default=False,
+                        help="Force installation")
     parser.add_argument("--url", "-x", metavar="<URL>", type=str, default="sabbirahm3d",
                         help="External URL for element")
-    parser.add_argument("--details", "-d", metavar="<ELEMENT>", type=str, default="",
-                        help="Display element information")
 
     args = parser.parse_args().__dict__
 
