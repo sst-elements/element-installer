@@ -49,10 +49,10 @@ def is_registered(element):
 
 def pprint_all_elements():
     """Print all elements, both registered and unregistered, in tabular format"""
-    all_elements = _list_all_elements()
+    all_elements = _list_all_elements().keys()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
-    for element, _ in all_elements:
+    for element in all_elements:
         if is_registered(element):
             # print check mark (✓)
             print(element.ljust(28), "\033[32m✓\033[0m")
@@ -97,11 +97,11 @@ def __clone(element, user, force):
             uninstall(element)
 
     all_elements = _list_all_elements()
-    if (element == elem for elem, url in all_elements):
-        print(element, url)
+    all_element_names = all_elements.keys()
+    if element in all_element_names:
         # git clone failed if exit code is non-zero
         if subprocess.call(
-            f"git clone -q https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
+            f"git clone -q {all_elements[element]}", shell=True, stdout=subprocess.DEVNULL
         ):
             print(f"Cloning of repository for {element} failed")
             raise SystemExit(1)
