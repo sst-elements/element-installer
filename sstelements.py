@@ -155,7 +155,7 @@ def __get_var_path(elem, dep):
     :return {Tuple[str, str]}: name of element along with the generated Makefile variable
                                definitions
     """
-    return elem, " ".join(f"{i}={ELEMENT_SRC_DIR}/{i}" for i in dep)
+    return elem, " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
 
 
 def install(element, force=False):
@@ -211,7 +211,7 @@ def install(element, force=False):
         for element, path in install_vars:
             print(f"Installing {element}...")
             subprocess.call(
-                f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR} && cd -",
+                f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR}{element} && cd -",
                 shell=True, stdout=subprocess.DEVNULL
             )
 
@@ -265,4 +265,4 @@ def get_info(element):
                     with readme_file:
                         return readme_file.read().decode("utf-8")
 
-    return "No information found on " + element
+    return f"No information found on {element}"

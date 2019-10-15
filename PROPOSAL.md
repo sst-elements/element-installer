@@ -18,17 +18,21 @@ The issue with the current installation procedure, albeit the familiar C++ libra
 
 The contents also provide an ineffective `INSTALL` file. Furthermore, testing the elements is very difficult due to the lack of documentation and proper test scripts.
 
+No instructions for removing the installation exist at this time. Invoking the `clean` target on the auto-generated root Makefile is insufficient as the process leaves SST to point to elements with invalid paths and many residue files remain.
+
 ## Proposed Installation Procedure
 
 ### Separate the Elements
 
-Development is already under way to separate each of the SST elements in the [`standalone` branch of lpsmodsim's fork](https://github.com/lpsmodsim/sst-elements/tree/standalone). The elements that have dependencies on other elements have mostly been separated, with the exception of those suspected to have cyclic dependencies.
+Modify the installation process such that users are able to specify which elements to install into their systems.
+
+[Development is already under way](https://github.com/lpsmodsim/sst-elements/tree/standalone) to separate each of the SST elements. The elements that have dependencies on other elements have mostly been separated, with the exception of those suspected to have cyclic dependencies.
 
 ### Move the Elements into Individual Repositories
 
 Once all the elements are properly separated and considered a stable standalone element, they can be moved out of the main SST Elements repository to their individual repositories. Hosting all the separate elements on a single main repository does not introduce a solution to the issue with bloating a user's system with unwanted code.
 
-The repositories can be grouped in a GitHub organization. This method allows third parties to contribute their elements in a convenient manner as transfership grants the administrators immediate access to the repository's contents, issues, pull requests, releases, project boards, and settings.
+The repositories can be grouped in a GitHub organization. This method allows third parties to contribute their elements in a convenient manner as ownership transfer grants the administrators immediate access to the repository's contents, issues, pull requests, releases, project boards, and settings.
 
 Custom elements may also be hosted on an individual user's repository if they do not intend to transfer ownership. The user will still be required to "register" their element with the SST maintainers by adding their repository as a trusted element.
 
