@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import re
 import shutil
@@ -24,19 +25,20 @@ def _list_all_elements():
     :return {List[str]}: list of elements
     """
     try:
-        elements_list = urllib.request.urlopen(ELEMENT_LIST_URL)
+        elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
     except urllib.error.HTTPError:
         print("Elements list file not found")
         raise SystemExit(1)
     else:
-        with elements_list:
-            return elements_list.read().decode("utf-8").split()
+        with elements_list_file:
+            return json.loads(elements_list_file.read().decode("utf-8"))
 
 
 def is_registered(element):
     """Check if element is registered in system
 
     :param {str} element: name of element
+
     :return {bool}: if element is registered
     """
     reg_elements = list_registered_elements()
@@ -50,7 +52,7 @@ def pprint_all_elements():
     all_elements = _list_all_elements()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
-    for element in all_elements:
+    for element, _ in all_elements:
         if is_registered(element):
             # print check mark (✓)
             print(element.ljust(28), "\033[32m✓\033[0m")
@@ -95,7 +97,8 @@ def __clone(element, user, force):
             uninstall(element)
 
     all_elements = _list_all_elements()
-    if element in all_elements:
+    if (element == elem for elem, url in all_elements):
+        print(element, url)
         # git clone failed if exit code is non-zero
         if subprocess.call(
             f"git clone -q https://github.com/{user}/{element}", shell=True, stdout=subprocess.DEVNULL
