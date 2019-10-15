@@ -7,24 +7,40 @@ import sys
 
 import sstelements
 
+
+class CustomHelpFormatter(argparse.HelpFormatter):
+
+    def __init__(self, prog):
+        super().__init__(prog, max_help_position=40, width=80)
+
+    def _format_action_invocation(self, action):
+        if not action.option_strings or action.nargs == 0:
+            return super()._format_action_invocation(action)
+        default = self._get_default_metavar_for_optional(action)
+        args_string = self._format_args(action, default)
+        return ", ".join(action.option_strings) + " " + args_string
+
+
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="SST Element Installer")
-    parser.add_argument("--install", "-i", metavar="ELEMENT", type=str, default="",
+    parser = argparse.ArgumentParser(
+        description="SST Element Installer", formatter_class=CustomHelpFormatter)
+
+    parser.add_argument("--install", "-i", metavar="<ELEMENT>", type=str, default="",
                         help="Install element")
-    parser.add_argument("--uninstall", "-u", metavar="ELEMENT", type=str, default="",
+    parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
                         help="Uninstall element")
     parser.add_argument("--quiet", "-q", action="store_true", default=False,
-                        help="Supress standard outputs")
+                        help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
                         help="Force installation")
     parser.add_argument("--list", "-l", action="store_true", default=False,
-                        help="List all elements")
+                        help="List all SST elements")
     parser.add_argument("--registered", "-r", action="store_true", default=False,
-                        help="List registered elements")
-    parser.add_argument("--url", "-x", type=str, default="sabbirahm3d",
+                        help="List elements registered to the system")
+    parser.add_argument("--url", "-x", metavar="<URL>", type=str, default="sabbirahm3d",
                         help="External URL for element")
-    parser.add_argument("--details", "-d", metavar="ELEMENT", type=str, default="",
+    parser.add_argument("--details", "-d", metavar="<ELEMENT>", type=str, default="",
                         help="Display element information")
 
     args = parser.parse_args().__dict__
@@ -35,8 +51,10 @@ if __name__ == "__main__":
             # suppress all console outputs
             sys.stdout = devnull
 
-        # install and uninstall options are mutually exclusive
+            # install and uninstall options are mutually exclusive
         if args["install"] and args["uninstall"]:
+            sys.stdout = sys.__stdout__
+            print("Program can only perform one installation task at a time")
             parser.print_help()
             exit(1)
 
