@@ -106,6 +106,9 @@ def __clone(element, user, force):
             print(f"Cloning of repository for {element} failed")
             raise SystemExit(1)
 
+        else:
+            return 1
+
     else:
         print(f"{element} not found")
         raise SystemExit(1)
@@ -172,49 +175,49 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
     dependencies = []
 
     # clone the targeted element repository
-    __clone(element, url, force)
+    if __clone(element, url, force):
 
-    # add its dependencies as well as its Makefile variable definitions
-    dependencies.extend(__get_dependencies(element))
-    install_vars.append(__get_var_path(element, dependencies))
+        # add its dependencies as well as its Makefile variable definitions
+        dependencies.extend(__get_dependencies(element))
+        install_vars.append(__get_var_path(element, dependencies))
 
-    # if the element depends on any other elements
-    if dependencies:
-        print(f"Found dependencies: {', '.join(dependencies)}")
+        # if the element depends on any other elements
+        if dependencies:
+            print(f"Found dependencies: {', '.join(dependencies)}")
 
-        # loop through its dependencies to generate a dependency graph
-        for dep in dependencies:
+            # loop through its dependencies to generate a dependency graph
+            for dep in dependencies:
 
-            __clone(element, url, force)
+                if __clone(dep, url, force):
 
-            # update the list of elements to be installed along with their corresponding Makefile
-            # variable definitions
-            new_dependencies = __get_dependencies(dep)
-            dependencies = __add_dependencies(dependencies, new_dependencies)
-            install_vars.append(__get_var_path(dep, new_dependencies))
-            if new_dependencies:
-                print(
-                    f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
-                )
+                    # update the list of elements to be installed along with their corresponding
+                    # Makefile variable definitions
+                    new_dependencies = __get_dependencies(dep)
+                    dependencies = __add_dependencies(dependencies, new_dependencies)
+                    install_vars.append(__get_var_path(dep, new_dependencies))
+                    if new_dependencies:
+                        print(
+                            f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
+                        )
 
-        # reverse the dependency graph represented in a flat array so that the parent elements are
-        # installed before their children
-        install_vars = install_vars[::-1]
-        print("Installing dependencies...")
+            # reverse the dependency graph represented in a flat array so that the parent elements
+            # are installed before their children
+            install_vars = install_vars[::-1]
+            print("Installing dependencies...")
 
-    # if the element does not depend on any other elements
-    else:
-        print("No dependencies found")
+        # if the element does not depend on any other elements
+        else:
+            print("No dependencies found")
 
-    for element, path in install_vars:
-        print(f"Installing {element}...")
-        subprocess.call(
-            f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR} && cd -",
-            shell=True, stdout=subprocess.DEVNULL
-        )
+        for element, path in install_vars:
+            print(f"Installing {element}...")
+            subprocess.call(
+                f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR} && cd -",
+                shell=True, stdout=subprocess.DEVNULL
+            )
 
-    print(f"Installed {', '.join(i[0] for i in install_vars)}")
-    return 0
+        print(f"Installed {', '.join(i[0] for i in install_vars)}")
+        return 0
 
 
 def list_registered_elements():
@@ -249,11 +252,13 @@ def get_info(element, user=ELEMENT_REPO_URL):
     else:
 
         all_elements = _list_all_elements()
-        if element in all_elements:
+        all_element_names = all_elements.keys()
+        if element in all_element_names:
             for file_name in README_FILE_PATS:
+                readme_url = all_elements[element].replace("github", "raw.githubusercontent")
                 try:
                     readme_file = urllib.request.urlopen(
-                        f"https://raw.githubusercontent.com/{user}/{element}/master/{file_name}"
+                        f"{readme_url}/master/{file_name}"
                     )
                 except urllib.error.HTTPError:
                     continue
