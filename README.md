@@ -17,7 +17,7 @@ The installer is packaged in a simple command line interface (CLI) as well as a 
 
 ### Command Line Interface
 
-```shell
+```
 usage: cli.py [-h] [--install <ELEMENT>] [--uninstall <ELEMENT>] [--quiet]
               [--force] [--list] [--registered] [--url <URL>]
               [--details <ELEMENT>]
