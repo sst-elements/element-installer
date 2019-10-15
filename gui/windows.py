@@ -126,7 +126,7 @@ class ElementsWindow(ElementsListWindow):
     def update(self):
 
         self.list_view.clear()
-        self.elements = sstelements._list_all_elements()
+        self.elements = list(sstelements._list_all_elements().keys())
         for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
             if sstelements.is_registered(element):

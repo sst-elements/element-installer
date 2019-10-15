@@ -23,7 +23,6 @@ The installer is packaged in a simple command line interface (CLI) as well as a 
 ```
 usage: cli.py [-h] [--install <ELEMENT>] [--uninstall <ELEMENT>]
               [--details <ELEMENT>] [--list] [--registered] [--quiet] [--force]
-              [--url <URL>]
 
 SST Element Installer
 
@@ -36,7 +35,6 @@ optional arguments:
   --registered, -r           List elements registered to the system
   --quiet, -q                Suppress standard outputs
   --force, -f                Force installation
-  --url, -x <URL>            External URL for element
 
 ```
 

@@ -40,8 +40,6 @@ if __name__ == "__main__":
                         help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
                         help="Force installation")
-    parser.add_argument("--url", "-x", metavar="<URL>", type=str, default="sabbirahm3d",
-                        help="External URL for element")
 
     args = parser.parse_args().__dict__
 
@@ -59,7 +57,7 @@ if __name__ == "__main__":
             exit(1)
 
         elif args["install"]:
-            sstelements.install(args["install"], args["url"], args["force"])
+            sstelements.install(args["install"], args["force"])
 
         elif args["uninstall"]:
             sstelements.uninstall(args["uninstall"])

@@ -11,7 +11,6 @@ import urllib.request
 REG_ELEM_RE = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
 ELEMENT_LIST_URL = os.environ["ELEMENT_LIST_URL"]
-ELEMENT_REPO_URL = os.environ["ELEMENT_REPO_URL"]
 ELEMENT_SRC_DIR = os.environ["ELEMENT_SRC_DIR"]
 
 os.chdir(ELEMENT_SRC_DIR)
@@ -78,7 +77,7 @@ def uninstall(element):
         print(f"{element} not found")
 
 
-def __clone(element, user, force):
+def __clone(element, force):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `__list_all_elements()`, it will be cloned from its repository with the
@@ -159,7 +158,7 @@ def __get_var_path(elem, dep):
     return elem, " ".join(f"{i}={ELEMENT_SRC_DIR}/{i}" for i in dep)
 
 
-def install(element, url=ELEMENT_REPO_URL, force=False):
+def install(element, force=False):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -175,7 +174,7 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
     dependencies = []
 
     # clone the targeted element repository
-    if __clone(element, url, force):
+    if __clone(element, force):
 
         # add its dependencies as well as its Makefile variable definitions
         dependencies.extend(__get_dependencies(element))
@@ -188,7 +187,7 @@ def install(element, url=ELEMENT_REPO_URL, force=False):
             # loop through its dependencies to generate a dependency graph
             for dep in dependencies:
 
-                if __clone(dep, url, force):
+                if __clone(dep, force):
 
                     # update the list of elements to be installed along with their corresponding
                     # Makefile variable definitions
@@ -232,7 +231,7 @@ def list_registered_elements():
     return [match.group() for match in matches]
 
 
-def get_info(element, user=ELEMENT_REPO_URL):
+def get_info(element):
     """[summary]
 
     [description]
