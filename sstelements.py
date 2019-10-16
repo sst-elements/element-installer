@@ -246,7 +246,7 @@ def get_info(element):
         for file_name in README_FILE_PATS:
             if os.path.exists(element + file_name):
                 with open(element + file_name) as readme_file:
-                    return readme_file.read()
+                    return readme_file.read(), element + file_name
 
     else:
 
@@ -263,6 +263,6 @@ def get_info(element):
                     continue
                 else:
                     with readme_file:
-                        return readme_file.read().decode("utf-8")
+                        return readme_file.read().decode("utf-8"), all_elements[element]
 
-    return f"No information found on {element}"
+    return f"No information found on {element}", ""

@@ -69,7 +69,7 @@ if __name__ == "__main__":
             print("\n".join(sstelements.list_registered_elements()))
 
         elif args["details"]:
-            print(sstelements.get_info(args["details"]))
+            print("\n".join(sstelements.get_info(args["details"])))
 
         else:
             parser.print_help()

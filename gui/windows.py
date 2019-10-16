@@ -24,6 +24,10 @@ class ElementOptionsWindow(SSTElementWindow):
 
         self.add_header()
 
+        self.url = QtWidgets.QLabel()
+        self.url.setOpenExternalLinks(True)
+        self.insert_widget(self.url)
+
         self.about = QtWidgets.QTextEdit()
         self.about.setReadOnly(True)
         self.insert_widget(self.about)
@@ -35,7 +39,9 @@ class ElementOptionsWindow(SSTElementWindow):
     def set_element(self, element):
 
         self.element = element
-        self.about.setText(sstelements.get_info(self.element))
+        readme, url = sstelements.get_info(self.element)
+        self.url.setText(f"<a href='{url}'>{url}</a>")
+        self.about.setText(readme)
 
     def set_registered(self, registered):
 
@@ -48,7 +54,7 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
                 self.uninstall_btn.clicked.connect(
                     lambda: self.element_action(sstelements.uninstall))
-                self.insert_widget(self.uninstall_btn, 2)
+                self.insert_widget(self.uninstall_btn, 3)
                 self.uninstall_btn.setStyleSheet("background-color: #e74c3c")
 
             if self.install_btn:
@@ -62,7 +68,7 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.install_btn = QtWidgets.QPushButton("Install")
                 self.install_btn.clicked.connect(
                     lambda: self.element_action(sstelements.install))
-                self.insert_widget(self.install_btn, 2)
+                self.insert_widget(self.install_btn, 3)
                 self.install_btn.setStyleSheet("background-color: #27ae60")
 
             if self.uninstall_btn:
