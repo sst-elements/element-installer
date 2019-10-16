@@ -6,17 +6,36 @@ This installer provides users with the capability to manage the elements on thei
 
 ## Table of Contents
 
-- [Usage](#usage)
-  - [Command Line Interface](#command-line-interface)
-  - [Graphical User Interface](#graphical-user-interface)
 - [Installation](#installation)
   - [Production](#production)
   - [Development](#development)
-    - [Cython](#cython)
+- [Usage](#usage)
+  - [Command Line Interface](#command-line-interface)
+  - [Graphical User Interface](#graphical-user-interface)
 
-## Usage
+## Installation
 
 The installer is packaged in a simple command line interface (CLI) as well as a graphical user interface (GUI). The GUI is built on top of Qt.
+
+### Production
+
+### Development
+
+Export the environment variables required by the program:
+```shell
+source setup.sh
+```
+
+The CLI wrapper of the installer does not require any additional libraries.
+
+To install requirements for the GUI wrapper, a Python virtual environment is recommended.
+```shell
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Usage
 
 ### Command Line Interface
 
@@ -39,19 +58,3 @@ optional arguments:
 ```
 
 ### Graphical User Interface
-
-
-## Installation
-
-### Production
-
-### Development
-
-```shell
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-source setup.sh
-```
-
-#### Cython

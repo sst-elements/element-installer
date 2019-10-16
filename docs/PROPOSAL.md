@@ -12,7 +12,6 @@ This document highlights current issues with SST Elements in regards to their in
   - [2. Refactor the SST Elements Repository](#2.-refactor-the-sst-elements-repository)
     - [2.1 Repositories for Individual Elements](#2.1-repositories-for-individual-elements)
     - [2.2 SST Elements Installer](#2.2-sst-elements-installer)
-      - [Installation](#installation)
   - [3. Enforce Consistent Documentation, Testing and Code Style Guidelines](#3.-enforce-consistent-documentation,-testing-and-code-style-guidelines)
 
 ## Issues
@@ -52,8 +51,6 @@ Custom elements may also be hosted on an individual user's repository if they do
 #### 2.2 SST Elements Installer
 
 The main SST Elements repository can now host ONLY the source code of the SST Elements Installer. The installer will provide the users the capability to manage the elements on their systems. When installing a target element, the installer will locate the repository and download the necessary contents to install the element along with its dependencies.
-
-##### Installation
 
 Add SST Elements Installer as an optional tool during the installation of SST core.
 
