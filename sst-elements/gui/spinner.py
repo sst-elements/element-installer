@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Implementation of a PyQt spinner
+
+Extracted from https://gist.github.com/eyllanesc/1a09157d17ba13d223c312b28a81c320
+"""
+
 from math import ceil
 
 from PyQt5.QtCore import *
@@ -6,10 +13,10 @@ from PyQt5.QtWidgets import *
 
 
 class QtWaitingSpinner(QWidget):
-    mColor = QColor(Qt.black)
+    mColor = QColor(Qt.gray)
     mRoundness = 100.0
     mMinimumTrailOpacity = 3.14159265358979323846
-    mTrailFadePercentage = 80.0
+    mTrailFadePercentage = 50.0
     mRevolutionsPerSecond = 1.57079632679489661923
     mNumberOfLines = 20
     mLineLength = 10

@@ -45,11 +45,10 @@ class ElementOptionsWindow(SSTElementWindow):
 
     def set_registered(self, registered):
 
-        self.set_header(f"{self.element}{' ✓' if registered else ''}")
-
         # if element is registered, replace the install button with the uninstall button
         if registered:
 
+            self.set_header(f"{self.element}<font color='#27ae60'> ✓</font>")
             if not self.uninstall_btn:
                 self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
                 self.uninstall_btn.clicked.connect(
@@ -64,6 +63,7 @@ class ElementOptionsWindow(SSTElementWindow):
         # replace the uninstall button with the install button
         else:
 
+            self.set_header(f"{self.element}")
             if not self.install_btn:
                 self.install_btn = QtWidgets.QPushButton("Install")
                 self.install_btn.clicked.connect(

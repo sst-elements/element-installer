@@ -6,6 +6,7 @@ import urllib.request
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from spinner import QtWaitingSpinner
+import sstelements
 
 
 class RunnableAction(QtCore.QRunnable):
@@ -21,7 +22,8 @@ class RunnableAction(QtCore.QRunnable):
         QtCore.QMetaObject.invokeMethod(
             self.window, "stop",
             QtCore.Qt.QueuedConnection,
-            QtCore.Q_ARG(int, self.action(*self.args)))
+            QtCore.Q_ARG(int, self.action(*self.args))
+        )
 
 
 class SplashScreen(QtWidgets.QDialog):
@@ -54,6 +56,10 @@ class SplashScreen(QtWidgets.QDialog):
     @QtCore.pyqtSlot(int)
     def stop(self, rdata):
 
+        QtWidgets.QMessageBox.information(
+            self, "Success",
+            f"{'Uninstalled ' + self.element if rdata else sstelements.INSTALLED_ELEMS}"
+        )
         self.__spinner.stop()
         self.adjustSize()
         self.parent.update(rdata)

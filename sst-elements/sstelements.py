@@ -15,6 +15,8 @@ ELEMENT_SRC_DIR = os.environ["ELEMENT_SRC_DIR"]
 
 os.chdir(ELEMENT_SRC_DIR)
 
+INSTALLED_ELEMS = ""
+
 
 def _list_all_elements():
     """Grab official list of trusted elements
@@ -72,6 +74,7 @@ def uninstall(element):
         subprocess.call(
             f"sst-register -u {element}", shell=True, stdout=subprocess.DEVNULL
         )
+        print(f"{element} uninstalled successfully")
         return 1
     else:
         print(f"{element} not found")
@@ -198,6 +201,8 @@ def install(element, force=False):
                         print(
                             f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
                         )
+                    else:
+                        print(f"No dependencies found for {dep}")
 
             # reverse the dependency graph represented in a flat array so that the parent elements
             # are installed before their children
@@ -209,13 +214,16 @@ def install(element, force=False):
             print("No dependencies found")
 
         for element, path in install_vars:
-            print(f"Installing {element}...")
+            print(f"Installing {element}... ", end="", flush=True)
             subprocess.call(
                 f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR}{element} && cd -",
                 shell=True, stdout=subprocess.DEVNULL
             )
+            print("done")
 
-        print(f"Installed {', '.join(i[0] for i in install_vars)}")
+        global INSTALLED_ELEMS
+        INSTALLED_ELEMS = f"Installed {', '.join([i[0] for i in install_vars])}"
+        print(INSTALLED_ELEMS)
         return 0
 
 
