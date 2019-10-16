@@ -2,7 +2,7 @@
 
 The SST core requires at least one [element](http://sst-simulator.org/SSTPages/SSTDeveloperElementSummaryInfo/) (a drivable library) to perform a simulation. As a stand-alone entity, the core fulfills no purpose.
 
-This installer provides users with the capability to manage the elements on their systems. Read [PROPOSAL.md](PROPOSAL.md) for further justification as well as details for contribution.
+This installer provides users with the capability to manage the elements on their systems. Read [PROPOSAL.md](docs/PROPOSAL.md) for further justification as well as instructions for contribution.
 
 ## Table of Contents
 
