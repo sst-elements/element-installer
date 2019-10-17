@@ -6,19 +6,23 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.error
 import urllib.request
 
 REG_ELEM_RE = re.compile(r"(((?<=^\d\.\s)|(?<=^\d{2}\.\s))\w*(?=.*?(?=VALID$)))", re.MULTILINE)
 
-ELEMENT_LIST_URL = os.environ["ELEMENT_LIST_URL"]
-ELEMENT_SRC_DIR = os.environ["ELEMENT_SRC_DIR"]
+ELEMENT_LIST_URL = os.environ.get("ELEMENT_LIST_URL", None)
+ELEMENT_SRC_DIR = os.environ.get("ELEMENT_SRC_DIR", None)
+
+if not (ELEMENT_LIST_URL and ELEMENT_SRC_DIR):
+    raise KeyError("Environment variables not set up properly")
 
 os.chdir(ELEMENT_SRC_DIR)
 
 INSTALLED_ELEMS = ""
 
 
-def _list_all_elements():
+def list_all_elements():
     """Grab official list of trusted elements
 
     The list document is a simple file with elements delimited by '\n'
@@ -50,7 +54,7 @@ def is_registered(element):
 
 def pprint_all_elements():
     """Print all elements, both registered and unregistered, in tabular format"""
-    all_elements = _list_all_elements().keys()
+    all_elements = list_all_elements().keys()
     print("SST Elements".ljust(25), "Registered")
     print("-" * 41)
     for element in all_elements:
@@ -83,7 +87,7 @@ def uninstall(element):
 def __clone(element, force):
     """Clone repository of element if it is deemed official and trusted
 
-    If element is found on `__list_all_elements()`, it will be cloned from its repository with the
+    If element is found on `_list_all_elements()`, it will be cloned from its repository with the
     URL provided
 
     :param {str} element: name of element
@@ -98,7 +102,7 @@ def __clone(element, force):
         else:
             uninstall(element)
 
-    all_elements = _list_all_elements()
+    all_elements = list_all_elements()
     all_element_names = all_elements.keys()
     if element in all_element_names:
         # git clone failed if exit code is non-zero
@@ -258,7 +262,7 @@ def get_info(element):
 
     else:
 
-        all_elements = _list_all_elements()
+        all_elements = list_all_elements()
         all_element_names = all_elements.keys()
         if element in all_element_names:
             for file_name in README_FILE_PATS:

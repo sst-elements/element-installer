@@ -43,6 +43,7 @@ class SplashScreen(QtWidgets.QDialog):
 
         header_label = QtWidgets.QLabel()
         header_label.setText(f"Installing {self.element}...")
+        header_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.layout().addWidget(header_label)
 
         self.__spinner = QtWaitingSpinner(self)

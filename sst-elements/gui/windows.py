@@ -19,6 +19,8 @@ class ElementOptionsWindow(SSTElementWindow):
         self.parent = parent
         super(ElementOptionsWindow, self).__init__(self.parent)
 
+        self.element = None
+
         self.install_btn = None
         self.uninstall_btn = None
 
@@ -132,7 +134,7 @@ class ElementsWindow(ElementsListWindow):
     def update(self):
 
         self.list_view.clear()
-        self.elements = list(sstelements._list_all_elements().keys())
+        self.elements = list(sstelements.list_all_elements().keys())
         for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
             if sstelements.is_registered(element):
