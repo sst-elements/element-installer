@@ -68,7 +68,8 @@ class QtWaitingSpinner(QtWidgets.QWidget):
                 self.parentWidget().height() / 2 - self.height() / 2
             )
 
-    def line_count_distance_from_primary(self, current, primary, total_num_lines):
+    @staticmethod
+    def line_count_distance_from_primary(current, primary, total_num_lines):
 
         distance = primary - current
         if distance < 0:
