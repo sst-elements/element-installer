@@ -47,9 +47,7 @@ def is_registered(element):
     :return {bool}: if element is registered
     """
     reg_elements = list_registered_elements()
-    if element in reg_elements:
-        return True
-    return False
+    return element in reg_elements
 
 
 def pprint_all_elements():
@@ -132,6 +130,8 @@ def __get_dependencies(element):
     if os.path.exists(dep_file_name):
         with open(dep_file_name) as req_file:
             return req_file.read().split()
+
+    return []
 
 
 def __add_dependencies(old, new):
@@ -251,7 +251,7 @@ def get_info(element):
     Arguments:
         element {[type]} -- [description]
     """
-    README_FILE_PATS = ("/README", "/README.md")
+    README_FILE_PATS = ("/README.md", "/README")
     reg_elements = list_registered_elements()
     if element in reg_elements:
 
