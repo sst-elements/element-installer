@@ -46,8 +46,7 @@ def is_registered(element):
 
     :return {bool}: if element is registered
     """
-    reg_elements = list_registered_elements()
-    return element in reg_elements
+    return element in list_registered_elements()
 
 
 def pprint_all_elements():
@@ -70,6 +69,8 @@ def uninstall(element):
     injection
 
     :param {str} element: name of element
+
+    :return {int}: return code 1 on success
     """
     if os.path.exists(element):
         shutil.rmtree(element)
@@ -89,14 +90,15 @@ def __clone(element, force):
     URL provided
 
     :param {str} element: name of element
-    :param {str} user: base URL of repositories
     :param {bool} force: flag to force install. If true and element is already installed, the
                          element is re-cloned
+
+    :return {bool}: success of clone
     """
     if os.path.exists(element):
         if not force:
             print(element, "already installed")
-            return 0
+            return False
         else:
             uninstall(element)
 
@@ -111,7 +113,7 @@ def __clone(element, force):
             raise SystemExit(1)
 
         else:
-            return 1
+            return True
 
     else:
         print(f"{element} not found")
@@ -173,9 +175,10 @@ def install(element, force=False):
     finally installed with their respective Makefiles in the reversed order of when they were added.
 
     :param {str} element: name of element
-    :param {str} url: URL of element repository
     :param {bool} force: flag to force install (default: {False})
                          If true and element is already installed, the element is re-cloned
+
+    :return {int}: return code 0 on success
     """
     install_vars = []
     dependencies = []
@@ -236,7 +239,7 @@ def list_registered_elements():
 
     This function is a wrapper for the list option provided by SST
 
-    :return {List[str]}:
+    :return {List[str]}: list of registered elements
     """
     elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
     matches = REG_ELEM_RE.finditer(elements)
@@ -244,12 +247,14 @@ def list_registered_elements():
 
 
 def get_info(element):
-    """[summary]
+    """Get README of element
 
-    [description]
+    If the element is installed, the local README contents and its path are returned. Else, the
+    README contents are grabbed from the element's repository.
 
-    Arguments:
-        element {[type]} -- [description]
+    :param {str} element: name of element
+
+    :return {Tuple[str, str]}: tuple of README content along with its path
     """
     README_FILE_PATS = ("/README.md", "/README")
     reg_elements = list_registered_elements()
@@ -277,4 +282,6 @@ def get_info(element):
                     with readme_file:
                         return readme_file.read().decode("utf-8"), all_elements[element]
 
-    return f"No information found on {element}", ""
+    # if an invalid element is requested
+    print(f"No information found on {element}")
+    raise SystemExit(1)

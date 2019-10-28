@@ -40,16 +40,19 @@ pip install -r requirements.txt
 ### Command Line Interface
 
 ```
-usage: cli.py [-h] [--install <ELEMENT>] [--uninstall <ELEMENT>]
-              [--details <ELEMENT>] [--list] [--registered] [--quiet] [--force]
+usage: cli.py [-h] [--uninstall <ELEMENT>] [--info <ELEMENT>] [--list]
+              [--registered] [--quiet] [--force]
+              [<ELEMENT>]
 
 SST Element Installer
 
+positional arguments:
+  <ELEMENT>                  Install element
+
 optional arguments:
   -h, --help                 show this help message and exit
-  --install, -i <ELEMENT>    Install element
   --uninstall, -u <ELEMENT>  Uninstall element
-  --details, -d <ELEMENT>    Display element information
+  --info, -i <ELEMENT>       Display element information
   --list, -l                 List all SST elements
   --registered, -r           List elements registered to the system
   --quiet, -q                Suppress standard outputs

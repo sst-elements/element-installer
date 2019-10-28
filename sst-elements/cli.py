@@ -22,19 +22,21 @@ if __name__ == "__main__":
             args_string = self._format_args(action, default)
             return ", ".join(action.option_strings) + " " + args_string
 
-    parser = argparse.ArgumentParser(
-        description="SST Element Installer", formatter_class=CustomHelpFormatter)
+    parser = argparse.ArgumentParser(description="SST Element Installer",
+                                     formatter_class=CustomHelpFormatter)
 
-    parser.add_argument("--install", "-i", metavar="<ELEMENT>", type=str, default="",
-                        help="Install element")
-    parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
-                        help="Uninstall element")
-    parser.add_argument("--details", "-d", metavar="<ELEMENT>", type=str, default="",
-                        help="Display element information")
-    parser.add_argument("--list", "-l", action="store_true", default=False,
-                        help="List all SST elements")
-    parser.add_argument("--registered", "-r", action="store_true", default=False,
-                        help="List elements registered to the system")
+    _xor_parser = parser.add_mutually_exclusive_group()
+
+    _xor_parser.add_argument("install", nargs="?", metavar="<ELEMENT>", type=str, default="",
+                             help="Install element")
+    _xor_parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
+                             help="Uninstall element")
+    _xor_parser.add_argument("--info", "-i", metavar="<ELEMENT>", type=str, default="",
+                             help="Display element information")
+    _xor_parser.add_argument("--list", "-l", action="store_true", default=False,
+                             help="List all SST elements")
+    _xor_parser.add_argument("--registered", "-r", action="store_true", default=False,
+                             help="List elements registered to the system")
     parser.add_argument("--quiet", "-q", action="store_true", default=False,
                         help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
@@ -48,14 +50,7 @@ if __name__ == "__main__":
             # suppress all console outputs
             sys.stdout = devnull
 
-            # install and uninstall options are mutually exclusive
-        if args["install"] and args["uninstall"]:
-            sys.stdout = sys.__stdout__
-            print("Program can only perform one installation task at a time")
-            parser.print_help()
-            exit(1)
-
-        elif args["install"]:
+        if args["install"]:
             sstelements.install(args["install"], args["force"])
 
         elif args["uninstall"]:
@@ -67,8 +62,8 @@ if __name__ == "__main__":
         elif args["registered"]:
             print("\n".join(sstelements.list_registered_elements()))
 
-        elif args["details"]:
-            print("\n".join(sstelements.get_info(args["details"])))
+        elif args["info"]:
+            print("\n".join(sstelements.get_info(args["info"])))
 
         else:
             parser.print_help()
