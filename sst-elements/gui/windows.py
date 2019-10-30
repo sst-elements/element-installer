@@ -3,7 +3,6 @@
 
 import os
 import sys
-import urllib.request
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -150,15 +149,15 @@ class MainWindow(SSTElementWindow):
 
         super(MainWindow, self).__init__(None)
 
-        img_url = "http://sst-simulator.org/img/sst-logo-small.png"
-        img_data = urllib.request.urlopen(urllib.request.Request(img_url)).read()
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(img_data)
-        pixmap_label = QtWidgets.QLabel()
-        pixmap_label.setPixmap(pixmap)
-        pixmap_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        pixmap_label.resize(pixmap.height(), pixmap.width())
-        self.insert_widget(pixmap_label)
+        self.intro = QtWidgets.QTextEdit()
+        self.intro.setReadOnly(True)
+        self.intro.setText(f"""
+            <h1>SST Elements</h1>
+            <p style='font-size:12px;text-align:center'>{sstelements.get_version()}</p>
+        """)
+        self.intro.setAlignment(QtCore.Qt.AlignCenter)
+        self.intro.setStyleSheet("padding-top: 175")
+        self.insert_widget(self.intro)
 
         reg_elems_btn = QtWidgets.QPushButton("Registered elements")
         self.insert_widget(reg_elems_btn)

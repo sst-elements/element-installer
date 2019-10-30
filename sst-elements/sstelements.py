@@ -22,6 +22,14 @@ os.chdir(ELEMENT_SRC_DIR)
 INSTALLED_ELEMS = ""
 
 
+def get_version():
+    """Get version of SST installed on system
+
+    :return {str}: version string of SST
+    """
+    return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
+
+
 def list_all_elements():
     """Grab official list of trusted elements
 

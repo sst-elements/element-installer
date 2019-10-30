@@ -23,8 +23,14 @@ if __name__ == "__main__":
             return ", ".join(action.option_strings) + " " + args_string
 
     parser = argparse.ArgumentParser(description="SST Element Installer",
-                                     formatter_class=CustomHelpFormatter)
+                                     formatter_class=CustomHelpFormatter, add_help=False)
 
+    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
+                        help="Show this help message and exit")
+    parser.add_argument("-v", "--version", action="version",
+                        version=sstelements.get_version(), help="Show version number and exit")
+    parser._positionals.title = "Positional arguments"
+    parser._optionals.title = "Optional arguments"
     _xor_parser = parser.add_mutually_exclusive_group()
 
     _xor_parser.add_argument("install", nargs="?", metavar="<ELEMENT>", type=str, default="",
@@ -32,7 +38,7 @@ if __name__ == "__main__":
     _xor_parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
                              help="Uninstall element")
     _xor_parser.add_argument("--info", "-i", metavar="<ELEMENT>", type=str, default="",
-                             help="Display element information")
+                             help="Display information on element")
     _xor_parser.add_argument("--list", "-l", action="store_true", default=False,
                              help="List all SST elements")
     _xor_parser.add_argument("--registered", "-r", action="store_true", default=False,
