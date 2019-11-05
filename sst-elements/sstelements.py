@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""This script provides the functionality required to manage SST elements in a system.
 
+The functionalities include:
+    - listing possible elements
+    - listing elements registered on system
+    - gathering dependency of elements
+    - gathering README content of elements
+    - cloning elements and its dependencies
+    - installing elements and its dependencies to the system
+    - uninstalling elements from the system
+    - gathering version of SST Core installed in the system
+"""
 import json
 import os
 import re
@@ -22,26 +33,29 @@ os.chdir(ELEMENT_SRC_DIR)
 INSTALLED_ELEMS = ""
 
 
-def get_version():
-    """Get version of SST installed on system
-
-    :return {str}: version string of SST
-    """
-    return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
-
-
 def list_all_elements():
     """Grab official list of trusted elements
 
     The list document is a simple file with elements delimited by '\n'
 
-    :return {List[str]}: list of elements
+    Raises:
+    -------
+    FileNotFoundError
+        element list file cannot be found due to a broken path
+    urllib.error.HTTPError
+        other HTTP errors
+
+    Returns:
+    --------
+    list(str)
+        list of elements
     """
     try:
         elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
-    except urllib.error.HTTPError:
-        print("Elements list file not found")
-        raise SystemExit(1)
+
+    except urllib.error.HTTPError as exc:
+        raise FileNotFoundError("Elements list file not found") from exc if exc.code == 404 else exc
+
     else:
         with elements_list_file:
             return json.loads(elements_list_file.read().decode("utf-8"))
@@ -50,9 +64,15 @@ def list_all_elements():
 def is_registered(element):
     """Check if element is registered in system
 
-    :param {str} element: name of element
+    Parameters
+    ----------
+    element : str
+        name of element
 
-    :return {bool}: if element is registered
+    Returns:
+    --------
+    bool
+        if element is registered
     """
     return element in list_registered_elements()
 
@@ -76,9 +96,15 @@ def uninstall(element):
     The path of the element is first located before a subprocess instance is created to avoid shell
     injection
 
-    :param {str} element: name of element
+    Parameters:
+    -----------
+    element : str
+        name of element
 
-    :return {int}: return code 1 on success
+    Returns:
+    --------
+    int
+        return code for the GUI wrapper. Return 1 on success, 2 on failure.
     """
     if os.path.exists(element):
         shutil.rmtree(element)
@@ -87,8 +113,10 @@ def uninstall(element):
         )
         print(f"{element} uninstalled successfully")
         return 1
+
     else:
         print(f"{element} not found")
+        return 2
 
 
 def __clone(element, force):
@@ -97,11 +125,24 @@ def __clone(element, force):
     If element is found on `_list_all_elements()`, it will be cloned from its repository with the
     URL provided
 
-    :param {str} element: name of element
-    :param {bool} force: flag to force install. If true and element is already installed, the
-                         element is re-cloned
+    Parameters:
+    -----------
+    element : str
+        name of element
+    force : bool
+        flag to force install. If true and element is already installed, the element is re-cloned
 
-    :return {bool}: success of clone
+    Raises:
+    -------
+    urllib.error.URLError
+        cloning of element's repository failed
+    FileNotFoundError
+        requested element does not exist
+
+    Returns:
+    --------
+    bool
+        if element was clone
     """
     if os.path.exists(element):
         if not force:
@@ -117,23 +158,27 @@ def __clone(element, force):
         if subprocess.call(
             f"git clone -q {all_elements[element]}", shell=True, stdout=subprocess.DEVNULL
         ):
-            print(f"Cloning of repository for {element} failed")
-            raise SystemExit(1)
+            raise urllib.error.URLError(f"Cloning of repository for {element} failed")
 
         else:
             return True
 
     else:
-        print(f"{element} not found")
-        raise SystemExit(1)
+        raise FileNotFoundError(f"{element} not found")
 
 
 def __get_dependencies(element):
     """Parse dependencies of element into list
 
-    :param {str} element: name of element
+    Parameters:
+    -----------
+    element : str
+        name of element
 
-    :return {List[str]}: dependencies
+    Returns:
+    --------
+    list(str)
+        dependencies of element
     """
     print(f"Gathering dependencies for {element}...")
     dep_file_name = f"{element}/dependencies.txt"
@@ -150,10 +195,17 @@ def __add_dependencies(old, new):
     If the new list of dependencies include elements already in the original list of dependencies,
     the index of the element is shifted to properly update the dependency graph
 
-    :param {List{str}} old: original list of dependencies
-    :param {List{str}} new: new list of elements to be added as dependencies
+    Parameters:
+    -----------
+    old : list(str)
+        original list of dependencies
+    new : list(str)
+        new list of elements to be added as dependencies
 
-    :return {List{str}}: updated list of dependencies
+    Returns:
+    --------
+    list(str)
+        updated list of dependencies
     """
     for elem in new:
         if elem in old:
@@ -163,16 +215,20 @@ def __add_dependencies(old, new):
     return old
 
 
-def __get_var_path(elem, dep):
+def __get_var_path(dep):
     """Generate Makefile variable definitions for elements with dependencies
 
-    :param {str} elem: name of element
-    :param {List{str}} dep: list of dependencies for the element
+    Parameters:
+    -----------
+    dep : list(str)
+        list of dependencies for the element
 
-    :return {Tuple[str, str]}: name of element along with the generated Makefile variable
-                               definitions
+    Returns:
+    --------
+    str
+        name of element along with the generated Makefile variable definitions
     """
-    return elem, " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
+    return " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
 
 
 def install(element, force=False):
@@ -182,11 +238,18 @@ def install(element, force=False):
     elements are then cloned as well until no more dependencies are required. All the elements are
     finally installed with their respective Makefiles in the reversed order of when they were added.
 
-    :param {str} element: name of element
-    :param {bool} force: flag to force install (default: {False})
-                         If true and element is already installed, the element is re-cloned
+    Parameters:
+    -----------
+    element : str
+        name of element
+    force : bool
+        flag to force install (default: {False}). If true and element is already installed, the
+        element is re-cloned
 
-    :return {int}: return code 0 on success
+    Returns:
+    --------
+    int
+        return code for the GUI wrapper. Return 0 on success, 2 on failure.
     """
     install_vars = []
     dependencies = []
@@ -196,7 +259,7 @@ def install(element, force=False):
 
         # add its dependencies as well as its Makefile variable definitions
         dependencies.extend(__get_dependencies(element))
-        install_vars.append(__get_var_path(element, dependencies))
+        install_vars.append((element, __get_var_path(dependencies)))
 
         # if the element depends on any other elements
         if dependencies:
@@ -211,7 +274,7 @@ def install(element, force=False):
                     # Makefile variable definitions
                     new_dependencies = __get_dependencies(dep)
                     dependencies = __add_dependencies(dependencies, new_dependencies)
-                    install_vars.append(__get_var_path(dep, new_dependencies))
+                    install_vars.append((dep, __get_var_path(new_dependencies)))
                     if new_dependencies:
                         print(
                             f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
@@ -241,13 +304,18 @@ def install(element, force=False):
         print(INSTALLED_ELEMS)
         return 0
 
+    return 2
+
 
 def list_registered_elements():
     """List elements installed in system
 
     This function is a wrapper for the list option provided by SST
 
-    :return {List[str]}: list of registered elements
+    Returns:
+    --------
+    list(str)
+        list of registered elements
     """
     elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
     matches = REG_ELEM_RE.finditer(elements)
@@ -260,9 +328,20 @@ def get_info(element):
     If the element is installed, the local README contents and its path are returned. Else, the
     README contents are grabbed from the element's repository.
 
-    :param {str} element: name of element
+    Parameters:
+    -----------
+    element : str
+        name of element
 
-    :return {Tuple[str, str]}: tuple of README content along with its path
+    Raises:
+    -------
+    FileNotFoundError
+        requested element does not exist
+
+    Returns:
+    --------
+    str, str
+        tuple of README content along with its path or URL
     """
     README_FILE_PATS = ("/README.md", "/README")
     reg_elements = list_registered_elements()
@@ -281,9 +360,7 @@ def get_info(element):
             for file_name in README_FILE_PATS:
                 readme_url = all_elements[element].replace("github", "raw.githubusercontent")
                 try:
-                    readme_file = urllib.request.urlopen(
-                        f"{readme_url}/master/{file_name}"
-                    )
+                    readme_file = urllib.request.urlopen(f"{readme_url}/master/{file_name}")
                 except urllib.error.HTTPError:
                     continue
                 else:
@@ -291,5 +368,15 @@ def get_info(element):
                         return readme_file.read().decode("utf-8"), all_elements[element]
 
     # if an invalid element is requested
-    print(f"No information found on {element}")
-    raise SystemExit(1)
+    raise FileNotFoundError(f"No information found on {element}")
+
+
+def get_version():
+    """Get version of SST installed on system
+
+    Returns:
+    --------
+    str
+        version string of SST
+    """
+    return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")

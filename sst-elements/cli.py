@@ -41,8 +41,8 @@ if __name__ == "__main__":
                              help="Display information on element")
     _xor_parser.add_argument("--list", "-l", action="store_true", default=False,
                              help="List all SST elements")
-    _xor_parser.add_argument("--registered", "-r", action="store_true", default=False,
-                             help="List elements registered to the system")
+    _xor_parser.add_argument("--registered", "-r", nargs="?", metavar="all|<ELEMENT>", type=str,
+                             const="all", help="List elements registered to the system")
     parser.add_argument("--quiet", "-q", action="store_true", default=False,
                         help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
@@ -56,20 +56,27 @@ if __name__ == "__main__":
             # suppress all console outputs
             sys.stdout = devnull
 
-        if args["install"]:
-            sstelements.install(args["install"], args["force"])
+        try:
+            if args["install"]:
+                sstelements.install(args["install"], args["force"])
 
-        elif args["uninstall"]:
-            sstelements.uninstall(args["uninstall"])
+            elif args["uninstall"]:
+                sstelements.uninstall(args["uninstall"])
 
-        elif args["list"]:
-            sstelements.pprint_all_elements()
+            elif args["list"]:
+                sstelements.pprint_all_elements()
 
-        elif args["registered"]:
-            print("\n".join(sstelements.list_registered_elements()))
+            elif args["registered"]:
+                if args["registered"] == "all":
+                    print("\n".join(sstelements.list_registered_elements()))
+                else:
+                    print(sstelements.is_registered(args["registered"]))
 
-        elif args["info"]:
-            print("\n".join(sstelements.get_info(args["info"])))
+            elif args["info"]:
+                print("\n".join(sstelements.get_info(args["info"])))
 
-        else:
-            parser.print_help()
+            else:
+                parser.print_help()
+
+        except Exception as exc:
+            raise SystemExit(exc)
