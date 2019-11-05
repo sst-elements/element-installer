@@ -39,6 +39,8 @@ if __name__ == "__main__":
                              help="Uninstall element")
     _xor_parser.add_argument("--info", "-i", metavar="<ELEMENT>", type=str, default="",
                              help="Display information on element")
+    _xor_parser.add_argument("--dep", "-d", metavar="<ELEMENT>", type=str, default="",
+                             help="Display dependencies of element")
     _xor_parser.add_argument("--list", "-l", action="store_true", default=False,
                              help="List all SST elements")
     _xor_parser.add_argument("--registered", "-r", nargs="?", metavar="all|<ELEMENT>", type=str,
@@ -62,6 +64,10 @@ if __name__ == "__main__":
 
             elif args["uninstall"]:
                 sstelements.uninstall(args["uninstall"])
+
+            elif args["dep"]:
+                dep = sstelements.get_dependencies(args["dep"])
+                print("\n".join(dep) if dep else None)
 
             elif args["list"]:
                 sstelements.pprint_all_elements()

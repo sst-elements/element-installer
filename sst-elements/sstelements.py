@@ -47,8 +47,8 @@ def list_all_elements():
 
     Returns:
     --------
-    list(str)
-        list of elements
+    dict(str, str)
+        key-value pairs of elements mapped to their repository URLs
     """
     try:
         elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
@@ -167,7 +167,7 @@ def __clone(element, force):
         raise FileNotFoundError(f"{element} not found")
 
 
-def __get_dependencies(element):
+def get_dependencies(element):
     """Parse dependencies of element into list
 
     Parameters:
@@ -180,13 +180,25 @@ def __get_dependencies(element):
     list(str)
         dependencies of element
     """
-    print(f"Gathering dependencies for {element}...")
     dep_file_name = f"{element}/dependencies.txt"
     if os.path.exists(dep_file_name):
-        with open(dep_file_name) as req_file:
-            return req_file.read().split()
+        with open(dep_file_name) as dep_file:
+            return dep_file.read().split()
 
-    return []
+    all_elements = list_all_elements()
+    if element in all_elements.keys():
+
+        try:
+            dep_file = urllib.request.urlopen(
+                f"{all_elements[element].replace('github', 'raw.githubusercontent')}/master/dependencies.txt"
+            )
+        except urllib.error.HTTPError:
+            return []
+        else:
+            with dep_file:
+                return dep_file.read().decode("utf-8").split()
+
+    raise FileNotFoundError(f"{element} not found")
 
 
 def __add_dependencies(old, new):
@@ -258,7 +270,8 @@ def install(element, force=False):
     if __clone(element, force):
 
         # add its dependencies as well as its Makefile variable definitions
-        dependencies.extend(__get_dependencies(element))
+        print(f"Gathering dependencies for {element}...")
+        dependencies.extend(get_dependencies(element))
         install_vars.append((element, __get_var_path(dependencies)))
 
         # if the element depends on any other elements
@@ -272,7 +285,8 @@ def install(element, force=False):
 
                     # update the list of elements to be installed along with their corresponding
                     # Makefile variable definitions
-                    new_dependencies = __get_dependencies(dep)
+                    print(f"Gathering dependencies for {dep}...")
+                    new_dependencies = get_dependencies(dep)
                     dependencies = __add_dependencies(dependencies, new_dependencies)
                     install_vars.append((dep, __get_var_path(new_dependencies)))
                     if new_dependencies:
