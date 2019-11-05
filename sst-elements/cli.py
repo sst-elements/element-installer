@@ -70,7 +70,16 @@ if __name__ == "__main__":
                 print("\n".join(dep) if dep else None)
 
             elif args["list"]:
-                sstelements.pprint_all_elements()
+                # sstelements.pprint_all_elements()
+                all_elements = sstelements.list_all_elements().keys()
+                print("SST Elements".ljust(25), "Registered")
+                print("-" * 41)
+                for element in all_elements:
+                    if sstelements.is_registered(element):
+                        # print check mark (✓)
+                        print(element.ljust(28), "\033[32m✓\033[0m")
+                    else:
+                        print(element)
 
             elif args["registered"]:
                 if args["registered"] == "all":

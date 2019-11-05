@@ -77,19 +77,6 @@ def is_registered(element):
     return element in list_registered_elements()
 
 
-def pprint_all_elements():
-    """Print all elements, both registered and unregistered, in tabular format"""
-    all_elements = list_all_elements().keys()
-    print("SST Elements".ljust(25), "Registered")
-    print("-" * 41)
-    for element in all_elements:
-        if is_registered(element):
-            # print check mark (✓)
-            print(element.ljust(28), "\033[32m✓\033[0m")
-        else:
-            print(element)
-
-
 def uninstall(element):
     """Remove and uninstall element from system
 
@@ -174,6 +161,11 @@ def get_dependencies(element):
     -----------
     element : str
         name of element
+
+    Raises:
+    -------
+    FileNotFoundError
+        requested element does not exist
 
     Returns:
     --------
