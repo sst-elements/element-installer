@@ -33,77 +33,15 @@ os.chdir(ELEMENT_SRC_DIR)
 INSTALLED_ELEMS = ""
 
 
-def list_all_elements():
-    """Grab official list of trusted elements
-
-    The list document is a simple file with elements delimited by '\n'
-
-    Raises:
-    -------
-    FileNotFoundError
-        element list file cannot be found due to a broken path
-    urllib.error.HTTPError
-        other HTTP errors
+def get_version():
+    """Get version of SST installed on system
 
     Returns:
     --------
-    dict(str, str)
-        key-value pairs of elements mapped to their repository URLs
+    str
+        version string of SST
     """
-    try:
-        elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
-
-    except urllib.error.HTTPError as exc:
-        raise FileNotFoundError("Elements list file not found") from exc if exc.code == 404 else exc
-
-    else:
-        with elements_list_file:
-            return json.loads(elements_list_file.read().decode("utf-8"))
-
-
-def is_registered(element):
-    """Check if element is registered in system
-
-    Parameters
-    ----------
-    element : str
-        name of element
-
-    Returns:
-    --------
-    bool
-        if element is registered
-    """
-    return element in list_registered_elements()
-
-
-def uninstall(element):
-    """Remove and uninstall element from system
-
-    The path of the element is first located before a subprocess instance is created to avoid shell
-    injection
-
-    Parameters:
-    -----------
-    element : str
-        name of element
-
-    Returns:
-    --------
-    int
-        return code for the GUI wrapper. Return 1 on success, 2 on failure.
-    """
-    if os.path.exists(element):
-        shutil.rmtree(element)
-        subprocess.call(
-            f"sst-register -u {element}", shell=True, stdout=subprocess.DEVNULL
-        )
-        print(f"{element} uninstalled successfully")
-        return 1
-
-    else:
-        print(f"{element} not found")
-        return 2
+    return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
 
 
 def __clone(element, force):
@@ -143,7 +81,7 @@ def __clone(element, force):
     if element in all_element_names:
         # git clone failed if exit code is non-zero
         if subprocess.call(
-            f"git clone -q {all_elements[element]}", shell=True, stdout=subprocess.DEVNULL
+            f"git clone -q {all_elements[element]['url']}", shell=True, stdout=subprocess.DEVNULL
         ):
             raise urllib.error.URLError(f"Cloning of repository for {element} failed")
 
@@ -172,23 +110,9 @@ def get_dependencies(element):
     list(str)
         dependencies of element
     """
-    dep_file_name = f"{element}/dependencies.txt"
-    if os.path.exists(dep_file_name):
-        with open(dep_file_name) as dep_file:
-            return dep_file.read().split()
-
     all_elements = list_all_elements()
     if element in all_elements.keys():
-
-        try:
-            dep_file = urllib.request.urlopen(
-                f"{all_elements[element].replace('github', 'raw.githubusercontent')}/master/dependencies.txt"
-            )
-        except urllib.error.HTTPError:
-            return []
-        else:
-            with dep_file:
-                return dep_file.read().decode("utf-8").split()
+        return all_elements[element]["dep"]
 
     raise FileNotFoundError(f"{element} not found")
 
@@ -211,10 +135,10 @@ def __add_dependencies(old, new):
     list(str)
         updated list of dependencies
     """
-    for elem in new:
-        if elem in old:
-            old.remove(elem)
-        old.append(elem)
+    for _element in new:
+        if _element in old:
+            old.remove(_element)
+        old.append(_element)
 
     return old
 
@@ -246,8 +170,8 @@ def install(element, force=False):
     -----------
     element : str
         name of element
-    force : bool
-        flag to force install (default: {False}). If true and element is already installed, the
+    force : bool (default: False)
+        flag to force install. If true and element is already installed, the
         element is re-cloned
 
     Returns:
@@ -313,19 +237,66 @@ def install(element, force=False):
     return 2
 
 
-def list_registered_elements():
-    """List elements installed in system
+def __get_dependents(element):
+    """Gather elements that are dependent on the target element
 
-    This function is a wrapper for the list option provided by SST
+    Parameters:
+    -----------
+    element : str
+        name of element
 
     Returns:
     --------
     list(str)
-        list of registered elements
+        list of element names flagged as dependents of the target element
     """
-    elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
-    matches = REG_ELEM_RE.finditer(elements)
-    return [match.group() for match in matches]
+    all_elements = list_all_elements()
+    reg_elements = list_registered_elements()
+    dependents = []
+    if element in reg_elements:
+        for _element in reg_elements:
+            if element in all_elements[_element]["dep"]:
+                dependents.append(_element)
+
+    return dependents
+
+
+def uninstall(element, clean=False):
+    """Remove and uninstall element from system
+
+    The path of the element is first located before a subprocess instance is created to avoid shell
+    injection
+
+    Parameters:
+    -----------
+    element : str
+        name of element
+    clean : bool (default: False)
+        flag to remove element as well as its dependent elements. This option is useful in cleaning
+        up deprecated elements.
+
+    Returns:
+    --------
+    int
+        return code for the GUI wrapper. Return 1 on success, 2 on failure.
+    """
+    elements = [element]
+    if clean:
+        elements += __get_dependents(element)
+
+    for _element in elements:
+        if os.path.exists(_element):
+            shutil.rmtree(_element)
+            subprocess.call(
+                f"sst-register -u {_element}", shell=True, stdout=subprocess.DEVNULL
+            )
+            print(f"{_element} uninstalled successfully")
+
+        else:
+            print(f"{_element} not found")
+            return 2
+
+    return 1
 
 
 def get_info(element):
@@ -364,25 +335,74 @@ def get_info(element):
         all_element_names = all_elements.keys()
         if element in all_element_names:
             for file_name in README_FILE_PATS:
-                readme_url = all_elements[element].replace("github", "raw.githubusercontent")
+                readme_url = all_elements[element]["url"].replace("github", "raw.githubusercontent")
                 try:
                     readme_file = urllib.request.urlopen(f"{readme_url}/master/{file_name}")
                 except urllib.error.HTTPError:
                     continue
                 else:
                     with readme_file:
-                        return readme_file.read().decode("utf-8"), all_elements[element]
+                        return readme_file.read().decode("utf-8"), all_elements[element]["url"]
 
     # if an invalid element is requested
     raise FileNotFoundError(f"No information found on {element}")
 
 
-def get_version():
-    """Get version of SST installed on system
+def list_all_elements():
+    """Grab official list of trusted elements
+
+    The list document is a simple file with elements delimited by '\n'
+
+    Raises:
+    -------
+    FileNotFoundError
+        element list file cannot be found due to a broken path
+    urllib.error.HTTPError
+        other HTTP errors
 
     Returns:
     --------
-    str
-        version string of SST
+    dict(str, str)
+        key-value pairs of elements mapped to their repository URLs
     """
-    return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
+    try:
+        elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
+
+    except urllib.error.HTTPError as exc:
+        raise FileNotFoundError(
+            "Elements list file not found") from exc if exc.code == 404 else exc
+
+    else:
+        with elements_list_file:
+            return json.loads(elements_list_file.read().decode("utf-8"))
+
+
+def is_registered(element):
+    """Check if element is registered in system
+
+    Parameters
+    ----------
+    element : str
+        name of element
+
+    Returns:
+    --------
+    bool
+        if element is registered
+    """
+    return element in list_registered_elements()
+
+
+def list_registered_elements():
+    """List elements installed in system
+
+    This function is a wrapper for the list option provided by SST
+
+    Returns:
+    --------
+    list(str)
+        list of registered elements
+    """
+    elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
+    matches = REG_ELEM_RE.finditer(elements)
+    return [match.group() for match in matches]

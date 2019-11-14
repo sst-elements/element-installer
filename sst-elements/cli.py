@@ -48,7 +48,11 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", "-q", action="store_true", default=False,
                         help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
-                        help="Force installation")
+                        help="""Flag to force installation or removal of element.
+                        If option is applied to installation, the existing files will be
+                        overwritten by the updated versions.
+                        If option is applied to uninstallation, the element as well as all its
+                        dependent elements will be removed.""")
 
     args = parser.parse_args().__dict__
 
@@ -63,14 +67,13 @@ if __name__ == "__main__":
                 sstelements.install(args["install"], args["force"])
 
             elif args["uninstall"]:
-                sstelements.uninstall(args["uninstall"])
+                sstelements.uninstall(args["uninstall"], args["force"])
 
             elif args["dep"]:
                 dep = sstelements.get_dependencies(args["dep"])
                 print("\n".join(dep) if dep else None)
 
             elif args["list"]:
-                # sstelements.pprint_all_elements()
                 all_elements = sstelements.list_all_elements().keys()
                 print("SST Elements".ljust(25), "Registered")
                 print("-" * 41)
