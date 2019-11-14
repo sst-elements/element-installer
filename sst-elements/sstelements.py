@@ -10,6 +10,7 @@ The functionalities include:
     - cloning elements and its dependencies
     - installing elements and its dependencies to the system
     - uninstalling elements from the system
+    - uninstalling dependent elements from the system
     - gathering version of SST Core installed in the system
 """
 import json
@@ -44,7 +45,7 @@ def get_version():
     return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
 
 
-def __clone(element, force):
+def __clone(element, force, branch, head):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `_list_all_elements()`, it will be cloned from its repository with the
@@ -56,6 +57,10 @@ def __clone(element, force):
         name of element
     force : bool
         flag to force install. If true and element is already installed, the element is re-cloned
+    branch : str
+        branch of repository of the element
+    head : str
+        commit SHA to revert to in the repository of the element
 
     Raises:
     -------
@@ -71,7 +76,7 @@ def __clone(element, force):
     """
     if os.path.exists(element):
         if not force:
-            print(element, "already installed")
+            print(f"{element} already installed")
             return False
         else:
             uninstall(element)
@@ -81,11 +86,15 @@ def __clone(element, force):
     if element in all_element_names:
         # git clone failed if exit code is non-zero
         if subprocess.call(
-            f"git clone -q {all_elements[element]['url']}", shell=True, stdout=subprocess.DEVNULL
+            f"git clone -q -b {branch} --single-branch {all_elements[element]['url']}",
+            shell=True, stdout=subprocess.DEVNULL
         ):
             raise urllib.error.URLError(f"Cloning of repository for {element} failed")
 
         else:
+            if head:
+                subprocess.call(f"cd {element} && git reset --hard {head} && cd -", shell=True,
+                                stdout=subprocess.DEVNULL)
             return True
 
     else:
@@ -159,7 +168,7 @@ def __get_var_path(dep):
     return " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
 
 
-def install(element, force=False):
+def install(element, force=False, branch="master", head=""):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -173,6 +182,10 @@ def install(element, force=False):
     force : bool (default: False)
         flag to force install. If true and element is already installed, the
         element is re-cloned
+    branch : str (default: "master")
+        branch of repository of the element
+    head : str (default: "")
+        commit SHA to revert to in the repository of the element
 
     Returns:
     --------
@@ -183,7 +196,7 @@ def install(element, force=False):
     dependencies = []
 
     # clone the targeted element repository
-    if __clone(element, force):
+    if __clone(element, force, branch, head):
 
         # add its dependencies as well as its Makefile variable definitions
         print(f"Gathering dependencies for {element}...")
@@ -317,8 +330,10 @@ def get_info(element):
 
     Returns:
     --------
-    str, str
-        tuple of README content along with its path or URL
+    str
+        README content
+    str
+        path or URL to README
     """
     README_FILE_PATS = ("/README.md", "/README")
     reg_elements = list_registered_elements()
@@ -351,8 +366,6 @@ def get_info(element):
 def list_all_elements():
     """Grab official list of trusted elements
 
-    The list document is a simple file with elements delimited by '\n'
-
     Raises:
     -------
     FileNotFoundError
@@ -369,8 +382,7 @@ def list_all_elements():
         elements_list_file = urllib.request.urlopen(ELEMENT_LIST_URL)
 
     except urllib.error.HTTPError as exc:
-        raise FileNotFoundError(
-            "Elements list file not found") from exc if exc.code == 404 else exc
+        raise FileNotFoundError("Elements list file not found") from exc if exc.code == 404 else exc
 
     else:
         with elements_list_file:

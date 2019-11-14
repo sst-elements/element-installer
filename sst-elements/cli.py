@@ -45,6 +45,12 @@ if __name__ == "__main__":
                              help="List all SST elements")
     _xor_parser.add_argument("--registered", "-r", nargs="?", metavar="all|<ELEMENT>", type=str,
                              const="all", help="List elements registered to the system")
+
+    parser.add_argument("--branch", "-b", metavar="<BRANCH>", type=str, default="master",
+                        help="Choose branch")
+    parser.add_argument("--head", "-c", metavar="<COMMIT>", type=str, default="",
+                        help="Choose commit SHA")
+
     parser.add_argument("--quiet", "-q", action="store_true", default=False,
                         help="Suppress standard outputs")
     parser.add_argument("--force", "-f", action="store_true", default=False,
@@ -64,7 +70,7 @@ if __name__ == "__main__":
 
         try:
             if args["install"]:
-                sstelements.install(args["install"], args["force"])
+                sstelements.install(args["install"], args["force"], args["branch"], args["head"])
 
             elif args["uninstall"]:
                 sstelements.uninstall(args["uninstall"], args["force"])
@@ -80,7 +86,7 @@ if __name__ == "__main__":
                 for element in all_elements:
                     if sstelements.is_registered(element):
                         # print check mark (✓)
-                        print(element.ljust(28), "\033[32m✓\033[0m")
+                        print(f"{element.ljust(28)} \033[32m✓\033[0m")
                     else:
                         print(element)
 

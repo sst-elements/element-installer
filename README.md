@@ -40,23 +40,34 @@ pip install -r requirements.txt
 ### Command Line Interface
 
 ```
-usage: cli.py [-h] [--uninstall <ELEMENT>] [--info <ELEMENT>] [--list]
-              [--registered] [--quiet] [--force]
+usage: cli.py [-h] [-v] [--uninstall <ELEMENT>] [--info <ELEMENT>]
+              [--dep <ELEMENT>] [--list] [--registered [all|<ELEMENT>]]
+              [--branch <BRANCH>] [--head <COMMIT>] [--quiet] [--force]
               [<ELEMENT>]
 
 SST Element Installer
 
-positional arguments:
-  <ELEMENT>                  Install element
+Positional arguments:
+  <ELEMENT>                         Install element
 
-optional arguments:
-  -h, --help                 show this help message and exit
-  --uninstall, -u <ELEMENT>  Uninstall element
-  --info, -i <ELEMENT>       Display element information
-  --list, -l                 List all SST elements
-  --registered, -r           List elements registered to the system
-  --quiet, -q                Suppress standard outputs
-  --force, -f                Force installation
+Optional arguments:
+  -h, --help                        Show this help message and exit
+  -v, --version                     Show version number and exit
+  --uninstall, -u <ELEMENT>         Uninstall element
+  --info, -i <ELEMENT>              Display information on element
+  --dep, -d <ELEMENT>               Display dependencies of element
+  --list, -l                        List all SST elements
+  --registered, -r [all|<ELEMENT>]  List elements registered to the system
+  --branch, -b <BRANCH>             Choose branch
+  --head, -c <COMMIT>               Choose commit SHA
+  --quiet, -q                       Suppress standard outputs
+  --force, -f                       Flag to force installation or removal of
+                                    element. If option is applied to
+                                    installation, the existing files will be
+                                    overwritten by the updated versions. If
+                                    option is applied to uninstallation, the
+                                    element as well as all its dependent
+                                    elements will be removed.
 
 ```
 
