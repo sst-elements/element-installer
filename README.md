@@ -40,27 +40,35 @@ pip install -r requirements.txt
 ### Command Line Interface
 
 ```
-usage: cli.py [-h] [-v] [--uninstall <ELEMENT>] [--info <ELEMENT>]
-              [--dep <ELEMENT>] [--list] [--registered [all|<ELEMENT>]]
-              [--branch <BRANCH>] [--head <COMMIT>] [--quiet] [--force]
+usage: cli.py [--uninstall <ELEMENT>] [--branch <BRANCH>] [--commit <SHA>]
+              [--force] [--list] [--registered [all|<ELEMENT>]]
+              [--info <ELEMENT>] [--dep <ELEMENT>] [-h] [-v] [--quiet]
               [<ELEMENT>]
 
-SST Element Installer
+SST Elements Installer
 
-Positional arguments:
-  <ELEMENT>                         Install element
+This script provides the functionality required to manage SST elements in a system.
 
-Optional arguments:
-  -h, --help                        Show this help message and exit
-  -v, --version                     Show version number and exit
+The functionalities include:
+    - listing possible elements
+    - listing elements registered on system
+    - gathering dependency of elements
+    - gathering README content of elements
+    - cloning elements and its dependencies
+    - installing elements and its dependencies to the system
+    - uninstalling elements from the system
+    - uninstalling dependent elements from the system
+    - gathering version of SST Core installed in the system
+
+Installation arguments:
+  <ELEMENT>                         Install element along with its dependencies
   --uninstall, -u <ELEMENT>         Uninstall element
-  --info, -i <ELEMENT>              Display information on element
-  --dep, -d <ELEMENT>               Display dependencies of element
-  --list, -l                        List all SST elements
-  --registered, -r [all|<ELEMENT>]  List elements registered to the system
-  --branch, -b <BRANCH>             Choose branch
-  --head, -c <COMMIT>               Choose commit SHA
-  --quiet, -q                       Suppress standard outputs
+  --branch, -b <BRANCH>             Branch of element repository. By default,
+                                    the installer will clone the master branch
+                                    of the element's repository.
+  --commit, -c <SHA>                Commit SHA of element repository. By
+                                    default, the installer will clone the
+                                    version of the repository at its head.
   --force, -f                       Flag to force installation or removal of
                                     element. If option is applied to
                                     installation, the existing files will be
@@ -69,6 +77,16 @@ Optional arguments:
                                     element as well as all its dependent
                                     elements will be removed.
 
+Element information arguments:
+  --list, -l                        List all SST elements
+  --registered, -r [all|<ELEMENT>]  List elements registered to the system
+  --info, -i <ELEMENT>              Display information on element
+  --dep, -d <ELEMENT>               Display dependencies of element
+
+Optional arguments:
+  -h, --help                        Show this help message and exit
+  -v, --version                     Show version number and exit
+  --quiet, -q                       Suppress standard outputs
 ```
 
 ### Graphical User Interface

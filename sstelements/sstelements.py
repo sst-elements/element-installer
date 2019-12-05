@@ -39,10 +39,21 @@ INSTALLED_ELEMS = ""
 LOG = True
 
 
-def __log(func="", message="", term=False, **kwargs):
+def __log(level="", message="", term=False, **kwargs):
+    """Customize output to stdout in the format: "[LEVEL] message"
 
+    Parameters:
+    -----------
+    level : str (default: "")
+        logging info level. Levels used are: INSTALL, REQUEST, DEPEND, REMOVE
+    message : str (default: "")
+        message to print
+    term : bool (default: False)
+        flag to print output after previous message was not flushed. If true, "done" is printed
+        and flushed to stdout
+    """
     if LOG:
-        print(f"[{func}] {message}", **kwargs) if not term else print(f"done")
+        print(f"[{level}] {message}" if not term else "done", **kwargs)
 
 
 def get_version():
@@ -276,7 +287,7 @@ def __get_dependents(element):
     list(str)
         list of element names flagged as dependents of the target element
     """
-    __log("DEPEND", f"Gathering dependents for {element}...")
+    __log("DEPEND", f"Gathering dependents of {element}...")
     dependents = []
     reg_elements = list_registered_elements()
     if element in reg_elements:
@@ -309,8 +320,10 @@ def uninstall(element, clean=False):
     __log("REMOVE", f"Uninstalling {element}...")
     elements = [element]
     if clean:
-        elements += __get_dependents(element)
-        __log("REMOVE", f"Uninstalling dependents of {element}: {', '.join(elements[1:])}...")
+        dependents = __get_dependents(element)
+        if dependents:
+            elements += dependents
+            __log("REMOVE", f"Uninstalling dependents of {element}: {', '.join(elements[1:])}...")
 
     for _element in elements:
         if os.path.exists(_element):
