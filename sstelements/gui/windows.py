@@ -10,6 +10,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
 from templates import SSTElementWindow, SplashScreen, ElementsListWindow
 
+# suppress all console outputs
+sstelements.LOG = False
+
 
 class ElementOptionsWindow(SSTElementWindow):
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""This script provides the functionality required to manage SST elements in a system.
+
+"""SST Elements Installer
+
+This script provides the functionality required to manage SST elements in a system.
 
 The functionalities include:
     - listing possible elements
@@ -33,6 +36,14 @@ os.chdir(ELEMENT_SRC_DIR)
 
 INSTALLED_ELEMS = ""
 
+LOG = True
+
+
+def __log(func="", message="", term=False, **kwargs):
+
+    if LOG:
+        print(f"[{func}] {message}", **kwargs) if not term else print(f"done")
+
 
 def get_version():
     """Get version of SST installed on system
@@ -45,7 +56,7 @@ def get_version():
     return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
 
 
-def __clone(element, force, branch, head):
+def __clone(element, force, branch="master", commit=""):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `_list_all_elements()`, it will be cloned from its repository with the
@@ -57,9 +68,9 @@ def __clone(element, force, branch, head):
         name of element
     force : bool
         flag to force install. If true and element is already installed, the element is re-cloned
-    branch : str
+    branch : str (default: "master")
         branch of repository of the element
-    head : str
+    commit : str (default: "")
         commit SHA to revert to in the repository of the element
 
     Raises:
@@ -74,16 +85,16 @@ def __clone(element, force, branch, head):
     bool
         if element was clone
     """
+    __log("REQUEST", f"Cloning {element}...")
     if os.path.exists(element):
         if not force:
-            print(f"{element} already installed")
+            __log("INSTALL", f"{element} already installed")
             return False
         else:
             uninstall(element)
 
     all_elements = list_all_elements()
-    all_element_names = all_elements.keys()
-    if element in all_element_names:
+    if element in all_elements.keys():
         # git clone failed if exit code is non-zero
         if subprocess.call(
             f"git clone -q -b {branch} --single-branch {all_elements[element]['url']}",
@@ -92,8 +103,8 @@ def __clone(element, force, branch, head):
             raise urllib.error.URLError(f"Cloning of repository for {element} failed")
 
         else:
-            if head:
-                subprocess.call(f"cd {element} && git reset --hard {head} && cd -", shell=True,
+            if commit:
+                subprocess.call(f"cd {element} && git reset --hard {commit} && cd -", shell=True,
                                 stdout=subprocess.DEVNULL)
             return True
 
@@ -144,6 +155,7 @@ def __add_dependencies(old, new):
     list(str)
         updated list of dependencies
     """
+    __log("DEPEND", "Updating dependency list...")
     for _element in new:
         if _element in old:
             old.remove(_element)
@@ -168,7 +180,7 @@ def __get_var_path(dep):
     return " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
 
 
-def install(element, force=False, branch="master", head=""):
+def install(element, force=False, branch="master", commit=""):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -184,7 +196,7 @@ def install(element, force=False, branch="master", head=""):
         element is re-cloned
     branch : str (default: "master")
         branch of repository of the element
-    head : str (default: "")
+    commit : str (default: "")
         commit SHA to revert to in the repository of the element
 
     Returns:
@@ -196,16 +208,16 @@ def install(element, force=False, branch="master", head=""):
     dependencies = []
 
     # clone the targeted element repository
-    if __clone(element, force, branch, head):
+    if __clone(element, force, branch, commit):
 
         # add its dependencies as well as its Makefile variable definitions
-        print(f"Gathering dependencies for {element}...")
+        __log("DEPEND", f"Gathering dependencies for {element}...")
         dependencies.extend(get_dependencies(element))
         install_vars.append((element, __get_var_path(dependencies)))
 
         # if the element depends on any other elements
         if dependencies:
-            print(f"Found dependencies: {', '.join(dependencies)}")
+            __log("DEPEND", f"Found dependencies: {', '.join(dependencies)}")
 
             # loop through its dependencies to generate a dependency graph
             for dep in dependencies:
@@ -214,37 +226,38 @@ def install(element, force=False, branch="master", head=""):
 
                     # update the list of elements to be installed along with their corresponding
                     # Makefile variable definitions
-                    print(f"Gathering dependencies for {dep}...")
+                    __log("DEPEND", f"Gathering dependencies for {dep}...")
                     new_dependencies = get_dependencies(dep)
                     dependencies = __add_dependencies(dependencies, new_dependencies)
                     install_vars.append((dep, __get_var_path(new_dependencies)))
                     if new_dependencies:
-                        print(
+                        __log(
+                            "DEPEND",
                             f"Found dependencies: {', '.join(new_dependencies)} (from {dep})"
                         )
                     else:
-                        print(f"No dependencies found for {dep}")
+                        __log("DEPEND", f"No dependencies found for {dep}")
 
             # reverse the dependency graph represented in a flat array so that the parent elements
             # are installed before their children
             install_vars = install_vars[::-1]
-            print("Installing dependencies...")
+            __log("INSTALL", "Installing dependencies...")
 
         # if the element does not depend on any other elements
         else:
-            print("No dependencies found")
+            __log("DEPEND", "No dependencies found")
 
         for element, path in install_vars:
-            print(f"Installing {element}... ", end="", flush=True)
+            __log("INSTALL", f"Installing {element}... ", end="", flush=True)
             subprocess.call(
                 f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR}{element} && cd -",
                 shell=True, stdout=subprocess.DEVNULL
             )
-            print("done")
+            __log(term=True)
 
         global INSTALLED_ELEMS
         INSTALLED_ELEMS = f"Installed {', '.join([i[0] for i in install_vars])}"
-        print(INSTALLED_ELEMS)
+        __log("INSTALL", INSTALLED_ELEMS)
         return 0
 
     return 2
@@ -263,12 +276,12 @@ def __get_dependents(element):
     list(str)
         list of element names flagged as dependents of the target element
     """
-    all_elements = list_all_elements()
-    reg_elements = list_registered_elements()
+    __log("DEPEND", f"Gathering dependents for {element}...")
     dependents = []
+    reg_elements = list_registered_elements()
     if element in reg_elements:
         for _element in reg_elements:
-            if element in all_elements[_element]["dep"]:
+            if element in list_all_elements()[_element]["dep"]:
                 dependents.append(_element)
 
     return dependents
@@ -293,9 +306,11 @@ def uninstall(element, clean=False):
     int
         return code for the GUI wrapper. Return 1 on success, 2 on failure.
     """
+    __log("REMOVE", f"Uninstalling {element}...")
     elements = [element]
     if clean:
         elements += __get_dependents(element)
+        __log("REMOVE", f"Uninstalling dependents of {element}: {', '.join(elements[1:])}...")
 
     for _element in elements:
         if os.path.exists(_element):
@@ -303,10 +318,10 @@ def uninstall(element, clean=False):
             subprocess.call(
                 f"sst-register -u {_element}", shell=True, stdout=subprocess.DEVNULL
             )
-            print(f"{_element} uninstalled successfully")
+            __log("REMOVE", f"{_element} uninstalled successfully")
 
         else:
-            print(f"{_element} not found")
+            __log("REMOVE", f"{_element} not found")
             return 2
 
     return 1
@@ -336,8 +351,7 @@ def get_info(element):
         path or URL to README
     """
     README_FILE_PATS = ("/README.md", "/README")
-    reg_elements = list_registered_elements()
-    if element in reg_elements:
+    if element in list_registered_elements():
 
         for file_name in README_FILE_PATS:
             if os.path.exists(element + file_name):
@@ -347,8 +361,7 @@ def get_info(element):
     else:
 
         all_elements = list_all_elements()
-        all_element_names = all_elements.keys()
-        if element in all_element_names:
+        if element in all_elements.keys():
             for file_name in README_FILE_PATS:
                 readme_url = all_elements[element]["url"].replace("github", "raw.githubusercontent")
                 try:
@@ -416,5 +429,4 @@ def list_registered_elements():
         list of registered elements
     """
     elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
-    matches = REG_ELEM_RE.finditer(elements)
-    return [match.group() for match in matches]
+    return [match.group() for match in REG_ELEM_RE.finditer(elements)]
