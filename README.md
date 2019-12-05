@@ -1,4 +1,5 @@
 # SST Elements Installer
+![](https://github.com/sabbirahm3d/sst-elements/workflows/continuous%20integration/badge.svg)
 
 The SST core requires at least one [element](http://sst-simulator.org/SSTPages/SSTDeveloperElementSummaryInfo/) (a drivable library) to perform a simulation. As a stand-alone entity, the core fulfills no purpose.
 
