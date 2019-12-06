@@ -95,10 +95,6 @@ jobs:
           curl -L ${SST_CORE_URL}sstcore-${SST_VER}.tar.gz | tar xz -C ${DEPS_DIR}
           mkdir -p ~/.sst && touch ~/.sst/sstsimulator.conf
 
-          # upgrade CMake to a more recent version
-          export PATH=$(realpath ${DEPS_DIR}/cmake-${CMAKE_VER}-Linux-x86_64/bin):${PATH}
-          cmake --version
-
           # install SST Core
           cd ${DEPS_DIR}/sstcore-${SST_VER} && ./configure && make -j${JOBS} all && sudo make install && cd -
 

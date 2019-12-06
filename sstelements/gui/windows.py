@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sstelements
-from templates import SSTElementWindow, SplashScreen, ElementsListWindow
+from .templates import SSTElementWindow, SplashScreen, ElementsListWindow
 
 # suppress all console outputs
 sstelements.LOG = False

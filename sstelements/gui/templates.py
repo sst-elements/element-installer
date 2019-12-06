@@ -5,7 +5,7 @@ import urllib.request
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from spinner import QtWaitingSpinner
+from .spinner import QtWaitingSpinner
 import sstelements
 
 
