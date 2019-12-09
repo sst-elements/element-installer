@@ -5,7 +5,7 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from gui.windows import MainWindow
+from gui import windows
 
 if __name__ == "__main__":
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     app.setApplicationName("SST Elements")
     app.setStyle("Fusion")
 
-    main = MainWindow()
+    main = windows.MainWindow()
     main.show()
 
     sys.exit(app.exec_())

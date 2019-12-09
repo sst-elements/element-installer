@@ -58,14 +58,14 @@ class QtWaitingSpinner(QtWidgets.QWidget):
 
     def update_timer(self):
 
-        self.timer.setInterval(1000 / (self._number_of_lines * self._revolutions_per_second))
+        self.timer.setInterval(int(1000 / (self._number_of_lines * self._revolutions_per_second)))
 
     def update_position(self):
 
         if self.parentWidget() and self._center_on_parent:
             self.move(
-                self.parentWidget().width() / 2 - self.width() / 2,
-                self.parentWidget().height() / 2 - self.height() / 2
+                int(self.parentWidget().width() / 2 - self.width() / 2),
+                int(self.parentWidget().height() / 2 - self.height() / 2)
             )
 
     @staticmethod
@@ -76,7 +76,8 @@ class QtWaitingSpinner(QtWidgets.QWidget):
             distance += total_num_lines
         return distance
 
-    def current_line_color(self, count_distance, total_num_lines, trail_fade_perc, min_opacity, color):
+    def current_line_color(self, count_distance, total_num_lines, trail_fade_perc, min_opacity,
+                           color):
 
         if count_distance == 0:
             return color

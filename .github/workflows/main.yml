@@ -102,4 +102,5 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           source setup.sh
-          python -m tests.__init__
+          pip install pytest-qt
+          pytest tests/cli.py
