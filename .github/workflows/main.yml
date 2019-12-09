@@ -101,6 +101,15 @@ jobs:
           # run tests
           python -m venv .venv
           source .venv/bin/activate
-          source setup.sh
+
+          # source setup.sh
+          # single official list of all trusted elements
+          export ELEMENT_LIST_URL="https://raw.githubusercontent.com/sabbirahm3d/sst-elements/installer/elements.json"
+
+          # directory of SST element sources
+          export ELEMENT_SRC_DIR=/home/${USER}/.sst/
+
+          pip install -r requirements.txt
           pip install pytest-qt
           pytest tests/cli.py
+          pytest tests/gui.py
