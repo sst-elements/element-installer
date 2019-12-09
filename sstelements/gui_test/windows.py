@@ -82,8 +82,6 @@ class ElementOptionsWindow(SSTElementWindow):
     def element_action(self, *action_args):
 
         self.splash = SplashScreen(self, self.element, *action_args)
-        self.splash.setWindowModality(QtCore.Qt.ApplicationModal)
-        self.splash.show()
 
     def update(self, rdata):
 
@@ -101,10 +99,8 @@ class RegisteredElementsWindow(ElementsListWindow):
     @QtCore.pyqtSlot("QModelIndex")
     def on_list_view_clicked(self, index):
 
-        self.hide()
         self.selected_element_window.set_element(self.elements[index.row()])
         self.selected_element_window.set_registered(True)
-        self.selected_element_window.show()
 
     def update(self):
 
@@ -128,10 +124,8 @@ class ElementsWindow(ElementsListWindow):
     def on_list_view_clicked(self, index):
 
         element = self.elements[index.row()]
-        self.hide()
         self.selected_element_window.set_element(element)
         self.selected_element_window.set_registered(sstelements.is_registered(element))
-        self.selected_element_window.show()
 
     def update(self):
 
@@ -179,12 +173,8 @@ class MainWindow(SSTElementWindow):
 
     def on_list_elems_clicked(self):
 
-        self.hide()
         self.registered_elements_window.update()
-        self.registered_elements_window.show()
 
     def on_install_elems_clicked(self):
 
-        self.hide()
         self.elements_window.update()
-        self.elements_window.show()

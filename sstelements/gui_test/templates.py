@@ -54,7 +54,6 @@ class SplashScreen(QtWidgets.QDialog):
 
         self.adjustSize()
         self.parent.update(rdata)
-        self.hide()
 
 
 class SSTElementWindow(QtWidgets.QMainWindow):
@@ -111,9 +110,7 @@ class SSTElementWindow(QtWidgets.QMainWindow):
 
     def __on_back_clicked(self):
 
-        self.hide()
         self.parent.update()
-        self.parent.show()
 
     def __on_exit_clicked(self):
 
