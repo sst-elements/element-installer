@@ -109,7 +109,9 @@ jobs:
           # directory of SST element sources
           export ELEMENT_SRC_DIR=/home/${USER}/.sst/
 
+          export QT_DEBUG_PLUGINS=1
           pip install -r requirements.txt
           pip install pytest-qt
-          pytest tests/cli.py
-          pytest tests/gui.py
+
+          pytest -sv tests/cli.py
+          # pytest tests/gui.py
