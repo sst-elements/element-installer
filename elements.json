@@ -1,98 +1,98 @@
 {
     "ariel": {
-        "url": "https://github.com/sabbirahm3d/ariel",
+        "url": "https://github.com/sst-elements/ariel",
         "dep": []
     },
     "cacheTracer": {
-        "url": "https://github.com/sabbirahm3d/cacheTracer",
+        "url": "https://github.com/sst-elements/cacheTracer",
         "dep": ["memHierarchy"]
     },
     "cassini": {
-        "url": "https://github.com/sabbirahm3d/cassini",
+        "url": "https://github.com/sst-elements/cassini",
         "dep": ["memHierarchy"]
     },
     "CramSim": {
-        "url": "https://github.com/sabbirahm3d/CramSim",
+        "url": "https://github.com/sst-elements/CramSim",
         "dep": []
     },
     "ember": {
-        "url": "https://github.com/sabbirahm3d/ember",
+        "url": "https://github.com/sst-elements/ember",
         "dep": ["thornhill"]
     },
     "firefly": {
-        "url": "https://github.com/sabbirahm3d/firefly",
+        "url": "https://github.com/sst-elements/firefly",
         "dep": ["thornhill"]
     },
     "GNA": {
-        "url": "https://github.com/sabbirahm3d/GNA",
+        "url": "https://github.com/sst-elements/GNA",
         "dep": ["memHierarchy"]
     },
     "hermes": {
-        "url": "https://github.com/sabbirahm3d/hermes",
+        "url": "https://github.com/sst-elements/hermes",
         "dep": ["thornhill"]
     },
     "kingsley": {
-        "url": "https://github.com/sabbirahm3d/kingsley",
+        "url": "https://github.com/sst-elements/kingsley",
         "dep": []
     },
     "memHierarchy": {
-        "url": "https://github.com/sabbirahm3d/memHierarchy",
+        "url": "https://github.com/sst-elements/memHierarchy",
         "dep": []
     },
     "merlin": {
-        "url": "https://github.com/sabbirahm3d/merlin",
+        "url": "https://github.com/sst-elements/merlin",
         "dep": []
     },
     "Messier": {
-        "url": "https://github.com/sabbirahm3d/Messier",
+        "url": "https://github.com/sst-elements/Messier",
         "dep": ["memHierarchy"]
     },
     "miranda": {
-        "url": "https://github.com/sabbirahm3d/miranda",
+        "url": "https://github.com/sst-elements/miranda",
         "dep": []
     },
     "Opal": {
-        "url": "https://github.com/sabbirahm3d/Opal",
+        "url": "https://github.com/sst-elements/Opal",
         "dep": ["memHierarchy"]
     },
     "prospero": {
-        "url": "https://github.com/sabbirahm3d/prospero",
+        "url": "https://github.com/sst-elements/prospero",
         "dep": []
     },
     "pyproto": {
-        "url": "https://github.com/sabbirahm3d/pyproto",
+        "url": "https://github.com/sst-elements/pyproto",
         "dep": []
     },
     "Samba": {
-        "url": "https://github.com/sabbirahm3d/Samba",
+        "url": "https://github.com/sst-elements/Samba",
         "dep": ["memHierarchy", "Opal"]
     },
     "scheduler": {
-        "url": "https://github.com/sabbirahm3d/scheduler",
+        "url": "https://github.com/sst-elements/scheduler",
         "dep": []
     },
     "shogun": {
-        "url": "https://github.com/sabbirahm3d/shogun",
+        "url": "https://github.com/sst-elements/shogun",
         "dep": []
     },
     "simpleElementExample": {
-        "url": "https://github.com/sabbirahm3d/simpleElementExample",
+        "url": "https://github.com/sst-elements/simpleElementExample",
         "dep": ["memHierarchy"]
     },
     "simpleSimulation": {
-        "url": "https://github.com/sabbirahm3d/simpleSimulation",
+        "url": "https://github.com/sst-elements/simpleSimulation",
         "dep": []
     },
     "thornhill": {
-        "url": "https://github.com/sabbirahm3d/thornhill",
+        "url": "https://github.com/sst-elements/thornhill",
         "dep": ["miranda"]
     },
     "VaultSimC": {
-        "url": "https://github.com/sabbirahm3d/VaultSimC",
+        "url": "https://github.com/sst-elements/VaultSimC",
         "dep": ["memHierarchy"]
     },
     "zodiac": {
-        "url": "https://github.com/sabbirahm3d/zodiac",
+        "url": "https://github.com/sst-elements/zodiac",
         "dep": ["thornhill", "hermes"]
     }
 }

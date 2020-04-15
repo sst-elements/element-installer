@@ -110,6 +110,6 @@ jobs:
           export ELEMENT_SRC_DIR=/home/${USER}/.sst/
 
           pip install -r requirements.txt
-          pip install pytest-qt
+          # pip install pytest-qt
           pytest tests/cli.py
-          pytest tests/gui.py
+          # pytest tests/gui.py
