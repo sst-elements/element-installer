@@ -1,0 +1,92 @@
+Manual fixes applied after running fixes.sh:
+-merge hermes into thornhill
+
+
+Fix #includes so that they reference the correct directory structure:
+
+merlin:
+	-offeredLoad
+	-hr_router files
+	-target_generator files
+	-topologies (all)
+	-trafficGen files
+	
+memHierarchy:
+	-scratchpad
+	-cacheController
+	-memHierarchyInterface
+	-memoryController
+	-memBackendConvertor
+	-coherentMemoryController
+	
+cassini:
+	-pageentry
+
+miranda:
+	-generators files
+
+VaultSimC:
+	-VaultSimC
+	-memReqEvent
+	-logicLayer
+	-cpu
+
+
+-----------------------------------------------------------------------------------
+List of elements that build properly:
+kingsley
+scheduler
+pyproto
+shogun
+merlin
+CramSim
+memHierarchy
+Messier
+cacheTracer
+GNA
+cassini
+simpleElementExample
+VaultSimC
+miranda
+thornhill + hermes
+zodiac
+
+
+
+Ignoring:
+ariel - PIN
+Opal - ariel
+Samba - Opal
+prospero - PIN
+simpleSimulation - this is the old version of the carwash
+
+
+-----------------------------------------------------------------------------------
+Dependencies:
+
+kingsley - None
+scheduler - None
+pyproto - None
+shogun - None
+merlin - None
+CramSim - None
+
+memHierarchy - optional dependency on merlin, Messier, CramSim
+Messier - depends on memHierarchy
+cacheTracer - depends on memHierarchy
+GNA - depends on memHierarchy
+cassini - depends on memHierarchy
+simpleElementExample - depends on memHierarchy
+VaultSimC - depends on memHierarchy
+
+Opal - depends on memHierarchy
+Samba - depends on memHierarchy, Opal
+
+
+miranda - None
+thornhill - depends on miranda
+hermes  - merged into thornhill
+zodiac - depends on thornhill + hermes
+firefly - depends on thornhill
+ember - depends on thornhill
+
