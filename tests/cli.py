@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
+from pathlib import Path
 import sys
 
 import pytest
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "installer")
-sys.path.append(BASE_DIR)
+BASE_DIR = Path(__file__).absolute().parent.parent / "installer"
+sys.path.append(str(BASE_DIR))
 import installer
 
 # suppress all console outputs

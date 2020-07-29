@@ -113,5 +113,12 @@ jobs:
           # install SST Core
           cd ${DEPS_DIR}/sstcore-${SST_VER} && ./configure && make -j${JOBS} all && sudo make install && cd -
 
+          # run tests
+          python -m venv .venv
+          source .venv/bin/activate
+
+          # export URL to single official list of all trusted elements and directory of SST element sources
+          source setup.sh
+
           pip install pytest
           pytest -sv tests/cli.py
