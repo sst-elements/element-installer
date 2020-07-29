@@ -6,7 +6,7 @@ import urllib.request
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from .spinner import QtWaitingSpinner
-import sstelements
+import installer
 
 
 class RunnableAction(QtCore.QRunnable):
@@ -59,7 +59,7 @@ class SplashScreen(QtWidgets.QDialog):
 
         QtWidgets.QMessageBox.information(
             self, "Success",
-            f"{'Uninstalled ' + self.element if rdata else sstelements.INSTALLED_ELEMS}"
+            f"{'Uninstalled ' + self.element if rdata else installer.INSTALLED_ELEMS}"
         )
         self.__spinner.stop()
         self.adjustSize()

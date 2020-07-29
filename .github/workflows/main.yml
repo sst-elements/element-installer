@@ -102,16 +102,12 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
 
-          # source setup.sh
-          # single official list of all trusted elements
-          export ELEMENT_LIST_URL="https://raw.githubusercontent.com/sabbirahm3d/sst-elements/installer/elements.json"
+          # export URL to single official list of all trusted elements and directory of SST element sources
+          source setup.sh
 
-          # directory of SST element sources
-          export ELEMENT_SRC_DIR=/home/${USER}/.sst/
-
-          export QT_DEBUG_PLUGINS=1
-          pip install -r requirements.txt
-          pip install pytest-qt
+          # export QT_DEBUG_PLUGINS=1
+          # pip install -r requirements.txt
+          # pip install pytest-qt
 
           pytest -sv tests/cli.py
           # pytest tests/gui.py

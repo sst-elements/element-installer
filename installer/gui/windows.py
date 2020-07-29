@@ -3,11 +3,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import sstelements
+import installer
 from .templates import SSTElementWindow, SplashScreen, ElementsListWindow
 
 # suppress all console outputs
-sstelements.LOG = False
+installer.LOG = False
 
 
 class ElementOptionsWindow(SSTElementWindow):
@@ -39,7 +39,7 @@ class ElementOptionsWindow(SSTElementWindow):
     def set_element(self, element):
 
         self.element = element
-        readme, url = sstelements.get_info(self.element)
+        readme, url = installer.get_info(self.element)
         self.url.setText(f"<a href='{url}'>{url}</a>")
         self.about.setText(readme)
 
@@ -52,7 +52,7 @@ class ElementOptionsWindow(SSTElementWindow):
             if not self.uninstall_btn:
                 self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
                 self.uninstall_btn.clicked.connect(
-                    lambda: self.element_action(sstelements.uninstall))
+                    lambda: self.element_action(installer.uninstall))
                 self.insert_widget(self.uninstall_btn, 3)
                 self.uninstall_btn.setStyleSheet("background-color: #e74c3c")
 
@@ -67,7 +67,7 @@ class ElementOptionsWindow(SSTElementWindow):
             if not self.install_btn:
                 self.install_btn = QtWidgets.QPushButton("Install")
                 self.install_btn.clicked.connect(
-                    lambda: self.element_action(sstelements.install))
+                    lambda: self.element_action(installer.install))
                 self.insert_widget(self.install_btn, 3)
                 self.install_btn.setStyleSheet("background-color: #27ae60")
 
@@ -105,7 +105,7 @@ class RegisteredElementsWindow(ElementsListWindow):
     def update(self):
 
         self.list_view.clear()
-        self.elements = sstelements.list_registered_elements()
+        self.elements = installer.list_registered_elements()
         for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
             element_item.setSelected(False)
@@ -126,16 +126,16 @@ class ElementsWindow(ElementsListWindow):
         element = self.elements[index.row()]
         self.hide()
         self.selected_element_window.set_element(element)
-        self.selected_element_window.set_registered(sstelements.is_registered(element))
+        self.selected_element_window.set_registered(installer.is_registered(element))
         self.selected_element_window.show()
 
     def update(self):
 
         self.list_view.clear()
-        self.elements = list(sstelements.list_all_elements().keys())
+        self.elements = list(installer.list_all_elements().keys())
         for element in self.elements:
             element_item = QtWidgets.QListWidgetItem(element)
-            if sstelements.is_registered(element):
+            if installer.is_registered(element):
                 element_item.setBackground(QtGui.QColor("#2ecc71"))
             element_item.setSelected(False)
             element_item.setIcon(self.default_icon)
@@ -152,7 +152,7 @@ class MainWindow(SSTElementWindow):
         self.intro.setReadOnly(True)
         self.intro.setText(f"""
             <h1>SST Elements</h1>
-            <p style='font-size:12px;text-align:center'>{sstelements.get_version()}</p>
+            <p style='font-size:12px;text-align:center'>{installer.get_version()}</p>
         """)
         self.intro.setAlignment(QtCore.Qt.AlignCenter)
         self.intro.setStyleSheet("padding-top: 175")

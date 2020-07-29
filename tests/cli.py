@@ -6,12 +6,12 @@ import sys
 
 import pytest
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sstelements")
+BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "installer")
 sys.path.append(BASE_DIR)
-import sstelements
+import installer
 
 # suppress all console outputs
-sstelements.LOG = False
+installer.LOG = False
 
 ELEMENT = "hermes"
 PARENT = "thornhill"
@@ -27,10 +27,10 @@ def test_dependency():
     """
     DEPENDENCIES.append(ELEMENT)
 
-    assert sstelements.get_dependencies(ELEMENT).pop() == PARENT
+    assert installer.get_dependencies(ELEMENT).pop() == PARENT
     DEPENDENCIES.append(PARENT)
 
-    assert sstelements.get_dependencies(PARENT).pop() == GRANDPARENT
+    assert installer.get_dependencies(PARENT).pop() == GRANDPARENT
     DEPENDENCIES.append(GRANDPARENT)
 
 
@@ -41,7 +41,7 @@ def test_install_invalid_element():
     """
     # attempt to install unsupported element "invalid_element"
     with pytest.raises(FileNotFoundError):
-        sstelements.install(element="invalid_element")
+        installer.install(element="invalid_element")
 
 
 def test_install_element():
@@ -50,9 +50,9 @@ def test_install_element():
     This method installs and registers element along with its dependencies and verifies
     their registration on the system.
     """
-    sstelements.install(ELEMENT)
+    installer.install(ELEMENT)
     for element in DEPENDENCIES:
-        assert sstelements.is_registered(element)
+        assert installer.is_registered(element)
 
 
 def test_uninstall_element():
@@ -61,7 +61,7 @@ def test_uninstall_element():
     This method removes and unregisters grandparent along with its dependents and verifies
     their registration on the system.
     """
-    sstelements.uninstall(PARENT, clean=True)
-    sstelements.uninstall(GRANDPARENT)
+    installer.uninstall(PARENT, clean=True)
+    installer.uninstall(GRANDPARENT)
     for element in DEPENDENCIES:
-        assert not sstelements.is_registered(element)
+        assert not installer.is_registered(element)

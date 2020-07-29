@@ -18,6 +18,7 @@ The functionalities include:
 """
 import json
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -97,7 +98,7 @@ def __clone(element, force, branch="master", commit=""):
         if element was clone
     """
     __log("REQUEST", f"Cloning {element}...")
-    if os.path.exists(element):
+    if pathlib.Path(element).is_dir():
         if not force:
             __log("INSTALL", f"{element} already installed")
             return False
@@ -115,8 +116,9 @@ def __clone(element, force, branch="master", commit=""):
 
         else:
             if commit:
-                subprocess.call(f"cd {element} && git reset --hard {commit} && cd -", shell=True,
-                                stdout=subprocess.DEVNULL)
+                os.chdir(element)
+                subprocess.call(f"git reset --hard {commit}", shell=True, stdout=subprocess.DEVNULL)
+                os.chdir(ELEMENT_SRC_DIR)
             return True
 
     else:
@@ -260,10 +262,11 @@ def install(element, force=False, branch="master", commit=""):
 
         for element, path in install_vars:
             __log("INSTALL", f"Installing {element}... ", end="", flush=True)
-            subprocess.call(
-                f"cd {element} && make all {path} && sst-register {element} {element}_LIBDIR={ELEMENT_SRC_DIR}{element} && cd -",
-                shell=True, stdout=subprocess.DEVNULL
-            )
+            build_path = pathlib.Path(f"{element}/build")
+            build_path.mkdir(parents=True, exist_ok=True)
+            os.chdir(build_path)
+            subprocess.call("cmake ..", shell=True, stdout=subprocess.DEVNULL)
+            os.chdir(ELEMENT_SRC_DIR)
             __log(term=True)
 
         global INSTALLED_ELEMS
@@ -290,9 +293,10 @@ def __get_dependents(element):
     __log("DEPEND", f"Gathering dependents of {element}...")
     dependents = []
     reg_elements = list_registered_elements()
+    all_elements = list_all_elements()
     if element in reg_elements:
         for _element in reg_elements:
-            if element in list_all_elements()[_element]["dep"]:
+            if _element in all_elements and element in all_elements[_element]["dep"]:
                 dependents.append(_element)
 
     return dependents
@@ -326,7 +330,7 @@ def uninstall(element, clean=False):
             __log("REMOVE", f"Uninstalling dependents of {element}: {', '.join(elements[1:])}...")
 
     for _element in elements:
-        if os.path.exists(_element):
+        if pathlib.Path(_element).is_dir():
             shutil.rmtree(_element)
             subprocess.call(
                 f"sst-register -u {_element}", shell=True, stdout=subprocess.DEVNULL
@@ -367,9 +371,10 @@ def get_info(element):
     if element in list_registered_elements():
 
         for file_name in README_FILE_PATS:
-            if os.path.exists(element + file_name):
-                with open(element + file_name) as readme_file:
-                    return readme_file.read(), element + file_name
+            file_path = pathlib.Path(element + file_name)
+            if file_path.is_file():
+                with file_path.open() as readme_file:
+                    return readme_file.read(), file_path._str
 
     else:
 

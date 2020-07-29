@@ -3,7 +3,7 @@
 
 import argparse
 
-import sstelements
+import installer
 
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
             args_string = self._format_args(action, default)
             return ", ".join(action.option_strings) + " " + args_string
 
-    parser = argparse.ArgumentParser(description=sstelements.__doc__,
+    parser = argparse.ArgumentParser(description=installer.__doc__,
                                      formatter_class=CustomHelpFormatter, add_help=False)
 
     install_parser = parser.add_argument_group("Installation arguments")
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     option_parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
                                help="Show this help message and exit")
     option_parser.add_argument("-v", "--version", action="version",
-                               version=sstelements.get_version(),
+                               version=installer.get_version(),
                                help="Show version number and exit")
     option_parser.add_argument("--quiet", "-q", action="store_true", default=False,
                                help="Suppress standard outputs")
@@ -64,25 +64,25 @@ if __name__ == "__main__":
 
     if args["quiet"]:
         # suppress all console outputs
-        sstelements.LOG = False
+        installer.LOG = False
 
     try:
         if args["install"]:
-            sstelements.install(args["install"], args["force"], args["branch"], args["commit"])
+            installer.install(args["install"], args["force"], args["branch"], args["commit"])
 
         elif args["uninstall"]:
-            sstelements.uninstall(args["uninstall"], args["force"])
+            installer.uninstall(args["uninstall"], args["force"])
 
         elif args["dep"]:
-            dep = sstelements.get_dependencies(args["dep"])
+            dep = installer.get_dependencies(args["dep"])
             print("\n".join(dep) if dep else None)
 
         elif args["list"]:
-            all_elements = sstelements.list_all_elements().keys()
+            all_elements = installer.list_all_elements().keys()
             print("SST Elements".ljust(25), "Registered")
             print("-" * 41)
             for element in all_elements:
-                if sstelements.is_registered(element):
+                if installer.is_registered(element):
                     # print check mark (✓)
                     print(f"{element.ljust(28)} \033[32m✓\033[0m")
                 else:
@@ -90,12 +90,12 @@ if __name__ == "__main__":
 
         elif args["registered"]:
             if args["registered"] == "all":
-                print("\n".join(sstelements.list_registered_elements()))
+                print("\n".join(installer.list_registered_elements()))
             else:
-                print(sstelements.is_registered(args["registered"]))
+                print(installer.is_registered(args["registered"]))
 
         elif args["info"]:
-            print("\n".join(sstelements.get_info(args["info"])))
+            print("\n".join(installer.get_info(args["info"])))
 
         else:
             parser.print_help()
