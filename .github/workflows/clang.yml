@@ -1,0 +1,117 @@
+name: clang builds
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04
+
+        _name:
+          - Clang 7
+          - Clang 8
+          - Clang 9
+          - Clang 10
+
+        exclude:
+
+          - os: ubuntu-18.04
+            _name: "Clang 9"
+
+          - os: ubuntu-18.04
+            _name: "Clang 10"
+
+          - os: ubuntu-20.04
+            _name: "Clang 7"
+
+          - os: ubuntu-20.04
+            _name: "Clang 8"
+
+        include:
+
+          # --------------- Clang on Linux --------------- #
+
+          # Clang 7
+          - _name: "Clang 7"
+            _cxx: "7"
+            _pkg: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main"
+
+          # Clang 8
+          - _name: "Clang 8"
+            _cxx: "8"
+            _pkg: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-8 main"
+
+          # Clang 9
+          - _name: "Clang 9"
+            _cxx: "9"
+            _pkg: "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main"
+
+          # Clang 10
+          - _name: "Clang 10"
+            _cxx: "10"
+            _pkg: "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main"
+
+    steps:
+
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.x
+          architecture: x64
+
+      - name: ${{ matrix._name }}
+        env:
+          _CXX: ${{ matrix._cxx }}
+          _PKG: ${{ matrix._pkg }}
+        run: |
+          # set the maximum number of cores supported on GitHub dockers
+          JOBS=$(nproc --all)
+          echo "Using ${JOBS} processors"
+
+          # dependencies required by the CI are installed in ${BUILD_DIR}/deps/
+          DEPS_DIR="deps"
+          mkdir -p "${DEPS_DIR}"
+
+          # add LLVM public keys for Clang compilers
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+
+          # set the proper C++ and MPI compilers
+          sudo add-apt-repository "${_PKG}" -y
+          sudo apt install clang-${_CXX} -y
+          export CXX=clang++-${_CXX}
+          export OMPI_CXX=${CXX}
+
+          # install necessary packages
+          sudo apt install openmpi-bin
+
+          # set versions and URLs for requirements
+          CMAKE_VER="3.17.3"
+          CMAKE_URL="https://cmake.org/files/v${CMAKE_VER%.[0-9]}/cmake-${CMAKE_VER}-Linux-x86_64.tar.gz"
+
+          SST_VER="10.0.0"
+          SST_CORE_URL="https://github.com/sstsimulator/sst-core/releases/download/v${SST_VER}_Final/"
+
+          # download sources for requirements
+          # curl CMake
+          curl -L ${CMAKE_URL} | tar xz -C ${DEPS_DIR}
+
+          # upgrade CMake to a more recent version
+          export PATH=$(realpath ${DEPS_DIR}/cmake-${CMAKE_VER}-Linux-x86_64/bin):${PATH}
+
+          # curl SST Core
+          curl -L ${SST_CORE_URL}sstcore-${SST_VER}.tar.gz | tar xz -C ${DEPS_DIR}
+          mkdir -p ~/.sst && touch ~/.sst/sstsimulator.conf
+
+          # install SST Core
+          cd ${DEPS_DIR}/sstcore-${SST_VER} && ./configure && make -j${JOBS} all && sudo make install && cd -
+
+          pip install pytest
+          pytest -sv tests/cli.py
