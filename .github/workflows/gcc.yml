@@ -19,17 +19,6 @@ jobs:
           - GCC 8
           - GCC 9
 
-        exclude:
-
-          - os: ubuntu-18.04
-            _name: "GCC 7"
-
-          - os: ubuntu-18.04
-            _name: "GCC 8"
-
-          - os: ubuntu-18.04
-            _name: "GCC 9"
-
         include:
 
           # --------------- GCC on Linux --------------- #
@@ -37,17 +26,14 @@ jobs:
           # GCC 7
           - _name: "GCC 7"
             _cxx: g++-7
-            _pkg: ppa:ubuntu-toolchain-r/test
 
           # GCC 8
           - _name: "GCC 8"
             _cxx: g++-8
-            _pkg: ppa:ubuntu-toolchain-r/test
 
           # GCC 9
           - _name: "GCC 9"
             _cxx: g++-9
-            _pkg: ppa:ubuntu-toolchain-r/test
 
     steps:
 
@@ -61,7 +47,6 @@ jobs:
       - name: ${{ matrix._name }}
         env:
           _CXX: ${{ matrix._cxx }}
-          _PKG: ${{ matrix._pkg }}
         run: |
           # set the maximum number of cores supported on GitHub dockers
           JOBS=$(nproc --all)
@@ -72,13 +57,13 @@ jobs:
           mkdir -p "${DEPS_DIR}"
 
           # set the proper C++ and MPI compilers
-          sudo add-apt-repository "${_PKG}" -y
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo apt install ${_CXX} -y
           export CXX=${_CXX}
           export OMPI_CXX=${CXX}
 
           # install necessary packages
-          sudo apt install openmpi-bin
+          sudo apt install libopenmpi-dev openmpi-bin
 
           # set versions and URLs for requirements
           CMAKE_VER="3.17.3"
