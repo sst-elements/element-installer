@@ -68,7 +68,8 @@ def get_version():
     return subprocess.check_output("$(which sst) -V || true", shell=True).decode("utf-8")
 
 
-def __clone(element, force, branch="master", commit=""):
+def __clone(element, force, branch="master", commit="",
+            element_stdout=subprocess.DEVNULL, element_stderr=subprocess.DEVNULL):
     """Clone repository of element if it is deemed official and trusted
 
     If element is found on `_list_all_elements()`, it will be cloned from its repository with the
@@ -110,14 +111,15 @@ def __clone(element, force, branch="master", commit=""):
         # git clone failed if exit code is non-zero
         if subprocess.call(
             f"git clone -q -b {branch} --single-branch {all_elements[element]['url']}",
-            shell=True, stdout=subprocess.DEVNULL
+            shell=True, stdout=element_stdout, stderr=element_stderr
         ):
             raise urllib.error.URLError(f"Cloning of repository for {element} failed")
 
         else:
             if commit:
                 os.chdir(element)
-                subprocess.call(f"git reset --hard {commit}", shell=True, stdout=subprocess.DEVNULL)
+                subprocess.call(f"git reset --hard {commit}",
+                                shell=True, stdout=element_stdout, stderr=element_stderr)
                 os.chdir(ELEMENT_SRC_DIR)
             return True
 
@@ -190,10 +192,11 @@ def __get_var_path(dep):
     str
         name of element along with the generated Makefile variable definitions
     """
-    return " ".join(f"{i}={ELEMENT_SRC_DIR}{i}" for i in dep)
+    pass
 
 
-def install(element, force=False, branch="master", commit=""):
+def install(element, force=False, generator="makefile", n_jobs=1,
+            branch="master", commit="", suppress_dump=True):
     """Install element as well as its dependencies
 
     The element's repository is first cloned and its dependencies are determined. The dependency
@@ -219,9 +222,14 @@ def install(element, force=False, branch="master", commit=""):
     """
     install_vars = []
     dependencies = []
+    if suppress_dump:
+        element_stdout = element_stderr = subprocess.DEVNULL
+    else:
+        element_stdout = open((pathlib.Path("element-logs") / (element + ".out")), "w+")
+        element_stderr = open((pathlib.Path("element-logs") / (element + ".err")), "w+")
 
     # clone the targeted element repository
-    if __clone(element, force, branch, commit):
+    if __clone(element, force, branch, commit, element_stdout, element_stderr):
 
         # add its dependencies as well as its Makefile variable definitions
         __log("DEPEND", f"Gathering dependencies for {element}...")
@@ -235,7 +243,8 @@ def install(element, force=False, branch="master", commit=""):
             # loop through its dependencies to generate a dependency graph
             for dep in dependencies:
 
-                if __clone(dep, force):
+                if __clone(dep, force, element_stdout=element_stdout,
+                           element_stderr=element_stderr):
 
                     # update the list of elements to be installed along with their corresponding
                     # Makefile variable definitions
@@ -251,8 +260,8 @@ def install(element, force=False, branch="master", commit=""):
                     else:
                         __log("DEPEND", f"No dependencies found for {dep}")
 
-            # reverse the dependency graph represented in a flat array so that the parent elements
-            # are installed before their children
+            # reverse the dependency graph represented in a flat array so that the parent
+            # elements are installed before their children
             install_vars = install_vars[::-1]
             __log("INSTALL", "Installing dependencies...")
 
@@ -260,12 +269,29 @@ def install(element, force=False, branch="master", commit=""):
         else:
             __log("DEPEND", "No dependencies found")
 
+        __log("INSTALL", f"Using {generator.title()} to build... ")
         for element, path in install_vars:
             __log("INSTALL", f"Installing {element}... ", end="", flush=True)
+
             build_path = pathlib.Path(f"{element}/build")
             build_path.mkdir(parents=True, exist_ok=True)
             os.chdir(build_path)
-            subprocess.call("cmake ..", shell=True, stdout=subprocess.DEVNULL)
+
+            if generator == "makefile":
+                subprocess.call("cmake ..", shell=True,
+                                stdout=element_stdout, stderr=element_stderr)
+                subprocess.call(f"make -j{n_jobs}", shell=True,
+                                stdout=element_stdout, stderr=element_stderr)
+
+            elif generator == "ninja":
+                subprocess.call("cmake -G Ninja ..", shell=True,
+                                stdout=element_stdout, stderr=element_stderr)
+                subprocess.call("ninja", shell=True, stdout=element_stdout,
+                                stderr=element_stderr)
+
+            else:
+                raise NotImplementedError(f"{generator} is not supported")
+
             os.chdir(ELEMENT_SRC_DIR)
             __log(term=True)
 
@@ -448,3 +474,16 @@ def list_registered_elements():
     """
     elements = subprocess.check_output("$(which sst-register) -l", shell=True).decode("utf-8")
     return [match.group() for match in REG_ELEM_RE.finditer(elements)]
+
+
+def list_tests(element):
+
+    if element in list_registered_elements():
+
+        tests_dir = pathlib.Path(element) / "tests"
+        if tests_dir.is_dir():
+            return tests_dir.glob("*.py")
+
+    else:
+        # if an invalid element is requested
+        raise FileNotFoundError(f"No tests found on {element}")

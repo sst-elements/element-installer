@@ -21,6 +21,7 @@ class ElementOptionsWindow(SSTElementWindow):
 
         self.install_btn = None
         self.uninstall_btn = None
+        self.tests_btn = None
 
         self.add_header()
 
@@ -50,10 +51,15 @@ class ElementOptionsWindow(SSTElementWindow):
 
             self.set_header(f"{self.element}<font color='#27ae60'> ✓</font>")
             if not self.uninstall_btn:
+                self.tests_btn = QtWidgets.QPushButton("Tests")
+                self.tests_btn.clicked.connect(
+                    lambda: self.element_tests_action(self.element))
+                self.insert_widget(self.tests_btn, 3)
+
                 self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
                 self.uninstall_btn.clicked.connect(
                     lambda: self.element_action(installer.uninstall))
-                self.insert_widget(self.uninstall_btn, 3)
+                self.insert_widget(self.uninstall_btn, 4)
                 self.uninstall_btn.setStyleSheet("background-color: #e74c3c")
 
             if self.install_btn:
@@ -73,7 +79,13 @@ class ElementOptionsWindow(SSTElementWindow):
 
             if self.uninstall_btn:
                 self.uninstall_btn.deleteLater()
+                self.tests_btn.deleteLater()
                 self.uninstall_btn = None
+                self.tests_btn = None
+
+    def element_tests_action(self, element_name):
+
+        installer.list_tests(element_name)
 
     def element_action(self, *action_args):
 

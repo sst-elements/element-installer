@@ -28,12 +28,24 @@ if __name__ == "__main__":
                                 help="Install element along with its dependencies")
     install_parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
                                 help="Uninstall element")
+
+    install_parser.add_argument("--gen", "-g", metavar="Makefile|Ninja", type=str,
+                                default="Makefile",
+                                help="""Generator to build element. Argument is case insensitive.""")
+    install_parser.add_argument("--jobs", "-j", metavar="<JOBS>", type=int, default=1,
+                                help="""Maximum number of parallel builds for Makefiles. Ninja is
+                                parallelized by default.""")
+
     install_parser.add_argument("--branch", "-b", metavar="<BRANCH>", type=str, default="master",
                                 help="""Branch of element repository. By default, the installer
                                  will clone the master branch of the element's repository.""")
     install_parser.add_argument("--commit", "-c", metavar="<SHA>", type=str, default="",
                                 help="""Commit SHA of element repository. By default, the installer
                                  will clone the version of the repository at its head.""")
+
+    install_parser.add_argument("--dump", "-d", action="store_false", default=True,
+                                help="Dump logs captured during the installation process")
+
     install_parser.add_argument("--force", "-f", action="store_true", default=False,
                                 help="""Flag to force installation or removal of element.
                         If option is applied to installation, the existing files will be
@@ -48,8 +60,10 @@ if __name__ == "__main__":
                              const="all", help="List elements registered to the system")
     info_parser.add_argument("--info", "-i", metavar="<ELEMENT>", type=str, default="",
                              help="Display information on element")
-    info_parser.add_argument("--dep", "-d", metavar="<ELEMENT>", type=str, default="",
+    info_parser.add_argument("--dep", "-p", metavar="<ELEMENT>", type=str, default="",
                              help="Display dependencies of element")
+    info_parser.add_argument("--tests", "-t", metavar="<ELEMENT>", type=str, default="",
+                             help="Display tests on element")
 
     option_parser = parser.add_argument_group("Optional arguments")
     option_parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
@@ -68,7 +82,15 @@ if __name__ == "__main__":
 
     try:
         if args["install"]:
-            installer.install(args["install"], args["force"], args["branch"], args["commit"])
+            installer.install(
+                element=args["install"],
+                generator=args["gen"].lower(),
+                n_jobs=args["jobs"],
+                force=args["force"],
+                branch=args["branch"],
+                commit=args["commit"],
+                suppress_dump=args["dump"]
+            )
 
         elif args["uninstall"]:
             installer.uninstall(args["uninstall"], args["force"])
@@ -96,6 +118,9 @@ if __name__ == "__main__":
 
         elif args["info"]:
             print("\n".join(installer.get_info(args["info"])))
+
+        elif args["tests"]:
+            print("\n".join(i.name for i in installer.list_tests(args["tests"])))
 
         else:
             parser.print_help()
