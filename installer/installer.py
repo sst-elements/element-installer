@@ -49,9 +49,6 @@ def __log(level="", message="", **kwargs):
         logging info level. Levels used are: INSTALL, REQUEST, DEPEND, REMOVE
     message : str (default: "")
         message to print
-    term : bool (default: False)
-        flag to print output after previous message was not flushed. If true, "done" is printed
-        and flushed to stdout
     """
     if LOG:
         print(f"[{level}] {message}", **kwargs)
@@ -234,7 +231,8 @@ def install(element, force=False, generator="makefile", n_jobs=None,
         # add its dependencies as well as its Makefile variable definitions
         __log("DEPEND", f"Gathering dependencies for {element}...")
         dependencies.extend(get_dependencies(element))
-        install_vars.append((element, __get_var_path(dependencies)))
+        # install_vars.append((element, __get_var_path(dependencies)))
+        install_vars.append(element)
 
         # if the element depends on any other elements
         if dependencies:
@@ -251,7 +249,8 @@ def install(element, force=False, generator="makefile", n_jobs=None,
                     __log("DEPEND", f"Gathering dependencies for {dep}...")
                     new_dependencies = get_dependencies(dep)
                     dependencies = __add_dependencies(dependencies, new_dependencies)
-                    install_vars.append((dep, __get_var_path(new_dependencies)))
+                    # install_vars.append((dep, __get_var_path(new_dependencies)))
+                    install_vars.append(dep)
                     if new_dependencies:
                         __log(
                             "DEPEND",
@@ -295,7 +294,7 @@ def install(element, force=False, generator="makefile", n_jobs=None,
         else:
             raise NotImplementedError(f"{generator} is not supported")
 
-        for element, path in install_vars:
+        for element in install_vars:
             __log("INSTALL", f"Installing {element}...")
 
             build_path = pathlib.Path(element) / "build"
@@ -308,7 +307,8 @@ def install(element, force=False, generator="makefile", n_jobs=None,
             os.chdir(ELEMENT_SRC_DIR)
 
         global INSTALLED_ELEMS
-        INSTALLED_ELEMS = f"Installed {', '.join([i[0] for i in install_vars])}"
+        # INSTALLED_ELEMS = f"Installed {', '.join([i[0] for i in install_vars])}"
+        INSTALLED_ELEMS = f"Installed {', '.join(install_vars)}"
         __log("INSTALL", INSTALLED_ELEMS)
         return 0
 
