@@ -11,7 +11,7 @@ if __name__ == "__main__":
     class CustomHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
         def __init__(self, prog):
-            super().__init__(prog, max_help_position=40, width=80)
+            super().__init__(prog, max_help_position=40, width=100)
 
         def _format_action_invocation(self, action):
             if not action.option_strings or action.nargs == 0:
@@ -25,26 +25,27 @@ if __name__ == "__main__":
 
     install_parser = parser.add_argument_group("Installation arguments")
     install_parser.add_argument("install", nargs="?", metavar="<ELEMENT>", type=str, default="",
-                                help="Install element along with its dependencies")
+                                help="Install element along with its dependencies.")
     install_parser.add_argument("--uninstall", "-u", metavar="<ELEMENT>", type=str, default="",
-                                help="Uninstall element")
+                                help="Uninstall element.")
 
-    install_parser.add_argument("--gen", "-g", metavar="Makefile|Ninja", type=str,
+    # build options
+    install_parser.add_argument("--gen", "-g", nargs="?", metavar="Makefile|Ninja", type=str,
                                 default="Makefile",
-                                help="""Generator to build element. Argument is case insensitive.""")
-    install_parser.add_argument("--jobs", "-j", metavar="<JOBS>", type=int, default=1,
-                                help="""Maximum number of parallel builds for Makefiles. Ninja is
-                                parallelized by default.""")
+                                help="""Generator to build element.
+                                Argument is case insensitive. (default: %(default)s)""")
+    install_parser.add_argument("--jobs", "-j", nargs="?", metavar="<JOBS>", type=int, default=1,
+                                help="""Maximum number of parallel builds.""")
+    install_parser.add_argument("--dump", "-d", action="store_false", default=True,
+                                help="Dump logs captured during the installation process.")
 
+    # download options
     install_parser.add_argument("--branch", "-b", metavar="<BRANCH>", type=str, default="master",
                                 help="""Branch of element repository. By default, the installer
                                  will clone the master branch of the element's repository.""")
     install_parser.add_argument("--commit", "-c", metavar="<SHA>", type=str, default="",
                                 help="""Commit SHA of element repository. By default, the installer
                                  will clone the version of the repository at its head.""")
-
-    install_parser.add_argument("--dump", "-d", action="store_false", default=True,
-                                help="Dump logs captured during the installation process")
 
     install_parser.add_argument("--force", "-f", action="store_true", default=False,
                                 help="""Flag to force installation or removal of element.
@@ -120,7 +121,9 @@ if __name__ == "__main__":
             print("\n".join(installer.get_info(args["info"])))
 
         elif args["tests"]:
-            print("\n".join(i.name for i in installer.list_tests(args["tests"])))
+            test_list = installer.list_tests(args["tests"])
+            if test_list:
+                print("\n".join(i.name for i in test_list))
 
         else:
             parser.print_help()

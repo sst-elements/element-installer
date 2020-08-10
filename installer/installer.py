@@ -40,7 +40,7 @@ INSTALLED_ELEMS = ""
 LOG = True
 
 
-def __log(level="", message="", term=False, **kwargs):
+def __log(level="", message="", **kwargs):
     """Customize output to stdout in the format: "[LEVEL] message"
 
     Parameters:
@@ -54,7 +54,7 @@ def __log(level="", message="", term=False, **kwargs):
         and flushed to stdout
     """
     if LOG:
-        print(f"[{level}] {message}" if not term else "done", **kwargs)
+        print(f"[{level}] {message}", **kwargs)
 
 
 def get_version():
@@ -195,7 +195,7 @@ def __get_var_path(dep):
     pass
 
 
-def install(element, force=False, generator="makefile", n_jobs=1,
+def install(element, force=False, generator="makefile", n_jobs=None,
             branch="master", commit="", suppress_dump=True):
     """Install element as well as its dependencies
 
@@ -269,31 +269,43 @@ def install(element, force=False, generator="makefile", n_jobs=1,
         else:
             __log("DEPEND", "No dependencies found")
 
-        __log("INSTALL", f"Using {generator.title()} to build... ")
-        for element, path in install_vars:
-            __log("INSTALL", f"Installing {element}... ", end="", flush=True)
+        cmake_cmd = ""
+        gen_cmd = ""
 
-            build_path = pathlib.Path(f"{element}/build")
+        # using Makefile
+        if generator == "makefile":
+            cmake_cmd = "cmake .."
+            if n_jobs is None:
+                gen_cmd = "make -j"
+                __log("INSTALL", f"Using Makefile with {os.cpu_count()} job(s) to build...")
+            else:
+                gen_cmd = f"make -j {n_jobs}"
+                __log("INSTALL", f"Using Makefile with {n_jobs} job(s) to build...")
+
+        # using Ninja
+        elif generator == "ninja":
+            cmake_cmd = "cmake -GNinja .."
+            if n_jobs is None:
+                gen_cmd = "ninja -j"
+                __log("INSTALL", f"Using Ninja with {os.cpu_count() + 2} job(s) to build...")
+            else:
+                gen_cmd = f"ninja -j {n_jobs}"
+                __log("INSTALL", f"Using Ninja with {n_jobs} job(s) to build...")
+
+        else:
+            raise NotImplementedError(f"{generator} is not supported")
+
+        for element, path in install_vars:
+            __log("INSTALL", f"Installing {element}...")
+
+            build_path = pathlib.Path(element) / "build"
             build_path.mkdir(parents=True, exist_ok=True)
             os.chdir(build_path)
 
-            if generator == "makefile":
-                subprocess.call("cmake ..", shell=True,
-                                stdout=element_stdout, stderr=element_stderr)
-                subprocess.call(f"make -j{n_jobs}", shell=True,
-                                stdout=element_stdout, stderr=element_stderr)
-
-            elif generator == "ninja":
-                subprocess.call("cmake -G Ninja ..", shell=True,
-                                stdout=element_stdout, stderr=element_stderr)
-                subprocess.call("ninja", shell=True, stdout=element_stdout,
-                                stderr=element_stderr)
-
-            else:
-                raise NotImplementedError(f"{generator} is not supported")
+            subprocess.call(cmake_cmd, shell=True, stdout=element_stdout, stderr=element_stderr)
+            subprocess.call(gen_cmd, shell=True, stdout=element_stdout, stderr=element_stderr)
 
             os.chdir(ELEMENT_SRC_DIR)
-            __log(term=True)
 
         global INSTALLED_ELEMS
         INSTALLED_ELEMS = f"Installed {', '.join([i[0] for i in install_vars])}"
@@ -393,11 +405,11 @@ def get_info(element):
     str
         path or URL to README
     """
-    README_FILE_PATS = ("/README.md", "/README")
+    README_FILE_PATS = ("README.md", "README")
     if element in list_registered_elements():
 
         for file_name in README_FILE_PATS:
-            file_path = pathlib.Path(element + file_name)
+            file_path = pathlib.Path(element) / file_name
             if file_path.is_file():
                 with file_path.open() as readme_file:
                     return readme_file.read(), file_path._str
