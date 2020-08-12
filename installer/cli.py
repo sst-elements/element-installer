@@ -11,7 +11,7 @@ if __name__ == "__main__":
     class CustomHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
         def __init__(self, prog):
-            super().__init__(prog, max_help_position=40, width=100)
+            super().__init__(prog, max_help_position=40, width=90)
 
         def _format_action_invocation(self, action):
             if not action.option_strings or action.nargs == 0:
@@ -35,14 +35,15 @@ if __name__ == "__main__":
                                 help="""Generator to build element.
                                 Argument is case insensitive. (default: %(default)s)""")
     install_parser.add_argument("--jobs", "-j", nargs="?", metavar="<JOBS>", type=int, default=1,
-                                help="""Maximum number of parallel builds.""")
+                                help="Maximum number of parallel builds. (default: %(default)s)")
     install_parser.add_argument("--dump", "-d", action="store_false", default=True,
                                 help="Dump logs captured during the installation process.")
 
     # download options
     install_parser.add_argument("--branch", "-b", metavar="<BRANCH>", type=str, default="master",
                                 help="""Branch of element repository. By default, the installer
-                                 will clone the master branch of the element's repository.""")
+                                 will clone the master branch of the element's repository.
+                                 (default: %(default)s)""")
     install_parser.add_argument("--commit", "-c", metavar="<SHA>", type=str, default="",
                                 help="""Commit SHA of element repository. By default, the installer
                                  will clone the version of the repository at its head.""")
@@ -85,16 +86,19 @@ if __name__ == "__main__":
         if args["install"]:
             installer.install(
                 element=args["install"],
+                force=args["force"],
                 generator=args["gen"].lower(),
                 n_jobs=args["jobs"],
-                force=args["force"],
                 branch=args["branch"],
                 commit=args["commit"],
                 suppress_dump=args["dump"]
             )
 
         elif args["uninstall"]:
-            installer.uninstall(args["uninstall"], args["force"])
+            installer.uninstall(
+                element=args["uninstall"],
+                force=args["force"]
+            )
 
         elif args["dep"]:
             dep = installer.get_dependencies(args["dep"])
@@ -122,8 +126,7 @@ if __name__ == "__main__":
 
         elif args["tests"]:
             test_list = installer.list_tests(args["tests"])
-            if test_list:
-                print("\n".join(i.name for i in test_list))
+            print("\n".join(i.name for i in test_list) if test_list else None)
 
         else:
             parser.print_help()

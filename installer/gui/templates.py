@@ -10,11 +10,12 @@ import installer
 
 
 class RunnableAction(QtCore.QRunnable):
-    def __init__(self, window, action, *args):
+    def __init__(self, window, action, element, **args):
 
         QtCore.QRunnable.__init__(self)
         self.window = window
         self.action = action
+        self.element = element
         self.args = args
 
     def run(self):
@@ -22,13 +23,13 @@ class RunnableAction(QtCore.QRunnable):
         QtCore.QMetaObject.invokeMethod(
             self.window, "stop",
             QtCore.Qt.QueuedConnection,
-            QtCore.Q_ARG(int, self.action(*self.args))
+            QtCore.Q_ARG(int, self.action(element=self.element, force=True, **self.args))
         )
 
 
 class SplashScreen(QtWidgets.QDialog):
 
-    def __init__(self, parent, element, action, *action_args):
+    def __init__(self, parent, element, action, **action_args):
 
         super(SplashScreen, self).__init__(None)
         self.resize(200, 100)
@@ -51,7 +52,7 @@ class SplashScreen(QtWidgets.QDialog):
 
         self.__spinner.start()
         QtCore.QThreadPool.globalInstance().start(
-            RunnableAction(self, self.action, self.element, *self.action_args)
+            RunnableAction(self, self.action, self.element, **self.action_args)
         )
 
     @QtCore.pyqtSlot(int)
@@ -114,6 +115,10 @@ class SSTElementWindow(QtWidgets.QMainWindow):
 
         self.__hlayout.setAlignment(QtCore.Qt.AlignRight)
         self.__layout.addLayout(self.__hlayout)
+
+    def add_sub_layout(self, sub_layout, index=0):
+
+        self.__layout.insertLayout(index, sub_layout)
 
     def set_header(self, header):
 

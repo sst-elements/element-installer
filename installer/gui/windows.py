@@ -4,11 +4,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import installer
+import os
 from .templates import SSTElementWindow, SplashScreen, ElementsListWindow
 
 # suppress all console outputs
 installer.LOG = False
 
+
+class CustomSpinBox(QtWidgets.QSpinBox):
+    def __init__(self, *args, **kwargs):
+        super(CustomSpinBox, self).__init__(*args, **kwargs)
+
+    def textFromValue(self, value):
+        return "Max" if value == self.maximum() else str(value)
 
 class ElementOptionsWindow(SSTElementWindow):
 
@@ -22,6 +30,15 @@ class ElementOptionsWindow(SSTElementWindow):
         self.install_btn = None
         self.uninstall_btn = None
         self.tests_btn = None
+
+        self.gen_label = None
+        self.gen_btns = []
+        self.gen_chosen = "makefile"
+        self.gen_group = None
+
+        self.jobs_spin_box = None
+        self.jobs = 0
+        self.__max_jobs = 0
 
         self.add_header()
 
@@ -51,11 +68,14 @@ class ElementOptionsWindow(SSTElementWindow):
 
             self.set_header(f"{self.element}<font color='#27ae60'> ✓</font>")
             if not self.uninstall_btn:
+
+                # tests button
                 self.tests_btn = QtWidgets.QPushButton("Tests")
                 self.tests_btn.clicked.connect(
                     lambda: self.element_tests_action(self.element))
                 self.insert_widget(self.tests_btn, 3)
 
+                # uninstall button
                 self.uninstall_btn = QtWidgets.QPushButton("Uninstall")
                 self.uninstall_btn.clicked.connect(
                     lambda: self.element_action(installer.uninstall))
@@ -63,21 +83,67 @@ class ElementOptionsWindow(SSTElementWindow):
                 self.uninstall_btn.setStyleSheet("background-color: #e74c3c")
 
             if self.install_btn:
+
                 self.install_btn.deleteLater()
                 self.install_btn = None
+
+                self.gen_label.deleteLater()
+                for gen_btn in self.gen_btns:
+                    gen_btn.deleteLater()
+                    gen_btn = None
+
+                self.gen_label = None
+
+                self.jobs_check.deleteLater()
+                self.jobs_check = None
+
+                if self.jobs_spin_box:
+                    self.jobs_spin_box.deleteLater()
+                    self.jobs_spin_box = None
 
         # replace the uninstall button with the install button
         else:
 
             self.set_header(f"{self.element}")
             if not self.install_btn:
+
+                # generator sub-layout
+                self.__gen_sub_layout = QtWidgets.QHBoxLayout()
+
+                self.gen_label = QtWidgets.QLabel("Choose your build tool:")
+                for gen in ("Makefile", "Ninja"):
+                    self.gen_btns.append(QtWidgets.QRadioButton(gen))
+                self.gen_group = QtWidgets.QButtonGroup()
+
+                self.gen_btns[0].setChecked(True)
+                for gen_btn in self.gen_btns:
+                    self.gen_group.addButton(gen_btn)
+                    gen_btn.toggled.connect(self.on_checked_gen)
+
+                self.__gen_sub_layout.addWidget(self.gen_label)
+                for gen_btn in self.gen_btns:
+                    self.__gen_sub_layout.addWidget(gen_btn)
+
+                self.add_sub_layout(self.__gen_sub_layout, 3)
+
+                # jobs sub-layout
+                self.__jobs_sub_layout = QtWidgets.QHBoxLayout()
+                self.jobs_check = QtWidgets.QRadioButton("Enable parallel builds")
+                self.jobs_check.toggled.connect(self.on_checked_jobs)
+
+                self.__jobs_sub_layout.addWidget(self.jobs_check)
+                self.add_sub_layout(self.__jobs_sub_layout, 4)
+
+                # install button
                 self.install_btn = QtWidgets.QPushButton("Install")
                 self.install_btn.clicked.connect(
-                    lambda: self.element_action(installer.install))
-                self.insert_widget(self.install_btn, 3)
+                    lambda: self.element_action(installer.install, generator=self.gen_chosen,
+                                                n_jobs=self.jobs))
+                self.insert_widget(self.install_btn, 5)
                 self.install_btn.setStyleSheet("background-color: #27ae60")
 
             if self.uninstall_btn:
+
                 self.uninstall_btn.deleteLater()
                 self.tests_btn.deleteLater()
                 self.uninstall_btn = None
@@ -87,9 +153,51 @@ class ElementOptionsWindow(SSTElementWindow):
 
         installer.list_tests(element_name)
 
-    def element_action(self, *action_args):
+    def on_spin_jobs(self, value):
 
-        splash = SplashScreen(self, self.element, *action_args)
+        self.jobs = 0 if value == self.__max_jobs else value
+
+    def _update_jobs(self):
+
+        if self.jobs_spin_box:
+
+            cores = os.cpu_count() + 1
+
+            if self.gen_chosen == "makefile":
+                self.__max_jobs = cores
+                self.jobs_spin_box.setMaximum(self.__max_jobs)
+                self.jobs_spin_box.setValue(self.__max_jobs)
+
+            elif self.gen_chosen == "ninja":
+                self.__max_jobs = cores + 2
+                self.jobs_spin_box.setMaximum(self.__max_jobs)
+                self.jobs_spin_box.setValue(self.__max_jobs)
+
+    def on_checked_gen(self):
+
+        radio_btn = self.sender()
+        if radio_btn.isChecked():
+            self.gen_chosen = radio_btn.text().lower()
+            self._update_jobs()
+
+    def on_checked_jobs(self):
+
+        if self.sender().isChecked():
+            self.jobs_spin_box = CustomSpinBox()
+            self.jobs_spin_box.setMinimum(1)
+            self.jobs_spin_box.setStepType(1)
+            self.jobs_spin_box.valueChanged.connect(self.on_spin_jobs)
+            self._update_jobs()
+
+            self.__jobs_sub_layout.addWidget(self.jobs_spin_box)
+
+        else:
+            self.jobs_spin_box.deleteLater()
+            self.jobs_spin_box = None
+
+    def element_action(self, action, **action_args):
+
+        splash = SplashScreen(self, self.element, action, **action_args)
         splash.setWindowModality(QtCore.Qt.ApplicationModal)
         splash.show()
 

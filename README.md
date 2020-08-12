@@ -41,9 +41,9 @@ pip install -r requirements.txt
 ### Command Line Interface
 
 ```
-usage: cli.py [--uninstall <ELEMENT>] [--branch <BRANCH>] [--commit <SHA>]
-              [--force] [--list] [--registered [all|<ELEMENT>]]
-              [--info <ELEMENT>] [--dep <ELEMENT>] [-h] [-v] [--quiet]
+usage: cli.py [--uninstall <ELEMENT>] [--gen [Makefile|Ninja]] [--jobs [<JOBS>]] [--dump]
+              [--branch <BRANCH>] [--commit <SHA>] [--force] [--list] [--registered [all|<ELEMENT>]]
+              [--info <ELEMENT>] [--dep <ELEMENT>] [--tests <ELEMENT>] [-h] [-v] [--quiet]
               [<ELEMENT>]
 
 SST Elements Installer
@@ -62,27 +62,28 @@ The functionalities include:
     - gathering version of SST Core installed in the system
 
 Installation arguments:
-  <ELEMENT>                         Install element along with its dependencies
-  --uninstall, -u <ELEMENT>         Uninstall element
-  --branch, -b <BRANCH>             Branch of element repository. By default,
-                                    the installer will clone the master branch
-                                    of the element's repository.
-  --commit, -c <SHA>                Commit SHA of element repository. By
-                                    default, the installer will clone the
-                                    version of the repository at its head.
-  --force, -f                       Flag to force installation or removal of
-                                    element. If option is applied to
-                                    installation, the existing files will be
-                                    overwritten by the updated versions. If
-                                    option is applied to uninstallation, the
-                                    element as well as all its dependent
-                                    elements will be removed.
+  <ELEMENT>                         Install element along with its dependencies.
+  --uninstall, -u <ELEMENT>         Uninstall element.
+  --gen, -g [Makefile|Ninja]        Generator to build element. Argument is case insensitive.
+                                    (default: Makefile)
+  --jobs, -j [<JOBS>]               Maximum number of parallel builds.
+  --dump, -d                        Dump logs captured during the installation process.
+  --branch, -b <BRANCH>             Branch of element repository. By default, the installer will
+                                    clone the master branch of the element's repository.
+  --commit, -c <SHA>                Commit SHA of element repository. By default, the installer will
+                                    clone the version of the repository at its head.
+  --force, -f                       Flag to force installation or removal of element. If option is
+                                    applied to installation, the existing files will be overwritten
+                                    by the updated versions. If option is applied to uninstallation,
+                                    the element as well as all its dependent elements will be
+                                    removed.
 
 Element information arguments:
   --list, -l                        List all SST elements
   --registered, -r [all|<ELEMENT>]  List elements registered to the system
   --info, -i <ELEMENT>              Display information on element
-  --dep, -d <ELEMENT>               Display dependencies of element
+  --dep, -p <ELEMENT>               Display dependencies of element
+  --tests, -t <ELEMENT>             Display tests on element
 
 Optional arguments:
   -h, --help                        Show this help message and exit

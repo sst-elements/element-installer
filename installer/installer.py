@@ -192,7 +192,7 @@ def __get_var_path(dep):
     pass
 
 
-def install(element, force=False, generator="makefile", n_jobs=None,
+def install(element, force=False, generator="makefile", n_jobs=0,
             branch="master", commit="", suppress_dump=True):
     """Install element as well as its dependencies
 
@@ -226,7 +226,8 @@ def install(element, force=False, generator="makefile", n_jobs=None,
         element_stderr = open((pathlib.Path("element-logs") / (element + ".err")), "w+")
 
     # clone the targeted element repository
-    if __clone(element, force, branch, commit, element_stdout, element_stderr):
+    if __clone(element=element, force=force, branch=branch, commit=commit,
+               element_stdout=element_stdout, element_stderr=element_stderr):
 
         # add its dependencies as well as its Makefile variable definitions
         __log("DEPEND", f"Gathering dependencies for {element}...")
@@ -241,7 +242,7 @@ def install(element, force=False, generator="makefile", n_jobs=None,
             # loop through its dependencies to generate a dependency graph
             for dep in dependencies:
 
-                if __clone(dep, force, element_stdout=element_stdout,
+                if __clone(element=dep, force=force, element_stdout=element_stdout,
                            element_stderr=element_stderr):
 
                     # update the list of elements to be installed along with their corresponding
@@ -274,9 +275,9 @@ def install(element, force=False, generator="makefile", n_jobs=None,
         # using Makefile
         if generator == "makefile":
             cmake_cmd = "cmake .."
-            if n_jobs is None:
+            if not n_jobs:
                 gen_cmd = "make -j"
-                __log("INSTALL", f"Using Makefile with {os.cpu_count()} job(s) to build...")
+                __log("INSTALL", f"Using Makefile with ~{os.cpu_count()} job(s) to build...")
             else:
                 gen_cmd = f"make -j {n_jobs}"
                 __log("INSTALL", f"Using Makefile with {n_jobs} job(s) to build...")
@@ -284,7 +285,7 @@ def install(element, force=False, generator="makefile", n_jobs=None,
         # using Ninja
         elif generator == "ninja":
             cmake_cmd = "cmake -GNinja .."
-            if n_jobs is None:
+            if not n_jobs:
                 gen_cmd = "ninja -j"
                 __log("INSTALL", f"Using Ninja with {os.cpu_count() + 2} job(s) to build...")
             else:
@@ -340,7 +341,7 @@ def __get_dependents(element):
     return dependents
 
 
-def uninstall(element, clean=False):
+def uninstall(element, force=False):
     """Remove and uninstall element from system
 
     The path of the element is first located before a subprocess instance is created to avoid shell
@@ -350,8 +351,8 @@ def uninstall(element, clean=False):
     -----------
     element : str
         name of element
-    clean : bool (default: False)
-        flag to remove element as well as its dependent elements. This option is useful in cleaning
+    force : bool (default: False)
+        flag to remove element as well as its dependent elements. This option is useful in forcing
         up deprecated elements.
 
     Returns:
@@ -361,7 +362,7 @@ def uninstall(element, clean=False):
     """
     __log("REMOVE", f"Uninstalling {element}...")
     elements = [element]
-    if clean:
+    if force:
         dependents = __get_dependents(element)
         if dependents:
             elements += dependents
